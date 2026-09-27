@@ -14,12 +14,13 @@ No installs needed. Download the repo and double-click `index.html` to open it i
 4. After about a minute, the site is live at `https://carlywaldeck.github.io/gsb-5576-project/`.
 
 ## How it's built
-| File | What it does |
+Everything is in one file, `index.html`, so it works however it's opened (double-clicked, previewed, or hosted). It has three sections:
+
+| Section | What it does |
 |---|---|
-| `index.html` | The page layout and input form |
-| `styles.css` | How it looks |
-| `app.js` | Estimates costs, ranks destinations, builds the results |
-| `data/cities.js` | City data: costs, month-by-month scores, itineraries, tips |
+| `<style>` | The design: departures-board header, ticket-style results, light and dark themes |
+| City data `<script>` | Costs, month-by-month scores, itineraries and tips for 16 cities |
+| App `<script>` | Estimates costs, ranks destinations, and updates the board and tickets as you change settings |
 
 **How costs are estimated:** round-trip transport is based on distance (train/bus under 600 km, budget flight over), plus hostel nights, food, and local transport and sights. Lodging and transport are adjusted for how busy the chosen month is.
 

@@ -40,7 +40,7 @@ Most travel tools answer *"what should I do in X?"* This app answers *"given my 
 
 ## Constraints
 - **$0 budget.** No paid APIs or hosting.
-- **No prior dev experience.** Built with AI assistance (Claude).
+- **Built with AI assistance (Claude)** to move faster and go beyond what I could build alone in a semester.
 - **Web app first.** It's easiest to deploy and share with employers.
 
 ## Data plan (all free)
