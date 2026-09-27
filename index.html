@@ -246,6 +246,44 @@ input[type="range"] { width: 100%; accent-color: var(--accent); margin: 0; }
 }
 .links a:hover { background: var(--accent-soft); }
 footer { max-width: 1180px; margin: 0 auto; padding-block: 0 40px; color: var(--muted); font-size: 13px; }
+/* ---------- Transport options, day trips, show more ---------- */
+.options { display: grid; gap: 8px; }
+.option {
+  display: grid; grid-template-columns: 70px 1fr auto; align-items: center; gap: 10px; text-align: left;
+  border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 10px 14px; font-size: 15px;
+}
+.option:not(:disabled):hover { border-color: var(--accent); }
+.option:disabled { cursor: not-allowed; opacity: .55; }
+.option span:nth-child(2) { color: var(--muted); font-size: 14px; }
+.option .mono { font-weight: 600; }
+.option[aria-checked="true"] { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+.fine { font-size: 13px; color: var(--muted); margin: 10px 0 0; }
+.daytrips { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.daytrip {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.daytrip.on { border-color: var(--good); box-shadow: inset 0 3px 0 var(--good); }
+.dt-head { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.dt-head strong { font-family: var(--display); font-size: 17px; line-height: 1.2; }
+.dt-how { font: 500 12px/1.3 var(--mono); color: var(--muted); }
+.daytrip p { margin: 0; font-size: 14px; line-height: 1.45; flex: 1; }
+.dt-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.dt-tags .tag { font-size: 12px; padding: 2px 8px; }
+.tag.hit { background: var(--accent-soft); color: var(--accent); }
+.dt-btn {
+  margin-top: 4px; border: 1px solid var(--accent); background: none; color: var(--accent);
+  border-radius: 8px; padding: 8px 10px; font-weight: 700; font-size: 14px;
+}
+.dt-btn[aria-pressed="true"] { background: var(--good-soft); border-color: var(--good); color: var(--good); }
+.trip-day { border-color: var(--good); }
+.c5 { background: var(--good); }
+.more-btn {
+  border: 1px dashed var(--line); background: var(--surface); color: var(--accent); border-radius: 14px;
+  padding: 14px; font-weight: 700;
+}
+.more-btn:hover { border-color: var(--accent); }
+@media (max-width: 480px) { .option { grid-template-columns: 56px 1fr auto; padding: 10px 12px; } }
 </style>
 </head>
 <body>
@@ -254,7 +292,7 @@ footer { max-width: 1180px; margin: 0 auto; padding-block: 0 40px; color: var(--
     <div class="board-top">
       <div>
         <div class="brand">Week<span>ender</span></div>
-        <p class="tagline">Cheap trips from wherever you're studying in Europe. Pick a budget and a month, and the board fills with places to go.</p>
+        <p class="tagline">Cheap trips from wherever you're studying in Europe: 49 cities, day trips nearby, and every way to get there by bus, train, boat or plane.</p>
       </div>
       <div class="board-status">
         <div class="eyebrow">Departures from</div>
@@ -263,7 +301,7 @@ footer { max-width: 1180px; margin: 0 auto; padding-block: 0 40px; color: var(--
     </div>
     <div class="brows" id="board">
       <div class="bhead" aria-hidden="true">
-        <span class="g" style="--w:11"><small>DESTINATION</small></span>
+        <span class="g" style="--w:13"><small>DESTINATION</small></span>
         <span class="g" style="--w:5"><small>FARE</small></span>
         <span class="g col-via" style="--w:5"><small>VIA</small></span>
         <span class="g col-remark" style="--w:10"><small>REMARK</small></span>
@@ -281,19 +319,52 @@ footer { max-width: 1180px; margin: 0 auto; padding-block: 0 40px; color: var(--
           <option value="amsterdam">Amsterdam</option>
           <option value="athens">Athens</option>
           <option value="barcelona">Barcelona</option>
+          <option value="belgrade">Belgrade</option>
           <option value="berlin">Berlin</option>
+          <option value="bologna">Bologna</option>
+          <option value="brussels">Brussels</option>
+          <option value="bucharest">Bucharest</option>
           <option value="budapest">Budapest</option>
+          <option value="copenhagen">Copenhagen</option>
+          <option value="dublin">Dublin</option>
+          <option value="dubrovnik">Dubrovnik</option>
+          <option value="edinburgh">Edinburgh</option>
           <option value="florence">Florence</option>
+          <option value="gdansk">Gdańsk</option>
+          <option value="granada">Granada</option>
+          <option value="istanbul">Istanbul</option>
           <option value="krakow">Kraków</option>
           <option value="lisbon">Lisbon</option>
+          <option value="ljubljana">Ljubljana</option>
           <option value="london">London</option>
+          <option value="lyon">Lyon</option>
           <option value="madrid" selected>Madrid</option>
+          <option value="marseille">Marseille</option>
+          <option value="milan">Milan</option>
+          <option value="munich">Munich</option>
+          <option value="malaga">Málaga</option>
+          <option value="naples">Naples</option>
+          <option value="nice">Nice</option>
+          <option value="palma">Palma de Mallorca</option>
           <option value="paris">Paris</option>
           <option value="porto">Porto</option>
           <option value="prague">Prague</option>
+          <option value="riga">Riga</option>
           <option value="rome">Rome</option>
+          <option value="salzburg">Salzburg</option>
+          <option value="sansebastian">San Sebastián</option>
           <option value="seville">Seville</option>
+          <option value="sofia">Sofia</option>
+          <option value="split">Split</option>
+          <option value="stockholm">Stockholm</option>
+          <option value="tallinn">Tallinn</option>
+          <option value="valencia">Valencia</option>
+          <option value="valletta">Valletta</option>
+          <option value="venice">Venice</option>
           <option value="vienna">Vienna</option>
+          <option value="warsaw">Warsaw</option>
+          <option value="zagreb">Zagreb</option>
+          <option value="zurich">Zurich</option>
         </select>
       </div>
 
@@ -320,6 +391,11 @@ footer { max-width: 1180px; margin: 0 auto; padding-block: 0 40px; color: var(--
         <span class="eyebrow" id="int-label">I'm into</span>
         <div class="chips" id="interests" role="group" aria-labelledby="int-label"></div>
       </div>
+
+      <div class="ctl">
+        <span class="eyebrow" id="modes-label">Getting there by</span>
+        <div class="chips" id="modes" role="group" aria-labelledby="modes-label"></div>
+      </div>
     </aside>
 
     <main>
@@ -339,19 +415,11 @@ footer { max-width: 1180px; margin: 0 auto; padding-block: 0 40px; color: var(--
 // ======================================================================
 // City data
 // ======================================================================
-// City dataset for the MVP.
-// All prices are rough per-person estimates in EUR for a budget traveler
-// (hostel dorm bed, cheap eats, public transit, a paid sight or two per day).
-// season:     how good each month is to visit, 1 (poor) to 5 (great), Jan..Dec
-// priceMult:  how expensive lodging/transport is that month vs. normal (1.0), Jan..Dec
-// code:       short station/airport-style code shown on the departures board
-// itinerary:  3 days x [morning, afternoon, evening]; each item is [activity, cost in EUR]
-
 window.CITIES = [
   {
     id: "barcelona", code: "BCN", name: "Barcelona", country: "Spain", lat: 41.39, lon: 2.17,
     costs: { hostel: 30, food: 30, transit: 6, activities: 15 },
-    interests: ["food", "nightlife", "beach", "architecture", "art"],
+    interests: ["food", "nightlife", "beach", "architecture", "art", "markets", "streetart", "festivals"],
     season:    [2, 3, 3, 4, 5, 4, 3, 3, 5, 4, 3, 2],
     priceMult: [0.8, 0.8, 0.9, 1.0, 1.1, 1.3, 1.4, 1.4, 1.2, 1.0, 0.8, 0.9],
     bestTime: "May and September: beach weather without peak-summer prices and crowds.",
@@ -360,7 +428,11 @@ window.CITIES = [
       [["Sagrada Família and Sant Pau from outside", 0], ["Afternoon on Barceloneta beach", 0], ["Pintxos crawl on Carrer de Blai", 15]],
       [["Walk up Montjuïc to the castle", 5], ["Picasso Museum", 15], ["Bars in El Raval", 10]]
     ],
-    extraDay: "Take the train to Sitges for a beach day or to Montserrat for a mountain hike.",
+    dayTrips: [
+      { name: "Montserrat", how: "Train + rack railway, 1h15", cost: 30, tags: ["hiking", "nature", "history"], note: "Mountain monastery with trails above the clouds." },
+      { name: "Sitges", how: "Train, 40 min", cost: 9, tags: ["beach", "nightlife"], note: "Small beach town with a pretty old town and lively bars." },
+      { name: "Girona", how: "Train, 40 min–1h15", cost: 25, tags: ["history", "architecture", "food"], note: "Medieval walls, colorful river houses and Game of Thrones filming spots." }
+    ],
     tips: [
       "The Picasso Museum is free on Thursday evenings and the first Sunday of each month (book online).",
       "Buy a T-casual 10-ride metro card instead of single tickets."
@@ -369,7 +441,7 @@ window.CITIES = [
   {
     id: "madrid", code: "MAD", name: "Madrid", country: "Spain", lat: 40.42, lon: -3.70,
     costs: { hostel: 25, food: 27, transit: 5, activities: 12 },
-    interests: ["food", "nightlife", "art", "history"],
+    interests: ["food", "nightlife", "art", "history", "markets", "castles", "cafes"],
     season:    [3, 3, 4, 5, 5, 3, 2, 2, 4, 5, 4, 3],
     priceMult: [0.9, 0.9, 0.9, 1.0, 1.1, 1.0, 0.9, 0.85, 1.0, 1.1, 0.9, 1.0],
     bestTime: "April–May and October: warm, lively, and cheap. August is scorching and half the city leaves.",
@@ -378,7 +450,11 @@ window.CITIES = [
       [["Royal Palace and Almudena Cathedral from outside", 0], ["El Rastro flea market (Sun) or Malasaña vintage shops", 0], ["Prado free hours, then tapas in La Latina", 15]],
       [["Reina Sofía to see Guernica", 0], ["Chocolate con churros at San Ginés", 5], ["Rooftop at Círculo de Bellas Artes, then Malasaña bars", 20]]
     ],
-    extraDay: "Take a day trip to Toledo or Segovia; both are under an hour away by train or bus.",
+    dayTrips: [
+      { name: "Toledo", how: "Bus, 1h", cost: 15, tags: ["history", "architecture", "castles"], note: "Hilltop city of three cultures, famous for swords and marzipan." },
+      { name: "Segovia", how: "Bus, 1h15", cost: 17, tags: ["history", "castles", "food"], note: "Roman aqueduct, a fairy-tale Alcázar and roast suckling pig." },
+      { name: "El Escorial", how: "Train, 1h", cost: 20, tags: ["history", "castles", "hiking"], note: "Huge royal monastery-palace at the foot of the mountains." }
+    ],
     tips: [
       "The Prado and Reina Sofía offer free entry during the last two hours on most days.",
       "Order the menú del día at lunch: 3 courses and a drink for about €13."
@@ -387,7 +463,7 @@ window.CITIES = [
   {
     id: "seville", code: "SVQ", name: "Seville", country: "Spain", lat: 37.39, lon: -5.98,
     costs: { hostel: 22, food: 22, transit: 3, activities: 10 },
-    interests: ["food", "history", "architecture", "nightlife"],
+    interests: ["food", "history", "architecture", "nightlife", "music", "festivals", "castles"],
     season:    [3, 4, 5, 5, 4, 2, 1, 1, 3, 5, 4, 3],
     priceMult: [0.8, 0.9, 1.0, 1.4, 1.1, 0.9, 0.8, 0.8, 0.9, 1.0, 0.9, 0.9],
     bestTime: "March and October–November. Semana Santa and the April Fair are spectacular, but lodging prices spike. Summer regularly tops 40°C.",
@@ -396,7 +472,11 @@ window.CITIES = [
       [["Real Alcázar palace", 15], ["Wander Barrio Santa Cruz, tapas lunch", 12], ["Sunset on the Setas (Metropol Parasol)", 15]],
       [["Triana market and ceramic shops", 0], ["Siesta, then a riverside walk", 0], ["Tapas crawl around the Alameda", 15]]
     ],
-    extraDay: "Take a day trip to Córdoba for the Mezquita, or to Cádiz for the beach.",
+    dayTrips: [
+      { name: "Córdoba", how: "Train, 45 min", cost: 45, tags: ["history", "architecture"], note: "The Mezquita, a mosque-cathedral unlike anything else in Europe." },
+      { name: "Cádiz", how: "Train, 1h45", cost: 25, tags: ["beach", "history", "food"], note: "Ancient port city with city beaches and great fried fish." },
+      { name: "Ronda", how: "Bus, 2h", cost: 25, tags: ["nature", "hiking", "architecture"], note: "Town split by a dramatic gorge and bridge." }
+    ],
     tips: [
       "Tapas often cost €3–4: order several instead of full plates.",
       "The Real Alcázar has free entry slots on Monday evenings; book online early."
@@ -405,7 +485,7 @@ window.CITIES = [
   {
     id: "lisbon", code: "LIS", name: "Lisbon", country: "Portugal", lat: 38.72, lon: -9.14,
     costs: { hostel: 25, food: 25, transit: 6, activities: 12 },
-    interests: ["food", "nightlife", "beach", "architecture"],
+    interests: ["food", "nightlife", "beach", "architecture", "music", "cafes", "streetart"],
     season:    [3, 3, 4, 5, 5, 4, 3, 3, 5, 4, 3, 3],
     priceMult: [0.8, 0.8, 0.9, 1.0, 1.1, 1.3, 1.3, 1.4, 1.2, 1.0, 0.8, 0.9],
     bestTime: "May and September. June brings the Santo António street festivals.",
@@ -414,7 +494,11 @@ window.CITIES = [
       [["Belém: pastéis de nata and the riverside", 5], ["LX Factory", 0], ["Street drinks in Bairro Alto", 10]],
       [["Lunch at Time Out Market", 12], ["Sunset at Miradouro da Senhora do Monte", 0], ["Pink Street, Cais do Sodré", 10]]
     ],
-    extraDay: "Take a day trip to Sintra's palaces (cheap train from Rossio).",
+    dayTrips: [
+      { name: "Sintra", how: "Train, 40 min", cost: 25, tags: ["castles", "hiking", "nature"], note: "Hilltop palaces in misty forest; Pena Palace is the famous one." },
+      { name: "Cascais", how: "Train, 40 min", cost: 5, tags: ["beach"], note: "Seaside town with small beaches and a coastal walk." },
+      { name: "Arrábida", how: "Train + bus, 1h", cost: 10, tags: ["beach", "nature"], note: "Turquoise coves in a natural park south of the city." }
+    ],
     tips: [
       "Load 'zapping' credit on a Navegante card: much cheaper than single tickets.",
       "Skip Tram 28 queues: walk the route or board early at the Martim Moniz end."
@@ -423,7 +507,7 @@ window.CITIES = [
   {
     id: "porto", code: "OPO", name: "Porto", country: "Portugal", lat: 41.15, lon: -8.61,
     costs: { hostel: 22, food: 22, transit: 5, activities: 10 },
-    interests: ["food", "architecture", "outdoors"],
+    interests: ["food", "architecture", "nature", "wine", "cafes"],
     season:    [2, 2, 3, 4, 5, 5, 4, 4, 5, 4, 2, 2],
     priceMult: [0.8, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.3, 1.1, 1.0, 0.8, 0.9],
     bestTime: "May–June and September. Winter is cheap but rainy.",
@@ -432,7 +516,11 @@ window.CITIES = [
       [["São Bento station tiles and the Clérigos area", 0], ["Francesinha lunch", 12], ["Bars on Rua Galeria de Paris", 10]],
       [["Beach walk at Foz do Douro", 5], ["Serralves park and museum", 10], ["Bolhão market and dinner", 12]]
     ],
-    extraDay: "Take the scenic train up the Douro Valley to Pinhão.",
+    dayTrips: [
+      { name: "Douro Valley", how: "Train, 2h", cost: 25, tags: ["wine", "nature"], note: "Terraced vineyards and wine estates along the river." },
+      { name: "Braga", how: "Train, 1h", cost: 7, tags: ["history", "architecture"], note: "Baroque churches and the Bom Jesus staircase." },
+      { name: "Aveiro", how: "Train, 1h", cost: 7, tags: ["architecture", "beach"], note: "Canals, painted boats and the striped houses of Costa Nova." }
+    ],
     tips: [
       "Get an Andante card for the metro and buses.",
       "A francesinha is huge; one is a full meal."
@@ -441,7 +529,7 @@ window.CITIES = [
   {
     id: "paris", code: "PAR", name: "Paris", country: "France", lat: 48.86, lon: 2.35,
     costs: { hostel: 40, food: 35, transit: 8, activities: 18 },
-    interests: ["art", "history", "food", "architecture"],
+    interests: ["art", "history", "food", "architecture", "cafes", "markets", "castles"],
     season:    [3, 3, 4, 5, 5, 4, 3, 3, 5, 4, 3, 4],
     priceMult: [0.85, 0.85, 0.9, 1.0, 1.1, 1.2, 1.2, 1.1, 1.1, 1.0, 0.9, 1.1],
     bestTime: "April–May and September. Late January–February has the lowest hostel prices.",
@@ -450,7 +538,11 @@ window.CITIES = [
       [["Louvre", 22], ["Falafel lunch in Le Marais", 8], ["Montmartre and Sacré-Cœur at dusk", 0]],
       [["Canal Saint-Martin", 0], ["Père Lachaise cemetery", 0], ["Bars in Belleville", 12]]
     ],
-    extraDay: "Take the RER to Versailles; the gardens are free most days.",
+    dayTrips: [
+      { name: "Versailles", how: "RER, 45 min", cost: 25, tags: ["castles", "history", "nature"], note: "The palace and its enormous gardens." },
+      { name: "Giverny", how: "Train + bus, 1h15", cost: 30, tags: ["art", "nature"], note: "Monet's house and water-lily gardens (April–October)." },
+      { name: "Reims", how: "Train, 45 min", cost: 50, tags: ["wine", "architecture"], note: "Champagne houses and a Gothic cathedral." }
+    ],
     tips: [
       "Under 26 and living in the EU on a long-stay visa? Most national museums, including the Louvre and Orsay, are free.",
       "Bakery lunch: a sandwich plus a pastry is often under €8."
@@ -459,7 +551,7 @@ window.CITIES = [
   {
     id: "london", code: "LON", name: "London", country: "UK", lat: 51.51, lon: -0.13,
     costs: { hostel: 38, food: 38, transit: 10, activities: 12 },
-    interests: ["history", "art", "nightlife", "food"],
+    interests: ["history", "art", "nightlife", "food", "music", "markets", "streetart", "castles"],
     season:    [3, 3, 3, 4, 5, 5, 4, 4, 4, 4, 3, 4],
     priceMult: [0.8, 0.85, 0.9, 1.0, 1.1, 1.2, 1.3, 1.3, 1.1, 1.0, 0.9, 1.1],
     bestTime: "May–June for long days and parks. January–February is cheapest, and the big museums are free year-round.",
@@ -468,7 +560,11 @@ window.CITIES = [
       [["South Bank walk and Tate Modern (free)", 0], ["Lunch at Borough Market", 12], ["Pub in Southwark", 10]],
       [["Camden Market", 10], ["Regent's Park and the Primrose Hill view", 0], ["Shoreditch street art and Brick Lane curry", 12]]
     ],
-    extraDay: "Take a coach to Oxford or a train to Brighton.",
+    dayTrips: [
+      { name: "Oxford", how: "Coach, 1h45", cost: 20, tags: ["history", "architecture"], note: "Historic colleges, libraries and riverside pubs." },
+      { name: "Brighton", how: "Train, 1h", cost: 25, tags: ["beach", "nightlife"], note: "Pier, pebble beach and quirky lanes." },
+      { name: "Windsor", how: "Train, 50 min", cost: 45, tags: ["castles", "history"], note: "The oldest royal castle still in use." }
+    ],
     tips: [
       "Tap in with a contactless card; daily fare caps apply automatically.",
       "Most major museums are free (donations welcome)."
@@ -477,7 +573,7 @@ window.CITIES = [
   {
     id: "amsterdam", code: "AMS", name: "Amsterdam", country: "Netherlands", lat: 52.37, lon: 4.90,
     costs: { hostel: 45, food: 35, transit: 8, activities: 18 },
-    interests: ["art", "nightlife", "outdoors", "history"],
+    interests: ["art", "nightlife", "nature", "history", "cafes", "markets", "festivals"],
     season:    [2, 2, 3, 5, 5, 4, 4, 4, 4, 3, 2, 3],
     priceMult: [0.8, 0.8, 0.9, 1.3, 1.2, 1.2, 1.2, 1.2, 1.1, 1.0, 0.8, 1.0],
     bestTime: "Mid-April tulip season and King's Day (27 April) are the best experience, at the highest prices. September is a good-value compromise.",
@@ -486,7 +582,11 @@ window.CITIES = [
       [["Rijksmuseum", 25], ["Rent a bike for the afternoon", 15], ["Dinner and bars in De Pijp", 15]],
       [["Free ferry to NDSM wharf", 0], ["Anne Frank House", 16], ["Leidseplein nightlife", 12]]
     ],
-    extraDay: "Take a day trip to Haarlem or the Zaanse Schans windmills.",
+    dayTrips: [
+      { name: "Haarlem", how: "Train, 15 min", cost: 9, tags: ["art", "architecture"], note: "A smaller, calmer Amsterdam with the Frans Hals Museum." },
+      { name: "Zaanse Schans", how: "Train, 20 min", cost: 7, tags: ["nature", "history"], note: "Working windmills and wooden houses." },
+      { name: "Utrecht", how: "Train, 30 min", cost: 17, tags: ["architecture", "cafes"], note: "Sunken canal-side terraces and a student vibe." }
+    ],
     tips: [
       "Anne Frank House tickets sell out; they're released online about 6 weeks ahead.",
       "The ferries behind Centraal station are free."
@@ -495,7 +595,7 @@ window.CITIES = [
   {
     id: "berlin", code: "BER", name: "Berlin", country: "Germany", lat: 52.52, lon: 13.40,
     costs: { hostel: 28, food: 25, transit: 9, activities: 12 },
-    interests: ["nightlife", "history", "art"],
+    interests: ["nightlife", "history", "art", "streetart", "music", "markets"],
     season:    [2, 2, 3, 4, 5, 5, 5, 5, 4, 3, 2, 3],
     priceMult: [0.8, 0.8, 0.9, 1.0, 1.1, 1.1, 1.1, 1.1, 1.0, 0.9, 0.8, 1.0],
     bestTime: "May–September for open-air bars, lakes and festivals. December for Christmas markets.",
@@ -504,7 +604,11 @@ window.CITIES = [
       [["East Side Gallery", 0], ["Picnic on Tempelhofer Feld", 5], ["Rooftop at Klunkerkranich, Neukölln", 5]],
       [["Mauerpark flea market (Sun)", 5], ["Topography of Terror (free)", 0], ["Club night", 18]]
     ],
-    extraDay: "Visit Potsdam's palaces, or spend a lake day at Wannsee.",
+    dayTrips: [
+      { name: "Potsdam", how: "S-Bahn, 40 min", cost: 25, tags: ["castles", "nature"], note: "Sanssouci palace and parks." },
+      { name: "Sachsenhausen", how: "S-Bahn, 45 min", cost: 5, tags: ["history"], note: "Former concentration camp, now a memorial and museum." },
+      { name: "Spreewald", how: "Train, 1h", cost: 25, tags: ["nature", "islands"], note: "Punt boats through forest canals." }
+    ],
     tips: [
       "Book the free Reichstag dome visit online a few days ahead.",
       "A 24-hour AB ticket beats buying single rides."
@@ -513,7 +617,7 @@ window.CITIES = [
   {
     id: "prague", code: "PRG", name: "Prague", country: "Czechia", lat: 50.08, lon: 14.44,
     costs: { hostel: 20, food: 20, transit: 5, activities: 10 },
-    interests: ["history", "architecture", "nightlife"],
+    interests: ["history", "architecture", "nightlife", "castles", "wine", "cafes"],
     season:    [2, 2, 3, 4, 5, 4, 3, 3, 5, 4, 3, 4],
     priceMult: [0.7, 0.7, 0.8, 1.0, 1.2, 1.2, 1.3, 1.3, 1.1, 1.0, 0.8, 1.2],
     bestTime: "May and September. December markets are magical but crowded. January–February is very cheap.",
@@ -522,7 +626,11 @@ window.CITIES = [
       [["Prague Castle grounds", 0], ["Petřín Hill and gardens", 0], ["Sunset at the Letná beer garden", 6]],
       [["Vyšehrad fortress", 0], ["Jewish Quarter", 18], ["Bars in Žižkov", 10]]
     ],
-    extraDay: "Take a day trip to Kutná Hora and its bone church.",
+    dayTrips: [
+      { name: "Kutná Hora", how: "Train, 1h", cost: 20, tags: ["history", "architecture"], note: "The bone church and a Gothic cathedral." },
+      { name: "Karlštejn", how: "Train, 40 min", cost: 20, tags: ["castles", "hiking"], note: "Gothic castle above a village, with forest trails." },
+      { name: "Český Krumlov", how: "Bus, 3h", cost: 25, tags: ["castles", "architecture"], note: "Fairy-tale river town; long for a day trip but worth it." }
+    ],
     tips: [
       "Avoid exchange booths near Old Town; pay by card or use a bank ATM.",
       "Weekday lunch menus (polední menu) cost €6–9."
@@ -531,7 +639,7 @@ window.CITIES = [
   {
     id: "vienna", code: "VIE", name: "Vienna", country: "Austria", lat: 48.21, lon: 16.37,
     costs: { hostel: 28, food: 28, transit: 6, activities: 14 },
-    interests: ["art", "history", "architecture", "food"],
+    interests: ["art", "history", "architecture", "food", "music", "cafes", "castles"],
     season:    [2, 2, 3, 4, 5, 4, 4, 4, 5, 4, 3, 5],
     priceMult: [0.8, 0.8, 0.9, 1.0, 1.1, 1.1, 1.1, 1.1, 1.0, 1.0, 0.9, 1.2],
     bestTime: "May and September. December is the best month for Christmas markets, with prices to match.",
@@ -540,7 +648,11 @@ window.CITIES = [
       [["Schönbrunn gardens", 0], ["MuseumsQuartier courtyard", 0], ["Heuriger wine tavern", 15]],
       [["Belvedere to see Klimt's The Kiss", 16], ["Prater park", 0], ["Bars along the Danube Canal", 10]]
     ],
-    extraDay: "Bratislava is an hour away by train, making it an easy second country.",
+    dayTrips: [
+      { name: "Bratislava", how: "Train, 1h", cost: 20, tags: ["history", "castles"], note: "Slovakia's compact capital with a hilltop castle." },
+      { name: "Wachau Valley", how: "Train + boat, 1h15", cost: 35, tags: ["wine", "nature"], note: "Danube vineyards, Melk Abbey and apricot everything." },
+      { name: "Kahlenberg", how: "Tram + bus, 40 min", cost: 5, tags: ["hiking", "wine"], note: "Vineyard trails and a wine tavern with city views." }
+    ],
     tips: [
       "Standing-room opera tickets go on sale shortly before each performance.",
       "Vienna's tap water is excellent; skip bottled water."
@@ -549,7 +661,7 @@ window.CITIES = [
   {
     id: "budapest", code: "BUD", name: "Budapest", country: "Hungary", lat: 47.50, lon: 19.04,
     costs: { hostel: 18, food: 20, transit: 5, activities: 12 },
-    interests: ["nightlife", "history", "architecture", "outdoors"],
+    interests: ["nightlife", "history", "architecture", "nature", "music", "festivals", "castles"],
     season:    [2, 2, 3, 4, 5, 4, 4, 4, 5, 4, 3, 4],
     priceMult: [0.7, 0.7, 0.8, 1.0, 1.1, 1.2, 1.2, 1.3, 1.1, 0.9, 0.8, 1.0],
     bestTime: "May and September. The thermal baths make winter surprisingly good, and the Sziget festival (August) pushes prices up.",
@@ -558,7 +670,11 @@ window.CITIES = [
       [["Széchenyi thermal baths", 30], ["City Park and Vajdahunyad Castle", 0], ["Night view from Fisherman's Bastion", 0]],
       [["Buda Castle district", 0], ["Hike up Gellért Hill", 0], ["Budget dinner and a river walk", 12]]
     ],
-    extraDay: "Take the suburban train to Szentendre, or go to Lake Balaton in summer.",
+    dayTrips: [
+      { name: "Szentendre", how: "Suburban train, 40 min", cost: 6, tags: ["art", "architecture"], note: "Artists' town on the Danube with galleries and cobbled lanes." },
+      { name: "Esztergom", how: "Train, 1h30", cost: 8, tags: ["history", "nature"], note: "Hungary's largest basilica on a hill above the Danube bend." },
+      { name: "Lake Balaton", how: "Train, 1h45", cost: 20, tags: ["beach", "nature"], note: "Central Europe's biggest lake, for summer swims." }
+    ],
     tips: [
       "Pay in forints, not euros; euro prices are usually worse.",
       "Go to the baths on a weekday morning for smaller crowds."
@@ -567,16 +683,20 @@ window.CITIES = [
   {
     id: "krakow", code: "KRK", name: "Kraków", country: "Poland", lat: 50.06, lon: 19.94,
     costs: { hostel: 15, food: 16, transit: 3, activities: 10 },
-    interests: ["history", "food", "nightlife"],
+    interests: ["history", "food", "nightlife", "castles", "markets"],
     season:    [2, 2, 3, 4, 5, 4, 4, 4, 5, 4, 2, 4],
     priceMult: [0.7, 0.7, 0.8, 1.0, 1.1, 1.2, 1.2, 1.2, 1.0, 0.9, 0.8, 1.0],
     bestTime: "May–June and September. One of Europe's cheapest weekends year-round.",
     itinerary: [
       [["Main Market Square and Cloth Hall", 0], ["Wawel Castle hill", 0], ["Pierogi dinner at a milk bar", 6]],
       [["Kazimierz Jewish Quarter", 0], ["Zapiekanka at Plac Nowy", 3], ["Bars in Kazimierz", 10]],
-      [["Auschwitz-Birkenau Memorial (book ahead)", 14], ["Return to the city and rest", 0], ["Riverside bars on the Vistula", 8]]
+      [["Schindler's Factory museum", 12], ["Podgórze and the Bernatka footbridge", 0], ["Riverside bars on the Vistula", 8]]
     ],
-    extraDay: "Visit the Wieliczka Salt Mine just outside the city.",
+    dayTrips: [
+      { name: "Wieliczka Salt Mine", how: "Train, 25 min", cost: 30, tags: ["history"], note: "Chapels and chambers carved entirely out of salt." },
+      { name: "Auschwitz-Birkenau", how: "Bus, 1h30", cost: 15, tags: ["history"], note: "Memorial and museum; book a free entry slot well ahead." },
+      { name: "Zakopane", how: "Bus, 2h", cost: 20, tags: ["hiking", "nature"], note: "Tatra mountain town with alpine hikes." }
+    ],
     tips: [
       "Milk bars (bar mleczny) serve full meals for €4–6.",
       "Free entry slots at Auschwitz go fast; book online well ahead."
@@ -585,7 +705,7 @@ window.CITIES = [
   {
     id: "rome", code: "ROM", name: "Rome", country: "Italy", lat: 41.90, lon: 12.50,
     costs: { hostel: 32, food: 28, transit: 6, activities: 16 },
-    interests: ["history", "art", "food", "architecture"],
+    interests: ["history", "art", "food", "architecture", "cafes"],
     season:    [3, 3, 4, 5, 4, 3, 2, 2, 4, 5, 4, 3],
     priceMult: [0.8, 0.8, 0.9, 1.2, 1.2, 1.2, 1.1, 1.0, 1.1, 1.1, 0.8, 1.0],
     bestTime: "October and late April. Easter week and summer bring crowds and heat, while November–February is cheap and quiet.",
@@ -594,7 +714,11 @@ window.CITIES = [
       [["Vatican Museums", 20], ["St. Peter's Basilica (free)", 0], ["Dinner and drinks in Trastevere", 15]],
       [["Villa Borghese and the Pincio terrace", 0], ["Campo de' Fiori market", 5], ["Aperitivo in Testaccio", 12]]
     ],
-    extraDay: "Take a day trip to Ostia Antica's ruins or Tivoli's villas.",
+    dayTrips: [
+      { name: "Ostia Antica", how: "Train, 40 min", cost: 16, tags: ["history"], note: "Ancient Rome's port, like a quieter Pompeii." },
+      { name: "Tivoli", how: "Bus, 1h", cost: 25, tags: ["castles", "nature"], note: "Villa d'Este's fountains and Hadrian's Villa." },
+      { name: "Orvieto", how: "Train, 1h15", cost: 20, tags: ["architecture", "wine"], note: "Cliff-top town with a striking cathedral and white wine." }
+    ],
     tips: [
       "The Colosseum is free on the first Sunday of each month; expect crowds.",
       "Refill your bottle at the free 'nasoni' water fountains."
@@ -603,7 +727,7 @@ window.CITIES = [
   {
     id: "florence", code: "FLR", name: "Florence", country: "Italy", lat: 43.77, lon: 11.26,
     costs: { hostel: 32, food: 28, transit: 3, activities: 16 },
-    interests: ["art", "architecture", "food", "history"],
+    interests: ["art", "architecture", "food", "history", "wine", "markets"],
     season:    [3, 3, 4, 5, 5, 3, 2, 2, 4, 5, 3, 3],
     priceMult: [0.8, 0.8, 0.9, 1.1, 1.2, 1.3, 1.3, 1.2, 1.2, 1.1, 0.8, 0.9],
     bestTime: "April–May and October. State museums are free on the first Sunday of each month.",
@@ -612,7 +736,11 @@ window.CITIES = [
       [["Uffizi Gallery", 25], ["Ponte Vecchio and the Oltrarno", 0], ["Aperitivo in Santo Spirito", 10]],
       [["Accademia to see David", 16], ["San Miniato al Monte", 0], ["Schiacciata sandwich and a wine bar", 10]]
     ],
-    extraDay: "Take a day trip to Siena, or to Pisa and Lucca.",
+    dayTrips: [
+      { name: "Siena", how: "Bus, 1h15", cost: 16, tags: ["architecture", "history"], note: "The shell-shaped Piazza del Campo and a striped cathedral." },
+      { name: "Pisa & Lucca", how: "Train, 1h", cost: 20, tags: ["architecture"], note: "The leaning tower, then a bike ride on Lucca's walls." },
+      { name: "Chianti", how: "Bus, 1h", cost: 25, tags: ["wine", "nature"], note: "Rolling vineyards and wine tastings in Greve." }
+    ],
     tips: [
       "The Uffizi and Accademia are free on the first Sunday of each month.",
       "Book museum tickets online to skip long lines."
@@ -621,7 +749,7 @@ window.CITIES = [
   {
     id: "athens", code: "ATH", name: "Athens", country: "Greece", lat: 37.98, lon: 23.73,
     costs: { hostel: 22, food: 22, transit: 5, activities: 14 },
-    interests: ["history", "food", "outdoors", "beach"],
+    interests: ["history", "food", "nature", "beach", "islands", "nightlife"],
     season:    [3, 3, 4, 5, 5, 4, 2, 2, 5, 5, 4, 3],
     priceMult: [0.8, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.3, 1.1, 1.0, 0.8, 0.8],
     bestTime: "April–May and September–October. July–August heat is brutal around the Acropolis.",
@@ -630,10 +758,736 @@ window.CITIES = [
       [["Ancient Agora", 10], ["Monastiraki flea market and souvlaki", 5], ["Rooftop bars in Psyrri", 10]],
       [["Hike Lycabettus Hill", 0], ["National Archaeological Museum", 12], ["Taverna dinner in Koukaki", 14]]
     ],
-    extraDay: "Take a ferry to Aegina island, or catch the sunset at Cape Sounion.",
+    dayTrips: [
+      { name: "Aegina", how: "Ferry, 40 min–1h15", cost: 25, tags: ["islands", "beach"], note: "The closest island escape, famous for pistachios." },
+      { name: "Cape Sounion", how: "Bus, 1h30", cost: 25, tags: ["history", "nature"], note: "Temple of Poseidon on a cliff at sunset." },
+      { name: "Delphi", how: "Bus, 2h45", cost: 40, tags: ["history", "hiking"], note: "The ancient oracle's mountainside sanctuary." }
+    ],
     tips: [
       "EU students under 25 get free entry to many archaeological sites; bring your student ID.",
       "A souvlaki pita costs €3–4 and makes a cheap meal."
+    ]
+  },
+  {
+    id: "valencia", code: "VLC", name: "Valencia", country: "Spain", lat: 39.47, lon: -0.38,
+    costs: { hostel: 22, food: 24, transit: 5, activities: 10 },
+    interests: ["food", "beach", "architecture", "nightlife", "festivals", "nature", "markets"],
+    season:    [3,  3,  5,  4,  5,  4,  3,  3,  5,  4,  3,  3],
+    priceMult: [0.8,  0.8,  1.4,  1.0,  1.0,  1.2,  1.3,  1.3,  1.1,  1.0,  0.8,  0.9],
+    bestTime: "May and September. Las Fallas (mid-March) is wild and unforgettable, with lodging prices to match.",
+    itinerary: [
+      [["Central Market and La Lonja", 3], ["Paella lunch near Malvarrosa beach", 14], ["Tapas in El Carmen", 14]],
+      [["Bike the Turia riverbed park", 8], ["City of Arts and Sciences", 0], ["Bars in Ruzafa", 12]],
+      [["Cathedral and Miguelete tower", 3], ["Horchata and fartons", 4], ["Sunset drinks on the beach", 8]]
+    ],
+    dayTrips: [
+      { name: "Albufera", how: "Bus, 30 min", cost: 10, tags: ["nature", "food"], note: "Rice fields, lagoon boat rides and the villages where paella started." },
+      { name: "Xàtiva", how: "Train, 1h", cost: 12, tags: ["castles", "history"], note: "Hilltop castle above a quiet old town." },
+      { name: "Peñíscola", how: "Train + bus, 2h", cost: 25, tags: ["beach", "castles"], note: "Castle on a rock in the sea, with beaches on both sides." }
+    ],
+    tips: [
+      "The City of Arts and Sciences is free to walk around; only the museums inside charge.",
+      "Rent a Valenbisi bike: the old riverbed park crosses the whole city."
+    ]
+  },
+  {
+    id: "granada", code: "GRX", name: "Granada", country: "Spain", lat: 37.18, lon: -3.6,
+    costs: { hostel: 20, food: 18, transit: 3, activities: 10 },
+    interests: ["history", "architecture", "food", "hiking", "castles", "nature", "music"],
+    season:    [3,  3,  4,  5,  5,  3,  2,  2,  4,  5,  4,  3],
+    priceMult: [0.9,  0.9,  1.0,  1.2,  1.1,  1.0,  0.9,  0.9,  1.0,  1.1,  0.9,  1.0],
+    bestTime: "April–May and October. In winter there's snow on the Sierra Nevada behind the Alhambra. Book Alhambra tickets weeks ahead.",
+    itinerary: [
+      [["Alhambra and Generalife", 20], ["Lunch in the Realejo", 10], ["Sunset at Mirador de San Nicolás", 0]],
+      [["Albaicín and Sacromonte cave houses", 0], ["Tea house on Calderería Nueva", 5], ["Free-tapas crawl (one comes with each drink)", 12]],
+      [["Cathedral and Royal Chapel", 6], ["Walk along the Carrera del Darro", 0], ["Flamenco in a Sacromonte cave", 20]]
+    ],
+    dayTrips: [
+      { name: "Sierra Nevada", how: "Bus, 1h", cost: 12, tags: ["hiking", "nature"], note: "Hiking in summer, cheap skiing in winter." },
+      { name: "Las Alpujarras", how: "Bus, 1h30", cost: 15, tags: ["hiking", "nature"], note: "White villages clinging to mountain slopes." },
+      { name: "Nerja", how: "Bus, 1h30", cost: 20, tags: ["beach", "nature"], note: "Beach town with huge caves on the coast." }
+    ],
+    tips: [
+      "Granada still gives a free tapa with each drink, so dinner can cost the price of a few drinks.",
+      "Alhambra tickets sell out; book on the official site as soon as your dates are set."
+    ]
+  },
+  {
+    id: "malaga", code: "AGP", name: "Málaga", country: "Spain", lat: 36.72, lon: -4.42,
+    costs: { hostel: 25, food: 22, transit: 4, activities: 10 },
+    interests: ["beach", "food", "art", "nightlife", "hiking", "nature", "castles"],
+    season:    [3,  4,  4,  5,  5,  4,  3,  3,  5,  5,  4,  3],
+    priceMult: [0.8,  0.8,  0.9,  1.1,  1.1,  1.3,  1.4,  1.4,  1.2,  1.0,  0.8,  0.9],
+    bestTime: "April–June and September–October. One of the warmest winters in Europe, so January is cheap and still sunny.",
+    itinerary: [
+      [["Alcazaba and the Roman theatre", 4], ["Lunch at Atarazanas market", 10], ["Sardine skewers on Pedregalejo beach", 12]],
+      [["Picasso Museum", 10], ["Soho street art district", 0], ["Gibralfaro castle at sunset", 4]],
+      [["Beach morning at La Malagueta", 0], ["Tapas off Calle Larios", 12], ["Rooftop bar in the old town", 8]]
+    ],
+    dayTrips: [
+      { name: "Caminito del Rey", how: "Train + bus, 1h30", cost: 30, tags: ["hiking", "nature"], note: "Cliffside boardwalk through a gorge; book ahead." },
+      { name: "Ronda", how: "Bus, 1h45", cost: 25, tags: ["architecture", "nature"], note: "Town split by a dramatic gorge and bridge." },
+      { name: "Nerja", how: "Bus, 1h", cost: 10, tags: ["beach", "nature"], note: "Coves, caves and the Balcón de Europa viewpoint." }
+    ],
+    tips: [
+      "Many Málaga museums are free on Sunday afternoons.",
+      "The airport is 15 minutes from the center on the cheap C1 train."
+    ]
+  },
+  {
+    id: "sansebastian", code: "EAS", name: "San Sebastián", country: "Spain", lat: 43.32, lon: -1.98,
+    costs: { hostel: 40, food: 30, transit: 4, activities: 8 },
+    interests: ["food", "beach", "nature", "hiking", "festivals"],
+    season:    [2,  2,  3,  4,  4,  5,  5,  5,  5,  4,  2,  3],
+    priceMult: [0.8,  0.8,  0.9,  1.0,  1.1,  1.3,  1.4,  1.5,  1.3,  1.0,  0.8,  0.9],
+    bestTime: "June and September for beach weather without August's peak prices. Winter is rainy but still great for pintxos.",
+    itinerary: [
+      [["Walk La Concha beach", 0], ["Pintxos lunch in the Parte Vieja", 18], ["Sunset from Monte Urgull", 0]],
+      [["Surf lesson at Zurriola beach", 30], ["Afternoon on the sand", 0], ["Pintxos crawl on Calle 31 de Agosto", 20]],
+      [["Funicular up Monte Igueldo", 4], ["San Telmo Museum", 8], ["Cider house dinner or more pintxos", 20]]
+    ],
+    dayTrips: [
+      { name: "Pasaia coastal hike", how: "Walk, 2h30", cost: 3, tags: ["hiking", "nature"], note: "Cliff path to a fishing village; take the little boat and bus back." },
+      { name: "Bilbao", how: "Bus, 1h15", cost: 25, tags: ["art", "architecture"], note: "The Guggenheim and a lively old town." },
+      { name: "Biarritz", how: "Bus, 1h", cost: 15, tags: ["beach"], note: "Surf town just across the French border." }
+    ],
+    tips: [
+      "Pintxos cost €3–5; the hot dishes made to order are worth it.",
+      "Stay in Gros: cheaper than the old town and next to the surf beach."
+    ]
+  },
+  {
+    id: "nice", code: "NCE", name: "Nice", country: "France", lat: 43.7, lon: 7.27,
+    costs: { hostel: 38, food: 30, transit: 4, activities: 10 },
+    interests: ["beach", "food", "art", "markets", "nature", "festivals"],
+    season:    [3,  3,  4,  4,  5,  5,  4,  4,  5,  4,  3,  3],
+    priceMult: [0.8,  0.9,  0.9,  1.0,  1.3,  1.3,  1.5,  1.5,  1.2,  1.0,  0.8,  0.9],
+    bestTime: "May–June and September for swimming without July–August prices. February brings the Nice Carnival.",
+    itinerary: [
+      [["Cours Saleya flower market", 0], ["Socca lunch in Vieux Nice", 8], ["Promenade des Anglais at sunset", 0]],
+      [["Castle Hill viewpoint", 0], ["Pebble beach afternoon", 0], ["Drinks around the port", 12]],
+      [["Matisse Museum", 12], ["Picnic in the Cimiez gardens", 8], ["Old-town bars", 12]]
+    ],
+    dayTrips: [
+      { name: "Monaco", how: "Train, 25 min", cost: 10, tags: ["architecture", "castles"], note: "Yachts, the casino and the Prince's Palace." },
+      { name: "Èze", how: "Bus, 30 min", cost: 5, tags: ["hiking", "architecture"], note: "Hilltop village, then the Nietzsche path down to the sea." },
+      { name: "Antibes", how: "Train, 20 min", cost: 10, tags: ["beach", "art"], note: "Old ramparts, sandy coves and the Picasso Museum." }
+    ],
+    tips: [
+      "Coastal trains cost a few euros; skip taxis entirely.",
+      "Buses along the coast are about €2 a ride."
+    ]
+  },
+  {
+    id: "lyon", code: "LYS", name: "Lyon", country: "France", lat: 45.76, lon: 4.84,
+    costs: { hostel: 30, food: 28, transit: 5, activities: 10 },
+    interests: ["food", "architecture", "history", "wine", "festivals", "streetart"],
+    season:    [2,  2,  3,  4,  5,  5,  4,  3,  4,  4,  3,  5],
+    priceMult: [0.8,  0.8,  0.9,  1.0,  1.1,  1.1,  1.0,  0.9,  1.0,  1.0,  0.9,  1.4],
+    bestTime: "May–June and September. The Fête des Lumières (early December) lights up the whole city; book early.",
+    itinerary: [
+      [["Vieux Lyon and the hidden traboule passages", 0], ["Set lunch at a bouchon", 20], ["Evening on the Saône quays", 0]],
+      [["Fourvière basilica and Roman theatres", 0], ["Croix-Rousse murals and market", 0], ["Wine bar on the Presqu'île", 12]],
+      [["Les Halles Paul Bocuse food hall", 12], ["Parc de la Tête d'Or", 0], ["Boat bar on the Rhône", 10]]
+    ],
+    dayTrips: [
+      { name: "Beaujolais", how: "Train, 45 min", cost: 20, tags: ["wine", "nature"], note: "Golden-stone villages and vineyard walks." },
+      { name: "Pérouges", how: "Train + walk, 40 min", cost: 10, tags: ["history", "architecture"], note: "Tiny medieval village famous for its sugar tart." },
+      { name: "Annecy", how: "Train, 2h", cost: 35, tags: ["nature", "hiking", "beach"], note: "Alpine lake with canals and summer swimming." }
+    ],
+    tips: [
+      "Bouchons have set lunch menus much cheaper than dinner.",
+      "The funicular up Fourvière uses a normal transit ticket."
+    ]
+  },
+  {
+    id: "marseille", code: "MRS", name: "Marseille", country: "France", lat: 43.3, lon: 5.37,
+    costs: { hostel: 25, food: 22, transit: 5, activities: 8 },
+    interests: ["food", "beach", "nature", "hiking", "islands", "streetart", "history"],
+    season:    [3,  3,  4,  4,  5,  5,  4,  4,  5,  4,  3,  3],
+    priceMult: [0.8,  0.8,  0.9,  1.0,  1.1,  1.2,  1.3,  1.3,  1.1,  1.0,  0.8,  0.8],
+    bestTime: "May–June and September for swimming and calanque hikes. Some trails close on high fire-risk summer days.",
+    itinerary: [
+      [["Vieux-Port fish market", 0], ["Le Panier old quarter", 0], ["Sunset at Notre-Dame de la Garde", 0]],
+      [["MuCEM and Fort Saint-Jean", 11], ["Swim at the Vallon des Auffes", 0], ["Pizza in Cours Julien", 12]],
+      [["Ferry to the Frioul islands", 12], ["Beach afternoon on the islands", 0], ["Bars on Cours Julien", 10]]
+    ],
+    dayTrips: [
+      { name: "Calanques", how: "Bus, 45 min", cost: 5, tags: ["hiking", "beach", "nature"], note: "Hike to turquoise coves like Sugiton and En-Vau." },
+      { name: "Cassis", how: "Train, 25 min", cost: 10, tags: ["beach", "wine", "islands"], note: "Fishing port with boat trips into the calanques." },
+      { name: "Aix-en-Provence", how: "Bus, 40 min", cost: 12, tags: ["markets", "architecture", "cafes"], note: "Fountains, markets and café terraces." }
+    ],
+    tips: [
+      "Check the calanques access map the night before; trails can close on windy, dry days.",
+      "The Frioul ferry costs about the same as a bus ticket."
+    ]
+  },
+  {
+    id: "edinburgh", code: "EDI", name: "Edinburgh", country: "UK", lat: 55.95, lon: -3.19,
+    costs: { hostel: 30, food: 30, transit: 5, activities: 12 },
+    interests: ["history", "castles", "hiking", "nature", "festivals", "nightlife", "music"],
+    season:    [2,  2,  3,  4,  5,  5,  4,  4,  4,  3,  2,  4],
+    priceMult: [0.8,  0.8,  0.9,  1.0,  1.1,  1.2,  1.3,  2.0,  1.0,  0.9,  0.8,  1.2],
+    bestTime: "May–June for long days. The August Fringe is incredible, but hostel prices can double.",
+    itinerary: [
+      [["Royal Mile and Edinburgh Castle", 22], ["Victoria Street and the Grassmarket", 0], ["Pub with live folk music", 10]],
+      [["Hike Arthur's Seat", 0], ["National Museum of Scotland (free)", 0], ["Old Town ghost tour", 12]],
+      [["Dean Village and the Water of Leith", 0], ["Stockbridge market (Sun)", 8], ["Sunset on Calton Hill", 0]]
+    ],
+    dayTrips: [
+      { name: "Highlands", how: "Coach tour, 10h", cost: 55, tags: ["nature", "castles"], note: "Glencoe and Loch Ness on a budget bus tour." },
+      { name: "Stirling", how: "Train, 50 min", cost: 30, tags: ["castles", "history"], note: "Stirling Castle and the Wallace Monument." },
+      { name: "North Berwick", how: "Train, 35 min", cost: 12, tags: ["beach", "hiking"], note: "Seaside town with a small hill to climb." }
+    ],
+    tips: [
+      "Most big museums are free.",
+      "Many Fringe shows are free or pay-what-you-want."
+    ]
+  },
+  {
+    id: "dublin", code: "DUB", name: "Dublin", country: "Ireland", lat: 53.35, lon: -6.26,
+    costs: { hostel: 40, food: 32, transit: 7, activities: 10 },
+    interests: ["nightlife", "music", "history", "food", "nature", "hiking", "wine"],
+    season:    [2,  2,  4,  4,  5,  5,  4,  4,  4,  3,  2,  3],
+    priceMult: [0.8,  0.8,  1.3,  1.0,  1.1,  1.2,  1.3,  1.3,  1.1,  1.0,  0.8,  1.0],
+    bestTime: "May–June for long days. St. Patrick's week is fun, but lodging prices spike.",
+    itinerary: [
+      [["Trinity College grounds", 0], ["National Gallery (free)", 0], ["Live trad music in a pub", 10]],
+      [["Guinness Storehouse or a distillery tour", 26], ["St Stephen's Green", 0], ["Pubs around Temple Bar", 12]],
+      [["Kilmainham Gaol", 8], ["Deer in Phoenix Park", 0], ["Pubs on Camden Street", 12]]
+    ],
+    dayTrips: [
+      { name: "Howth", how: "DART train, 30 min", cost: 7, tags: ["hiking", "nature", "food"], note: "Cliff walk and fish and chips by the harbor." },
+      { name: "Wicklow Mountains", how: "Bus, 1h15", cost: 25, tags: ["hiking", "nature"], note: "Glendalough's lakes and monastic ruins." },
+      { name: "Cliffs of Moher", how: "Coach tour, 12h", cost: 55, tags: ["nature"], note: "Long day, but the cliffs are unforgettable." }
+    ],
+    tips: [
+      "Get a Leap Card; fares are much cheaper than paying cash.",
+      "Trad sessions in pubs are free; just buy a drink."
+    ]
+  },
+  {
+    id: "brussels", code: "BRU", name: "Brussels", country: "Belgium", lat: 50.85, lon: 4.35,
+    costs: { hostel: 30, food: 28, transit: 6, activities: 10 },
+    interests: ["food", "architecture", "art", "wine", "streetart", "markets"],
+    season:    [2,  2,  3,  4,  5,  4,  4,  4,  4,  3,  2,  4],
+    priceMult: [0.8,  0.8,  0.9,  1.0,  1.0,  1.0,  0.9,  1.0,  1.0,  1.0,  0.9,  1.1],
+    bestTime: "May–September. December has Christmas markets and lights on the Grand-Place.",
+    itinerary: [
+      [["Grand-Place and the Royal Galleries", 0], ["Frites and a waffle", 8], ["Belgian beer at Delirium Café", 12]],
+      [["Comic strip mural trail", 0], ["Magritte Museum", 10], ["Dinner in Sainte-Catherine", 14]],
+      [["The Atomium from outside", 0], ["Marolles flea market", 0], ["Beer bar in Saint-Gilles", 12]]
+    ],
+    dayTrips: [
+      { name: "Bruges", how: "Train, 1h", cost: 25, tags: ["architecture", "history"], note: "Canals, belfry and chocolate shops." },
+      { name: "Ghent", how: "Train, 35 min", cost: 18, tags: ["architecture", "nightlife", "castles"], note: "Medieval castle and a lively student scene." },
+      { name: "Antwerp", how: "Train, 45 min", cost: 18, tags: ["art", "markets"], note: "Rubens, fashion shops and a stunning train station." }
+    ],
+    tips: [
+      "Under 26? Belgian rail sells cheap youth tickets for any domestic trip.",
+      "Many museums are free on the first Wednesday afternoon of the month."
+    ]
+  },
+  {
+    id: "copenhagen", code: "CPH", name: "Copenhagen", country: "Denmark", lat: 55.68, lon: 12.57,
+    costs: { hostel: 45, food: 40, transit: 8, activities: 12 },
+    interests: ["food", "architecture", "cafes", "nature", "beach", "nightlife", "castles"],
+    season:    [2,  2,  3,  4,  5,  5,  5,  5,  4,  3,  2,  3],
+    priceMult: [0.8,  0.8,  0.9,  1.0,  1.1,  1.2,  1.3,  1.2,  1.0,  0.9,  0.8,  1.0],
+    bestTime: "June–August for long days and harbor swimming. It's one of Europe's priciest cities, so keep the trip short.",
+    itinerary: [
+      [["Nyhavn and the harbor walk", 0], ["Torvehallerne market lunch", 15], ["Tivoli Gardens", 20]],
+      [["Bike around the lakes", 15], ["Christiania", 0], ["Street food at Reffen", 15]],
+      [["Rosenborg Castle gardens", 0], ["Harbor swim at Islands Brygge", 0], ["Bars in Vesterbro", 15]]
+    ],
+    dayTrips: [
+      { name: "Kronborg Castle", how: "Train, 45 min", cost: 35, tags: ["castles", "history"], note: "Hamlet's castle in Helsingør." },
+      { name: "Louisiana Museum", how: "Train, 35 min", cost: 35, tags: ["art", "nature"], note: "Modern art museum on the sea." },
+      { name: "Malmö", how: "Train, 35 min", cost: 25, tags: ["architecture", "cafes"], note: "Hop over the bridge to Sweden." }
+    ],
+    tips: [
+      "Harbor swimming spots are free and clean.",
+      "Supermarket lunches save a lot; restaurant lunches easily cost €20+."
+    ]
+  },
+  {
+    id: "stockholm", code: "STO", name: "Stockholm", country: "Sweden", lat: 59.33, lon: 18.07,
+    costs: { hostel: 40, food: 38, transit: 8, activities: 12 },
+    interests: ["history", "architecture", "islands", "nature", "cafes", "art"],
+    season:    [2,  2,  2,  3,  4,  5,  5,  5,  4,  3,  2,  3],
+    priceMult: [0.8,  0.8,  0.9,  1.0,  1.1,  1.2,  1.2,  1.1,  1.0,  0.9,  0.8,  1.0],
+    bestTime: "June–August for endless daylight and archipelago swims. Winter is dark and cold, but December is cozy.",
+    itinerary: [
+      [["Gamla Stan old town", 0], ["Fika: coffee and a cinnamon bun", 7], ["Södermalm viewpoints at sunset", 0]],
+      [["Vasa Museum", 20], ["Walk Djurgården island", 0], ["Dinner in Södermalm", 18]],
+      [["Metro art tour", 0], ["Fotografiska", 20], ["Bars in SoFo", 15]]
+    ],
+    dayTrips: [
+      { name: "Archipelago", how: "Ferry, 1h", cost: 20, tags: ["islands", "nature"], note: "Island-hop to Vaxholm or Grinda." },
+      { name: "Uppsala", how: "Train, 40 min", cost: 20, tags: ["history", "architecture"], note: "Sweden's oldest university town." },
+      { name: "Drottningholm Palace", how: "Metro + bus, 1h", cost: 15, tags: ["castles"], note: "The royal family's home and baroque gardens." }
+    ],
+    tips: [
+      "The metro stations double as a free art gallery.",
+      "Public ferries run on your transit card and cost much less than tour boats."
+    ]
+  },
+  {
+    id: "munich", code: "MUC", name: "Munich", country: "Germany", lat: 48.14, lon: 11.58,
+    costs: { hostel: 40, food: 30, transit: 8, activities: 10 },
+    interests: ["wine", "history", "castles", "nature", "hiking", "festivals", "architecture"],
+    season:    [2,  2,  3,  4,  5,  5,  5,  4,  5,  3,  2,  4],
+    priceMult: [0.8,  0.8,  0.9,  1.0,  1.1,  1.1,  1.1,  1.1,  1.8,  1.3,  0.8,  1.0],
+    bestTime: "June–July for beer gardens. Oktoberfest (late September) is famous, but hostel prices can nearly double.",
+    itinerary: [
+      [["Marienplatz and Viktualienmarkt", 8], ["Englischer Garten and the river surfers", 0], ["Beer garden at the Chinese Tower", 15]],
+      [["Residenz palace", 10], ["Pinakothek museums (€1 on Sundays)", 1], ["Augustiner beer hall", 15]],
+      [["Nymphenburg Palace gardens", 0], ["Olympic Park hill", 0], ["Bars in Glockenbachviertel", 12]]
+    ],
+    dayTrips: [
+      { name: "Neuschwanstein", how: "Train + bus, 2h15", cost: 45, tags: ["castles", "hiking", "nature"], note: "The fairy-tale castle and alpine lakes." },
+      { name: "Dachau", how: "S-Bahn + bus, 45 min", cost: 8, tags: ["history"], note: "Concentration camp memorial; entry is free." },
+      { name: "Tegernsee", how: "Train, 1h", cost: 20, tags: ["nature", "beach", "hiking"], note: "Alpine lake with swimming and easy hikes." }
+    ],
+    tips: [
+      "The Bayern-Ticket covers a day of regional trains for a group; split it with friends.",
+      "Beer gardens let you bring your own food; just buy the drinks."
+    ]
+  },
+  {
+    id: "zurich", code: "ZRH", name: "Zurich", country: "Switzerland", lat: 47.37, lon: 8.54,
+    costs: { hostel: 55, food: 45, transit: 9, activities: 12 },
+    interests: ["nature", "hiking", "beach", "art", "architecture", "cafes"],
+    season:    [2,  2,  3,  4,  5,  5,  5,  5,  4,  3,  2,  4],
+    priceMult: [0.9,  0.9,  1.0,  1.0,  1.1,  1.1,  1.1,  1.1,  1.0,  1.0,  0.9,  1.1],
+    bestTime: "June–August for lake swimming. It's the priciest city here, so plan short and picnic a lot.",
+    itinerary: [
+      [["Old town and Lindenhof viewpoint", 0], ["Picnic by the lake", 10], ["Drinks in Zürich West", 18]],
+      [["Swim at a lake bath", 8], ["Grossmünster tower", 5], ["Bars on Langstrasse", 18]],
+      [["Hike up Uetliberg", 0], ["Kunsthaus", 23], ["Frau Gerolds Garten", 15]]
+    ],
+    dayTrips: [
+      { name: "Rhine Falls", how: "Train, 45 min", cost: 30, tags: ["nature"], note: "Europe's most powerful waterfall." },
+      { name: "Lucerne", how: "Train, 45 min", cost: 30, tags: ["nature", "architecture", "hiking"], note: "Covered wooden bridge and lake views." },
+      { name: "Interlaken", how: "Train, 2h", cost: 60, tags: ["hiking", "nature"], note: "Gateway to the Jungfrau region; big but pricey." }
+    ],
+    tips: [
+      "Book Supersaver train tickets in advance on the SBB app.",
+      "Public fountains all over the city have drinkable water."
+    ]
+  },
+  {
+    id: "salzburg", code: "SZG", name: "Salzburg", country: "Austria", lat: 47.8, lon: 13.04,
+    costs: { hostel: 32, food: 26, transit: 4, activities: 12 },
+    interests: ["music", "castles", "history", "nature", "hiking", "architecture"],
+    season:    [2,  2,  3,  4,  5,  5,  5,  5,  5,  4,  2,  5],
+    priceMult: [0.9,  0.9,  0.9,  1.0,  1.0,  1.1,  1.3,  1.3,  1.0,  0.9,  0.8,  1.2],
+    bestTime: "May–June and September. December Christmas markets are lovely; the summer music festival pushes prices up.",
+    itinerary: [
+      [["Old town and Mozart's birthplace", 0], ["Hohensalzburg Fortress", 16], ["Augustiner Bräustübl beer hall", 12]],
+      [["Mirabell Gardens", 0], ["Hike the Kapuzinerberg", 0], ["Student-price concert or organ recital", 15]],
+      [["Hellbrunn trick fountains", 15], ["Cycle along the Salzach", 10], ["Evening on Getreidegasse", 0]]
+    ],
+    dayTrips: [
+      { name: "Hallstatt", how: "Train + ferry, 2h30", cost: 40, tags: ["nature", "architecture"], note: "Lakeside village under the mountains; go early." },
+      { name: "Königssee", how: "Bus, 50 min", cost: 30, tags: ["nature", "hiking", "islands"], note: "Boat across an emerald lake to St. Bartholomä." },
+      { name: "Untersberg", how: "Bus + cable car, 45 min", cost: 32, tags: ["hiking", "nature"], note: "Cable car to alpine ridges above the city." }
+    ],
+    tips: [
+      "Buses are cheap, but the old town is walkable.",
+      "Go to Hallstatt early to beat the tour groups."
+    ]
+  },
+  {
+    id: "venice", code: "VCE", name: "Venice", country: "Italy", lat: 45.44, lon: 12.32,
+    costs: { hostel: 38, food: 30, transit: 10, activities: 12 },
+    interests: ["architecture", "art", "islands", "history", "festivals", "food"],
+    season:    [3,  4,  3,  4,  5,  4,  3,  3,  4,  4,  3,  3],
+    priceMult: [0.9,  1.3,  1.0,  1.1,  1.2,  1.2,  1.2,  1.1,  1.2,  1.1,  0.9,  1.0],
+    bestTime: "Late autumn and early spring are quieter. Carnival (February) is magical but expensive. Day visitors pay an entry fee on peak days.",
+    itinerary: [
+      [["Get lost in Cannaregio", 0], ["Cicchetti (Venetian tapas) lunch", 12], ["Rialto Bridge at sunset", 0]],
+      [["St. Mark's Square and Basilica", 5], ["Dorsoduro and the Accademia bridge", 0], ["Spritz on the Fondamenta della Misericordia", 8]],
+      [["Vaporetto pass to Murano and Burano", 25], ["Burano's painted houses", 0], ["Back in Venice for dinner", 15]]
+    ],
+    dayTrips: [
+      { name: "Verona", how: "Train, 1h15", cost: 20, tags: ["history", "architecture"], note: "Roman arena and Juliet's balcony." },
+      { name: "Padua", how: "Train, 30 min", cost: 12, tags: ["art", "history"], note: "Giotto's Scrovegni Chapel and a lively student town." },
+      { name: "Lido", how: "Vaporetto, 15 min", cost: 10, tags: ["beach", "islands"], note: "Venice's beach island." }
+    ],
+    tips: [
+      "Stay in Mestre on the mainland: hostels are half the price, 15 minutes away by bus.",
+      "A 24-hour vaporetto pass pays for itself after three rides."
+    ]
+  },
+  {
+    id: "milan", code: "MIL", name: "Milan", country: "Italy", lat: 45.46, lon: 9.19,
+    costs: { hostel: 35, food: 30, transit: 5, activities: 12 },
+    interests: ["art", "architecture", "food", "markets", "nightlife", "festivals"],
+    season:    [2,  2,  3,  4,  5,  4,  3,  2,  4,  4,  2,  3],
+    priceMult: [0.9,  1.1,  1.0,  1.2,  1.0,  1.0,  1.0,  0.8,  1.2,  1.0,  0.9,  1.0],
+    bestTime: "May, June and September. Most locals leave in August, and Design Week (April) fills every bed.",
+    itinerary: [
+      [["Duomo rooftop", 15], ["Galleria Vittorio Emanuele II", 0], ["Aperitivo buffet in Navigli", 12]],
+      [["Sforza Castle courtyards", 0], ["Brera district", 0], ["Dinner in Isola", 15]],
+      [["The Last Supper (book months ahead)", 15], ["Cimitero Monumentale", 0], ["Bars along the Navigli canals", 12]]
+    ],
+    dayTrips: [
+      { name: "Lake Como", how: "Train, 1h", cost: 18, tags: ["nature", "beach", "hiking"], note: "Ferries between Bellagio and Varenna." },
+      { name: "Bergamo", how: "Train, 50 min", cost: 12, tags: ["architecture", "history"], note: "Walled hilltop old town." },
+      { name: "Turin", how: "Train, 1h", cost: 25, tags: ["food", "architecture", "cafes"], note: "Chocolate, arcades and the Egyptian Museum." }
+    ],
+    tips: [
+      "Aperitivo: one drink (€8–12) often comes with a buffet big enough for dinner.",
+      "Last Supper tickets sell out months ahead; watch for last-minute releases."
+    ]
+  },
+  {
+    id: "naples", code: "NAP", name: "Naples", country: "Italy", lat: 40.85, lon: 14.27,
+    costs: { hostel: 22, food: 18, transit: 4, activities: 10 },
+    interests: ["food", "history", "islands", "beach", "hiking", "streetart"],
+    season:    [3,  3,  4,  5,  5,  4,  3,  3,  5,  5,  3,  3],
+    priceMult: [0.8,  0.8,  0.9,  1.1,  1.1,  1.2,  1.3,  1.3,  1.1,  1.0,  0.8,  0.9],
+    bestTime: "April–June and September–October. Summer is hot and the islands are packed.",
+    itinerary: [
+      [["Spaccanapoli and the historic center", 0], ["Pizza at a classic pizzeria", 8], ["Seafront at sunset", 0]],
+      [["Naples Underground tour", 15], ["Sfogliatella and espresso", 3], ["Murals and bars in the Quartieri Spagnoli", 10]],
+      [["National Archaeological Museum", 22], ["View from Castel Sant'Elmo", 5], ["Bars on Piazza Bellini", 10]]
+    ],
+    dayTrips: [
+      { name: "Pompeii", how: "Train, 40 min", cost: 25, tags: ["history"], note: "The buried Roman city; free on the first Sunday of the month." },
+      { name: "Vesuvius", how: "Train + bus, 1h30", cost: 30, tags: ["hiking", "nature"], note: "Walk to the crater rim of the volcano." },
+      { name: "Capri", how: "Ferry, 50 min", cost: 45, tags: ["islands", "beach"], note: "Cliffs, grottoes and lemon groves." },
+      { name: "Amalfi Coast", how: "Train + bus, 2h30", cost: 25, tags: ["beach", "hiking"], note: "Positano and Amalfi by cliffside bus." }
+    ],
+    tips: [
+      "A real Neapolitan margherita costs €5–8.",
+      "Pompeii is free on the first Sunday of each month."
+    ]
+  },
+  {
+    id: "bologna", code: "BLQ", name: "Bologna", country: "Italy", lat: 44.49, lon: 11.34,
+    costs: { hostel: 30, food: 24, transit: 3, activities: 8 },
+    interests: ["food", "architecture", "history", "nightlife", "markets"],
+    season:    [2,  2,  3,  4,  5,  4,  3,  2,  4,  5,  3,  3],
+    priceMult: [0.9,  0.9,  1.0,  1.1,  1.1,  1.0,  0.9,  0.8,  1.1,  1.1,  1.0,  0.9],
+    bestTime: "May and October. It's a university town, so nightlife is lively during term time.",
+    itinerary: [
+      [["Piazza Maggiore and the porticoes", 0], ["Tagliatelle al ragù lunch", 12], ["Aperitivo in the Quadrilatero", 10]],
+      [["Santo Stefano's seven churches", 0], ["Walk the portico up to San Luca", 0], ["Bars on Via del Pratello", 10]],
+      [["Archiginnasio anatomical theatre", 3], ["Mercato di Mezzo food hall", 10], ["Student bars in the university quarter", 10]]
+    ],
+    dayTrips: [
+      { name: "Modena", how: "Train, 25 min", cost: 20, tags: ["food", "wine"], note: "Balsamic vinegar tastings and Ferrari country." },
+      { name: "Parma", how: "Train, 1h", cost: 20, tags: ["food", "architecture"], note: "Parmesan, prosciutto and a pink baptistery." },
+      { name: "Ravenna", how: "Train, 1h", cost: 25, tags: ["art", "history"], note: "Glittering Byzantine mosaics." }
+    ],
+    tips: [
+      "Bologna is a rail hub, so it's a great base for cheap day trips.",
+      "About 40 km of porticoes mean rain rarely matters."
+    ]
+  },
+  {
+    id: "dubrovnik", code: "DBV", name: "Dubrovnik", country: "Croatia", lat: 42.65, lon: 18.09,
+    costs: { hostel: 35, food: 30, transit: 4, activities: 15 },
+    interests: ["history", "beach", "islands", "castles", "nature"],
+    season:    [2,  2,  3,  4,  5,  4,  3,  3,  5,  4,  2,  2],
+    priceMult: [0.7,  0.7,  0.8,  1.0,  1.2,  1.4,  1.6,  1.6,  1.3,  1.0,  0.7,  0.8],
+    bestTime: "May and September to early October. July–August means cruise crowds and peak prices; many places close in winter.",
+    itinerary: [
+      [["Walk the city walls (go early)", 35], ["Old town lanes", 0], ["Sunset drinks at a cliffside bar", 10]],
+      [["Kayak around the old town", 35], ["Swim at Banje beach", 0], ["Dinner outside the walls", 14]],
+      [["Hike up Mount Srđ", 0], ["Ferry to Lokrum island", 25], ["Old town evening", 8]]
+    ],
+    dayTrips: [
+      { name: "Kotor", how: "Bus, 2h30", cost: 30, tags: ["history", "hiking"], note: "Montenegro's walled bay town; climb to the fortress." },
+      { name: "Elafiti Islands", how: "Ferry, 1h", cost: 20, tags: ["islands", "beach"], note: "Quiet car-free islands." },
+      { name: "Ston", how: "Bus, 1h", cost: 15, tags: ["food", "history"], note: "Oysters and Europe's longest defensive walls." }
+    ],
+    tips: [
+      "The Dubrovnik Pass includes the walls; buy it only if you'll see several sights.",
+      "Stay in Lapad or Gruž and bus in; it's much cheaper than the old town."
+    ]
+  },
+  {
+    id: "split", code: "SPU", name: "Split", country: "Croatia", lat: 43.51, lon: 16.44,
+    costs: { hostel: 28, food: 25, transit: 3, activities: 10 },
+    interests: ["beach", "islands", "history", "nightlife", "nature"],
+    season:    [2,  2,  3,  4,  5,  5,  4,  4,  5,  4,  2,  2],
+    priceMult: [0.7,  0.7,  0.8,  1.0,  1.1,  1.3,  1.5,  1.5,  1.2,  0.9,  0.7,  0.8],
+    bestTime: "June and September. The Ultra festival (July) and August bring the biggest crowds.",
+    itinerary: [
+      [["Diocletian's Palace", 0], ["Riva promenade and fish market", 0], ["Old town bars", 12]],
+      [["Hike Marjan Hill", 0], ["Swim at Kašjuni beach", 0], ["Beach bars at Bačvice", 12]],
+      [["Ferry to Hvar or Brač", 20], ["Beach day on the island", 0], ["Dinner back in Split", 14]]
+    ],
+    dayTrips: [
+      { name: "Krka Waterfalls", how: "Bus, 1h30", cost: 40, tags: ["nature", "hiking"], note: "Boardwalks between waterfalls; cheaper before June." },
+      { name: "Trogir", how: "Bus, 30 min", cost: 5, tags: ["history", "architecture"], note: "Tiny walled island town." },
+      { name: "Hvar", how: "Ferry, 1h", cost: 25, tags: ["islands", "beach", "nightlife"], note: "Lavender fields, coves and beach clubs." }
+    ],
+    tips: [
+      "Public Jadrolinija ferries cost less than tourist catamarans.",
+      "Krka is cheaper and quieter before June."
+    ]
+  },
+  {
+    id: "ljubljana", code: "LJU", name: "Ljubljana", country: "Slovenia", lat: 46.06, lon: 14.51,
+    costs: { hostel: 28, food: 24, transit: 3, activities: 8 },
+    interests: ["nature", "hiking", "architecture", "cafes", "beach"],
+    season:    [2,  2,  3,  4,  5,  5,  5,  5,  5,  4,  2,  3],
+    priceMult: [0.8,  0.8,  0.9,  1.0,  1.1,  1.1,  1.2,  1.2,  1.1,  1.0,  0.8,  1.0],
+    bestTime: "May–September. Small, green and easy, perfect for a relaxed weekend.",
+    itinerary: [
+      [["Old town and the Triple Bridge", 0], ["Open Kitchen street food (Fridays)", 12], ["Riverside bars", 10]],
+      [["Walk up to Ljubljana Castle", 15], ["Tivoli Park", 0], ["Metelkova art squat", 8]],
+      [["Central market", 5], ["Bike around the city", 5], ["Dinner by the river", 14]]
+    ],
+    dayTrips: [
+      { name: "Lake Bled", how: "Bus, 1h20", cost: 20, tags: ["nature", "hiking", "beach"], note: "Island church and the Ojstrica viewpoint hike." },
+      { name: "Lake Bohinj", how: "Bus, 2h", cost: 22, tags: ["nature", "hiking", "beach"], note: "Bigger, wilder and quieter than Bled." },
+      { name: "Postojna Cave", how: "Bus, 1h", cost: 45, tags: ["nature", "castles"], note: "Train ride into a huge cave, plus a castle in a cliff." }
+    ],
+    tips: [
+      "Bled's Ojstrica viewpoint is free and has the classic lake view.",
+      "Ljubljana's tap water is excellent; carry a bottle."
+    ]
+  },
+  {
+    id: "zagreb", code: "ZAG", name: "Zagreb", country: "Croatia", lat: 45.81, lon: 15.98,
+    costs: { hostel: 22, food: 22, transit: 3, activities: 8 },
+    interests: ["cafes", "history", "markets", "nightlife", "festivals", "nature"],
+    season:    [2,  2,  3,  4,  5,  4,  4,  3,  4,  4,  3,  5],
+    priceMult: [0.8,  0.8,  0.9,  1.0,  1.0,  1.0,  1.0,  0.9,  1.0,  1.0,  0.9,  1.1],
+    bestTime: "May, September and December, when Advent in Zagreb is one of Europe's best Christmas markets.",
+    itinerary: [
+      [["Upper Town and St. Mark's Church", 0], ["Museum of Broken Relationships", 8], ["Bars on Tkalčićeva", 10]],
+      [["Dolac market", 5], ["Coffee on Cvjetni trg", 4], ["Dinner in the Lower Town", 12]],
+      [["Mirogoj cemetery", 0], ["Maksimir park", 0], ["Lake Jarun bars (summer)", 10]]
+    ],
+    dayTrips: [
+      { name: "Plitvice Lakes", how: "Bus, 2h", cost: 55, tags: ["nature", "hiking"], note: "Turquoise terraced lakes; far cheaper outside summer." },
+      { name: "Samobor", how: "Bus, 40 min", cost: 8, tags: ["food", "hiking"], note: "Cream cakes and forest walks." }
+    ],
+    tips: [
+      "Plitvice tickets cost much less outside June–September.",
+      "One espresso buys you an hour on a café terrace."
+    ]
+  },
+  {
+    id: "warsaw", code: "WAW", name: "Warsaw", country: "Poland", lat: 52.23, lon: 21.01,
+    costs: { hostel: 18, food: 18, transit: 4, activities: 8 },
+    interests: ["history", "food", "nightlife", "music", "art", "architecture"],
+    season:    [2,  2,  3,  4,  5,  5,  4,  4,  4,  3,  2,  3],
+    priceMult: [0.8,  0.8,  0.9,  1.0,  1.0,  1.0,  1.0,  1.0,  1.0,  0.9,  0.8,  1.0],
+    bestTime: "May–September. On summer Sundays there are free Chopin concerts in Łazienki Park.",
+    itinerary: [
+      [["Rebuilt Old Town and Castle Square", 0], ["Milk bar lunch", 5], ["Vistula riverbank bars", 8]],
+      [["Warsaw Uprising Museum", 10], ["Palace of Culture viewing terrace", 8], ["Bars on Nowy Świat", 10]],
+      [["Łazienki Park", 0], ["Street art in Praga", 0], ["Pierogi dinner", 8]]
+    ],
+    dayTrips: [
+      { name: "Kampinos Forest", how: "Bus, 1h", cost: 5, tags: ["nature", "hiking"], note: "Dunes and forest trails on the city's edge." },
+      { name: "Łódź", how: "Train, 1h20", cost: 15, tags: ["streetart", "architecture"], note: "Huge murals and converted factories." }
+    ],
+    tips: [
+      "Many museums have one free day a week; check before you go.",
+      "Milk bars serve full meals for €4–6."
+    ]
+  },
+  {
+    id: "gdansk", code: "GDN", name: "Gdańsk", country: "Poland", lat: 54.35, lon: 18.65,
+    costs: { hostel: 20, food: 20, transit: 4, activities: 8 },
+    interests: ["history", "beach", "architecture", "food", "festivals"],
+    season:    [2,  2,  2,  3,  4,  5,  5,  5,  4,  3,  2,  3],
+    priceMult: [0.8,  0.8,  0.8,  0.9,  1.0,  1.2,  1.3,  1.3,  1.0,  0.9,  0.8,  0.9],
+    bestTime: "June–August for Baltic beaches. St. Dominic's Fair fills the old town from late July.",
+    itinerary: [
+      [["Long Market and Neptune's Fountain", 0], ["Amber shops on Mariacka Street", 0], ["Riverside dinner", 12]],
+      [["European Solidarity Centre", 8], ["Shipyard walk", 0], ["Craft beer in the old town", 10]],
+      [["Boat to Westerplatte", 15], ["Beach afternoon at Brzeźno", 0], ["Old town bars", 10]]
+    ],
+    dayTrips: [
+      { name: "Sopot", how: "Train, 20 min", cost: 3, tags: ["beach", "nightlife"], note: "Beach resort with Europe's longest wooden pier." },
+      { name: "Malbork Castle", how: "Train, 40 min", cost: 25, tags: ["castles", "history"], note: "The world's largest brick castle." },
+      { name: "Hel Peninsula", how: "Train or ferry, 2h", cost: 20, tags: ["beach", "nature"], note: "Long sandy spit with seal sanctuary." }
+    ],
+    tips: [
+      "The SKM commuter train links Gdańsk, Sopot and Gdynia for pocket change.",
+      "Give Malbork at least half a day."
+    ]
+  },
+  {
+    id: "tallinn", code: "TLL", name: "Tallinn", country: "Estonia", lat: 59.44, lon: 24.75,
+    costs: { hostel: 22, food: 24, transit: 3, activities: 8 },
+    interests: ["history", "architecture", "castles", "cafes", "nature"],
+    season:    [2,  2,  2,  3,  4,  5,  5,  5,  4,  3,  2,  4],
+    priceMult: [0.8,  0.8,  0.8,  0.9,  1.0,  1.2,  1.3,  1.2,  1.0,  0.9,  0.8,  1.0],
+    bestTime: "June–August for the white nights. December for a storybook Christmas market.",
+    itinerary: [
+      [["Old Town walls and towers", 0], ["Toompea viewpoints", 0], ["Medieval-style dinner", 15]],
+      [["Telliskivi Creative City", 0], ["Balti Jaam market", 8], ["Kalamaja wooden houses and bars", 10]],
+      [["Kadriorg Park and palace", 0], ["Seaside walk to Pirita", 0], ["Old town bars", 10]]
+    ],
+    dayTrips: [
+      { name: "Lahemaa National Park", how: "Bus, 1h", cost: 20, tags: ["nature", "hiking"], note: "Bog boardwalks, forests and manor houses." },
+      { name: "Helsinki", how: "Ferry, 2h", cost: 40, tags: ["architecture", "cafes", "islands"], note: "Finland's capital and the Suomenlinna sea fortress." }
+    ],
+    tips: [
+      "The old town is small; you may not need transport at all.",
+      "Helsinki ferries are cheaper booked a week ahead."
+    ]
+  },
+  {
+    id: "riga", code: "RIX", name: "Riga", country: "Latvia", lat: 56.95, lon: 24.11,
+    costs: { hostel: 18, food: 20, transit: 3, activities: 8 },
+    interests: ["architecture", "history", "markets", "nightlife", "beach", "music"],
+    season:    [2,  2,  2,  3,  4,  5,  5,  5,  4,  3,  2,  3],
+    priceMult: [0.8,  0.8,  0.8,  0.9,  1.0,  1.2,  1.2,  1.2,  1.0,  0.9,  0.8,  1.0],
+    bestTime: "June–August. Midsummer (around 23 June) is Latvia's biggest celebration.",
+    itinerary: [
+      [["Old Town and the House of the Blackheads", 0], ["Central Market in the old Zeppelin hangars", 8], ["Black Balsam cocktail bar", 8]],
+      [["Art Nouveau district", 0], ["Freedom Monument and Bastejkalns park", 0], ["Dinner at a Lido buffet", 10]],
+      [["St. Peter's Church tower", 10], ["Kalnciema Quarter market (Sat)", 5], ["Old Town bars", 10]]
+    ],
+    dayTrips: [
+      { name: "Jūrmala", how: "Train, 30 min", cost: 5, tags: ["beach", "nature"], note: "Long sandy beach with wooden villas." },
+      { name: "Sigulda", how: "Train, 1h15", cost: 12, tags: ["castles", "hiking", "nature"], note: "Castles and trails in the Gauja valley." },
+      { name: "Rundāle Palace", how: "Bus, 1h30", cost: 25, tags: ["castles"], note: "A small Versailles in the Latvian countryside." }
+    ],
+    tips: [
+      "Lido buffets are cheap, filling and very Latvian.",
+      "Riga's old town is small; walking beats the tram."
+    ]
+  },
+  {
+    id: "istanbul", code: "IST", name: "Istanbul", country: "Türkiye", lat: 41.01, lon: 28.98,
+    costs: { hostel: 15, food: 18, transit: 3, activities: 12 },
+    interests: ["history", "food", "architecture", "markets", "islands", "cafes", "nightlife"],
+    season:    [2,  2,  3,  5,  5,  4,  3,  3,  5,  5,  3,  2],
+    priceMult: [0.8,  0.8,  0.9,  1.1,  1.1,  1.2,  1.2,  1.2,  1.1,  1.0,  0.8,  0.8],
+    bestTime: "April–May (tulip season) and September–October.",
+    itinerary: [
+      [["Blue Mosque (free)", 0], ["Hagia Sophia", 25], ["Rooftop sunset over the Golden Horn", 8]],
+      [["Grand Bazaar", 0], ["Spice Bazaar and a fish sandwich by Galata Bridge", 5], ["Bars in Beyoğlu", 12]],
+      [["Ferry across the Bosphorus to Kadıköy", 1], ["Kadıköy market lunch", 8], ["Moda seaside evening", 8]]
+    ],
+    dayTrips: [
+      { name: "Princes' Islands", how: "Ferry, 1h30", cost: 5, tags: ["islands", "beach", "nature"], note: "Car-free islands for cycling and swimming." },
+      { name: "Bosphorus to Anadolu Kavağı", how: "Ferry, 1h30", cost: 8, tags: ["nature", "castles"], note: "Ferry up the strait to a castle overlooking the Black Sea." }
+    ],
+    tips: [
+      "Get an İstanbulkart: ferries, trams and metro are very cheap with it.",
+      "Prices change quickly with inflation; check recent costs before you go."
+    ]
+  },
+  {
+    id: "sofia", code: "SOF", name: "Sofia", country: "Bulgaria", lat: 42.7, lon: 23.32,
+    costs: { hostel: 14, food: 16, transit: 2, activities: 6 },
+    interests: ["history", "hiking", "nature", "food", "nightlife", "cafes"],
+    season:    [2,  3,  3,  4,  5,  5,  4,  4,  5,  4,  2,  3],
+    priceMult: [0.8,  0.8,  0.9,  1.0,  1.0,  1.0,  1.0,  1.0,  1.0,  0.9,  0.8,  0.9],
+    bestTime: "May–June and September. One of Europe's cheapest capitals, with mountains at the edge of town.",
+    itinerary: [
+      [["Alexander Nevsky Cathedral", 0], ["Free walking tour", 0], ["Dinner on Vitosha Boulevard", 10]],
+      [["Hike on Vitosha mountain", 3], ["Banya Bashi mosque and mineral springs", 0], ["Bars in the center", 8]],
+      [["National History Museum", 6], ["Boyana Church", 5], ["Shopska salad and rakia dinner", 8]]
+    ],
+    dayTrips: [
+      { name: "Rila Monastery", how: "Bus, 2h30", cost: 20, tags: ["history", "hiking", "nature"], note: "Striped monastery deep in the mountains." },
+      { name: "Plovdiv", how: "Bus, 2h", cost: 15, tags: ["history", "streetart"], note: "Roman theatre and the artsy Kapana quarter." },
+      { name: "Seven Rila Lakes", how: "Tour, 2h each way", cost: 35, tags: ["hiking", "nature"], note: "Glacial lakes on a ridge hike." }
+    ],
+    tips: [
+      "Fill your bottle with free mineral water at the springs near Banya Bashi.",
+      "Free walking tours start daily in the center."
+    ]
+  },
+  {
+    id: "bucharest", code: "BUH", name: "Bucharest", country: "Romania", lat: 44.43, lon: 26.1,
+    costs: { hostel: 15, food: 18, transit: 2, activities: 8 },
+    interests: ["nightlife", "history", "architecture", "castles", "cafes"],
+    season:    [2,  2,  3,  4,  5,  4,  3,  3,  5,  4,  2,  3],
+    priceMult: [0.8,  0.8,  0.9,  1.0,  1.0,  1.0,  1.0,  1.0,  1.0,  0.9,  0.8,  0.9],
+    bestTime: "May and September. Summer is hot; spring and autumn are ideal.",
+    itinerary: [
+      [["Old Town and Stavropoleos Monastery", 0], ["Lunch at Caru' cu Bere", 12], ["Old Town bars", 10]],
+      [["Palace of the Parliament tour", 12], ["Cișmigiu Gardens", 0], ["Rooftop bar", 10]],
+      [["Herăstrău Park", 0], ["Village Museum", 6], ["Club night", 10]]
+    ],
+    dayTrips: [
+      { name: "Brașov & Bran Castle", how: "Train, 2h30", cost: 30, tags: ["castles", "hiking", "history"], note: "Dracula's castle and a pretty mountain town." },
+      { name: "Sinaia & Peleș Castle", how: "Train, 1h30", cost: 20, tags: ["castles", "nature"], note: "Ornate royal castle in the Carpathians (closed Mondays)." }
+    ],
+    tips: [
+      "Use a ride-hailing app instead of street taxis.",
+      "Peleș Castle is closed on Mondays."
+    ]
+  },
+  {
+    id: "belgrade", code: "BEG", name: "Belgrade", country: "Serbia", lat: 44.79, lon: 20.45,
+    costs: { hostel: 15, food: 16, transit: 2, activities: 6 },
+    interests: ["nightlife", "history", "food", "music", "cafes", "festivals"],
+    season:    [2,  2,  3,  4,  5,  5,  5,  5,  5,  4,  2,  3],
+    priceMult: [0.8,  0.8,  0.9,  1.0,  1.0,  1.0,  1.1,  1.1,  1.0,  0.9,  0.8,  0.9],
+    bestTime: "May–September, when the floating river clubs are open.",
+    itinerary: [
+      [["Kalemegdan fortress", 0], ["Lunch in the bohemian Skadarlija quarter", 10], ["Floating river club", 10]],
+      [["Knez Mihailova street and cafés", 4], ["Zemun waterfront", 0], ["Bars in Savamala", 10]],
+      [["Temple of Saint Sava", 0], ["Museum of Yugoslavia", 4], ["Ćevapi dinner", 6]]
+    ],
+    dayTrips: [
+      { name: "Novi Sad", how: "Train, 40 min", cost: 10, tags: ["history", "festivals", "nightlife"], note: "Petrovaradin fortress; home of the EXIT festival." },
+      { name: "Sremski Karlovci", how: "Bus, 1h15", cost: 8, tags: ["wine", "history"], note: "Baroque town with wineries." },
+      { name: "Avala Tower", how: "Bus, 40 min", cost: 5, tags: ["nature", "hiking"], note: "Forested hill with a viewing tower." }
+    ],
+    tips: [
+      "The fast train makes Novi Sad a very easy day trip.",
+      "Cash is still common in small bars and bakeries."
+    ]
+  },
+  {
+    id: "valletta", code: "MLA", name: "Valletta", country: "Malta", lat: 35.9, lon: 14.51,
+    costs: { hostel: 25, food: 24, transit: 3, activities: 10 },
+    interests: ["history", "beach", "islands", "architecture", "festivals"],
+    season:    [3,  3,  3,  4,  5,  5,  4,  4,  5,  5,  4,  3],
+    priceMult: [0.8,  0.8,  0.9,  1.0,  1.1,  1.2,  1.4,  1.4,  1.2,  1.0,  0.8,  0.9],
+    bestTime: "May–June and September–October. The sea stays warm into November.",
+    itinerary: [
+      [["Upper Barrakka Gardens and the noon gun", 0], ["Pastizzi lunch", 3], ["Bars on Strait Street", 10]],
+      [["Ferry to the Three Cities", 3], ["Birgu waterfront", 0], ["Dinner in Sliema", 14]],
+      [["St. John's Co-Cathedral (Caravaggio)", 15], ["Swim at St. Peter's Pool", 3], ["Sunset in Valletta", 0]]
+    ],
+    dayTrips: [
+      { name: "Gozo & Comino", how: "Ferry, 1h30", cost: 20, tags: ["islands", "beach", "hiking"], note: "Blue Lagoon swims and Gozo's cliffs." },
+      { name: "Mdina", how: "Bus, 30 min", cost: 3, tags: ["history", "architecture"], note: "The silent walled city." },
+      { name: "Blue Grotto", how: "Bus, 45 min", cost: 13, tags: ["nature", "islands"], note: "Boat trip into sea caves." }
+    ],
+    tips: [
+      "A Tallinja card makes buses much cheaper.",
+      "Pastizzi (flaky pastries) cost under €1."
+    ]
+  },
+  {
+    id: "palma", code: "PMI", name: "Palma de Mallorca", country: "Spain", lat: 39.57, lon: 2.65,
+    costs: { hostel: 30, food: 28, transit: 4, activities: 10 },
+    interests: ["beach", "islands", "hiking", "architecture", "nature", "food"],
+    season:    [2,  3,  3,  4,  5,  5,  4,  4,  5,  4,  3,  2],
+    priceMult: [0.7,  0.7,  0.8,  1.0,  1.2,  1.4,  1.6,  1.6,  1.3,  1.0,  0.7,  0.8],
+    bestTime: "May–June and September. Flights and hostels are cheapest outside July–August.",
+    itinerary: [
+      [["La Seu cathedral", 10], ["Old town lanes and patios", 0], ["Tapas in Santa Catalina", 14]],
+      [["Bellver Castle", 4], ["Beach afternoon at Can Pere Antoni", 0], ["Sunset drinks on the seafront", 10]],
+      [["Bus to the Illetes coves", 4], ["Swim and snorkel", 0], ["Ensaïmada and dinner in town", 12]]
+    ],
+    dayTrips: [
+      { name: "Sóller", how: "Bus, 45 min", cost: 10, tags: ["nature", "hiking", "beach"], note: "Orange-grove valley and a vintage tram to the port." },
+      { name: "Valldemossa", how: "Bus, 30 min", cost: 5, tags: ["architecture", "hiking"], note: "Stone village in the mountains." },
+      { name: "Caló des Moro", how: "Bus, 1h15", cost: 10, tags: ["beach", "nature"], note: "A tiny turquoise cove; go early." }
+    ],
+    tips: [
+      "Take the bus to Sóller instead of the vintage train: same views, far cheaper.",
+      "Coves get crowded by 11am in summer; go early."
     ]
   }
 ];
@@ -647,10 +1501,34 @@ const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 const MONTHS_FULL = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const INTERESTS = {
   food: "Food", nightlife: "Nightlife", history: "History", art: "Art & museums",
-  architecture: "Architecture", outdoors: "Outdoors", beach: "Beach"
+  architecture: "Architecture", castles: "Castles & palaces", nature: "Nature & parks", hiking: "Hiking",
+  beach: "Beach", islands: "Islands & boats", wine: "Wine & beer", cafes: "Cafés",
+  markets: "Markets & shopping", music: "Live music", streetart: "Street art", festivals: "Festivals"
+};
+const MODES = {
+  bus:    { label: "Bus",    board: "BUS" },
+  train:  { label: "Train",  board: "TRAIN" },
+  boat:   { label: "Boat",   board: "BOAT" },
+  flight: { label: "Flight", board: "FLY" }
 };
 const SLOTS = ["Morning", "Afternoon", "Evening"];
 const BOARD_ROWS = 5;
+const LIST_LIMIT = 10;
+
+// Places you can only reach by plane or boat, and places without useful rail links.
+const ISLANDS = new Set(["dublin", "valletta", "palma"]);
+const NO_RAIL = new Set(["athens", "istanbul", "dubrovnik"]);
+// Ferry routes between cities in the list: round-trip cost (EUR) and hours each way.
+const FERRIES = {
+  "barcelona-palma": { cost: 90, hours: 7 },
+  "palma-valencia": { cost: 90, hours: 8 },
+  "barcelona-rome": { cost: 140, hours: 20 },
+  "stockholm-tallinn": { cost: 80, hours: 16 },
+  "riga-stockholm": { cost: 80, hours: 17 },
+  "dublin-london": { cost: 100, hours: 8 },
+  "dublin-edinburgh": { cost: 90, hours: 9 },
+  "dubrovnik-split": { cost: 70, hours: 4.5 }
+};
 
 // Current choices. The page opens with an example search already filled in.
 const state = {
@@ -658,17 +1536,21 @@ const state = {
   budget: 300,
   days: 3,
   month: (new Date().getMonth() + 1) % 12,
-  interests: new Set(["food", "history"])
+  interests: new Set(["food", "history"]),
+  modes: new Set(Object.keys(MODES))
 };
-const expanded = new Set(); // trips whose details are open
+const expanded = new Set();       // trips whose plan is open
+const modeChoice = new Map();     // city id -> chosen transport mode
+const dayTripChoice = new Map();  // city id -> index of chosen day trip (-1 = none)
+let showAll = false;
 
 const $ = (sel) => document.querySelector(sel);
 const byId = (id) => CITIES.find(c => c.id === id);
 const euro = (n) => "€" + Math.round(n).toLocaleString("en-US");
+const hrs = (h) => h < 1 ? "<1h" : `${Math.round(h * 2) / 2}h`.replace(".5h", "½h");
 
-// ---------------------------------------------------------------- costs
+// ---------------------------------------------------------------- transport
 
-// Straight-line distance in km (haversine formula).
 function distanceKm(a, b) {
   const rad = (d) => d * Math.PI / 180;
   const dLat = rad(b.lat - a.lat), dLon = rad(b.lon - a.lon);
@@ -676,23 +1558,63 @@ function distanceKm(a, b) {
   return 2 * 6371 * Math.asin(Math.sqrt(h));
 }
 
-// Rough round-trip transport. Under 600 km: train or bus. Over: budget airline plus airport transfers.
-function estimateTransport(home, dest, month) {
+// Every way to get from home to dest, with a rough round-trip price and hours each way.
+function transportOptions(home, dest, month) {
   const km = distanceKm(home, dest);
   const mult = dest.priceMult[month];
-  if (km < 600) {
-    return { mode: "Train", short: "TRAIN", cost: Math.round(Math.max(25, km * 0.2) * mult), hours: Math.max(1, Math.round(km / 80)) };
+  const overWater = ISLANDS.has(home.id) || ISLANDS.has(dest.id);
+  const opts = [];
+  if (!overWater && km <= 1600) {
+    opts.push({ mode: "bus", cost: Math.round(Math.max(18, km * 0.1) * mult), hours: km / 70 + 0.5 });
   }
-  return { mode: "Flight", short: "FLY", cost: Math.round((70 + km * 0.04) * mult + 25), hours: Math.round(km / 750 + 3) };
+  if (!overWater && km <= 1400 && !NO_RAIL.has(home.id) && !NO_RAIL.has(dest.id)) {
+    opts.push({ mode: "train", cost: Math.round(Math.max(25, km * 0.2) * mult), hours: km / 120 + 0.5 });
+  }
+  const ferry = FERRIES[[home.id, dest.id].sort().join("-")];
+  if (ferry) opts.push({ mode: "boat", cost: Math.round(ferry.cost * mult), hours: ferry.hours });
+  if (km >= 250 || overWater) {
+    opts.push({ mode: "flight", cost: Math.round((70 + km * 0.04) * mult + 25), hours: km / 750 + 3 });
+  }
+  return opts;
 }
 
-function estimateTrip(home, dest, days, month) {
-  const nights = Math.max(1, days - 1);
-  const transport = estimateTransport(home, dest, month);
-  const lodging = Math.round(nights * dest.costs.hostel * dest.priceMult[month]);
-  const food = days * dest.costs.food;
-  const local = days * (dest.costs.transit + dest.costs.activities);
-  return { transport, lodging, food, local, nights, total: transport.cost + lodging + food + local };
+// Pick the option to use: the traveler's own pick if they made one, otherwise the best
+// balance of price and time (each hour on the road counts as €8, both ways).
+// Longest sensible trip each way: 3 hours per day of the trip. Flights always qualify, and
+// overnight ferries (up to 20h) do too on trips of 3+ days, since you sleep on board.
+function tooLong(o) {
+  if (o.mode === "flight") return false;
+  if (o.mode === "boat" && state.days >= 3 && o.hours <= 20) return false;
+  return o.hours > state.days * 3;
+}
+
+function pickTransport(dest, opts) {
+  const allowed = opts.filter(o => state.modes.has(o.mode) && !tooLong(o));
+  if (!allowed.length) return null;
+  const chosen = allowed.find(o => o.mode === modeChoice.get(dest.id));
+  return chosen || allowed.reduce((best, o) => (o.cost + o.hours * 16 < best.cost + best.hours * 16 ? o : best));
+}
+
+// ---------------------------------------------------------------- trip cost
+
+function chosenDayTrip(dest) {
+  const pick = dayTripChoice.has(dest.id) ? dayTripChoice.get(dest.id) : (state.days === 4 ? 0 : -1);
+  return pick >= 0 ? dest.dayTrips[pick] : null;
+}
+
+function estimateTrip(home, dest) {
+  const options = transportOptions(home, dest, state.month);
+  const transport = pickTransport(dest, options);
+  if (!transport) return null;
+  const nights = Math.max(1, state.days - 1);
+  const lodging = Math.round(nights * dest.costs.hostel * dest.priceMult[state.month]);
+  const food = state.days * dest.costs.food;
+  const dayTrip = chosenDayTrip(dest);
+  // A day trip replaces one day of city sightseeing.
+  const local = state.days * (dest.costs.transit + dest.costs.activities) - (dayTrip ? dest.costs.activities : 0);
+  const extra = dayTrip ? dayTrip.cost : 0;
+  return { options, transport, lodging, food, local, dayTrip, extra, nights,
+           total: transport.cost + lodging + food + local + extra };
 }
 
 // ---------------------------------------------------------------- ranking
@@ -700,21 +1622,27 @@ function estimateTrip(home, dest, days, month) {
 function findTrips() {
   const home = byId(state.home);
   const wanted = [...state.interests];
-  const trips = CITIES.filter(c => c.id !== home.id).map(dest => {
-    const cost = estimateTrip(home, dest, state.days, state.month);
+  const trips = [];
+  CITIES.forEach(dest => {
+    if (dest.id === home.id) return;
+    const cost = estimateTrip(home, dest);
+    if (!cost) return;
+    const tripTags = new Set(dest.dayTrips.flatMap(d => d.tags));
     const matched = wanted.filter(i => dest.interests.includes(i));
-    const interestScore = wanted.length ? matched.length / wanted.length : 1;
+    const viaDayTrip = wanted.filter(i => !dest.interests.includes(i) && tripTags.has(i));
+    const interestScore = wanted.length ? (matched.length + 0.6 * viaDayTrip.length) / wanted.length : 1;
     const seasonScore = dest.season[state.month] / 5;
     const savings = Math.max(0, Math.min(1, 1 - cost.total / state.budget));
     // What you like (45%), how good the month is (35%), budget left over (20%).
     const score = 0.45 * interestScore + 0.35 * seasonScore + 0.2 * savings;
-    return { dest, cost, matched, score };
-  }).sort((a, b) => b.score - a.score);
-
+    trips.push({ dest, cost, matched, viaDayTrip, score });
+  });
+  trips.sort((a, b) => b.score - a.score);
   return {
     home,
     fits: trips.filter(t => t.cost.total <= state.budget),
-    stretch: trips.filter(t => t.cost.total > state.budget && t.cost.total <= state.budget * 1.2)
+    // Plans you've opened stay visible even if changes push them well over budget.
+    stretch: trips.filter(t => t.cost.total > state.budget && (t.cost.total <= state.budget * 1.2 || expanded.has(t.dest.id)))
   };
 }
 
@@ -769,6 +1697,7 @@ function buildBoard() {
     row.addEventListener("click", () => {
       if (!row.dataset.id) return;
       expanded.add(row.dataset.id);
+      showAll = true;
       renderResults(findTrips());
       document.getElementById("t-" + row.dataset.id).scrollIntoView({ behavior: "smooth", block: "start" });
     });
@@ -777,14 +1706,14 @@ function buildBoard() {
 }
 
 function renderBoard({ home, fits, stretch }) {
-
+  $("#board-from").textContent = home.name.toUpperCase();
   const top = [...fits.map(t => ({ ...t, over: false })), ...stretch.map(t => ({ ...t, over: true }))].slice(0, BOARD_ROWS);
   [...document.querySelectorAll(".brow")].forEach((row, i) => {
     const t = top[i];
     const s = t ? season(t.dest.season[state.month]) : null;
-    setFlaps(row.querySelector(".dest"), padText(t ? t.dest.name : "", 11));
+    setFlaps(row.querySelector(".dest"), padText(t ? t.dest.name : "", 13));
     setFlaps(row.querySelector(".fare"), padText(t ? euro(t.cost.total) : "", 5, true));
-    setFlaps(row.querySelector(".via"), padText(t ? t.cost.transport.short : "", 5));
+    setFlaps(row.querySelector(".via"), padText(t ? MODES[t.cost.transport.mode].board : "", 5));
     const remark = row.querySelector(".remark");
     setFlaps(remark, padText(t ? (t.over ? "STRETCH" : s.board) : "", 10));
     remark.className = "g col-remark remark " + (t ? (t.over ? "stretch" : s.tone) : "");
@@ -794,24 +1723,41 @@ function renderBoard({ home, fits, stretch }) {
   });
 }
 
-function setBoardFrom(name) { $("#board-from").textContent = name.toUpperCase(); }
-
 // ---------------------------------------------------------------- tickets
 
 function monthStrip(dest) {
+  const best = dest.season.map((q, i) => q === 5 ? MONTHS[i] : null).filter(Boolean);
   return `<div class="strip" aria-hidden="true">${dest.season.map((q, i) =>
     `<i class="q${q}${i === state.month ? " sel" : ""}"></i>`).join("")}</div>
-    <div class="strip-label">Best months: ${dest.season.map((q, i) => q === 5 ? MONTHS[i] : null).filter(Boolean).join(", ") || "spring and autumn"}</div>`;
+    <div class="strip-label">Best months: ${best.join(", ") || "spring and autumn"}</div>`;
+}
+
+function transportSection(dest, cost) {
+  const allowed = cost.options.filter(o => state.modes.has(o.mode));
+  const hidden = cost.options.length - allowed.length;
+  return `<div>
+    <h4>Getting there</h4>
+    <div class="options" role="radiogroup" aria-label="Transport to ${dest.name}">
+      ${allowed.map(o => `<button type="button" class="option" role="radio" data-act="mode" data-id="${dest.id}" data-v="${o.mode}"
+          aria-checked="${o.mode === cost.transport.mode}" ${tooLong(o) ? "disabled" : ""}>
+          <strong>${MODES[o.mode].label}</strong>
+          <span>~${hrs(o.hours)} each way${tooLong(o) ? ` · too long for ${state.days} days` : ""}</span>
+          <span class="mono">${euro(o.cost)}</span>
+        </button>`).join("")}
+    </div>
+    <p class="fine">Round-trip prices. ${hidden ? `${hidden} more option${hidden > 1 ? "s" : ""} hidden by your travel filter.` : "Pick one to update the total."}</p>
+  </div>`;
 }
 
 function costSection(cost) {
   const scale = Math.max(state.budget, cost.total) * 1.02;
   const parts = [
-    ["c1", `${cost.transport.mode} round trip`, `~${cost.transport.hours}h each way`, cost.transport.cost],
+    ["c1", `${MODES[cost.transport.mode].label} round trip`, `~${hrs(cost.transport.hours)} each way`, cost.transport.cost],
     ["c2", "Hostel", `${cost.nights} night${cost.nights > 1 ? "s" : ""}`, cost.lodging],
     ["c3", "Food", `${state.days} days`, cost.food],
     ["c4", "Local transport & sights", "", cost.local]
   ];
+  if (cost.dayTrip) parts.push(["c5", `Day trip: ${cost.dayTrip.name}`, "travel + entry", cost.extra]);
   const mark = state.budget / scale * 100;
   return `
     <div>
@@ -849,37 +1795,67 @@ function whenSection(dest) {
     </div>`;
 }
 
-function itinerarySection(dest) {
-  const days = dest.itinerary.slice(0, Math.min(state.days, 3)).map((day, d) => {
+function dayTripsSection(dest, cost) {
+  const current = cost.dayTrip;
+  return `<div>
+    <h4>Day trips nearby</h4>
+    <div class="daytrips">
+      ${dest.dayTrips.map((d, i) => {
+        const on = current === d;
+        return `<div class="daytrip${on ? " on" : ""}">
+          <div class="dt-head"><strong>${d.name}</strong><span class="mono">~${euro(d.cost)}</span></div>
+          <span class="dt-how">${d.how}</span>
+          <p>${d.note}</p>
+          <div class="dt-tags">${d.tags.map(t => `<span class="tag${state.interests.has(t) ? " hit" : ""}">${INTERESTS[t]}</span>`).join("")}</div>
+          <button type="button" class="dt-btn" data-act="daytrip" data-id="${dest.id}" data-v="${on ? -1 : i}" aria-pressed="${on}">
+            ${on ? "Added to your plan ✓" : "Add to my plan"}</button>
+        </div>`;
+      }).join("")}
+    </div>
+    <p class="fine">Adding a day trip swaps it in for your last day in the city. Prices cover round-trip travel and the main entry fee.</p>
+  </div>`;
+}
+
+function itinerarySection(dest, cost) {
+  const cityDays = cost.dayTrip ? state.days - 1 : Math.min(state.days, 3);
+  const days = dest.itinerary.slice(0, cityDays).map((day, d) => {
     const total = day.reduce((sum, [, c]) => sum + c, 0);
     return `<div class="day">
       <div class="day-head"><strong>Day ${d + 1}</strong><span class="mono">${total ? euro(total) : "Free"}</span></div>
-      <ol>${day.map(([what, cost], s) => `<li><span class="slot">${SLOTS[s]}</span>
-        <span class="what"><span>${what}</span><span>${cost ? euro(cost) : "free"}</span></span></li>`).join("")}</ol>
+      <ol>${day.map(([what, c], s) => `<li><span class="slot">${SLOTS[s]}</span>
+        <span class="what"><span>${what}</span><span>${c ? euro(c) : "free"}</span></span></li>`).join("")}</ol>
     </div>`;
   });
-  if (state.days > 3) {
-    days.push(`<div class="day"><div class="day-head"><strong>Day 4</strong><span class="mono">Day trip</span></div>
-      <ol><li><span class="slot">All day</span><span class="what"><span>${dest.extraDay}</span></span></li></ol></div>`);
+  if (cost.dayTrip) {
+    days.push(`<div class="day trip-day"><div class="day-head"><strong>Day ${cityDays + 1}</strong><span class="mono">Day trip</span></div>
+      <ol><li><span class="slot">${cost.dayTrip.how}</span><span class="what"><span>${cost.dayTrip.name}: ${cost.dayTrip.note}</span><span>${euro(cost.dayTrip.cost)}</span></span></li></ol></div>`);
+  } else if (state.days > 3) {
+    days.push(`<div class="day"><div class="day-head"><strong>Day 4</strong><span class="mono">Free day</span></div>
+      <ol><li><span class="what"><span>Pick a day trip below, or explore at your own pace.</span></span></li></ol></div>`);
   }
   return `<div><h4>Your ${state.days}-day plan</h4><div class="days">${days.join("")}</div></div>`;
 }
 
-function extrasSection(home, dest) {
-  const flights = encodeURIComponent(`Flights from ${home.name} to ${dest.name}`);
+function extrasSection(home, dest, cost) {
+  const mode = cost.transport.mode;
+  const q = encodeURIComponent(`Flights from ${home.name} to ${dest.name}`);
+  const book = mode === "flight"
+    ? `<a href="https://www.google.com/travel/flights?q=${q}" target="_blank" rel="noopener">Flights ↗</a>`
+    : mode === "boat"
+      ? `<a href="https://www.directferries.com/" target="_blank" rel="noopener">Ferries ↗</a>`
+      : `<a href="https://www.omio.com/" target="_blank" rel="noopener">${MODES[mode].label} tickets ↗</a>`;
   const hostels = encodeURIComponent(`hostels in ${dest.name}`);
   return `<div class="two">
     <div><h4>Save money</h4><ul class="tips">${dest.tips.map(t => `<li>${t}</li>`).join("")}</ul></div>
     <div><h4>Check live prices</h4><div class="links">
-      <a href="https://www.google.com/travel/flights?q=${flights}" target="_blank" rel="noopener">Flights ↗</a>
-      <a href="https://www.omio.com/" target="_blank" rel="noopener">Trains &amp; buses ↗</a>
+      ${book}
       <a href="https://www.google.com/search?q=${hostels}" target="_blank" rel="noopener">Hostels ↗</a>
     </div></div>
   </div>`;
 }
 
 function ticket(trip, home, over) {
-  const { dest, cost, matched } = trip;
+  const { dest, cost, matched, viaDayTrip } = trip;
   const s = season(dest.season[state.month]);
   const left = state.budget - cost.total;
   const isOpen = expanded.has(dest.id);
@@ -887,13 +1863,15 @@ function ticket(trip, home, over) {
   <article class="ticket${over ? " stretch" : ""}" id="t-${dest.id}">
     <div class="t-main">
       <div class="route"><span>${home.code}</span><span class="line"></span><span>${dest.code}</span>
-        <span class="mode">${cost.transport.mode} · ~${cost.transport.hours}h</span></div>
+        <span class="mode">${MODES[cost.transport.mode].label} · ~${hrs(cost.transport.hours)}</span></div>
       <h3>${dest.name}<small>${dest.country}</small></h3>
       <div class="tags">
         <span class="tag ${s.tone}">${s.text} in ${MONTHS[state.month]}</span>
         ${matched.map(m => `<span class="tag">${INTERESTS[m]}</span>`).join("")}
+        ${viaDayTrip.map(m => `<span class="tag">${INTERESTS[m]} · day trip</span>`).join("")}
       </div>
       ${monthStrip(dest)}
+      ${cost.dayTrip ? `<div class="strip-label">Includes a day trip to ${cost.dayTrip.name}</div>` : ""}
     </div>
     <div class="t-stub">
       <div>
@@ -901,12 +1879,14 @@ function ticket(trip, home, over) {
         <strong class="price">${euro(cost.total)}</strong>
         <span class="left ${left >= 0 ? "good" : "warn"}">${left >= 0 ? `${euro(left)} under budget` : `${euro(-left)} over budget`}</span>
       </div>
-      <button class="open-btn" type="button" data-id="${dest.id}" aria-expanded="${isOpen}">${isOpen ? "Hide plan" : "See the plan"}</button>
+      <button class="open-btn" type="button" data-act="open" data-id="${dest.id}" aria-expanded="${isOpen}">${isOpen ? "Hide plan" : "See the plan"}</button>
     </div>
     ${isOpen ? `<div class="details">
-      <div class="two">${costSection(cost)}${whenSection(dest)}</div>
-      ${itinerarySection(dest)}
-      ${extrasSection(home, dest)}
+      <div class="two">${costSection(cost)}${transportSection(dest, cost)}</div>
+      ${itinerarySection(dest, cost)}
+      ${dayTripsSection(dest, cost)}
+      ${whenSection(dest)}
+      ${extrasSection(home, dest, cost)}
     </div>` : ""}
   </article>`;
 }
@@ -916,9 +1896,16 @@ function renderResults({ home, fits, stretch }) {
   $("#results-title").textContent = n ? `${n} trip${n === 1 ? "" : "s"} fit your budget` : "Nothing fits yet";
   $("#results-sub").textContent = `From ${home.name} · ${state.days} days · ${MONTHS_FULL[state.month]} · ${euro(state.budget)} per person`;
   const out = [];
-  if (!n) out.push(`<div class="empty">No trips fit ${euro(state.budget)} for ${state.days} days in ${MONTHS_FULL[state.month]}. Try a shorter trip, a cheaper month, or move the budget slider up.</div>`);
-  fits.forEach(t => out.push(ticket(t, home, false)));
-  if (stretch.length) {
+  if (!state.modes.size) {
+    out.push(`<div class="empty">Pick at least one way to travel under "Getting there by".</div>`);
+  } else if (!n) {
+    out.push(`<div class="empty">No trips fit ${euro(state.budget)} for ${state.days} days in ${MONTHS_FULL[state.month]}. Try a shorter trip, a cheaper month, more ways to travel, or move the budget slider up.</div>`);
+  }
+  const shown = showAll ? fits : fits.slice(0, LIST_LIMIT);
+  shown.forEach(t => out.push(ticket(t, home, false)));
+  if (shown.length < n) {
+    out.push(`<button type="button" class="more-btn" data-act="more">Show all ${n} trips</button>`);
+  } else if (stretch.length) {
     out.push(`<div class="divider eyebrow">Worth stretching for · up to 20% over</div>`);
     stretch.forEach(t => out.push(ticket(t, home, true)));
   }
@@ -932,35 +1919,48 @@ function update() {
   document.querySelectorAll("#days .pick").forEach(b => b.setAttribute("aria-pressed", Number(b.dataset.v) === state.days));
   document.querySelectorAll("#months .pick").forEach(b => b.setAttribute("aria-pressed", Number(b.dataset.v) === state.month));
   document.querySelectorAll("#interests .chip").forEach(b => b.setAttribute("aria-pressed", state.interests.has(b.dataset.v)));
+  document.querySelectorAll("#modes .chip").forEach(b => b.setAttribute("aria-pressed", state.modes.has(b.dataset.v)));
   const result = findTrips();
-  setBoardFrom(result.home.name);
   renderBoard(result);
   renderResults(result);
 }
+
+function toggle(set, value) { set.has(value) ? set.delete(value) : set.add(value); }
 
 function setupControls() {
   $("#days").innerHTML = [2, 3, 4].map(d => `<button type="button" class="pick" data-v="${d}">${d} days</button>`).join("");
   $("#months").innerHTML = MONTHS.map((m, i) => `<button type="button" class="pick" data-v="${i}" aria-label="${MONTHS_FULL[i]}">${m}</button>`).join("");
   $("#interests").innerHTML = Object.entries(INTERESTS).map(([k, label]) => `<button type="button" class="chip" data-v="${k}">${label}</button>`).join("");
+  $("#modes").innerHTML = Object.entries(MODES).map(([k, m]) => `<button type="button" class="chip" data-v="${k}">${m.label}</button>`).join("");
 
+  const changed = () => { showAll = false; update(); };
   $("#home").value = state.home;
-  $("#home").addEventListener("change", (e) => { state.home = e.target.value; update(); });
-  $("#budget").addEventListener("input", (e) => { state.budget = Number(e.target.value); update(); });
-  $("#days").addEventListener("click", (e) => { const b = e.target.closest(".pick"); if (b) { state.days = Number(b.dataset.v); update(); } });
-  $("#months").addEventListener("click", (e) => { const b = e.target.closest(".pick"); if (b) { state.month = Number(b.dataset.v); update(); } });
-  $("#interests").addEventListener("click", (e) => {
-    const b = e.target.closest(".chip");
-    if (!b) return;
-    state.interests.has(b.dataset.v) ? state.interests.delete(b.dataset.v) : state.interests.add(b.dataset.v);
-    update();
-  });
+  $("#home").addEventListener("change", (e) => { state.home = e.target.value; modeChoice.clear(); changed(); });
+  $("#budget").addEventListener("input", (e) => { state.budget = Number(e.target.value); changed(); });
+  $("#days").addEventListener("click", (e) => { const b = e.target.closest(".pick"); if (b) { state.days = Number(b.dataset.v); changed(); } });
+  $("#months").addEventListener("click", (e) => { const b = e.target.closest(".pick"); if (b) { state.month = Number(b.dataset.v); changed(); } });
+  $("#interests").addEventListener("click", (e) => { const b = e.target.closest(".chip"); if (b) { toggle(state.interests, b.dataset.v); changed(); } });
+  $("#modes").addEventListener("click", (e) => { const b = e.target.closest(".chip"); if (b) { toggle(state.modes, b.dataset.v); changed(); } });
+
+  // Buttons inside the results (open a plan, switch transport, add a day trip, show more).
   $("#results").addEventListener("click", (e) => {
-    const b = e.target.closest(".open-btn");
+    const b = e.target.closest("[data-act]");
     if (!b) return;
-    expanded.has(b.dataset.id) ? expanded.delete(b.dataset.id) : expanded.add(b.dataset.id);
-    renderResults(findTrips());
-    document.getElementById("t-" + b.dataset.id).querySelector(".open-btn").focus();
+    const { act, id, v } = b.dataset;
+    if (act === "more") { showAll = true; renderResults(findTrips()); return; }
+    if (act === "open") toggle(expanded, id);
+    if (act === "mode") modeChoice.set(id, v);
+    if (act === "daytrip") dayTripChoice.set(id, Number(v));
+    update();
+    const again = document.querySelector(`#t-${id} [data-act="${act}"]${act === "open" ? "" : `[data-v="${act === "daytrip" ? (Number(v) >= 0 ? v : dayTripIndexAfterRemove(b)) : v}"]`}`);
+    if (again) again.focus({ preventScroll: true });
   });
+}
+
+// After removing a day trip, focus stays on the same card's button.
+function dayTripIndexAfterRemove(button) {
+  const cards = [...button.closest(".daytrips").children];
+  return cards.indexOf(button.closest(".daytrip"));
 }
 
 setupControls();

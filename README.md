@@ -19,16 +19,21 @@ Everything is in one file, `index.html`, so it works however it's opened (double
 | Section | What it does |
 |---|---|
 | `<style>` | The design: departures-board header, ticket-style results, light and dark themes |
-| City data `<script>` | Costs, month-by-month scores, itineraries and tips for 16 cities |
+| City data `<script>` | 49 cities: costs, month-by-month scores, 3-day itineraries, 2–4 nearby day trips each, and tips |
 | App `<script>` | Estimates costs, ranks destinations, and updates the board and tickets as you change settings |
 
-**How costs are estimated:** round-trip transport is based on distance (train/bus under 600 km, budget flight over), plus hostel nights, food, and local transport and sights. Lodging and transport are adjusted for how busy the chosen month is.
+**How costs are estimated:** hostel nights, food, local transport and sights, plus round-trip travel. Travel options are estimated from distance:
+- **Bus** and **train** for places reachable over land (not islands; no train where rail links are poor), limited to about 3 hours each way per day of the trip
+- **Boat** on real ferry routes between cities in the list (e.g. Barcelona–Palma, Stockholm–Tallinn); overnight ferries are allowed on trips of 3+ days
+- **Flight** for anything 250 km or more, including airport transfers
 
-**How trips are ranked:** 45% interest match + 35% how good the month is + 20% how much budget is left over.
+By default the app picks the best mix of price and travel time; you can switch options for any trip. Adding a day trip swaps it in for your last city day and adds its travel and entry cost. Lodging and travel prices are adjusted for how busy the chosen month is.
+
+**How trips are ranked:** 45% interest match (interests you can only get on a day trip count a bit less) + 35% how good the month is + 20% how much budget is left over.
 
 ## Milestones
 - [x] Week 3: Idea set
-- [ ] Week 6: Working MVP (16 cities, cost estimates, calendar, itineraries: first version done)
+- [ ] Week 6: Working MVP (49 cities, 4 ways to travel, day trips, calendar and itineraries: first version done)
 - [ ] Week 10: Peer user testing
 - [ ] Week 12: Final product
 - [ ] Week 13: Final presentation
