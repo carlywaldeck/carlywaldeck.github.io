@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Weekender · Budget trips for study-abroad students</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="hero">
+    <h1>Weekender</h1>
+    <p>Tell us your budget and when you're free. We'll tell you where to go, when it's best, and what to do there.</p>
+  </header>
+
+  <main>
+    <form id="trip-form" class="card">
+      <div class="field">
+        <label for="home">I'm studying in</label>
+        <select id="home"></select>
+      </div>
+      <div class="field">
+        <label for="budget">Budget per person (€)</label>
+        <input id="budget" type="number" min="50" max="3000" step="10" value="300">
+      </div>
+      <div class="field">
+        <label for="days">Trip length</label>
+        <select id="days">
+          <option value="2">2 days</option>
+          <option value="3" selected>3 days</option>
+          <option value="4">4 days</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="month">Month</label>
+        <select id="month"></select>
+      </div>
+      <fieldset class="field interests">
+        <legend>I'm into…</legend>
+        <div id="interest-list"></div>
+      </fieldset>
+      <button type="submit">Find trips</button>
+    </form>
+
+    <section id="results" aria-live="polite"></section>
+  </main>
+
+  <footer>
+    All prices are rough estimates for budget travelers (hostel dorms, cheap eats, public transit).
+    Always check live prices before booking.
+  </footer>
+
+  <script src="data/cities.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
