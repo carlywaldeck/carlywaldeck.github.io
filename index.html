@@ -9,24 +9,27 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
 <style>
-/* Dark, cinematic theme (single theme by design). */
+/* Daylight theme (single theme by design). */
 :root {
-  color-scheme: dark;
-  --space: #04050A;
-  --bg: #0B0D14;
-  --glass: rgba(14, 17, 27, 0.72);
-  --glass-strong: rgba(12, 14, 22, 0.94);
-  --soft: rgba(255, 255, 255, 0.05);
-  --ink: #EEF0F5;
-  --muted: #8C93A6;
-  --line: rgba(255, 255, 255, 0.09);
-  --accent: #D4FF3F;
-  --accent-ink: #0A0B0D;
-  --accent-soft: rgba(212, 255, 63, 0.12);
-  --good: #D4FF3F; --good-soft: rgba(212, 255, 63, 0.12);
-  --mid: #FFC857;  --mid-soft: rgba(255, 200, 87, 0.12);
-  --warn: #FF6B8B; --warn-soft: rgba(255, 107, 139, 0.13);
-  --s2: #26304A; --s3: #3E5387; --s4: #7B93D6;
+  color-scheme: light;
+  --space: #EEF4FB;
+  --bg: #FFFFFF;
+  --glass: rgba(255, 255, 255, 0.78);
+  --glass-strong: rgba(255, 255, 255, 0.96);
+  --soft: rgba(19, 35, 63, 0.045);
+  --ink: #13233F;
+  --muted: #5D6B85;
+  --line: rgba(19, 35, 63, 0.10);
+  --hover-line: rgba(19, 35, 63, 0.28);
+  --accent: #FF6A4D;
+  --accent-ink: #FFFFFF;
+  --accent-soft: rgba(255, 106, 77, 0.11);
+  --good: #0B8A7C; --good-soft: rgba(14, 159, 142, 0.12);
+  --mid: #B7770A;  --mid-soft: rgba(230, 154, 18, 0.14);
+  --warn: #C73558; --warn-soft: rgba(224, 71, 107, 0.12);
+  --dot-good: #12A594; --dot-mid: #EFA21C; --dot-warn: #E8527A;
+  --s2: #D6E4F7; --s3: #9DBCE6; --s4: #4F82C9;
+  --shadow: 0 10px 40px rgba(30, 60, 110, 0.12), 0 1px 3px rgba(30, 60, 110, 0.08);
   --display: "Unbounded", "Geist", system-ui, sans-serif;
   --sans: "Geist", "Helvetica Neue", "Segoe UI", system-ui, sans-serif;
   --mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
@@ -41,7 +44,7 @@ button { cursor: pointer; }
 h1, h2, h3, h4 { margin: 0; font-weight: 600; text-wrap: balance; }
 .num { font-family: var(--mono); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
 .eyebrow { font: 500 11px/1.3 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
-.glass { background: var(--glass); backdrop-filter: blur(18px) saturate(1.3); -webkit-backdrop-filter: blur(18px) saturate(1.3); border: 1px solid var(--line); }
+.glass { background: var(--glass); backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4); border: 1px solid rgba(255, 255, 255, 0.7); box-shadow: var(--shadow); }
 
 /* ---------- Stage ---------- */
 #stage { position: fixed; inset: 0; }
@@ -66,13 +69,13 @@ select {
   background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
   background-position: calc(100% - 14px) 55%, calc(100% - 10px) 55%; background-size: 4px 4px; background-repeat: no-repeat;
 }
-select option, select optgroup { background: #12151F; color: var(--ink); }
+select option, select optgroup { background: #FFFFFF; color: var(--ink); }
 .field.budget input { width: 150px; accent-color: var(--accent); margin: 6px 0 4px; }
 .seg { display: flex; background: var(--soft); border: 1px solid var(--line); border-radius: 9px; padding: 2px; }
 .seg .pick { border: 0; background: none; width: 32px; padding: 4px 0; border-radius: 7px; font-weight: 500; color: var(--muted); }
 .seg .pick[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
 .bar-btn { margin-left: auto; border: 1px solid var(--line); background: var(--soft); border-radius: 10px; padding: 8px 14px; font-weight: 500; white-space: nowrap; }
-.bar-btn:hover, .bar-btn[aria-expanded="true"] { border-color: rgba(255,255,255,.3); }
+.bar-btn:hover, .bar-btn[aria-expanded="true"] { border-color: var(--hover-line); }
 .bar-btn i { font-style: normal; font: 500 11px var(--mono); background: var(--accent); color: var(--accent-ink); border-radius: 999px; padding: 1px 6px; margin-left: 6px; }
 .bar-btn i:empty { display: none; }
 #settings-btn { display: none; }
@@ -84,7 +87,7 @@ select option, select optgroup { background: #12151F; color: var(--ink); }
 .popover h3 { font-size: 12px; font-weight: 500; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 8px; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip { border: 1px solid var(--line); background: var(--soft); border-radius: 999px; padding: 5px 11px; font-size: 13px; }
-.chip:hover { border-color: rgba(255,255,255,.3); }
+.chip:hover { border-color: var(--hover-line); }
 .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
 
 /* ---------- Trip panel ---------- */
@@ -97,7 +100,7 @@ select option, select optgroup { background: #12151F; color: var(--ink); }
 .panel-head p { margin: 0; font-size: 13px; color: var(--muted); }
 .sort { display: flex; gap: 4px; margin-top: 8px; }
 .sort .pick { border: 1px solid var(--line); background: none; border-radius: 8px; padding: 4px 10px; font-size: 12px; color: var(--muted); }
-.sort .pick[aria-pressed="true"] { color: var(--ink); border-color: rgba(255,255,255,.35); }
+.sort .pick[aria-pressed="true"] { color: var(--ink); border-color: var(--hover-line); }
 .panel-list { overflow-y: auto; padding: 6px 8px 14px; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
 .group { display: flex; justify-content: space-between; font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding: 14px 10px 6px; }
 .group span { font-family: var(--mono); letter-spacing: 0; }
@@ -106,13 +109,15 @@ select option, select optgroup { background: #12151F; color: var(--ink); }
   text-align: left; border: 0; background: none; border-radius: 10px; padding: 9px 10px; transition: background .12s;
 }
 .row:hover, .row.hover { background: var(--soft); }
-.row.active { background: rgba(212, 255, 63, 0.08); box-shadow: inset 0 0 0 1px rgba(212, 255, 63, 0.35); }
-.row .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--good); box-shadow: 0 0 8px currentColor; color: var(--good); }
-.row.mid .dot { background: var(--mid); color: var(--mid); } .row.warn .dot { background: var(--warn); color: var(--warn); }
+.row.active { background: var(--accent-soft); box-shadow: inset 0 0 0 1px rgba(255, 106, 77, 0.45); }
+.row .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--dot-good); }
+.row.mid .dot { background: var(--dot-mid); } .row.warn .dot { background: var(--dot-warn); }
 .row-main { min-width: 0; display: grid; }
 .row-main strong { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .row-main small { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .row-price { font-size: 14px; }
+.row.good, .row.mid, .row.warn { color: var(--ink); }
+.row.good .row-price { color: var(--good); } .row.mid .row-price { color: var(--mid); } .row.warn .row-price { color: var(--warn); }
 .empty { padding: 16px 10px; color: var(--muted); }
 
 /* ---------- Spotlight card ---------- */
@@ -124,15 +129,16 @@ select option, select optgroup { background: #12151F; color: var(--ink); }
 .good { color: var(--good); } .mid { color: var(--mid); } .warn { color: var(--warn); }
 .spot-meta { margin: 0; font-size: 13px; color: var(--muted); }
 .cta { margin-top: 12px; border: 0; border-radius: 11px; padding: 11px; background: var(--accent); color: var(--accent-ink); font-weight: 600; }
-.cta:hover { filter: brightness(1.08); }
+.cta:hover { filter: brightness(1.05); }
+.cta { box-shadow: 0 6px 18px rgba(255, 106, 77, 0.35); }
 .x { position: absolute; top: 10px; right: 12px; border: 0; background: none; color: var(--muted); font-size: 22px; line-height: 1; }
 .x:hover { color: var(--ink); }
 
 /* ---------- Map controls ---------- */
 .hud { position: fixed; z-index: 3; bottom: 16px; left: 50%; transform: translateX(calc(-50% - min(200px, 17vw))); display: flex; gap: 6px; }
-.hud button { border: 1px solid var(--line); background: var(--glass); backdrop-filter: blur(12px); border-radius: 10px; min-width: 38px; height: 36px; padding: 0 12px; font-weight: 500; }
-.hud button:hover { border-color: rgba(255,255,255,.3); }
-.legend { position: fixed; z-index: 3; left: 16px; top: calc(env(safe-area-inset-top, 0px) + 96px); display: grid; gap: 4px; font-size: 12px; color: var(--muted); }
+.hud button { border: 1px solid rgba(255,255,255,.7); background: var(--glass); box-shadow: var(--shadow); color: var(--ink); backdrop-filter: blur(12px); border-radius: 10px; min-width: 38px; height: 36px; padding: 0 12px; font-weight: 500; }
+.hud button:hover { border-color: var(--hover-line); }
+.legend { position: fixed; z-index: 3; left: 16px; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,.6); backdrop-filter: blur(10px); top: calc(env(safe-area-inset-top, 0px) + 96px); display: grid; gap: 4px; font-size: 12px; color: var(--muted); }
 .legend span { display: flex; align-items: center; gap: 8px; }
 .legend i { width: 7px; height: 7px; border-radius: 50%; }
 .legend i.l { width: 18px; height: 0; border-radius: 0; border-top: 1.5px solid var(--muted); }
@@ -141,7 +147,7 @@ select option, select optgroup { background: #12151F; color: var(--ink); }
 /* ---------- Plan drawer ---------- */
 .drawer {
   position: fixed; z-index: 8; top: 0; right: 0; bottom: 0; width: min(560px, 100vw); overflow-y: auto;
-  background: var(--glass-strong); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-left: 1px solid var(--line);
+  background: var(--glass-strong); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-left: 1px solid var(--line); box-shadow: -20px 0 60px rgba(30, 60, 110, 0.15);
   padding: calc(env(safe-area-inset-top, 0px) + 28px) 28px calc(env(safe-area-inset-bottom, 0px) + 40px);
   animation: slide .35s cubic-bezier(.2, .8, .2, 1);
 }
@@ -158,7 +164,7 @@ select option, select optgroup { background: #12151F; color: var(--ink); }
 .costbar { position: relative; display: flex; height: 6px; border-radius: 3px; background: var(--soft); margin: 28px 0 16px; }
 .costbar span { height: 100%; }
 .costbar span:first-child { border-radius: 3px 0 0 3px; }
-.c1 { background: var(--accent); } .c2 { background: #9FB4FF; } .c3 { background: #6C7FC4; } .c4 { background: #3E4C7E; } .c5 { background: #FFC857; }
+.c1 { background: var(--accent); } .c2 { background: #4F82C9; } .c3 { background: #9DBCE6; } .c4 { background: #D6E4F7; } .c5 { background: var(--dot-mid); }
 .budget-mark { position: absolute; top: -22px; bottom: -5px; width: 0; border-left: 1.5px solid var(--ink); }
 .budget-mark b { position: absolute; top: 0; right: 5px; white-space: nowrap; font: 500 11px/1 var(--mono); color: var(--muted); }
 .budget-mark.flip b { right: auto; left: 5px; }
@@ -169,9 +175,9 @@ select option, select optgroup { background: #12151F; color: var(--ink); }
 .lines small { color: var(--muted); }
 .lines .total { border-top: 1px solid var(--line); padding-top: 11px; font-weight: 600; }
 .options { display: grid; gap: 6px; }
-.option { display: grid; grid-template-columns: 64px 1fr auto; align-items: center; gap: 10px; text-align: left; border: 1px solid var(--line); background: var(--soft); border-radius: 11px; padding: 11px 14px; }
+.option { display: grid; grid-template-columns: 64px 1fr auto; align-items: center; gap: 10px; text-align: left; border: 1px solid var(--line); background: #FFFFFF; border-radius: 11px; padding: 11px 14px; }
 .option strong { font-weight: 600; }
-.option:not(:disabled):hover { border-color: rgba(255,255,255,.3); }
+.option:not(:disabled):hover { border-color: var(--hover-line); }
 .option:disabled { cursor: not-allowed; opacity: .4; }
 .option span:nth-child(2) { color: var(--muted); font-size: 13px; }
 .option[aria-checked="true"] { border-color: var(--accent); background: var(--accent-soft); }
@@ -180,7 +186,7 @@ select option, select optgroup { background: #12151F; color: var(--ink); }
 .live { font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--accent-ink); background: var(--accent); border-radius: 4px; padding: 2px 5px; vertical-align: 2px; }
 .chart { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; align-items: end; height: 90px; }
 .chart .bar { border-radius: 3px 3px 0 0; min-height: 6px; }
-.bar.good { background: var(--good); } .bar.mid { background: var(--mid); } .bar.warn { background: var(--warn); }
+.bar.good { background: var(--dot-good); } .bar.mid { background: var(--dot-mid); } .bar.warn { background: var(--dot-warn); }
 .bar.sel { outline: 1.5px solid var(--ink); outline-offset: 2px; }
 .chart-x { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; margin-top: 6px; font: 400 11px/1 var(--mono); color: var(--muted); text-align: center; }
 .chart-x .sel { color: var(--ink); }
@@ -188,8 +194,8 @@ select option, select optgroup { background: #12151F; color: var(--ink); }
 .chart-key i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; }
 .best { margin: 0 0 16px; color: var(--muted); }
 .days, .daytrips { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
-.day, .daytrip { border: 1px solid var(--line); background: var(--soft); border-radius: 14px; padding: 16px; }
-.trip-day { border-color: rgba(212, 255, 63, .4); }
+.day, .daytrip { border: 1px solid var(--line); background: #FFFFFF; border-radius: 14px; padding: 16px; }
+.trip-day { border-color: rgba(14, 159, 142, .45); }
 .day-head, .dt-head { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; margin-bottom: 10px; }
 .day-head strong, .dt-head strong { font-weight: 600; }
 .day-head .num, .dt-head .num { font-size: 13px; color: var(--muted); }
@@ -208,9 +214,9 @@ select option, select optgroup { background: #12151F; color: var(--ink); }
 .dt-tags .tag { font-size: 11px; padding: 2px 8px; }
 .dt-tags .tag.hit { background: var(--accent-soft); color: var(--accent); }
 .dt-btn { margin-top: 6px; border: 1px solid var(--line); background: none; border-radius: 9px; padding: 8px 10px; font-weight: 500; font-size: 13px; }
-.dt-btn:hover { border-color: rgba(255,255,255,.3); }
+.dt-btn:hover { border-color: var(--hover-line); }
 .dt-btn[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
-.tips { margin: 0; padding-left: 18px; display: grid; gap: 6px; color: #C9CEDA; }
+.tips { margin: 0; padding-left: 18px; display: grid; gap: 6px; color: var(--ink); }
 .links { display: flex; flex-wrap: wrap; gap: 8px; }
 .links a { text-decoration: none; font-weight: 500; font-size: 13px; color: var(--ink); border: 1px solid var(--line); border-radius: 999px; padding: 6px 13px; }
 .links a:hover { border-color: var(--accent); color: var(--accent); }
@@ -415,9 +421,9 @@ select option, select optgroup { background: #12151F; color: var(--ink); }
 </div>
 
 <div class="legend" aria-hidden="true">
-  <span><i style="background:var(--good)"></i>Well under budget</span>
-  <span><i style="background:var(--mid)"></i>Near budget</span>
-  <span><i style="background:var(--warn)"></i>A little over</span>
+  <span><i style="background:var(--dot-good)"></i>Well under budget</span>
+  <span><i style="background:var(--dot-mid)"></i>Near budget</span>
+  <span><i style="background:var(--dot-warn)"></i>A little over</span>
   <span><i class="l"></i>Train</span>
   <span><i class="l dot"></i>Bus</span>
   <span><i class="l dash"></i>Flight / boat</span>
@@ -3188,7 +3194,8 @@ const G = {
 };
 let projection, baseCtx, fxCtx, pathFast, pathDetail, fxPath, graticule;
 const reduceMotion = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-const TONE_COLORS = { good: "#D4FF3F", mid: "#FFC857", warn: "#FF6B8B" };
+const TONE_COLORS = { good: "#12A594", mid: "#EFA21C", warn: "#E8527A" };
+const LABEL_COLORS = { good: "#0B8A7C", mid: "#B7770A", warn: "#C73558" };
 const globeDirty = () => { G.dirty = true; };
 
 function globeInit() {
@@ -3279,16 +3286,15 @@ const clampScale = (s) => Math.max(globeFullScale() * 0.5, Math.min(s, globeFull
 function zoomBy(f) { flyTo(G.rot, clampScale(G.scale * f), 500); }
 
 function drawStars() {
+  // Daylight sky: a soft bright glow behind the globe fading to pale blue.
   const c = $("#stars"), ctx = c.getContext("2d");
   ctx.setTransform(G.dpr, 0, 0, G.dpr, 0, 0);
-  ctx.clearRect(0, 0, G.W, G.H);
-  let seed = 7;
-  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-  for (let i = 0; i < Math.round(G.W * G.H / 2600); i++) {
-    const r = rnd() < 0.92 ? 0.6 : 1.1;
-    ctx.fillStyle = `rgba(210,220,255,${0.15 + rnd() * 0.55})`;
-    ctx.beginPath(); ctx.arc(rnd() * G.W, rnd() * G.H, r, 0, 7); ctx.fill();
-  }
+  const sky = ctx.createRadialGradient(G.cx, G.cy, 0, G.cx, G.cy, Math.max(G.W, G.H) * 0.75);
+  sky.addColorStop(0, "#FFFFFF");
+  sky.addColorStop(0.55, "#EEF4FB");
+  sky.addColorStop(1, "#DCE8F6");
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, G.W, G.H);
 }
 
 // ---- camera
@@ -3381,35 +3387,35 @@ function drawBase() {
 
   // atmosphere glow
   const glow = ctx.createRadialGradient(G.cx, G.cy, r * 0.96, G.cx, G.cy, r * 1.22);
-  glow.addColorStop(0, "rgba(110,160,255,0.28)");
-  glow.addColorStop(0.35, "rgba(90,130,255,0.10)");
-  glow.addColorStop(1, "rgba(80,120,255,0)");
+  glow.addColorStop(0, "rgba(120,175,235,0.45)");
+  glow.addColorStop(0.35, "rgba(140,190,240,0.18)");
+  glow.addColorStop(1, "rgba(160,200,245,0)");
   ctx.fillStyle = glow;
   ctx.beginPath(); ctx.arc(G.cx, G.cy, r * 1.22, 0, 7); ctx.fill();
 
   // ocean, lit from the upper left
   const ocean = ctx.createRadialGradient(G.cx - r * 0.35, G.cy - r * 0.4, r * 0.1, G.cx, G.cy, r);
-  ocean.addColorStop(0, "#132544");
-  ocean.addColorStop(1, "#060B17");
+  ocean.addColorStop(0, "#9CCAF0");
+  ocean.addColorStop(1, "#3D7CC9");
   ctx.fillStyle = ocean;
   ctx.beginPath(); ctx.arc(G.cx, G.cy, r, 0, 7); ctx.fill();
 
   ctx.beginPath(); pathFast(graticule);
-  ctx.strokeStyle = "rgba(170,195,255,0.06)"; ctx.lineWidth = 0.6; ctx.stroke();
+  ctx.strokeStyle = "rgba(255,255,255,0.22)"; ctx.lineWidth = 0.6; ctx.stroke();
 
   const land = moving ? GEO.land110 : GEO.land50;
   ctx.beginPath(); (moving ? pathFast : pathDetail)(land);
-  ctx.fillStyle = "#222E47"; ctx.fill();
-  ctx.strokeStyle = "rgba(160,190,255,0.35)"; ctx.lineWidth = 0.7; ctx.stroke();
+  ctx.fillStyle = "#F7F3EA"; ctx.fill();
+  ctx.strokeStyle = "rgba(40,80,140,0.45)"; ctx.lineWidth = 0.7; ctx.stroke();
   if (!moving) {
     ctx.beginPath(); pathDetail(GEO.borders50);
-    ctx.strokeStyle = "rgba(200,215,255,0.13)"; ctx.lineWidth = 0.5; ctx.stroke();
+    ctx.strokeStyle = "rgba(40,80,140,0.18)"; ctx.lineWidth = 0.5; ctx.stroke();
   }
 
   // limb shading for depth
   const limb = ctx.createRadialGradient(G.cx, G.cy, r * 0.55, G.cx, G.cy, r);
-  limb.addColorStop(0, "rgba(0,0,0,0)");
-  limb.addColorStop(1, "rgba(0,0,8,0.55)");
+  limb.addColorStop(0, "rgba(20,50,110,0)");
+  limb.addColorStop(1, "rgba(20,50,110,0.28)");
   ctx.fillStyle = limb;
   ctx.beginPath(); ctx.arc(G.cx, G.cy, r, 0, 7); ctx.fill();
 }
@@ -3460,9 +3466,9 @@ function drawFx(now) {
     const col = TONE_COLORS[tone(t)];
     ctx.save();
     ctx.strokeStyle = col;
-    ctx.globalAlpha = isFocus ? 1 : focus ? 0.18 : 0.55;
-    ctx.lineWidth = isFocus ? 2.2 : 1.3;
-    ctx.shadowColor = col; ctx.shadowBlur = isFocus ? 14 : 6;
+    ctx.globalAlpha = isFocus ? 1 : focus ? 0.25 : 0.75;
+    ctx.lineWidth = isFocus ? 2.6 : 1.6;
+    ctx.shadowColor = col; ctx.shadowBlur = isFocus ? 8 : 3;
     ctx.setLineDash(mode === "bus" ? [1.5, 5] : mode === "train" ? [] : [7, 6]);
     ctx.lineDashOffset = -time * 24;
     for (let s = 0; s < chain.length - 1; s++) {
@@ -3474,7 +3480,7 @@ function drawFx(now) {
       if ((isFocus || i < 5) && !reduceMotion && s === chain.length - 2) {
         const k = Math.floor(((time * 0.35 + i * 0.13) % 1) * (arc.length - 1));
         const p = arc[k];
-        if (p) { ctx.setLineDash([]); ctx.fillStyle = "#FFFFFF"; ctx.globalAlpha = isFocus ? 1 : 0.8;
+        if (p) { ctx.setLineDash([]); ctx.shadowColor = "rgba(20,40,80,.5)"; ctx.shadowBlur = 4; ctx.fillStyle = "#FFFFFF"; ctx.globalAlpha = isFocus ? 1 : 0.8;
           ctx.beginPath(); ctx.arc(p[0], p[1], isFocus ? 2.6 : 1.8, 0, 7); ctx.fill(); }
       }
     }
@@ -3497,11 +3503,12 @@ function drawFx(now) {
       ctx.strokeStyle = col; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(sx, sy, 3, 0, 7); ctx.stroke(); } });
     const r = isFocus ? 6.5 : i < 10 ? 4.5 : 3;
     ctx.save();
-    ctx.shadowColor = col; ctx.shadowBlur = isFocus ? 18 : 8;
+    ctx.shadowColor = "rgba(20,40,80,0.35)"; ctx.shadowBlur = isFocus ? 8 : 4;
     ctx.fillStyle = col; ctx.globalAlpha = t.over && !isFocus ? 0.7 : 1;
     ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill();
     ctx.restore();
-    if (isFocus) { ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, r + 4, 0, 7); ctx.stroke(); }
+    ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.stroke();
+    if (isFocus) { ctx.strokeStyle = "#13233F"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, r + 4, 0, 7); ctx.stroke(); }
     G.markers.push({ id: t.dest.id, x, y });
     if (i < 6 || isFocus) labels.push({ t, x, y, isFocus, i });
   });
@@ -3511,10 +3518,11 @@ function drawFx(now) {
     const [hx, hy] = projection(homeP);
     for (let k = 0; k < 2; k++) {
       const ph = reduceMotion ? 0.4 : (time * 0.6 + k * 0.5) % 1;
-      ctx.strokeStyle = `rgba(255,255,255,${0.55 * (1 - ph)})`; ctx.lineWidth = 1.2;
+      ctx.strokeStyle = `rgba(19,35,63,${0.6 * (1 - ph)})`; ctx.lineWidth = 1.2;
       ctx.beginPath(); ctx.arc(hx, hy, 6 + ph * 18, 0, 7); ctx.stroke();
     }
-    ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(hx, hy, 5, 0, 7); ctx.fill();
+    ctx.fillStyle = "#13233F"; ctx.beginPath(); ctx.arc(hx, hy, 5.5, 0, 7); ctx.fill();
+    ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 2; ctx.stroke();
     labels.push({ home: true, x: hx, y: hy });
   }
 
@@ -3533,11 +3541,12 @@ function drawFx(now) {
     const box = [bx, by, bx + bw, by + bh];
     if (!l.home && !l.isFocus && placed.some(b => !(box[2] < b[0] || box[0] > b[2] || box[3] < b[1] || box[1] > b[3]))) continue;
     placed.push(box);
-    ctx.fillStyle = l.isFocus || l.home ? "rgba(10,12,20,0.85)" : "rgba(10,12,20,0.6)";
-    roundRect(ctx, bx, by, bw, bh, 6); ctx.fill();
+    ctx.fillStyle = l.isFocus || l.home ? "rgba(255,255,255,0.97)" : "rgba(255,255,255,0.85)";
+    ctx.shadowColor = "rgba(20,40,80,0.18)"; ctx.shadowBlur = 6;
+    roundRect(ctx, bx, by, bw, bh, 6); ctx.fill(); ctx.shadowBlur = 0;
     ctx.font = `600 ${l.home ? 13 : 12}px Geist, system-ui, sans-serif`;
-    ctx.fillStyle = "#F2F4F8"; ctx.fillText(name, bx + 7, l.y + 1);
-    if (price) { ctx.font = "500 12px 'Geist Mono', ui-monospace, monospace"; ctx.fillStyle = TONE_COLORS[tone(l.t)]; ctx.fillText(price, bx + 7 + w1 + 8, l.y + 1); }
+    ctx.fillStyle = "#13233F"; ctx.fillText(name, bx + 7, l.y + 1);
+    if (price) { ctx.font = "500 12px 'Geist Mono', ui-monospace, monospace"; ctx.fillStyle = LABEL_COLORS[tone(l.t)]; ctx.fillText(price, bx + 7 + w1 + 8, l.y + 1); }
   }
 }
 
