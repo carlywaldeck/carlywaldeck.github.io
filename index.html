@@ -6,328 +6,316 @@
 <title>Weekender</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Karla:wght@400;500;600;700&family=Courier+Prime:wght@400;700&family=Caveat:wght@500;700&display=swap">
 <style>
 :root {
-  --ground: #EAF2FF;
-  --surface: #FFFFFF;
-  --surface-2: #F3F7FF;
-  --ink: #17183B;
-  --muted: #565A85;
-  --line: #D5DDF0;
-  --border: #17183B;
-  --shadow-c: #17183B;
-  --sea: #2F6BFF;
-  --sea-deep: #1F4FD1;
-  --tile: #FFFFFF;
-  --tile-ink: #17183B;
-  --sun: #FFC933;
-  --sun-soft: #FFF1C2;
-  --orange: #FF6A3D;
-  --orange-ink: #FFFFFF;
-  --mint: #22C58B;
-  --mint-soft: #D4F7E8;
-  --pink: #FF7BAC;
-  --pink-soft: #FFE0EC;
-  --good: #0B8A57; --good-soft: #D4F7E8;
-  --mid: #9A6400;  --mid-soft: #FFF1C2;
-  --warn: #D13F1F; --warn-soft: #FFE1D8;
-  --s2: #C9D9FF; --s3: #8FB0FF; --s4: #4F82FF;
-  --display: "Fredoka", "Baloo 2", "Avenir Next Rounded", "Segoe UI", system-ui, sans-serif;
-  --body: "Nunito", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --paper: #F3EEE3;
+  --page: #FBF8F1;
+  --page-2: #F1EBDF;
+  --ink: #1E2640;
+  --ink-soft: #3A4466;
+  --pencil: #6E6758;
+  --rule: #DCD3C2;
+  --blue: #2C4F8F;
+  --blue-soft: #E1E7F2;
+  --red: #A83A2C;
+  --red-soft: #F4E0DA;
+  --green: #3C6E4E;
+  --green-soft: #DFEADF;
+  --ochre: #9A6B12;
+  --ochre-soft: #F3E7C9;
+  --s2: #D5DCEB; --s3: #A9B8D6; --s4: #6F86B5;
+  --shadow: 0 1px 1px rgba(60, 45, 20, .06), 0 6px 18px rgba(60, 45, 20, .08);
+  --grain: .05;
+  --serif: "Young Serif", "Iowan Old Style", Georgia, serif;
+  --sans: "Karla", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --type: "Courier Prime", "Courier New", ui-monospace, monospace;
+  --hand: "Caveat", "Bradley Hand", "Segoe Print", cursive;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --ground: #12132B; --surface: #1D1F42; --surface-2: #26294F; --ink: #F4F3FF; --muted: #A9ACD6;
-    --line: #34386A; --border: #555A96; --shadow-c: #06071A;
-    --sea: #2C5BE0; --sea-deep: #2249BE; --tile: #F4F3FF; --tile-ink: #17183B;
-    --sun-soft: #2F2C63; --mint-soft: #123A2E; --pink-soft: #43203A;
-    --good: #4BDDA4; --good-soft: #123A2E; --mid: #FFD466; --mid-soft: #3D3312; --warn: #FF8C6B; --warn-soft: #45211A;
-    --s2: #2A3A78; --s3: #3A58B8; --s4: #5C8AFF;
+    --paper: #1A1815; --page: #24211C; --page-2: #2C2822; --ink: #EDE6D6; --ink-soft: #CFC6B2; --pencil: #A89F8C; --rule: #3B362D;
+    --blue: #8FA9DD; --blue-soft: #28314A; --red: #E08A7A; --red-soft: #45261F; --green: #8CC39F; --green-soft: #213528;
+    --ochre: #E0B55A; --ochre-soft: #3D311A; --s2: #333B52; --s3: #4B5C88; --s4: #7F97CF;
+    --shadow: 0 1px 1px rgba(0, 0, 0, .3), 0 8px 20px rgba(0, 0, 0, .3); --grain: .08;
   }
 }
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --ground: #12132B; --surface: #1D1F42; --surface-2: #26294F; --ink: #F4F3FF; --muted: #A9ACD6;
-  --line: #34386A; --border: #555A96; --shadow-c: #06071A;
-  --sea: #2C5BE0; --sea-deep: #2249BE; --tile: #F4F3FF; --tile-ink: #17183B;
-  --sun-soft: #2F2C63; --mint-soft: #123A2E; --pink-soft: #43203A;
-  --good: #4BDDA4; --good-soft: #123A2E; --mid: #FFD466; --mid-soft: #3D3312; --warn: #FF8C6B; --warn-soft: #45211A;
-  --s2: #2A3A78; --s3: #3A58B8; --s4: #5C8AFF;
+  --paper: #1A1815; --page: #24211C; --page-2: #2C2822; --ink: #EDE6D6; --ink-soft: #CFC6B2; --pencil: #A89F8C; --rule: #3B362D;
+  --blue: #8FA9DD; --blue-soft: #28314A; --red: #E08A7A; --red-soft: #45261F; --green: #8CC39F; --green-soft: #213528;
+  --ochre: #E0B55A; --ochre-soft: #3D311A; --s2: #333B52; --s3: #4B5C88; --s4: #7F97CF;
+  --shadow: 0 1px 1px rgba(0, 0, 0, .3), 0 8px 20px rgba(0, 0, 0, .3); --grain: .08;
 }
 
 * { box-sizing: border-box; }
 body {
   margin: 0;
   padding-inline: 16px;
-  background: var(--ground);
+  background: var(--paper);
   color: var(--ink);
-  font: 500 16px/1.55 var(--body);
-  -webkit-font-smoothing: antialiased;
+  font: 400 17px/1.6 var(--sans);
+  position: relative;
 }
+/* Paper grain */
+body::before {
+  content: ""; position: fixed; inset: 0; pointer-events: none; opacity: var(--grain); z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .25 0 0 0 0 .15 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.wrap, footer { position: relative; z-index: 1; }
 button, select, input { font: inherit; color: inherit; }
 button { cursor: pointer; }
-:focus-visible { outline: 3px solid var(--sea); outline-offset: 2px; }
-h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; text-wrap: balance; margin: 0; }
-.wrap { max-width: 1180px; margin: 0 auto; padding-block: 24px 56px; }
-.num { font-family: var(--display); font-variant-numeric: tabular-nums; }
-.eyebrow { font: 800 12px/1.2 var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
-.sticker { background: var(--surface); border: 2px solid var(--border); border-radius: 22px; box-shadow: 4px 4px 0 var(--shadow-c); }
+:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+h1, h2, h3, h4 { font-family: var(--serif); font-weight: 400; text-wrap: balance; margin: 0; letter-spacing: -0.005em; }
+.wrap { max-width: 1160px; margin: 0 auto; padding-block: 32px 56px; }
+.num { font-family: var(--type); font-variant-numeric: tabular-nums; }
+.hand { font-family: var(--hand); font-weight: 600; }
+.eyebrow { font: 700 12px/1.2 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--pencil); }
+.page { background: var(--page); border-radius: 4px; box-shadow: var(--shadow); }
 
-/* ---------- Hero ---------- */
-.hero-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 20px; }
-.brand { font: 700 clamp(44px, 8vw, 76px)/0.95 var(--display); letter-spacing: -0.02em; color: var(--ink); }
-.brand span { color: var(--orange); }
-.tagline { margin: 10px 0 0; color: var(--muted); max-width: 52ch; font-size: 17px; }
-.tagline b { color: var(--ink); }
-.sun {
-  flex-shrink: 0; width: clamp(64px, 11vw, 112px); aspect-ratio: 1; max-width: 100%; border-radius: 50%;
-  background: var(--sun); border: 2px solid var(--border); box-shadow: 4px 4px 0 var(--shadow-c), 0 0 0 10px var(--sun-soft);
-  margin-right: 12px; animation: bob 5s ease-in-out infinite;
-}
-@keyframes bob { 50% { transform: translateY(-6px) rotate(8deg); } }
+/* ---------- Masthead ---------- */
+.masthead { display: grid; gap: 6px; max-width: 720px; }
+.masthead .hand { font-size: 26px; color: var(--red); transform: rotate(-2deg); transform-origin: left; margin: 0; }
+.masthead h1 { font-size: clamp(48px, 8vw, 84px); line-height: .95; }
+.tagline { margin: 10px 0 0; color: var(--ink-soft); max-width: 56ch; }
 
-/* ---------- Departures board ---------- */
-.board { background: var(--sea); color: #fff; padding: 20px clamp(16px, 3vw, 28px) 24px; }
-.board-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 16px; margin-bottom: 16px; }
-.board-top .eyebrow { color: #D6E2FF; }
-.board-top strong { font: 700 clamp(22px, 3vw, 30px)/1.1 var(--display); margin-left: 8px; }
-.board-note { font-size: 14px; font-weight: 700; color: #D6E2FF; }
-.brows { display: grid; gap: 8px; font: 600 clamp(15px, 2.1vw, 26px)/1 var(--display); }
-.brow, .bhead { display: flex; align-items: center; gap: clamp(8px, 1.6vw, 18px); }
-.bhead { padding-bottom: 2px; }
-.bhead small { font: 800 11px/1 var(--body); letter-spacing: .1em; color: #D6E2FF; }
-.bhead .g { width: calc(var(--w) * 1.05em + (var(--w) - 1) * 3px); }
-.brow {
-  background: var(--sea-deep); border: 0; padding: 6px; border-radius: 14px; text-align: left; color: var(--tile-ink);
-  transition: transform .15s, background .15s;
+/* ---------- Postcards ---------- */
+.picks-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; margin: 40px 0 16px; }
+.picks-head h2 { font-size: clamp(24px, 3vw, 30px); }
+.picks-head .hand { font-size: 22px; color: var(--pencil); }
+.underline {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='8' viewBox='0 0 120 8' preserveAspectRatio='none'%3E%3Cpath d='M1 5 Q 30 1 60 4 T 119 3' fill='none' stroke='%23A83A2C' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") bottom / 100% 8px no-repeat;
+  padding-bottom: 6px;
 }
-.brow:not(:disabled):hover { transform: translateX(4px); background: #183FAE; }
-.brow:disabled { cursor: default; opacity: .5; }
-.g { display: flex; gap: 3px; flex-shrink: 0; }
-.flap {
-  width: 1.05em; height: 1.45em; line-height: 1.45em; text-align: center;
-  background: var(--tile); border-radius: 6px; position: relative; overflow: hidden;
+.postcards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
+@media (max-width: 860px) { .postcards { grid-template-columns: minmax(0, 1fr); } }
+.postcard {
+  position: relative; text-align: left; border: 0; padding: 22px 22px 20px; min-height: 210px;
+  display: flex; flex-direction: column; gap: 6px; transition: transform .2s ease, box-shadow .2s ease;
+  background-image: linear-gradient(var(--rule), var(--rule)); background-size: 1px 55%; background-position: 62% 60%; background-repeat: no-repeat;
 }
-.flap::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: rgba(23, 24, 59, .12); }
-.fare .flap { background: var(--sun); color: #17183B; }
-.flap.blank, .fare .flap.blank { background: rgba(255, 255, 255, .14); }
-.flap.blank::after { display: none; }
-.flap.flip { animation: flip .3s ease-out both; }
-@keyframes flip { 0% { transform: rotateX(90deg); } 100% { transform: rotateX(0); } }
-.col-via, .col-remark { font: 800 14px/1 var(--body); }
-.col-via { width: 64px; color: #fff; }
-.col-remark { width: 130px; }
-.brow .col-remark { padding: 7px 12px; border-radius: 999px; background: #fff; color: #17183B; text-align: center; }
-.brow .col-remark.good { background: var(--mint); color: #0A3A28; }
-.brow .col-remark.mid { background: var(--sun); color: #3D2A00; }
-.brow .col-remark.warn { background: var(--pink); color: #4A0D26; }
-.brow .col-remark.stretch { background: #C9D6FF; color: #17183B; }
-.brow .col-remark:empty { background: none; }
-@media (max-width: 700px) { .col-via, .col-remark { display: none; } }
-@media (prefers-reduced-motion: reduce) { .flap.flip, .sun { animation: none; } }
+.postcard:nth-child(1) { transform: rotate(-1deg); }
+.postcard:nth-child(2) { transform: rotate(.6deg); }
+.postcard:nth-child(3) { transform: rotate(-.4deg); }
+.postcard:hover { transform: rotate(0) translateY(-3px); box-shadow: 0 2px 2px rgba(60, 45, 20, .08), 0 14px 30px rgba(60, 45, 20, .14); }
+.postcard .rank { font-family: var(--hand); font-size: 22px; color: var(--pencil); line-height: 1; }
+.postcard h3 { font-size: 30px; line-height: 1.1; max-width: 58%; }
+.postcard .country { color: var(--pencil); font-size: 15px; }
+.postcard .pc-price { margin-top: auto; font: 700 26px/1 var(--type); }
+.postcard .pc-note { font: 600 21px/1.1 var(--hand); }
+.postcard .pc-note.good { color: var(--green); } .postcard .pc-note.mid { color: var(--ochre); } .postcard .pc-note.warn { color: var(--red); }
+.postcard .pc-meta { font-size: 14px; color: var(--pencil); }
+.postcard .stamp { position: absolute; top: 18px; right: 18px; }
+.postmark {
+  position: absolute; top: 70px; right: 76px; width: 74px; height: 74px; border-radius: 50%;
+  border: 1.5px solid var(--ink-soft); opacity: .45; transform: rotate(-14deg);
+  display: grid; place-items: center; text-align: center; font: 700 10px/1.2 var(--type); letter-spacing: .06em; color: var(--ink-soft);
+}
+.postmark::before, .postmark::after { content: ""; position: absolute; left: -26px; right: -26px; height: 0; border-top: 1.5px solid var(--ink-soft); }
+.postmark::before { top: 30px; } .postmark::after { top: 38px; }
+
+/* ---------- Stamps ---------- */
+.stamp {
+  width: 74px; height: 88px; padding: 7px 6px; background: var(--blue); color: var(--page);
+  border: 4px dotted var(--page); outline: 1px solid var(--rule);
+  display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center;
+  font-family: var(--type); flex-shrink: 0;
+}
+.stamp b { font-size: 21px; letter-spacing: .04em; line-height: 1; }
+.stamp small { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+.stamp.good { background: var(--green); } .stamp.mid { background: var(--blue); } .stamp.warn { background: var(--red); }
 
 /* ---------- Layout ---------- */
-.layout { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 28px; margin-top: 28px; align-items: start; }
+.layout { display: grid; grid-template-columns: 330px minmax(0, 1fr); gap: 32px; margin-top: 48px; align-items: start; }
 @media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr); } }
 
 /* ---------- Controls ---------- */
-.panel { padding: 22px; display: grid; gap: 22px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); }
+.panel { padding: 24px; display: grid; gap: 22px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); }
 @media (max-width: 900px) { .panel { position: static; } }
 .panel h2 { font-size: 26px; }
+.panel h2 + .hand { font-size: 19px; color: var(--pencil); margin: -18px 0 0; }
 .ctl { display: grid; gap: 10px; }
 .ctl-head { display: flex; justify-content: space-between; align-items: baseline; }
-.ctl-head strong { font: 700 24px/1 var(--display); color: var(--orange); }
+.ctl-head strong { font: 700 22px/1 var(--type); }
 select {
-  appearance: none; width: 100%; padding: 12px 40px 12px 14px; border-radius: 14px;
-  border: 2px solid var(--border); background: var(--surface-2); font-weight: 800;
+  appearance: none; width: 100%; padding: 10px 36px 10px 2px; border: 0; border-bottom: 1.5px solid var(--ink);
+  border-radius: 0; background: transparent; font: 400 22px var(--serif);
   background-image: linear-gradient(45deg, transparent 50%, var(--ink) 50%), linear-gradient(135deg, var(--ink) 50%, transparent 50%);
-  background-position: calc(100% - 20px) 55%, calc(100% - 14px) 55%;
+  background-position: calc(100% - 14px) 55%, calc(100% - 8px) 55%;
   background-size: 6px 6px; background-repeat: no-repeat;
 }
-input[type="range"] { width: 100%; accent-color: var(--orange); margin: 0; height: 24px; }
-.range-scale { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: var(--muted); }
-.seg-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.months { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+select option, select optgroup { background: var(--page); color: var(--ink); font: 16px var(--sans); }
+input[type="range"] { width: 100%; accent-color: var(--ink); margin: 0; }
+.range-scale { display: flex; justify-content: space-between; font: 400 13px var(--type); color: var(--pencil); }
+.seg-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.months { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; }
 .pick, .chip {
-  border: 2px solid var(--line); background: var(--surface-2); font-weight: 800; font-size: 14px;
-  transition: transform .12s, background .12s, border-color .12s;
+  border: 1px solid var(--rule); background: transparent; font-size: 15px; font-weight: 600;
+  transition: background .15s, color .15s, border-color .15s;
 }
-.pick { border-radius: 12px; padding: 9px 4px; }
-.chip { border-radius: 999px; padding: 7px 13px; }
-.pick:hover, .chip:hover { border-color: var(--border); transform: translateY(-1px); }
-.pick[aria-pressed="true"] { background: var(--orange); border-color: var(--border); color: var(--orange-ink); box-shadow: 2px 2px 0 var(--shadow-c); }
-.chip[aria-pressed="true"] { background: var(--sun); border-color: var(--border); color: #17183B; box-shadow: 2px 2px 0 var(--shadow-c); }
-.chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.pick { border-radius: 6px; padding: 8px 2px; }
+.chip { border-radius: 999px; padding: 5px 12px; }
+.pick:hover, .chip:hover { border-color: var(--ink-soft); }
+.pick[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--page); }
+.chip[aria-pressed="true"] { background: var(--blue-soft); border-color: var(--blue); color: var(--blue); }
+.chip[aria-pressed="true"]::before { content: "✓ "; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
 
 /* ---------- Results ---------- */
-.results-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 16px; margin: 4px 2px 18px; }
-.results-head h2 { font-size: clamp(28px, 3.4vw, 38px); }
-.results-head p { margin: 0; color: var(--muted); font-weight: 700; }
-.list { display: grid; gap: 20px; }
-.divider { display: flex; align-items: center; gap: 12px; margin: 18px 2px 2px; }
-.divider::after { content: ""; flex: 1; height: 2px; background: var(--line); border-radius: 2px; }
-.empty { padding: 28px; font-weight: 700; color: var(--muted); }
+.results-head { display: grid; gap: 2px; margin: 0 2px 20px; }
+.results-head h2 { font-size: clamp(30px, 3.6vw, 40px); }
+.results-head p { margin: 0; color: var(--pencil); }
+.list { display: grid; gap: 22px; }
+.divider { display: flex; align-items: center; gap: 12px; margin: 16px 2px 0; }
+.divider::after { content: ""; flex: 1; border-top: 1px dashed var(--rule); }
+.empty { padding: 28px; color: var(--pencil); }
 
-/* ---------- Ticket ---------- */
-.ticket { display: grid; grid-template-columns: minmax(0, 1fr) 200px; overflow: hidden; scroll-margin-top: 16px; }
-.ticket.stretch { box-shadow: 4px 4px 0 var(--line); border-color: var(--line); }
-.t-main { padding: 20px 22px; display: grid; gap: 12px; min-width: 0; }
-.route { display: flex; align-items: center; gap: 10px; font: 700 14px/1 var(--display); letter-spacing: .06em; color: var(--muted); }
-.route .line { flex: 0 1 70px; height: 0; border-top: 3px dotted var(--s3); }
-.route .mode { font: 800 12px/1 var(--body); letter-spacing: 0; padding: 5px 10px; border-radius: 999px; background: var(--surface-2); color: var(--ink); }
-.t-main h3 { font-size: clamp(28px, 3.2vw, 36px); line-height: 1.05; font-weight: 700; }
-.t-main h3 small { font: 700 15px var(--body); color: var(--muted); margin-left: 8px; }
+/* ---------- Journal entry (trip card) ---------- */
+.ticket { display: grid; grid-template-columns: auto minmax(0, 1fr) 190px; overflow: hidden; scroll-margin-top: 16px; }
+.ticket.stretch { opacity: .92; }
+.t-stamp { padding: 20px 0 20px 20px; }
+.t-main { padding: 20px 22px; display: grid; gap: 10px; min-width: 0; align-content: start; }
+.route { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font: 400 14px/1 var(--type); color: var(--pencil); }
+.route .line { flex: 0 1 56px; height: 0; border-top: 1.5px dashed var(--pencil); }
+.t-main h3 { font-size: clamp(28px, 3vw, 34px); line-height: 1.1; }
+.t-main h3 small { font: 400 16px var(--sans); color: var(--pencil); margin-left: 8px; }
 .tags { display: flex; flex-wrap: wrap; gap: 6px; }
-.tag { font-size: 13px; font-weight: 800; padding: 4px 11px; border-radius: 999px; background: var(--pink-soft); color: var(--ink); }
-.tag.good { background: var(--good-soft); color: var(--good); }
-.tag.mid { background: var(--mid-soft); color: var(--mid); }
-.tag.warn { background: var(--warn-soft); color: var(--warn); }
-.strip { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; max-width: 360px; }
-.strip i { height: 9px; border-radius: 4px; background: var(--surface-2); }
+.tag { font-size: 13px; font-weight: 600; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--rule); color: var(--ink-soft); }
+.tag.good { background: var(--green-soft); border-color: transparent; color: var(--green); }
+.tag.mid { background: var(--ochre-soft); border-color: transparent; color: var(--ochre); }
+.tag.warn { background: var(--red-soft); border-color: transparent; color: var(--red); }
+.strip { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; max-width: 340px; }
+.strip i { height: 7px; border-radius: 2px; background: var(--page-2); }
 .strip i.q3 { background: var(--s2); } .strip i.q4 { background: var(--s3); } .strip i.q5 { background: var(--s4); }
-.strip i.sel { outline: 2px solid var(--ink); outline-offset: 1px; }
-.strip-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-top: -6px; }
+.strip i.sel { outline: 1.5px solid var(--ink); outline-offset: 1px; }
+.strip-label { font-size: 14px; color: var(--pencil); margin-top: -4px; }
 
 .t-stub {
-  position: relative; border-left: 3px dashed var(--line); padding: 20px; background: var(--sun-soft);
+  position: relative; border-left: 1.5px dashed var(--rule); padding: 20px;
   display: flex; flex-direction: column; justify-content: space-between; gap: 12px;
 }
-.t-stub::before, .t-stub::after {
-  content: ""; position: absolute; left: -14px; width: 24px; height: 24px; border-radius: 50%;
-  background: var(--ground); border: 2px solid var(--border);
-}
-.t-stub::before { top: -14px; } .t-stub::after { bottom: -14px; }
-.price { font: 700 40px/1 var(--display); margin-top: 6px; display: block; font-variant-numeric: tabular-nums; }
-.left { font-size: 14px; font-weight: 800; }
-.left.good { color: var(--good); } .left.warn { color: var(--warn); }
+.price { font: 700 36px/1 var(--type); margin-top: 6px; display: block; }
+.left { font: 600 21px/1.1 var(--hand); }
+.left.good { color: var(--green); } .left.warn { color: var(--red); }
 .open-btn {
-  border: 2px solid var(--border); border-radius: 14px; padding: 10px 12px; font-weight: 800; font-size: 15px;
-  background: var(--orange); color: var(--orange-ink); box-shadow: 3px 3px 0 var(--shadow-c); transition: transform .1s, box-shadow .1s;
+  border: 1.5px solid var(--ink); border-radius: 6px; padding: 9px 12px; font-weight: 700; font-size: 15px;
+  background: var(--ink); color: var(--page); transition: background .15s, color .15s;
 }
-.open-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--shadow-c); }
-.open-btn[aria-expanded="true"] { background: var(--surface); color: var(--ink); }
-@media (max-width: 560px) {
-  .ticket { grid-template-columns: minmax(0, 1fr); }
-  .t-stub { border-left: 0; border-top: 3px dashed var(--line); flex-direction: row; align-items: center; flex-wrap: wrap; }
-  .t-stub::before { left: -14px; top: -14px; }
-  .t-stub::after { left: auto; right: -14px; top: -14px; bottom: auto; }
+.open-btn:hover { background: var(--ink-soft); }
+.open-btn[aria-expanded="true"] { background: transparent; color: var(--ink); }
+@media (max-width: 640px) {
+  .ticket { grid-template-columns: minmax(0, 1fr); position: relative; }
+  .t-stamp { position: absolute; top: 16px; right: 16px; padding: 0; }
+  .t-stamp .stamp { width: 62px; height: 74px; }
+  .t-stamp .stamp b { font-size: 17px; }
+  .t-main { padding-right: 96px; }
+  .t-stub { border-left: 0; border-top: 1.5px dashed var(--rule); flex-direction: row; align-items: center; flex-wrap: wrap; }
   .open-btn { margin-left: auto; }
 }
 
 /* ---------- Plan details ---------- */
-.details { grid-column: 1 / -1; border-top: 2px solid var(--border); background: var(--surface-2); padding: 24px 22px; display: grid; gap: 30px; }
-.details h4 { font-size: 21px; margin-bottom: 12px; }
-.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 28px; }
-.costbar { position: relative; display: flex; height: 18px; border-radius: 999px; background: var(--surface); border: 2px solid var(--border); margin: 30px 0 14px; }
+.details { grid-column: 1 / -1; border-top: 1px solid var(--rule); background: var(--page-2); padding: 26px 24px; display: grid; gap: 32px; }
+.details h4 { font-size: 22px; margin-bottom: 12px; }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 32px; }
+.costbar { position: relative; display: flex; height: 12px; border-radius: 2px; background: var(--page); outline: 1px solid var(--rule); margin: 30px 0 16px; }
 .costbar span { height: 100%; }
-.costbar span:first-child { border-radius: 999px 0 0 999px; }
-.c1 { background: var(--sea); } .c2 { background: var(--pink); } .c3 { background: var(--sun); } .c4 { background: var(--s3); } .c5 { background: var(--mint); }
-.budget-mark { position: absolute; top: -26px; bottom: -6px; width: 0; border-left: 3px solid var(--ink); }
-.budget-mark b { position: absolute; top: 0; right: 5px; white-space: nowrap; font: 800 12px/1 var(--body); }
-.budget-mark.flip b { right: auto; left: 5px; }
-.lines { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
-.lines li { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 700; }
-.lines .dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; border: 2px solid var(--border); }
-.lines .amt { margin-left: auto; font: 600 17px var(--display); }
-.lines small { color: var(--muted); font-weight: 600; }
-.lines .total { border-top: 2px solid var(--line); padding-top: 10px; font-weight: 800; }
-.lines .total .amt { font-size: 20px; }
-.options { display: grid; gap: 8px; }
+.c1 { background: var(--blue); } .c2 { background: var(--red); } .c3 { background: var(--ochre); } .c4 { background: var(--s3); } .c5 { background: var(--green); }
+.budget-mark { position: absolute; top: -24px; bottom: -6px; width: 0; border-left: 1.5px solid var(--ink); }
+.budget-mark b { position: absolute; top: -4px; right: 6px; white-space: nowrap; font: 600 18px/1 var(--hand); }
+.budget-mark.flip b { right: auto; left: 6px; }
+.lines { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; }
+.lines li { display: flex; align-items: center; gap: 10px; font-size: 16px; }
+.lines .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.lines .amt { margin-left: auto; font: 400 16px var(--type); }
+.lines small { color: var(--pencil); }
+.lines .total { border-top: 1px solid var(--ink); padding-top: 9px; font-weight: 700; }
+.lines .total .amt { font-weight: 700; font-size: 18px; }
+.options { display: grid; gap: 6px; }
 .option {
   display: grid; grid-template-columns: 64px 1fr auto; align-items: center; gap: 10px; text-align: left;
-  border: 2px solid var(--line); background: var(--surface); border-radius: 14px; padding: 10px 14px; font-size: 15px;
+  border: 1px solid var(--rule); background: var(--page); border-radius: 6px; padding: 10px 14px; font-size: 15px;
 }
-.option strong { font-weight: 800; }
-.option:not(:disabled):hover { border-color: var(--border); }
+.option strong { font-weight: 700; }
+.option:not(:disabled):hover { border-color: var(--ink-soft); }
 .option:disabled { cursor: not-allowed; opacity: .5; }
-.option span:nth-child(2) { color: var(--muted); font-size: 14px; font-weight: 600; }
-.option .num { font-size: 17px; font-weight: 600; }
-.option[aria-checked="true"] { border-color: var(--border); background: var(--sun-soft); box-shadow: 3px 3px 0 var(--shadow-c); }
-.fine { font-size: 13px; font-weight: 600; color: var(--muted); margin: 10px 0 0; }
-.chart { display: grid; grid-template-columns: repeat(12, 1fr); gap: 5px; align-items: end; height: 110px; }
-.chart .bar { border-radius: 8px 8px 3px 3px; min-height: 8px; }
-.bar.good { background: var(--mint); } .bar.mid { background: var(--sun); } .bar.warn { background: var(--pink); }
-.bar.sel { outline: 3px solid var(--ink); outline-offset: 2px; }
-.chart-x { display: grid; grid-template-columns: repeat(12, 1fr); gap: 5px; margin-top: 6px; font: 600 12px/1 var(--display); color: var(--muted); text-align: center; }
-.chart-x .sel { color: var(--ink); }
-.chart-key { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; font-weight: 700; color: var(--muted); margin-top: 12px; }
-.chart-key i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; }
+.option span:nth-child(2) { color: var(--pencil); font-size: 14px; }
+.option[aria-checked="true"] { border-color: var(--ink); box-shadow: inset 3px 0 0 var(--ink); }
+.fine { font-size: 14px; color: var(--pencil); margin: 10px 0 0; }
+.fine a { color: var(--blue); font-weight: 700; }
+.live { font: 700 10px/1 var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--green); border: 1px solid var(--green); border-radius: 3px; padding: 2px 4px; vertical-align: 2px; }
+.chart { display: grid; grid-template-columns: repeat(12, 1fr); gap: 5px; align-items: end; height: 110px; border-bottom: 1px solid var(--rule); }
+.chart .bar { border-radius: 2px 2px 0 0; min-height: 8px; }
+.bar.good { background: var(--green); } .bar.mid { background: var(--ochre); } .bar.warn { background: var(--red); }
+.bar.sel { outline: 1.5px solid var(--ink); outline-offset: 2px; }
+.chart-x { display: grid; grid-template-columns: repeat(12, 1fr); gap: 5px; margin-top: 6px; font: 400 12px/1 var(--type); color: var(--pencil); text-align: center; }
+.chart-x .sel { color: var(--ink); font-weight: 700; }
+.chart-key { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--pencil); margin-top: 12px; }
+.chart-key i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; }
 .best { margin: 0 0 14px; max-width: 62ch; }
-.days { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
-.day { background: var(--surface); border: 2px solid var(--line); border-radius: 18px; padding: 14px 16px; }
-.trip-day { border-color: var(--mint); background: var(--mint-soft); }
+.days { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
+.day {
+  background: var(--page); border-radius: 3px; padding: 14px 16px; box-shadow: 0 1px 2px rgba(60, 45, 20, .08);
+}
+.trip-day { box-shadow: inset 0 3px 0 var(--green), 0 1px 2px rgba(60, 45, 20, .08); }
 .day-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
-.day-head strong { font: 600 19px var(--display); }
-.day-head .num { font-size: 15px; color: var(--muted); }
+.day-head strong { font: 400 20px var(--serif); }
+.day-head .num { font-size: 14px; color: var(--pencil); }
 .day ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
 .day li { display: grid; gap: 1px; }
-.day .slot { font: 800 11px/1.2 var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
-.day .what { display: flex; gap: 8px; justify-content: space-between; font-size: 15px; font-weight: 600; line-height: 1.35; }
-.day .what span:last-child { font: 600 14px var(--display); color: var(--muted); white-space: nowrap; }
-.daytrips { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
-.daytrip { background: var(--surface); border: 2px solid var(--line); border-radius: 18px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
-.daytrip.on { border-color: var(--border); background: var(--mint-soft); box-shadow: 3px 3px 0 var(--shadow-c); }
+.day .slot { font: 600 18px/1 var(--hand); color: var(--red); }
+.day .what { display: flex; gap: 8px; justify-content: space-between; font-size: 15px; line-height: 1.4; }
+.day .what span:last-child { font: 400 13px var(--type); color: var(--pencil); white-space: nowrap; }
+.daytrips { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.daytrip { background: var(--page); border-radius: 3px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; box-shadow: 0 1px 2px rgba(60, 45, 20, .08); }
+.daytrip.on { box-shadow: inset 0 0 0 1.5px var(--green); }
 .dt-head { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
-.dt-head strong { font: 600 19px/1.2 var(--display); }
-.dt-head .num { font-size: 16px; }
-.dt-how { font-size: 13px; font-weight: 800; color: var(--muted); }
-.daytrip p { margin: 0; font-size: 14px; line-height: 1.45; flex: 1; }
+.dt-head strong { font: 400 19px/1.2 var(--serif); }
+.dt-head .num { font-size: 15px; }
+.dt-how { font: 400 13px var(--type); color: var(--pencil); }
+.daytrip p { margin: 0; font-size: 15px; line-height: 1.45; flex: 1; }
 .dt-tags { display: flex; flex-wrap: wrap; gap: 4px; }
-.dt-tags .tag { font-size: 12px; padding: 2px 9px; background: var(--surface-2); color: var(--muted); }
-.dt-tags .tag.hit { background: var(--sun); color: #17183B; }
+.dt-tags .tag { font-size: 12px; padding: 1px 8px; }
+.dt-tags .tag.hit { background: var(--blue-soft); border-color: transparent; color: var(--blue); }
 .dt-btn {
-  margin-top: 4px; border: 2px solid var(--border); background: var(--surface); border-radius: 12px;
-  padding: 8px 10px; font-weight: 800; font-size: 14px;
+  margin-top: 4px; border: 1px solid var(--ink); background: transparent; border-radius: 6px;
+  padding: 7px 10px; font-weight: 700; font-size: 14px;
 }
-.dt-btn:hover { background: var(--sun-soft); }
-.dt-btn[aria-pressed="true"] { background: var(--mint); color: #0A3A28; }
+.dt-btn:hover { background: var(--page-2); }
+.dt-btn[aria-pressed="true"] { background: var(--green); border-color: var(--green); color: var(--page); }
 .tips { margin: 0; padding-left: 20px; display: grid; gap: 6px; max-width: 70ch; }
 .links { display: flex; flex-wrap: wrap; gap: 8px; }
 .links a {
-  text-decoration: none; font-weight: 800; font-size: 14px; color: var(--ink); background: var(--surface);
-  border: 2px solid var(--border); border-radius: 999px; padding: 7px 15px; box-shadow: 2px 2px 0 var(--shadow-c);
+  text-decoration: none; font-weight: 700; font-size: 15px; color: var(--ink);
+  border: 1px solid var(--ink); border-radius: 6px; padding: 6px 14px;
 }
-.links a:hover { background: var(--sun-soft); }
-.more-btn {
-  border: 2px dashed var(--border); background: var(--surface); border-radius: 18px;
-  padding: 14px; font-weight: 800; font-size: 16px;
-}
-.more-btn:hover { background: var(--sun-soft); }
-footer { max-width: 1180px; margin: 0 auto; padding-block: 0 40px; color: var(--muted); font-size: 13px; font-weight: 600; }
+.links a:hover { background: var(--page); }
+.more-btn { border: 1px dashed var(--pencil); background: transparent; border-radius: 6px; padding: 14px; font-weight: 700; }
+.more-btn:hover { background: var(--page); }
+footer { max-width: 1160px; margin: 0 auto; padding-block: 0 40px; color: var(--pencil); font-size: 14px; }
 @media (max-width: 480px) { .option { grid-template-columns: 52px 1fr auto; padding: 10px 12px; } }
+@media (prefers-reduced-motion: reduce) { .postcard { transition: none; } }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <div class="hero-top">
-      <div>
-        <div class="brand">weekender<span>.</span></div>
-        <p class="tagline">Cheap trips from wherever you're studying. <b><span id="city-count">80</span> places</b> across Europe, North Africa and beyond, with day trips nearby and every way to get there.</p>
-      </div>
-      <div class="sun" aria-hidden="true"></div>
+    <div class="masthead">
+      <p class="hand">notes for the next trip</p>
+      <h1>Weekender</h1>
+      <p class="tagline">Cheap trips from wherever you're studying: <span id="city-count">80</span> places across Europe, North Africa and beyond, with day trips nearby, the best month to go, and every way to get there.</p>
     </div>
-    <section class="board sticker" aria-label="Top trips for your choices">
-      <div class="board-top">
-        <div><span class="eyebrow">Departures from</span><strong id="board-from">MADRID</strong></div>
-        <span class="board-note">Tap a row to see the plan</span>
-      </div>
-      <div class="brows" id="board">
-        <div class="bhead" aria-hidden="true">
-          <span class="g" style="--w:13"><small>DESTINATION</small></span>
-          <span class="g" style="--w:5"><small>FROM</small></span>
-          <span class="col-via"><small>VIA</small></span>
-          <span class="col-remark"><small>IN THIS MONTH</small></span>
-        </div>
-      </div>
-    </section>
+    <div class="picks-head">
+      <h2 class="underline" id="picks-title">Top picks</h2>
+      <span class="hand">tap a postcard to see the plan</span>
+    </div>
+    <div class="postcards" id="postcards" aria-live="polite"></div>
   </header>
 
   <div class="layout">
-    <aside class="panel sticker" aria-label="Trip settings">
+    <aside class="panel page" aria-label="Trip settings">
       <h2>Plan your trip</h2>
+      <p class="hand">change anything and the picks update</p>
 
       <div class="ctl">
         <label class="eyebrow" for="home">I'm studying in</label>
@@ -521,7 +509,7 @@ footer { max-width: 1180px; margin: 0 auto; padding-block: 0 40px; color: var(--
         <p id="results-sub"></p>
       </div>
       <div class="list" id="results">
-        <noscript><div class="empty sticker">Weekender needs JavaScript turned on to plan trips.</div></noscript>
+        <noscript><div class="empty page">Weekender needs JavaScript turned on to plan trips.</div></noscript>
       </div>
     </main>
   </div>
@@ -2355,6 +2343,38 @@ const BUDGET_AIRPORTS = {
   essaouira: "Essaouira or Marrakech (RAK)"
 };
 
+// ---------------------------------------------------------------- live prices (optional)
+// Paste the URL of your price worker here (see docs/LIVE_PRICES.md). Leave it empty to use
+// estimates only. Only works when the site is hosted somewhere that allows outside requests,
+// such as GitHub Pages.
+const LIVE_PRICES_URL = window.WEEKENDER_API || "";
+// Your GetYourGuide partner ID, once approved. Links still work without it.
+const GYG_PARTNER_ID = "";
+const liveFares = new Map(); // "MAD-LIS-2026-10" -> { status: "loading" | "ok" | "none", price, link, depart, ret }
+
+// The next time the chosen month comes around, as YYYY-MM.
+function travelMonth() {
+  const now = new Date();
+  const year = state.month >= now.getMonth() ? now.getFullYear() : now.getFullYear() + 1;
+  return `${year}-${String(state.month + 1).padStart(2, "0")}`;
+}
+const fareKey = (home, dest) => `${home.code}-${dest.code}-${travelMonth()}`;
+
+async function fetchLiveFare(home, dest) {
+  const key = fareKey(home, dest);
+  if (!LIVE_PRICES_URL || liveFares.has(key)) return;
+  liveFares.set(key, { status: "loading" });
+  try {
+    const res = await fetch(`${LIVE_PRICES_URL.replace(/\/$/, "")}/flights?from=${home.code}&to=${dest.code}&month=${travelMonth()}`);
+    const data = res.ok ? await res.json() : {};
+    liveFares.set(key, data.price ? { status: "ok", price: data.price, link: data.link, depart: data.departure_at, ret: data.return_at }
+                                  : { status: "none" });
+  } catch {
+    liveFares.set(key, { status: "none" });
+  }
+  update();
+}
+
 // Current choices. The page opens with an example search already filled in.
 const state = {
   home: "madrid",
@@ -2398,7 +2418,10 @@ function transportOptions(home, dest, month) {
   const ferry = FERRIES[[home.id, dest.id].sort().join("-")];
   if (ferry) opts.push({ mode: "boat", cost: Math.round(ferry.cost * mult), hours: ferry.hours });
   if (km >= 250 || overWater) {
-    opts.push({ mode: "flight", cost: Math.round((70 + km * 0.04) * mult + 25), hours: km / 750 + 3 });
+    const live = liveFares.get(fareKey(home, dest));
+    opts.push(live && live.status === "ok"
+      ? { mode: "flight", cost: Math.round(live.price + 25), hours: km / 750 + 3, live }
+      : { mode: "flight", cost: Math.round((70 + km * 0.04) * mult + 25), hours: km / 750 + 3 });
   }
   return opts;
 }
@@ -2430,7 +2453,7 @@ function estimateTrip(home, dest) {
   // A day trip replaces one day of city sightseeing.
   const local = state.days * (dest.costs.transit + dest.costs.activities) - (dayTrip ? dest.costs.activities : 0);
   const extra = dayTrip ? dayTrip.cost : 0;
-  return { options, transport, lodging, food, local, dayTrip, extra, nights,
+  return { dest, options, transport, lodging, food, local, dayTrip, extra, nights,
            total: transport.cost + lodging + food + local + extra };
 }
 
@@ -2478,68 +2501,32 @@ function priceLevel(mult) {
   return { text: "average prices", tone: "mid" };
 }
 
-// ---------------------------------------------------------------- board
+// ---------------------------------------------------------------- postcards
 
-function padText(text, width, alignRight) {
-  text = text.toUpperCase().slice(0, width);
-  return alignRight ? text.padStart(width) : text.padEnd(width);
+function stamp(dest, tone) {
+  return `<div class="stamp ${tone}" aria-hidden="true"><small>${dest.country.split(" ")[0].slice(0, 9)}</small><b>${dest.code}</b><small>${MONTHS[state.month]}</small></div>`;
 }
 
-function setFlaps(group, text) {
-  const chars = [...text];
-  if (group.children.length !== chars.length) {
-    group.innerHTML = chars.map(() => '<span class="flap"> </span>').join("");
+function renderPostcards({ home, fits, stretch }) {
+  $("#picks-title").textContent = `Top picks from ${home.name} in ${MONTHS_FULL[state.month]}`;
+  const top = [...fits.map(t => ({ ...t, over: false })), ...stretch.map(t => ({ ...t, over: true }))].slice(0, 3);
+  if (!top.length) {
+    $("#postcards").innerHTML = `<p class="hand" style="font-size:22px;color:var(--pencil);margin:0">Nothing fits yet. Try a bigger budget or another month.</p>`;
+    return;
   }
-  chars.forEach((ch, i) => {
-    const cell = group.children[i];
-    const shown = ch === " " ? " " : ch;
-    cell.classList.toggle("blank", ch === " ");
-    if (cell.textContent !== shown) {
-      cell.textContent = shown;
-      cell.classList.remove("flip");
-      void cell.offsetWidth; // restart the animation
-      cell.style.animationDelay = (i * 22) + "ms";
-      cell.classList.add("flip");
-    }
-  });
-}
-
-function buildBoard() {
-  const board = $("#board");
-  for (let r = 0; r < BOARD_ROWS; r++) {
-    const row = document.createElement("button");
-    row.className = "brow";
-    row.type = "button";
-    row.innerHTML = '<span class="g dest"></span><span class="g fare"></span>' +
-      '<span class="col-via via"></span><span class="col-remark remark"></span>';
-    row.addEventListener("click", () => {
-      if (!row.dataset.id) return;
-      expanded.add(row.dataset.id);
-      showAll = true;
-      renderResults(findTrips());
-      document.getElementById("t-" + row.dataset.id).scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-    board.appendChild(row);
-  }
-}
-
-function renderBoard({ home, fits, stretch }) {
-  $("#board-from").textContent = home.name.toUpperCase();
-  const top = [...fits.map(t => ({ ...t, over: false })), ...stretch.map(t => ({ ...t, over: true }))].slice(0, BOARD_ROWS);
-  [...document.querySelectorAll(".brow")].forEach((row, i) => {
-    const t = top[i];
-    const s = t ? season(t.dest.season[state.month]) : null;
-    setFlaps(row.querySelector(".dest"), padText(t ? t.dest.name : "", 13));
-    setFlaps(row.querySelector(".fare"), padText(t ? euro(t.cost.total) : "", 5, true));
-    const via = row.querySelector(".via");
-    via.textContent = t ? MODES[t.cost.transport.mode].label : "";
-    const remark = row.querySelector(".remark");
-    remark.textContent = t ? (t.over ? "A little over" : s.text.replace(" to go", "")) : "";
-    remark.className = "col-remark remark " + (t ? (t.over ? "stretch" : s.tone) : "");
-    row.disabled = !t;
-    row.dataset.id = t ? t.dest.id : "";
-    row.setAttribute("aria-label", t ? `${t.dest.name}, about ${euro(t.cost.total)}. Show trip.` : "Empty");
-  });
+  $("#postcards").innerHTML = top.map((t, i) => {
+    const s = season(t.dest.season[state.month]);
+    return `<button type="button" class="postcard page" data-id="${t.dest.id}" aria-label="${t.dest.name}, about ${euro(t.cost.total)}. See the plan.">
+      ${stamp(t.dest, s.tone)}
+      <span class="postmark" aria-hidden="true">${home.code}<br>${MONTHS[state.month].toUpperCase()}</span>
+      <span class="rank">No. ${i + 1}</span>
+      <h3>${t.dest.name}</h3>
+      <span class="country">${t.dest.country}</span>
+      <span class="pc-price num">${euro(t.cost.total)}</span>
+      <span class="pc-note ${t.over ? "warn" : s.tone}">${t.over ? "a little over budget" : s.text.toLowerCase()}</span>
+      <span class="pc-meta">${MODES[t.cost.transport.mode].label} · ~${hrs(t.cost.transport.hours)} · ${state.days} days</span>
+    </button>`;
+  }).join("");
 }
 
 // ---------------------------------------------------------------- tickets
@@ -2559,14 +2546,29 @@ function transportSection(dest, cost) {
     <div class="options" role="radiogroup" aria-label="Transport to ${dest.name}">
       ${allowed.map(o => `<button type="button" class="option" role="radio" data-act="mode" data-id="${dest.id}" data-v="${o.mode}"
           aria-checked="${o.mode === cost.transport.mode}">
-          <strong>${MODES[o.mode].label}</strong>
+          <strong>${MODES[o.mode].label}${o.live ? ' <span class="live">live</span>' : ""}</strong>
           <span>~${hrs(o.hours)} each way</span>
           <span class="num">${euro(o.cost)}</span>
         </button>`).join("")}
     </div>
+    ${liveNote(cost)}
     ${BUDGET_AIRPORTS[state.home] && allowed.some(o => o.mode === "flight") ? `<p class="fine">Flying from ${byId(state.home).name}? Budget airlines usually use ${BUDGET_AIRPORTS[state.home]}.</p>` : ""}
     <p class="fine">Round-trip prices. ${hidden ? `${hidden} more option${hidden > 1 ? "s" : ""} hidden by your travel filter.` : "Pick one to update the total."}</p>
   </div>`;
+}
+
+function liveNote(cost) {
+  if (!LIVE_PRICES_URL) return "";
+  const flight = cost.options.find(o => o.mode === "flight");
+  if (!flight) return "";
+  if (flight.live) {
+    const dates = flight.live.depart ? ` for ${flight.live.depart.slice(5, 10)}${flight.live.ret ? " to " + flight.live.ret.slice(5, 10) : ""}` : "";
+    return `<p class="fine">Live fare: cheapest recent round trip found was ${euro(flight.live.price)}${dates}, plus ~€25 for airport transfers.
+      ${flight.live.link ? `<a href="${flight.live.link}" target="_blank" rel="noopener">See this fare ↗</a>` : ""}</p>`;
+  }
+  const status = (liveFares.get(fareKey(byId(state.home), cost.dest)) || {}).status;
+  return status === "loading" ? `<p class="fine">Checking live flight prices…</p>`
+       : status === "none" ? `<p class="fine">No recent live fare for this route and month, so this is an estimate.</p>` : "";
 }
 
 function costSection(cost) {
@@ -2670,6 +2672,7 @@ function extrasSection(home, dest, cost) {
     <div><h4>Check live prices</h4><div class="links">
       ${book}
       <a href="https://www.google.com/search?q=${hostels}" target="_blank" rel="noopener">Hostels ↗</a>
+      <a href="https://www.getyourguide.com/s/?q=${encodeURIComponent(dest.name)}${GYG_PARTNER_ID ? `&partner_id=${GYG_PARTNER_ID}` : ""}" target="_blank" rel="noopener">Tours &amp; tickets ↗</a>
     </div></div>
   </div>`;
 }
@@ -2680,10 +2683,11 @@ function ticket(trip, home, over) {
   const left = state.budget - cost.total;
   const isOpen = expanded.has(dest.id);
   return `
-  <article class="ticket sticker${over ? " stretch" : ""}" id="t-${dest.id}">
+  <article class="ticket page${over ? " stretch" : ""}" id="t-${dest.id}">
+    <div class="t-stamp">${stamp(dest, s.tone)}</div>
     <div class="t-main">
       <div class="route"><span>${home.code}</span><span class="line"></span><span>${dest.code}</span>
-        <span class="mode">${MODES[cost.transport.mode].label} · ~${hrs(cost.transport.hours)}</span></div>
+        <span class="mode">by ${MODES[cost.transport.mode].label.toLowerCase()}, ~${hrs(cost.transport.hours)}</span></div>
       <h3>${dest.name}<small>${dest.country}</small></h3>
       <div class="tags">
         <span class="tag ${s.tone}">${s.text} in ${MONTHS[state.month]}</span>
@@ -2717,9 +2721,9 @@ function renderResults({ home, fits, stretch }) {
   $("#results-sub").textContent = `From ${home.name} · ${state.days} days · ${MONTHS_FULL[state.month]} · ${euro(state.budget)} per person`;
   const out = [];
   if (!state.modes.size) {
-    out.push(`<div class="empty sticker">Pick at least one way to travel under "Getting there by".</div>`);
+    out.push(`<div class="empty page">Pick at least one way to travel under "Getting there by".</div>`);
   } else if (!n) {
-    out.push(`<div class="empty sticker">No trips fit ${euro(state.budget)} for ${state.days} days in ${MONTHS_FULL[state.month]}. Try a shorter trip, a cheaper month, more ways to travel, or move the budget slider up.</div>`);
+    out.push(`<div class="empty page">No trips fit ${euro(state.budget)} for ${state.days} days in ${MONTHS_FULL[state.month]}. Try a shorter trip, a cheaper month, more ways to travel, or move the budget slider up.</div>`);
   }
   const shown = showAll ? fits : fits.slice(0, LIST_LIMIT);
   shown.forEach(t => out.push(ticket(t, home, false)));
@@ -2730,6 +2734,10 @@ function renderResults({ home, fits, stretch }) {
     stretch.forEach(t => out.push(ticket(t, home, true)));
   }
   $("#results").innerHTML = out.join("");
+  // Look up live flight fares for any open plan (only if a price worker is set up).
+  [...fits, ...stretch]
+    .filter(t => expanded.has(t.dest.id) && t.cost.options.some(o => o.mode === "flight"))
+    .forEach(t => fetchLiveFare(home, t.dest));
 }
 
 // ---------------------------------------------------------------- controls
@@ -2741,7 +2749,7 @@ function update() {
   document.querySelectorAll("#interests .chip").forEach(b => b.setAttribute("aria-pressed", state.interests.has(b.dataset.v)));
   document.querySelectorAll("#modes .chip").forEach(b => b.setAttribute("aria-pressed", state.modes.has(b.dataset.v)));
   const result = findTrips();
-  renderBoard(result);
+  renderPostcards(result);
   renderResults(result);
 }
 
@@ -2761,6 +2769,15 @@ function setupControls() {
   $("#months").addEventListener("click", (e) => { const b = e.target.closest(".pick"); if (b) { state.month = Number(b.dataset.v); changed(); } });
   $("#interests").addEventListener("click", (e) => { const b = e.target.closest(".chip"); if (b) { toggle(state.interests, b.dataset.v); changed(); } });
   $("#modes").addEventListener("click", (e) => { const b = e.target.closest(".chip"); if (b) { toggle(state.modes, b.dataset.v); changed(); } });
+
+  $("#postcards").addEventListener("click", (e) => {
+    const card = e.target.closest(".postcard");
+    if (!card) return;
+    expanded.add(card.dataset.id);
+    showAll = true;
+    renderResults(findTrips());
+    document.getElementById("t-" + card.dataset.id).scrollIntoView({ behavior: "smooth", block: "start" });
+  });
 
   // Buttons inside the results (open a plan, switch transport, add a day trip, show more).
   $("#results").addEventListener("click", (e) => {
@@ -2785,7 +2802,6 @@ function dayTripIndexAfterRemove(button) {
 
 document.getElementById("city-count").textContent = CITIES.length;
 setupControls();
-buildBoard();
 // Open the top pick so the first view shows a full plan.
 const firstPick = findTrips().fits[0];
 if (firstPick) expanded.add(firstPick.dest.id);

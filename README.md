@@ -18,7 +18,7 @@ Everything is in one file, `index.html`, so it works however it's opened (double
 
 | Section | What it does |
 |---|---|
-| `<style>` | The design: bright, playful look with a departures-board header, ticket-style results, light and dark themes |
+| `<style>` | The design: travel-journal look (paper, postage stamps, postcards for top picks), light and dark themes |
 | City data `<script>` | 80 cities: costs, month-by-month scores, 3-day itineraries, 2–4 nearby day trips each (231 total), and tips |
 | App `<script>` | Estimates costs, ranks destinations, and updates the board and tickets as you change settings |
 
@@ -38,5 +38,5 @@ By default the app picks the best mix of price and travel time; you can switch o
 - [ ] Week 12: Final product
 - [ ] Week 13: Final presentation
 
-## Live prices (not yet)
-Prices are estimates. Scraping Skyscanner, Omio or GetYourGuide isn't an option: their terms forbid it, they actively block bots, and a static page can't call other sites anyway. The realistic path is an official data source (for example Travelpayouts' free flight-price API, or affiliate programs from Omio/GetYourGuide) called through a small free serverless function (Cloudflare Workers or Vercel) that keeps the API key private.
+## Live prices
+The app is ready for real flight fares via a small free Cloudflare Worker ([`api/worker.js`](api/worker.js)) and the Travelpayouts API, plus GetYourGuide and Omio affiliate links. Step-by-step setup: [docs/LIVE_PRICES.md](docs/LIVE_PRICES.md). Until it's set up, everything uses estimates.
