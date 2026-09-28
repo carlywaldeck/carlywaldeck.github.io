@@ -70,8 +70,15 @@ h1, h2, h3, h4 { font-weight: 600; text-wrap: balance; margin: 0; letter-spacing
 @media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr); gap: 32px; } }
 
 /* ---------- Controls ---------- */
-.panel { display: grid; gap: 24px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 20px); }
-@media (max-width: 900px) { .panel { position: static; padding: 20px; background: var(--soft); border-radius: 14px; } }
+.panel {
+  display: grid; gap: 20px; align-content: start; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 20px);
+  /* Fit the sidebar to the screen and let it scroll on its own when it's taller. */
+  max-height: calc(100vh - 40px); overflow-y: auto; overscroll-behavior: contain;
+  padding-right: 12px; margin-right: -12px; scrollbar-width: thin; scrollbar-color: var(--line) transparent;
+}
+.panel::-webkit-scrollbar { width: 6px; }
+.panel::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+@media (max-width: 900px) { .panel { position: static; max-height: none; overflow: visible; margin-right: 0; padding: 20px; background: var(--soft); border-radius: 14px; } }
 .panel h2 { font-size: 20px; }
 .ctl { display: grid; gap: 8px; }
 .ctl-head { display: flex; justify-content: space-between; align-items: baseline; }
