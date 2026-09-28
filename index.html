@@ -6,51 +6,55 @@
 <title>Weekender</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;600;700;800&display=swap">
 <style>
 :root {
-  --ground: #EDF0F4;
+  --ground: #EAF2FF;
   --surface: #FFFFFF;
-  --surface-2: #F4F6F9;
-  --ink: #111C2B;
-  --muted: #586579;
-  --line: #D6DDE6;
-  --board: #0E1726;
-  --board-cell: #1A263B;
-  --board-ink: #FFC629;
-  --board-text: #EEF2F8;
-  --board-dim: #8C98AD;
-  --accent: #1F4FD8;
-  --accent-ink: #FFFFFF;
-  --accent-soft: #E3EAFD;
-  --good: #1B8553; --good-soft: #DDF2E7;
-  --mid: #A87A12;  --mid-soft: #FBF0D3;
-  --warn: #BF4F1A; --warn-soft: #FBE6DA;
-  --s2: #C3D2F1; --s3: #93AEEA; --s4: #5A81DE;
-  --shadow: 0 1px 2px rgba(17, 28, 43, .05), 0 10px 30px rgba(17, 28, 43, .07);
-  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
-  --body: "Figtree", "Segoe UI", system-ui, -apple-system, sans-serif;
-  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --surface-2: #F3F7FF;
+  --ink: #17183B;
+  --muted: #565A85;
+  --line: #D5DDF0;
+  --border: #17183B;
+  --shadow-c: #17183B;
+  --sea: #2F6BFF;
+  --sea-deep: #1F4FD1;
+  --tile: #FFFFFF;
+  --tile-ink: #17183B;
+  --sun: #FFC933;
+  --sun-soft: #FFF1C2;
+  --orange: #FF6A3D;
+  --orange-ink: #FFFFFF;
+  --mint: #22C58B;
+  --mint-soft: #D4F7E8;
+  --pink: #FF7BAC;
+  --pink-soft: #FFE0EC;
+  --good: #0B8A57; --good-soft: #D4F7E8;
+  --mid: #9A6400;  --mid-soft: #FFF1C2;
+  --warn: #D13F1F; --warn-soft: #FFE1D8;
+  --s2: #C9D9FF; --s3: #8FB0FF; --s4: #4F82FF;
+  --display: "Fredoka", "Baloo 2", "Avenir Next Rounded", "Segoe UI", system-ui, sans-serif;
+  --body: "Nunito", "Segoe UI", system-ui, -apple-system, sans-serif;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --ground: #0A0F18; --surface: #131B28; --surface-2: #1A2333; --ink: #E7ECF3; --muted: #97A3B5; --line: #27324A;
-    --board: #05090F; --board-cell: #121B2B; --board-dim: #6F7C91;
-    --accent: #7FA2FF; --accent-ink: #0A0F18; --accent-soft: #1C2946;
-    --good: #4CC38A; --good-soft: #13301F; --mid: #E2B64A; --mid-soft: #33290F; --warn: #F08A5D; --warn-soft: #3A1F14;
-    --s2: #24365E; --s3: #34508F; --s4: #5476CF;
-    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 10px 30px rgba(0, 0, 0, .25);
+    --ground: #12132B; --surface: #1D1F42; --surface-2: #26294F; --ink: #F4F3FF; --muted: #A9ACD6;
+    --line: #34386A; --border: #555A96; --shadow-c: #06071A;
+    --sea: #2C5BE0; --sea-deep: #2249BE; --tile: #F4F3FF; --tile-ink: #17183B;
+    --sun-soft: #2F2C63; --mint-soft: #123A2E; --pink-soft: #43203A;
+    --good: #4BDDA4; --good-soft: #123A2E; --mid: #FFD466; --mid-soft: #3D3312; --warn: #FF8C6B; --warn-soft: #45211A;
+    --s2: #2A3A78; --s3: #3A58B8; --s4: #5C8AFF;
   }
 }
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --ground: #0A0F18; --surface: #131B28; --surface-2: #1A2333; --ink: #E7ECF3; --muted: #97A3B5; --line: #27324A;
-  --board: #05090F; --board-cell: #121B2B; --board-dim: #6F7C91;
-  --accent: #7FA2FF; --accent-ink: #0A0F18; --accent-soft: #1C2946;
-  --good: #4CC38A; --good-soft: #13301F; --mid: #E2B64A; --mid-soft: #33290F; --warn: #F08A5D; --warn-soft: #3A1F14;
-  --s2: #24365E; --s3: #34508F; --s4: #5476CF;
-  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 10px 30px rgba(0, 0, 0, .25);
+  --ground: #12132B; --surface: #1D1F42; --surface-2: #26294F; --ink: #F4F3FF; --muted: #A9ACD6;
+  --line: #34386A; --border: #555A96; --shadow-c: #06071A;
+  --sea: #2C5BE0; --sea-deep: #2249BE; --tile: #F4F3FF; --tile-ink: #17183B;
+  --sun-soft: #2F2C63; --mint-soft: #123A2E; --pink-soft: #43203A;
+  --good: #4BDDA4; --good-soft: #123A2E; --mid: #FFD466; --mid-soft: #3D3312; --warn: #FF8C6B; --warn-soft: #45211A;
+  --s2: #2A3A78; --s3: #3A58B8; --s4: #5C8AFF;
 }
 
 * { box-sizing: border-box; }
@@ -59,312 +63,425 @@ body {
   padding-inline: 16px;
   background: var(--ground);
   color: var(--ink);
-  font: 16px/1.55 var(--body);
+  font: 500 16px/1.55 var(--body);
   -webkit-font-smoothing: antialiased;
 }
 button, select, input { font: inherit; color: inherit; }
 button { cursor: pointer; }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-h1, h2, h3, h4 { font-family: var(--display); text-wrap: balance; margin: 0; }
-.wrap { max-width: 1180px; margin: 0 auto; padding-block: 20px 56px; }
-.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
-.eyebrow { font: 600 11px/1.2 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+:focus-visible { outline: 3px solid var(--sea); outline-offset: 2px; }
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; text-wrap: balance; margin: 0; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-block: 24px 56px; }
+.num { font-family: var(--display); font-variant-numeric: tabular-nums; }
+.eyebrow { font: 800 12px/1.2 var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.sticker { background: var(--surface); border: 2px solid var(--border); border-radius: 22px; box-shadow: 4px 4px 0 var(--shadow-c); }
+
+/* ---------- Hero ---------- */
+.hero-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 20px; }
+.brand { font: 700 clamp(44px, 8vw, 76px)/0.95 var(--display); letter-spacing: -0.02em; color: var(--ink); }
+.brand span { color: var(--orange); }
+.tagline { margin: 10px 0 0; color: var(--muted); max-width: 52ch; font-size: 17px; }
+.tagline b { color: var(--ink); }
+.sun {
+  flex-shrink: 0; width: clamp(64px, 11vw, 112px); aspect-ratio: 1; max-width: 100%; border-radius: 50%;
+  background: var(--sun); border: 2px solid var(--border); box-shadow: 4px 4px 0 var(--shadow-c), 0 0 0 10px var(--sun-soft);
+  margin-right: 12px; animation: bob 5s ease-in-out infinite;
+}
+@keyframes bob { 50% { transform: translateY(-6px) rotate(8deg); } }
 
 /* ---------- Departures board ---------- */
-.board {
-  background: var(--board);
-  color: var(--board-text);
-  border-radius: 18px;
-  padding: 22px clamp(16px, 3vw, 32px) 26px;
-  box-shadow: var(--shadow);
-}
-.board-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px 24px; margin-bottom: 20px; }
-.brand { font: 800 clamp(34px, 6vw, 56px)/0.95 var(--display); letter-spacing: -0.03em; }
-.brand span { color: var(--board-ink); }
-.tagline { margin: 8px 0 0; color: var(--board-dim); max-width: 42ch; }
-.board-status { text-align: right; }
-.board-status .eyebrow { color: var(--board-dim); }
-.board-status strong { display: block; font: 600 clamp(15px, 2vw, 19px)/1.3 var(--mono); color: var(--board-ink); letter-spacing: .04em; }
-
-.brows { display: grid; gap: 6px; font: 600 clamp(13px, 1.75vw, 21px)/1 var(--mono); }
-.brow, .bhead { display: flex; align-items: center; gap: clamp(8px, 1.6vw, 20px); }
+.board { background: var(--sea); color: #fff; padding: 20px clamp(16px, 3vw, 28px) 24px; }
+.board-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 16px; margin-bottom: 16px; }
+.board-top .eyebrow { color: #D6E2FF; }
+.board-top strong { font: 700 clamp(22px, 3vw, 30px)/1.1 var(--display); margin-left: 8px; }
+.board-note { font-size: 14px; font-weight: 700; color: #D6E2FF; }
+.brows { display: grid; gap: 8px; font: 600 clamp(15px, 2.1vw, 26px)/1 var(--display); }
+.brow, .bhead { display: flex; align-items: center; gap: clamp(8px, 1.6vw, 18px); }
 .bhead { padding-bottom: 2px; }
-.bhead .g { width: calc(var(--w) * 1.05em + (var(--w) - 1) * 2px); }
-.bhead small { font: 600 10px/1 var(--mono); letter-spacing: .14em; color: var(--board-dim); }
-.brow { background: none; border: 0; padding: 0; text-align: left; color: var(--board-ink); border-radius: 4px; }
-.brow:disabled { cursor: default; }
-.brow:not(:disabled):hover .flap { background: #24344F; }
-.g { display: flex; gap: 2px; flex-shrink: 0; }
-.bhead .g { gap: 0; }
-.flap {
-  width: 1.05em; height: 1.5em; line-height: 1.5em; text-align: center;
-  background: var(--board-cell); border-radius: 3px; position: relative; overflow: hidden;
+.bhead small { font: 800 11px/1 var(--body); letter-spacing: .1em; color: #D6E2FF; }
+.bhead .g { width: calc(var(--w) * 1.05em + (var(--w) - 1) * 3px); }
+.brow {
+  background: var(--sea-deep); border: 0; padding: 6px; border-radius: 14px; text-align: left; color: var(--tile-ink);
+  transition: transform .15s, background .15s;
 }
-.flap::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: rgba(0, 0, 0, .45); }
-.flap.flip { animation: flip .32s ease-out both; }
-@keyframes flip { 0% { transform: rotateX(90deg); opacity: .3; } 100% { transform: rotateX(0); opacity: 1; } }
-.brow .remark.good { color: #7DE3A8; }
-.brow .remark.warn { color: #FF9C6B; }
-.brow .remark.stretch { color: var(--board-dim); }
-@media (max-width: 640px) { .col-via, .col-remark { display: none; } }
-@media (prefers-reduced-motion: reduce) { .flap.flip { animation: none; } html { scroll-behavior: auto; } }
+.brow:not(:disabled):hover { transform: translateX(4px); background: #183FAE; }
+.brow:disabled { cursor: default; opacity: .5; }
+.g { display: flex; gap: 3px; flex-shrink: 0; }
+.flap {
+  width: 1.05em; height: 1.45em; line-height: 1.45em; text-align: center;
+  background: var(--tile); border-radius: 6px; position: relative; overflow: hidden;
+}
+.flap::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: rgba(23, 24, 59, .12); }
+.fare .flap { background: var(--sun); color: #17183B; }
+.flap.blank, .fare .flap.blank { background: rgba(255, 255, 255, .14); }
+.flap.blank::after { display: none; }
+.flap.flip { animation: flip .3s ease-out both; }
+@keyframes flip { 0% { transform: rotateX(90deg); } 100% { transform: rotateX(0); } }
+.col-via, .col-remark { font: 800 14px/1 var(--body); }
+.col-via { width: 64px; color: #fff; }
+.col-remark { width: 130px; }
+.brow .col-remark { padding: 7px 12px; border-radius: 999px; background: #fff; color: #17183B; text-align: center; }
+.brow .col-remark.good { background: var(--mint); color: #0A3A28; }
+.brow .col-remark.mid { background: var(--sun); color: #3D2A00; }
+.brow .col-remark.warn { background: var(--pink); color: #4A0D26; }
+.brow .col-remark.stretch { background: #C9D6FF; color: #17183B; }
+.brow .col-remark:empty { background: none; }
+@media (max-width: 700px) { .col-via, .col-remark { display: none; } }
+@media (prefers-reduced-motion: reduce) { .flap.flip, .sun { animation: none; } }
 
 /* ---------- Layout ---------- */
-.layout { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 24px; margin-top: 24px; align-items: start; }
+.layout { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 28px; margin-top: 28px; align-items: start; }
 @media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr); } }
 
 /* ---------- Controls ---------- */
-.panel {
-  background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 22px;
-  display: grid; gap: 22px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px);
-}
+.panel { padding: 22px; display: grid; gap: 22px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); }
 @media (max-width: 900px) { .panel { position: static; } }
-.panel h2 { font-size: 22px; letter-spacing: -0.01em; }
+.panel h2 { font-size: 26px; }
 .ctl { display: grid; gap: 10px; }
 .ctl-head { display: flex; justify-content: space-between; align-items: baseline; }
-.ctl-head strong { font: 600 20px/1 var(--mono); }
+.ctl-head strong { font: 700 24px/1 var(--display); color: var(--orange); }
 select {
-  appearance: none; width: 100%; padding: 12px 40px 12px 14px; border-radius: 10px;
-  border: 1px solid var(--line); background: var(--surface-2); font-weight: 600;
-  background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  appearance: none; width: 100%; padding: 12px 40px 12px 14px; border-radius: 14px;
+  border: 2px solid var(--border); background: var(--surface-2); font-weight: 800;
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink) 50%), linear-gradient(135deg, var(--ink) 50%, transparent 50%);
   background-position: calc(100% - 20px) 55%, calc(100% - 14px) 55%;
   background-size: 6px 6px; background-repeat: no-repeat;
 }
-input[type="range"] { width: 100%; accent-color: var(--accent); margin: 0; }
-.range-scale { display: flex; justify-content: space-between; font: 500 11px/1 var(--mono); color: var(--muted); }
-.seg-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+input[type="range"] { width: 100%; accent-color: var(--orange); margin: 0; height: 24px; }
+.range-scale { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: var(--muted); }
+.seg-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .months { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
-.pick {
-  border: 1px solid var(--line); background: var(--surface-2); border-radius: 9px;
-  padding: 9px 4px; font-weight: 600; font-size: 14px; transition: background .15s, color .15s, border-color .15s;
+.pick, .chip {
+  border: 2px solid var(--line); background: var(--surface-2); font-weight: 800; font-size: 14px;
+  transition: transform .12s, background .12s, border-color .12s;
 }
-.pick:hover { border-color: var(--accent); }
-.pick[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
-.chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.chip { border: 1px solid var(--line); background: var(--surface-2); border-radius: 999px; padding: 7px 13px; font-size: 14px; font-weight: 600; }
-.chip:hover { border-color: var(--accent); }
-.chip[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
-.chip[aria-pressed="true"]::before { content: "✓ "; }
+.pick { border-radius: 12px; padding: 9px 4px; }
+.chip { border-radius: 999px; padding: 7px 13px; }
+.pick:hover, .chip:hover { border-color: var(--border); transform: translateY(-1px); }
+.pick[aria-pressed="true"] { background: var(--orange); border-color: var(--border); color: var(--orange-ink); box-shadow: 2px 2px 0 var(--shadow-c); }
+.chip[aria-pressed="true"] { background: var(--sun); border-color: var(--border); color: #17183B; box-shadow: 2px 2px 0 var(--shadow-c); }
+.chips { display: flex; flex-wrap: wrap; gap: 7px; }
 
 /* ---------- Results ---------- */
-.results-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 16px; margin: 4px 2px 16px; }
-.results-head h2 { font-size: clamp(24px, 3vw, 32px); letter-spacing: -0.02em; }
-.results-head p { margin: 0; color: var(--muted); }
-.list { display: grid; gap: 16px; }
-.divider { display: flex; align-items: center; gap: 12px; margin: 18px 2px 2px; color: var(--muted); }
-.divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
-.empty { background: var(--surface); border: 1px dashed var(--line); border-radius: 16px; padding: 28px; color: var(--muted); }
+.results-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 16px; margin: 4px 2px 18px; }
+.results-head h2 { font-size: clamp(28px, 3.4vw, 38px); }
+.results-head p { margin: 0; color: var(--muted); font-weight: 700; }
+.list { display: grid; gap: 20px; }
+.divider { display: flex; align-items: center; gap: 12px; margin: 18px 2px 2px; }
+.divider::after { content: ""; flex: 1; height: 2px; background: var(--line); border-radius: 2px; }
+.empty { padding: 28px; font-weight: 700; color: var(--muted); }
 
 /* ---------- Ticket ---------- */
-.ticket {
-  display: grid; grid-template-columns: minmax(0, 1fr) 190px;
-  background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
-  box-shadow: var(--shadow); overflow: hidden; scroll-margin-top: 16px;
-}
-.ticket.stretch { box-shadow: none; }
+.ticket { display: grid; grid-template-columns: minmax(0, 1fr) 200px; overflow: hidden; scroll-margin-top: 16px; }
+.ticket.stretch { box-shadow: 4px 4px 0 var(--line); border-color: var(--line); }
 .t-main { padding: 20px 22px; display: grid; gap: 12px; min-width: 0; }
-.route { display: flex; align-items: center; gap: 10px; font: 600 13px/1 var(--mono); letter-spacing: .08em; color: var(--muted); }
-.route .line { flex: 0 1 80px; height: 0; border-top: 2px dotted var(--line); }
-.route .mode { font-weight: 500; letter-spacing: .04em; }
-.t-main h3 { font-size: clamp(26px, 3vw, 32px); letter-spacing: -0.02em; line-height: 1.05; }
-.t-main h3 small { font: 500 15px var(--body); color: var(--muted); letter-spacing: 0; margin-left: 6px; }
+.route { display: flex; align-items: center; gap: 10px; font: 700 14px/1 var(--display); letter-spacing: .06em; color: var(--muted); }
+.route .line { flex: 0 1 70px; height: 0; border-top: 3px dotted var(--s3); }
+.route .mode { font: 800 12px/1 var(--body); letter-spacing: 0; padding: 5px 10px; border-radius: 999px; background: var(--surface-2); color: var(--ink); }
+.t-main h3 { font-size: clamp(28px, 3.2vw, 36px); line-height: 1.05; font-weight: 700; }
+.t-main h3 small { font: 700 15px var(--body); color: var(--muted); margin-left: 8px; }
 .tags { display: flex; flex-wrap: wrap; gap: 6px; }
-.tag { font-size: 13px; font-weight: 600; padding: 3px 10px; border-radius: 999px; background: var(--surface-2); color: var(--muted); }
+.tag { font-size: 13px; font-weight: 800; padding: 4px 11px; border-radius: 999px; background: var(--pink-soft); color: var(--ink); }
 .tag.good { background: var(--good-soft); color: var(--good); }
 .tag.mid { background: var(--mid-soft); color: var(--mid); }
 .tag.warn { background: var(--warn-soft); color: var(--warn); }
 .strip { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; max-width: 360px; }
-.strip i { height: 8px; border-radius: 2px; background: var(--surface-2); }
+.strip i { height: 9px; border-radius: 4px; background: var(--surface-2); }
 .strip i.q3 { background: var(--s2); } .strip i.q4 { background: var(--s3); } .strip i.q5 { background: var(--s4); }
 .strip i.sel { outline: 2px solid var(--ink); outline-offset: 1px; }
-.strip-label { font-size: 12px; color: var(--muted); margin-top: -6px; }
+.strip-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-top: -6px; }
 
 .t-stub {
-  position: relative; border-left: 2px dashed var(--line); padding: 20px;
+  position: relative; border-left: 3px dashed var(--line); padding: 20px; background: var(--sun-soft);
   display: flex; flex-direction: column; justify-content: space-between; gap: 12px;
 }
 .t-stub::before, .t-stub::after {
-  content: ""; position: absolute; left: -12px; width: 22px; height: 22px; border-radius: 50%; background: var(--ground);
+  content: ""; position: absolute; left: -14px; width: 24px; height: 24px; border-radius: 50%;
+  background: var(--ground); border: 2px solid var(--border);
 }
-.t-stub::before { top: -12px; } .t-stub::after { bottom: -12px; }
-.price { font: 600 34px/1 var(--mono); letter-spacing: -0.02em; margin-top: 6px; display: block; }
-.left { font-size: 14px; font-weight: 600; }
+.t-stub::before { top: -14px; } .t-stub::after { bottom: -14px; }
+.price { font: 700 40px/1 var(--display); margin-top: 6px; display: block; font-variant-numeric: tabular-nums; }
+.left { font-size: 14px; font-weight: 800; }
 .left.good { color: var(--good); } .left.warn { color: var(--warn); }
 .open-btn {
-  border: 0; border-radius: 10px; padding: 10px 12px; font-weight: 700; font-size: 14px;
-  background: var(--accent); color: var(--accent-ink);
+  border: 2px solid var(--border); border-radius: 14px; padding: 10px 12px; font-weight: 800; font-size: 15px;
+  background: var(--orange); color: var(--orange-ink); box-shadow: 3px 3px 0 var(--shadow-c); transition: transform .1s, box-shadow .1s;
 }
-.open-btn[aria-expanded="true"] { background: var(--surface-2); color: var(--ink); }
+.open-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--shadow-c); }
+.open-btn[aria-expanded="true"] { background: var(--surface); color: var(--ink); }
 @media (max-width: 560px) {
   .ticket { grid-template-columns: minmax(0, 1fr); }
-  .t-stub { border-left: 0; border-top: 2px dashed var(--line); flex-direction: row; align-items: center; flex-wrap: wrap; }
-  .t-stub::before { left: -12px; top: -12px; }
-  .t-stub::after { left: auto; right: -12px; top: -12px; bottom: auto; }
+  .t-stub { border-left: 0; border-top: 3px dashed var(--line); flex-direction: row; align-items: center; flex-wrap: wrap; }
+  .t-stub::before { left: -14px; top: -14px; }
+  .t-stub::after { left: auto; right: -14px; top: -14px; bottom: auto; }
   .open-btn { margin-left: auto; }
 }
 
-/* ---------- Ticket details ---------- */
-.details { grid-column: 1 / -1; border-top: 1px solid var(--line); background: var(--surface-2); padding: 22px; display: grid; gap: 28px; }
-.details h4 { font-size: 18px; margin-bottom: 12px; letter-spacing: -0.01em; }
+/* ---------- Plan details ---------- */
+.details { grid-column: 1 / -1; border-top: 2px solid var(--border); background: var(--surface-2); padding: 24px 22px; display: grid; gap: 30px; }
+.details h4 { font-size: 21px; margin-bottom: 12px; }
 .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 28px; }
-.costbar { position: relative; display: flex; height: 16px; border-radius: 5px; overflow: visible; background: var(--surface); border: 1px solid var(--line); margin: 28px 0 14px; }
+.costbar { position: relative; display: flex; height: 18px; border-radius: 999px; background: var(--surface); border: 2px solid var(--border); margin: 30px 0 14px; }
 .costbar span { height: 100%; }
-.costbar span:first-child { border-radius: 4px 0 0 4px; }
-.c1 { background: var(--accent); } .c2 { background: var(--s4); } .c3 { background: var(--s3); } .c4 { background: var(--s2); }
-.budget-mark { position: absolute; top: -24px; bottom: -4px; width: 0; border-left: 2px solid var(--ink); }
-.budget-mark b { position: absolute; top: 0; right: 4px; white-space: nowrap; font: 600 11px/1 var(--mono); }
-.budget-mark.flip b { right: auto; left: 4px; }
-.lines { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; }
-.lines li { display: flex; align-items: center; gap: 10px; font-size: 15px; }
-.lines .dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
-.lines .amt { margin-left: auto; font: 500 15px var(--mono); }
-.lines small { color: var(--muted); }
-.lines .total { border-top: 1px solid var(--line); padding-top: 8px; font-weight: 700; }
+.costbar span:first-child { border-radius: 999px 0 0 999px; }
+.c1 { background: var(--sea); } .c2 { background: var(--pink); } .c3 { background: var(--sun); } .c4 { background: var(--s3); } .c5 { background: var(--mint); }
+.budget-mark { position: absolute; top: -26px; bottom: -6px; width: 0; border-left: 3px solid var(--ink); }
+.budget-mark b { position: absolute; top: 0; right: 5px; white-space: nowrap; font: 800 12px/1 var(--body); }
+.budget-mark.flip b { right: auto; left: 5px; }
+.lines { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.lines li { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 700; }
+.lines .dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; border: 2px solid var(--border); }
+.lines .amt { margin-left: auto; font: 600 17px var(--display); }
+.lines small { color: var(--muted); font-weight: 600; }
+.lines .total { border-top: 2px solid var(--line); padding-top: 10px; font-weight: 800; }
+.lines .total .amt { font-size: 20px; }
+.options { display: grid; gap: 8px; }
+.option {
+  display: grid; grid-template-columns: 64px 1fr auto; align-items: center; gap: 10px; text-align: left;
+  border: 2px solid var(--line); background: var(--surface); border-radius: 14px; padding: 10px 14px; font-size: 15px;
+}
+.option strong { font-weight: 800; }
+.option:not(:disabled):hover { border-color: var(--border); }
+.option:disabled { cursor: not-allowed; opacity: .5; }
+.option span:nth-child(2) { color: var(--muted); font-size: 14px; font-weight: 600; }
+.option .num { font-size: 17px; font-weight: 600; }
+.option[aria-checked="true"] { border-color: var(--border); background: var(--sun-soft); box-shadow: 3px 3px 0 var(--shadow-c); }
+.fine { font-size: 13px; font-weight: 600; color: var(--muted); margin: 10px 0 0; }
 .chart { display: grid; grid-template-columns: repeat(12, 1fr); gap: 5px; align-items: end; height: 110px; }
-.chart .bar { border-radius: 4px 4px 1px 1px; min-height: 8px; }
-.bar.good { background: var(--good); } .bar.mid { background: var(--mid); } .bar.warn { background: var(--warn); }
-.bar.sel { outline: 2px solid var(--ink); outline-offset: 2px; }
-.chart-x { display: grid; grid-template-columns: repeat(12, 1fr); gap: 5px; margin-top: 6px; font: 500 11px/1 var(--mono); color: var(--muted); text-align: center; }
-.chart-x .sel { color: var(--ink); font-weight: 700; }
-.chart-key { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--muted); margin-top: 12px; }
-.chart-key i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; vertical-align: 0; }
+.chart .bar { border-radius: 8px 8px 3px 3px; min-height: 8px; }
+.bar.good { background: var(--mint); } .bar.mid { background: var(--sun); } .bar.warn { background: var(--pink); }
+.bar.sel { outline: 3px solid var(--ink); outline-offset: 2px; }
+.chart-x { display: grid; grid-template-columns: repeat(12, 1fr); gap: 5px; margin-top: 6px; font: 600 12px/1 var(--display); color: var(--muted); text-align: center; }
+.chart-x .sel { color: var(--ink); }
+.chart-key { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; font-weight: 700; color: var(--muted); margin-top: 12px; }
+.chart-key i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; }
 .best { margin: 0 0 14px; max-width: 62ch; }
 .days { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
-.day { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+.day { background: var(--surface); border: 2px solid var(--line); border-radius: 18px; padding: 14px 16px; }
+.trip-day { border-color: var(--mint); background: var(--mint-soft); }
 .day-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
-.day-head strong { font-family: var(--display); font-size: 17px; }
+.day-head strong { font: 600 19px var(--display); }
+.day-head .num { font-size: 15px; color: var(--muted); }
 .day ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
 .day li { display: grid; gap: 1px; }
-.day .slot { font: 600 10px/1.2 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
-.day .what { display: flex; gap: 8px; justify-content: space-between; font-size: 15px; line-height: 1.35; }
-.day .what span:last-child { font: 500 13px var(--mono); color: var(--muted); white-space: nowrap; }
+.day .slot { font: 800 11px/1.2 var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.day .what { display: flex; gap: 8px; justify-content: space-between; font-size: 15px; font-weight: 600; line-height: 1.35; }
+.day .what span:last-child { font: 600 14px var(--display); color: var(--muted); white-space: nowrap; }
+.daytrips { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.daytrip { background: var(--surface); border: 2px solid var(--line); border-radius: 18px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.daytrip.on { border-color: var(--border); background: var(--mint-soft); box-shadow: 3px 3px 0 var(--shadow-c); }
+.dt-head { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.dt-head strong { font: 600 19px/1.2 var(--display); }
+.dt-head .num { font-size: 16px; }
+.dt-how { font-size: 13px; font-weight: 800; color: var(--muted); }
+.daytrip p { margin: 0; font-size: 14px; line-height: 1.45; flex: 1; }
+.dt-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.dt-tags .tag { font-size: 12px; padding: 2px 9px; background: var(--surface-2); color: var(--muted); }
+.dt-tags .tag.hit { background: var(--sun); color: #17183B; }
+.dt-btn {
+  margin-top: 4px; border: 2px solid var(--border); background: var(--surface); border-radius: 12px;
+  padding: 8px 10px; font-weight: 800; font-size: 14px;
+}
+.dt-btn:hover { background: var(--sun-soft); }
+.dt-btn[aria-pressed="true"] { background: var(--mint); color: #0A3A28; }
 .tips { margin: 0; padding-left: 20px; display: grid; gap: 6px; max-width: 70ch; }
 .links { display: flex; flex-wrap: wrap; gap: 8px; }
 .links a {
-  text-decoration: none; font-weight: 600; font-size: 14px; color: var(--accent);
-  border: 1px solid var(--accent); border-radius: 999px; padding: 7px 14px;
+  text-decoration: none; font-weight: 800; font-size: 14px; color: var(--ink); background: var(--surface);
+  border: 2px solid var(--border); border-radius: 999px; padding: 7px 15px; box-shadow: 2px 2px 0 var(--shadow-c);
 }
-.links a:hover { background: var(--accent-soft); }
-footer { max-width: 1180px; margin: 0 auto; padding-block: 0 40px; color: var(--muted); font-size: 13px; }
-/* ---------- Transport options, day trips, show more ---------- */
-.options { display: grid; gap: 8px; }
-.option {
-  display: grid; grid-template-columns: 70px 1fr auto; align-items: center; gap: 10px; text-align: left;
-  border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 10px 14px; font-size: 15px;
-}
-.option:not(:disabled):hover { border-color: var(--accent); }
-.option:disabled { cursor: not-allowed; opacity: .55; }
-.option span:nth-child(2) { color: var(--muted); font-size: 14px; }
-.option .mono { font-weight: 600; }
-.option[aria-checked="true"] { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
-.fine { font-size: 13px; color: var(--muted); margin: 10px 0 0; }
-.daytrips { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
-.daytrip {
-  background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px;
-  display: flex; flex-direction: column; gap: 6px;
-}
-.daytrip.on { border-color: var(--good); box-shadow: inset 0 3px 0 var(--good); }
-.dt-head { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
-.dt-head strong { font-family: var(--display); font-size: 17px; line-height: 1.2; }
-.dt-how { font: 500 12px/1.3 var(--mono); color: var(--muted); }
-.daytrip p { margin: 0; font-size: 14px; line-height: 1.45; flex: 1; }
-.dt-tags { display: flex; flex-wrap: wrap; gap: 4px; }
-.dt-tags .tag { font-size: 12px; padding: 2px 8px; }
-.tag.hit { background: var(--accent-soft); color: var(--accent); }
-.dt-btn {
-  margin-top: 4px; border: 1px solid var(--accent); background: none; color: var(--accent);
-  border-radius: 8px; padding: 8px 10px; font-weight: 700; font-size: 14px;
-}
-.dt-btn[aria-pressed="true"] { background: var(--good-soft); border-color: var(--good); color: var(--good); }
-.trip-day { border-color: var(--good); }
-.c5 { background: var(--good); }
+.links a:hover { background: var(--sun-soft); }
 .more-btn {
-  border: 1px dashed var(--line); background: var(--surface); color: var(--accent); border-radius: 14px;
-  padding: 14px; font-weight: 700;
+  border: 2px dashed var(--border); background: var(--surface); border-radius: 18px;
+  padding: 14px; font-weight: 800; font-size: 16px;
 }
-.more-btn:hover { border-color: var(--accent); }
-@media (max-width: 480px) { .option { grid-template-columns: 56px 1fr auto; padding: 10px 12px; } }
+.more-btn:hover { background: var(--sun-soft); }
+footer { max-width: 1180px; margin: 0 auto; padding-block: 0 40px; color: var(--muted); font-size: 13px; font-weight: 600; }
+@media (max-width: 480px) { .option { grid-template-columns: 52px 1fr auto; padding: 10px 12px; } }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header class="board" aria-label="Top trips for your choices">
-    <div class="board-top">
+  <header>
+    <div class="hero-top">
       <div>
-        <div class="brand">Week<span>ender</span></div>
-        <p class="tagline">Cheap trips from wherever you're studying in Europe: 49 cities, day trips nearby, and every way to get there by bus, train, boat or plane.</p>
+        <div class="brand">weekender<span>.</span></div>
+        <p class="tagline">Cheap trips from wherever you're studying. <b><span id="city-count">80</span> places</b> across Europe, North Africa and beyond, with day trips nearby and every way to get there.</p>
       </div>
-      <div class="board-status">
-        <div class="eyebrow">Departures from</div>
-        <strong id="board-from">MADRID</strong>
-      </div>
+      <div class="sun" aria-hidden="true"></div>
     </div>
-    <div class="brows" id="board">
-      <div class="bhead" aria-hidden="true">
-        <span class="g" style="--w:13"><small>DESTINATION</small></span>
-        <span class="g" style="--w:5"><small>FARE</small></span>
-        <span class="g col-via" style="--w:5"><small>VIA</small></span>
-        <span class="g col-remark" style="--w:10"><small>REMARK</small></span>
+    <section class="board sticker" aria-label="Top trips for your choices">
+      <div class="board-top">
+        <div><span class="eyebrow">Departures from</span><strong id="board-from">MADRID</strong></div>
+        <span class="board-note">Tap a row to see the plan</span>
       </div>
-    </div>
+      <div class="brows" id="board">
+        <div class="bhead" aria-hidden="true">
+          <span class="g" style="--w:13"><small>DESTINATION</small></span>
+          <span class="g" style="--w:5"><small>FROM</small></span>
+          <span class="col-via"><small>VIA</small></span>
+          <span class="col-remark"><small>IN THIS MONTH</small></span>
+        </div>
+      </div>
+    </section>
   </header>
 
   <div class="layout">
-    <aside class="panel" aria-label="Trip settings">
+    <aside class="panel sticker" aria-label="Trip settings">
       <h2>Plan your trip</h2>
 
       <div class="ctl">
         <label class="eyebrow" for="home">I'm studying in</label>
         <select id="home">
-          <option value="amsterdam">Amsterdam</option>
-          <option value="athens">Athens</option>
-          <option value="barcelona">Barcelona</option>
-          <option value="belgrade">Belgrade</option>
-          <option value="berlin">Berlin</option>
-          <option value="bologna">Bologna</option>
-          <option value="brussels">Brussels</option>
-          <option value="bucharest">Bucharest</option>
-          <option value="budapest">Budapest</option>
-          <option value="copenhagen">Copenhagen</option>
-          <option value="dublin">Dublin</option>
-          <option value="dubrovnik">Dubrovnik</option>
-          <option value="edinburgh">Edinburgh</option>
-          <option value="florence">Florence</option>
-          <option value="gdansk">Gdańsk</option>
-          <option value="granada">Granada</option>
-          <option value="istanbul">Istanbul</option>
-          <option value="krakow">Kraków</option>
-          <option value="lisbon">Lisbon</option>
-          <option value="ljubljana">Ljubljana</option>
-          <option value="london">London</option>
-          <option value="lyon">Lyon</option>
-          <option value="madrid" selected>Madrid</option>
-          <option value="marseille">Marseille</option>
-          <option value="milan">Milan</option>
-          <option value="munich">Munich</option>
-          <option value="malaga">Málaga</option>
-          <option value="naples">Naples</option>
-          <option value="nice">Nice</option>
-          <option value="palma">Palma de Mallorca</option>
-          <option value="paris">Paris</option>
-          <option value="porto">Porto</option>
-          <option value="prague">Prague</option>
-          <option value="riga">Riga</option>
-          <option value="rome">Rome</option>
-          <option value="salzburg">Salzburg</option>
-          <option value="sansebastian">San Sebastián</option>
-          <option value="seville">Seville</option>
-          <option value="sofia">Sofia</option>
-          <option value="split">Split</option>
-          <option value="stockholm">Stockholm</option>
-          <option value="tallinn">Tallinn</option>
-          <option value="valencia">Valencia</option>
-          <option value="valletta">Valletta</option>
-          <option value="venice">Venice</option>
-          <option value="vienna">Vienna</option>
-          <option value="warsaw">Warsaw</option>
-          <option value="zagreb">Zagreb</option>
-          <option value="zurich">Zurich</option>
+          <optgroup label="Albania">
+            <option value="tirana">Tirana</option>
+          </optgroup>
+          <optgroup label="Austria">
+            <option value="salzburg">Salzburg</option>
+            <option value="vienna">Vienna</option>
+          </optgroup>
+          <optgroup label="Belgium">
+            <option value="brussels">Brussels</option>
+          </optgroup>
+          <optgroup label="Bosnia & Herzegovina">
+            <option value="sarajevo">Sarajevo</option>
+          </optgroup>
+          <optgroup label="Bulgaria">
+            <option value="sofia">Sofia</option>
+          </optgroup>
+          <optgroup label="Croatia">
+            <option value="dubrovnik">Dubrovnik</option>
+            <option value="split">Split</option>
+            <option value="zagreb">Zagreb</option>
+          </optgroup>
+          <optgroup label="Cyprus">
+            <option value="paphos">Paphos</option>
+          </optgroup>
+          <optgroup label="Czechia">
+            <option value="prague">Prague</option>
+          </optgroup>
+          <optgroup label="Denmark">
+            <option value="copenhagen">Copenhagen</option>
+          </optgroup>
+          <optgroup label="Estonia">
+            <option value="tallinn">Tallinn</option>
+          </optgroup>
+          <optgroup label="France">
+            <option value="bordeaux">Bordeaux</option>
+            <option value="lyon">Lyon</option>
+            <option value="marseille">Marseille</option>
+            <option value="nice">Nice</option>
+            <option value="paris">Paris</option>
+          </optgroup>
+          <optgroup label="Georgia">
+            <option value="tbilisi">Tbilisi</option>
+          </optgroup>
+          <optgroup label="Germany">
+            <option value="berlin">Berlin</option>
+            <option value="cologne">Cologne</option>
+            <option value="hamburg">Hamburg</option>
+            <option value="munich">Munich</option>
+          </optgroup>
+          <optgroup label="Greece">
+            <option value="athens">Athens</option>
+            <option value="chania">Chania (Crete)</option>
+            <option value="corfu">Corfu</option>
+            <option value="thessaloniki">Thessaloniki</option>
+          </optgroup>
+          <optgroup label="Hungary">
+            <option value="budapest">Budapest</option>
+          </optgroup>
+          <optgroup label="Iceland">
+            <option value="reykjavik">Reykjavík</option>
+          </optgroup>
+          <optgroup label="Ireland">
+            <option value="dublin">Dublin</option>
+          </optgroup>
+          <optgroup label="Italy">
+            <option value="bari">Bari</option>
+            <option value="bologna">Bologna</option>
+            <option value="cagliari">Cagliari (Sardinia)</option>
+            <option value="florence">Florence</option>
+            <option value="milan">Milan</option>
+            <option value="naples">Naples</option>
+            <option value="palermo">Palermo</option>
+            <option value="rome">Rome</option>
+            <option value="venice">Venice</option>
+          </optgroup>
+          <optgroup label="Jordan">
+            <option value="amman">Amman</option>
+          </optgroup>
+          <optgroup label="Latvia">
+            <option value="riga">Riga</option>
+          </optgroup>
+          <optgroup label="Lithuania">
+            <option value="vilnius">Vilnius</option>
+          </optgroup>
+          <optgroup label="Malta">
+            <option value="valletta">Valletta</option>
+          </optgroup>
+          <optgroup label="Morocco">
+            <option value="agadir">Agadir</option>
+            <option value="essaouira">Essaouira</option>
+            <option value="fez">Fez</option>
+            <option value="marrakech">Marrakech</option>
+            <option value="tangier">Tangier</option>
+          </optgroup>
+          <optgroup label="Netherlands">
+            <option value="amsterdam">Amsterdam</option>
+          </optgroup>
+          <optgroup label="Poland">
+            <option value="gdansk">Gdańsk</option>
+            <option value="krakow">Kraków</option>
+            <option value="warsaw">Warsaw</option>
+            <option value="wroclaw">Wrocław</option>
+          </optgroup>
+          <optgroup label="Portugal">
+            <option value="faro">Faro (Algarve)</option>
+            <option value="funchal">Funchal (Madeira)</option>
+            <option value="lisbon">Lisbon</option>
+            <option value="pontadelgada">Ponta Delgada (Azores)</option>
+            <option value="porto">Porto</option>
+          </optgroup>
+          <optgroup label="Romania">
+            <option value="bucharest">Bucharest</option>
+            <option value="cluj">Cluj-Napoca</option>
+          </optgroup>
+          <optgroup label="Serbia">
+            <option value="belgrade">Belgrade</option>
+          </optgroup>
+          <optgroup label="Slovenia">
+            <option value="ljubljana">Ljubljana</option>
+          </optgroup>
+          <optgroup label="Spain">
+            <option value="barcelona">Barcelona</option>
+            <option value="bilbao">Bilbao</option>
+            <option value="granada">Granada</option>
+            <option value="ibiza">Ibiza</option>
+            <option value="laspalmas">Las Palmas</option>
+            <option value="madrid" selected>Madrid</option>
+            <option value="malaga">Málaga</option>
+            <option value="palma">Palma de Mallorca</option>
+            <option value="sansebastian">San Sebastián</option>
+            <option value="seville">Seville</option>
+            <option value="tenerife">Tenerife</option>
+            <option value="valencia">Valencia</option>
+          </optgroup>
+          <optgroup label="Sweden">
+            <option value="stockholm">Stockholm</option>
+          </optgroup>
+          <optgroup label="Switzerland">
+            <option value="zurich">Zurich</option>
+          </optgroup>
+          <optgroup label="Tunisia">
+            <option value="tunis">Tunis</option>
+          </optgroup>
+          <optgroup label="Türkiye">
+            <option value="istanbul">Istanbul</option>
+          </optgroup>
+          <optgroup label="UK">
+            <option value="edinburgh">Edinburgh</option>
+            <option value="london">London</option>
+          </optgroup>
         </select>
       </div>
 
@@ -404,7 +521,7 @@ footer { max-width: 1180px; margin: 0 auto; padding-block: 0 40px; color: var(--
         <p id="results-sub"></p>
       </div>
       <div class="list" id="results">
-        <noscript><div class="empty">Weekender needs JavaScript turned on to plan trips.</div></noscript>
+        <noscript><div class="empty sticker">Weekender needs JavaScript turned on to plan trips.</div></noscript>
       </div>
     </main>
   </div>
@@ -1489,6 +1606,683 @@ window.CITIES = [
       "Take the bus to Sóller instead of the vintage train: same views, far cheaper.",
       "Coves get crowded by 11am in summer; go early."
     ]
+  },
+  {
+    id: "marrakech", code: "RAK", name: "Marrakech", country: "Morocco", lat: 31.63, lon: -7.99,
+    costs: { hostel: 12, food: 15, transit: 3, activities: 10 },
+    interests: ["markets", "food", "history", "architecture", "nature", "hiking", "cafes"],
+    season:    [4,  4,  5,  5,  4,  2,  1,  1,  3,  5,  5,  4],
+    priceMult: [0.9,  0.9,  1.0,  1.2,  1.0,  0.9,  0.8,  0.8,  0.9,  1.1,  1.0,  1.2],
+    bestTime: "March–May and October–November. June–August regularly passes 40°C; Christmas and New Year are busy.",
+    itinerary: [
+      [["Jemaa el-Fnaa square and the souks", 0], ["Lunch at a rooftop café", 8], ["Food stalls on Jemaa el-Fnaa at night", 8]],
+      [["Bahia Palace", 8], ["The Mellah and the spice market", 0], ["Local hammam", 10]],
+      [["Jardin Majorelle", 15], ["Ben Youssef Madrasa", 5], ["Sunset mint tea on a riad rooftop", 4]]
+    ],
+    dayTrips: [
+      { name: "Atlas Mountains & Imlil", how: "Shared taxi, 1h30", cost: 20, tags: ["hiking", "nature"], note: "Berber villages and trails below Mount Toubkal." },
+      { name: "Agafay Desert", how: "Tour, 45 min", cost: 30, tags: ["nature"], note: "Stony desert with camel rides and sunset dinners." },
+      { name: "Ouzoud Falls", how: "Tour, 3h", cost: 25, tags: ["nature", "hiking"], note: "Morocco's tallest waterfalls, with wild monkeys." }
+    ],
+    tips: [
+      "Agree on prices before any service, and haggle in the souks: start around a third of the asking price.",
+      "Many riad hostels include breakfast on the roof."
+    ]
+  },
+  {
+    id: "fez", code: "FEZ", name: "Fez", country: "Morocco", lat: 34.03, lon: -5.0,
+    costs: { hostel: 12, food: 14, transit: 2, activities: 8 },
+    interests: ["history", "markets", "architecture", "food"],
+    season:    [3,  3,  5,  5,  5,  3,  2,  2,  4,  5,  4,  3],
+    priceMult: [0.9,  0.9,  1.0,  1.1,  1.0,  0.9,  0.9,  0.9,  1.0,  1.0,  0.9,  1.0],
+    bestTime: "March–May and September–November. Summer is very hot inside the medina.",
+    itinerary: [
+      [["Blue Gate and the medina", 0], ["Street-food lunch", 5], ["Rooftop sunset over the medina", 0]],
+      [["Chouara tannery viewpoint", 2], ["Al-Attarine Madrasa", 3], ["Dinner in the medina", 8]],
+      [["Guided medina walk (it's a maze)", 10], ["Royal Palace gates and the Mellah", 0], ["Sunset at the Merenid Tombs", 0]]
+    ],
+    dayTrips: [
+      { name: "Chefchaouen", how: "Bus, 4h", cost: 15, tags: ["architecture", "hiking"], note: "The famous blue mountain town; better as an overnight." },
+      { name: "Meknes & Volubilis", how: "Train + taxi, 1h30", cost: 20, tags: ["history"], note: "Roman ruins and a former imperial city." }
+    ],
+    tips: [
+      "Hire an official guide for your first medina walk; getting lost is easy.",
+      "Tannery shops let you look for free, but expect a sales pitch."
+    ]
+  },
+  {
+    id: "tangier", code: "TNG", name: "Tangier", country: "Morocco", lat: 35.77, lon: -5.8,
+    costs: { hostel: 15, food: 15, transit: 2, activities: 6 },
+    interests: ["history", "beach", "cafes", "markets", "architecture"],
+    season:    [3,  3,  4,  5,  5,  5,  4,  4,  5,  4,  3,  3],
+    priceMult: [0.8,  0.8,  0.9,  1.0,  1.1,  1.2,  1.3,  1.3,  1.1,  1.0,  0.8,  0.9],
+    bestTime: "April–June and September. An easy first step into Morocco: just a short ferry from Spain.",
+    itinerary: [
+      [["Kasbah and the medina", 0], ["Mint tea at Café Hafa above the sea", 2], ["Grand Socco and dinner", 8]],
+      [["Caves of Hercules", 3], ["Cap Spartel lighthouse", 0], ["Beach walk at Achakar", 0]],
+      [["American Legation Museum", 5], ["Cafés on the Petit Socco", 3], ["Seafront at sunset", 0]]
+    ],
+    dayTrips: [
+      { name: "Chefchaouen", how: "Bus, 3h", cost: 12, tags: ["architecture", "hiking"], note: "Blue-painted town in the Rif mountains." },
+      { name: "Asilah", how: "Train, 45 min", cost: 6, tags: ["streetart", "beach"], note: "Whitewashed seaside town covered in murals." },
+      { name: "Tetouan", how: "Bus, 1h", cost: 5, tags: ["history", "markets"], note: "UNESCO medina with Andalusian architecture." }
+    ],
+    tips: [
+      "Ferries from Tarifa arrive in the city port, a short walk from the medina.",
+      "High-speed Al Boraq trains run from Tangier to Rabat and Casablanca."
+    ]
+  },
+  {
+    id: "agadir", code: "AGA", name: "Agadir", country: "Morocco", lat: 30.43, lon: -9.6,
+    costs: { hostel: 15, food: 15, transit: 2, activities: 10 },
+    interests: ["beach", "nature", "hiking", "food"],
+    season:    [4,  4,  5,  5,  5,  4,  4,  4,  5,  5,  5,  4],
+    priceMult: [0.9,  0.9,  0.9,  1.0,  1.0,  1.0,  1.2,  1.3,  1.0,  1.0,  0.9,  1.1],
+    bestTime: "Almost any month: 300 sunny days a year and mild winters. Surf is best from autumn to spring.",
+    itinerary: [
+      [["The long beach and promenade", 0], ["Souk El Had market", 5], ["Fish dinner at the port", 10]],
+      [["Surf lesson in Taghazout", 25], ["Beach afternoon", 0], ["Sunset in Taghazout", 0]],
+      [["Agadir Oufella kasbah viewpoint", 3], ["Swim at Paradise Valley", 8], ["Dinner in town", 8]]
+    ],
+    dayTrips: [
+      { name: "Taghazout", how: "Bus, 40 min", cost: 3, tags: ["beach"], note: "Laid-back surf village." },
+      { name: "Paradise Valley", how: "Taxi, 1h", cost: 15, tags: ["nature", "hiking"], note: "Palm-lined gorge with rock pools." }
+    ],
+    tips: [
+      "Local buses to Taghazout cost under €1.",
+      "Winter is warm enough for the beach when Europe is freezing."
+    ]
+  },
+  {
+    id: "essaouira", code: "ESU", name: "Essaouira", country: "Morocco", lat: 31.51, lon: -9.77,
+    costs: { hostel: 15, food: 15, transit: 1, activities: 8 },
+    interests: ["beach", "music", "markets", "food", "cafes", "art"],
+    season:    [4,  4,  5,  5,  5,  4,  4,  4,  5,  5,  4,  4],
+    priceMult: [0.9,  0.9,  0.9,  1.0,  1.0,  1.2,  1.2,  1.2,  1.0,  1.0,  0.9,  1.0],
+    bestTime: "Year-round; cooler and windier than Marrakech. The Gnaoua music festival is in June.",
+    itinerary: [
+      [["Ramparts and the Skala de la Ville", 0], ["Grilled fish at the port stalls", 10], ["Rooftop sunset", 4]],
+      [["Beach and a camel ride", 15], ["Art galleries in the medina", 0], ["Live Gnaoua music", 5]],
+      [["Medina markets", 0], ["Coffee on Place Moulay Hassan", 3], ["Sunset beach walk", 0]]
+    ],
+    dayTrips: [
+      { name: "Sidi Kaouki", how: "Bus, 30 min", cost: 4, tags: ["beach"], note: "Quiet surf beach south of town." },
+      { name: "Argan cooperatives", how: "Taxi, 30 min", cost: 10, tags: ["nature", "markets"], note: "Women's cooperatives making argan oil." }
+    ],
+    tips: [
+      "Pick your fish at the port stalls and they'll grill it for you.",
+      "Bring a jacket: the wind can be strong."
+    ]
+  },
+  {
+    id: "tunis", code: "TUN", name: "Tunis", country: "Tunisia", lat: 36.81, lon: 10.18,
+    costs: { hostel: 15, food: 14, transit: 2, activities: 8 },
+    interests: ["history", "beach", "architecture", "markets", "food"],
+    season:    [3,  3,  4,  5,  5,  4,  3,  3,  5,  5,  4,  3],
+    priceMult: [0.8,  0.8,  0.9,  1.0,  1.1,  1.2,  1.3,  1.3,  1.1,  1.0,  0.8,  0.9],
+    bestTime: "April–June and September–October. Very affordable and uncrowded outside summer.",
+    itinerary: [
+      [["Medina of Tunis and the souks", 0], ["Lunch in the medina", 6], ["Dinner on Avenue Habib Bourguiba", 8]],
+      [["Bardo Museum mosaics", 5], ["Light rail to Sidi Bou Said", 1], ["Sunset at Café des Délices", 3]],
+      [["Carthage ruins", 5], ["Beach at La Marsa", 0], ["Seafood in La Goulette", 12]]
+    ],
+    dayTrips: [
+      { name: "Dougga", how: "Bus + taxi, 2h", cost: 15, tags: ["history"], note: "A remarkably complete Roman town in the hills." },
+      { name: "Hammamet", how: "Train, 1h", cost: 5, tags: ["beach"], note: "Beach town with an old medina." },
+      { name: "Kairouan", how: "Shared minibus, 2h30", cost: 12, tags: ["history", "architecture"], note: "One of Islam's holiest cities." }
+    ],
+    tips: [
+      "The TGM light rail runs to Carthage, Sidi Bou Said and La Marsa for pennies.",
+      "Shared louage minibuses are the cheapest way between cities."
+    ]
+  },
+  {
+    id: "amman", code: "AMM", name: "Amman", country: "Jordan", lat: 31.95, lon: 35.93,
+    costs: { hostel: 18, food: 15, transit: 3, activities: 12 },
+    interests: ["history", "food", "hiking", "nature", "markets"],
+    season:    [3,  3,  5,  5,  5,  3,  2,  2,  4,  5,  5,  3],
+    priceMult: [0.9,  0.9,  1.0,  1.2,  1.1,  1.0,  1.0,  1.0,  1.0,  1.1,  1.0,  0.9],
+    bestTime: "March–May and October–November. Summer is scorching at Petra and Wadi Rum.",
+    itinerary: [
+      [["Citadel and the Roman Theatre", 3], ["Falafel at Hashem", 3], ["Cafés on Rainbow Street", 6]],
+      [["Downtown souks", 0], ["Kunafa at Habibah", 2], ["Rooftop dinner in Jabal Amman", 12]],
+      [["Jordan Museum", 7], ["Wild Jordan Center viewpoint", 4], ["Downtown night walk", 0]]
+    ],
+    dayTrips: [
+      { name: "Petra", how: "Bus, 3h30", cost: 70, tags: ["history", "hiking"], note: "The rose-red city; the Jordan Pass covers entry if bought before you arrive." },
+      { name: "Dead Sea", how: "Bus, 1h", cost: 25, tags: ["nature", "beach"], note: "Float in the saltiest sea on earth." },
+      { name: "Jerash", how: "Bus, 1h", cost: 15, tags: ["history"], note: "One of the best-preserved Roman cities anywhere." }
+    ],
+    tips: [
+      "Buy the Jordan Pass online before arriving: it waives the visa fee and includes Petra.",
+      "Falafel and hummus breakfasts cost a couple of euros."
+    ]
+  },
+  {
+    id: "tbilisi", code: "TBS", name: "Tbilisi", country: "Georgia", lat: 41.72, lon: 44.79,
+    costs: { hostel: 12, food: 15, transit: 2, activities: 8 },
+    interests: ["food", "wine", "history", "nightlife", "hiking", "architecture", "cafes"],
+    season:    [2,  2,  3,  5,  5,  4,  3,  3,  5,  5,  3,  2],
+    priceMult: [0.9,  0.9,  0.9,  1.0,  1.1,  1.1,  1.1,  1.1,  1.1,  1.0,  0.9,  0.9],
+    bestTime: "April–June and September–October. October is harvest season in the wine regions.",
+    itinerary: [
+      [["Old Tbilisi and the sulfur-bath district", 0], ["Khinkali (dumpling) lunch", 6], ["Wine bar in the old town", 10]],
+      [["Cable car to Narikala Fortress", 1], ["Fabrika courtyard bars", 5], ["Georgian feast dinner", 12]],
+      [["Dry Bridge flea market", 0], ["Private sulfur bath room (split with friends)", 10], ["Techno night", 15]]
+    ],
+    dayTrips: [
+      { name: "Mtskheta", how: "Minibus, 30 min", cost: 3, tags: ["history"], note: "The ancient capital and hilltop Jvari Monastery." },
+      { name: "Kazbegi", how: "Minibus, 3h", cost: 15, tags: ["hiking", "nature"], note: "Mountain church below Mount Kazbek." },
+      { name: "Kakheti wine country", how: "Minibus, 2h", cost: 20, tags: ["wine", "nature"], note: "Sighnaghi's walls and family wineries." }
+    ],
+    tips: [
+      "Budget flights often land in Kutaisi; a cheap shuttle bus runs to Tbilisi (about 4 hours).",
+      "Many EU passport holders can visit visa-free; check yours before booking."
+    ]
+  },
+  {
+    id: "paphos", code: "PFO", name: "Paphos", country: "Cyprus", lat: 34.77, lon: 32.42,
+    costs: { hostel: 25, food: 22, transit: 4, activities: 8 },
+    interests: ["beach", "history", "hiking", "nature", "islands"],
+    season:    [3,  3,  4,  5,  5,  4,  3,  3,  5,  5,  4,  3],
+    priceMult: [0.8,  0.8,  0.9,  1.0,  1.1,  1.2,  1.3,  1.3,  1.1,  1.0,  0.8,  0.9],
+    bestTime: "April–June and September–October. Beach weather lasts into November.",
+    itinerary: [
+      [["Archaeological Park mosaics", 5], ["Harbor lunch", 12], ["Sunset by the harbor castle", 0]],
+      [["Tombs of the Kings", 3], ["Coral Bay beach", 0], ["Bars in Kato Paphos", 10]],
+      [["Swim at Aphrodite's Rock", 0], ["Halloumi and meze lunch", 12], ["Old town evening", 8]]
+    ],
+    dayTrips: [
+      { name: "Avakas Gorge", how: "Bus + walk, 1h", cost: 5, tags: ["hiking", "nature"], note: "Narrow limestone gorge on the Akamas peninsula." },
+      { name: "Blue Lagoon, Akamas", how: "Boat trip, 1h", cost: 30, tags: ["islands", "beach"], note: "Clear water for swimming and snorkeling." },
+      { name: "Troodos Mountains", how: "Tour, 1h30", cost: 30, tags: ["hiking", "nature", "wine"], note: "Pine forests, painted churches and village wineries." }
+    ],
+    tips: [
+      "Intercity and airport buses are cheap; taxis are not.",
+      "Order a meze to share: it's a full feast for a group."
+    ]
+  },
+  {
+    id: "tenerife", code: "TFS", name: "Tenerife", country: "Spain", lat: 28.46, lon: -16.25,
+    costs: { hostel: 22, food: 22, transit: 4, activities: 10 },
+    interests: ["beach", "hiking", "nature", "festivals", "islands"],
+    season:    [5,  5,  4,  4,  4,  4,  4,  4,  4,  4,  5,  5],
+    priceMult: [1.1,  1.2,  1.0,  1.0,  0.9,  1.0,  1.2,  1.3,  1.0,  1.0,  1.1,  1.2],
+    bestTime: "Warm all year, so winter is the best time to escape Europe's cold. Santa Cruz Carnival (February) is one of the world's biggest.",
+    itinerary: [
+      [["La Laguna old town", 0], ["Papas arrugadas lunch", 8], ["Seafront bars in Santa Cruz", 10]],
+      [["Bus to Teide National Park", 10], ["Hike near the volcano", 0], ["Stargazing under clear skies", 0]],
+      [["Hike in the Anaga mountains", 3], ["Las Teresitas beach", 0], ["Fish dinner in San Andrés", 12]]
+    ],
+    dayTrips: [
+      { name: "Masca", how: "Bus, 1h30", cost: 8, tags: ["hiking", "nature"], note: "Village in a dramatic ravine." },
+      { name: "La Gomera", how: "Ferry, 1h", cost: 45, tags: ["islands", "hiking"], note: "Laurel forests and whistled language." },
+      { name: "Los Gigantes", how: "Bus, 1h30", cost: 30, tags: ["beach", "islands"], note: "Sea cliffs and whale-watching boats." }
+    ],
+    tips: [
+      "Get a Ten+ bus card for much cheaper rides.",
+      "The Teide cable car sells out; book ahead or hike instead."
+    ]
+  },
+  {
+    id: "laspalmas", code: "LPA", name: "Las Palmas", country: "Spain", lat: 28.12, lon: -15.43,
+    costs: { hostel: 22, food: 22, transit: 4, activities: 8 },
+    interests: ["beach", "nature", "hiking", "nightlife", "festivals", "islands"],
+    season:    [5,  5,  4,  4,  4,  4,  4,  4,  4,  4,  5,  5],
+    priceMult: [1.1,  1.1,  1.0,  1.0,  0.9,  1.0,  1.1,  1.2,  1.0,  1.0,  1.1,  1.2],
+    bestTime: "Warm all year, with some of Europe's best winter weather. Carnival is in February.",
+    itinerary: [
+      [["Las Canteras beach", 0], ["Vegueta old town", 0], ["Tapas in Triana", 12]],
+      [["Surf lesson at La Cícer", 25], ["Beach afternoon", 0], ["Bars near the beach", 10]],
+      [["Lunch at Mercado del Puerto", 10], ["Bus to the Roque Nublo hike", 8], ["Dinner in town", 10]]
+    ],
+    dayTrips: [
+      { name: "Maspalomas Dunes", how: "Bus, 1h", cost: 6, tags: ["beach", "nature"], note: "Sahara-style dunes next to the ocean." },
+      { name: "Roque Nublo", how: "Bus, 1h30", cost: 8, tags: ["hiking", "nature"], note: "Easy hike to the island's iconic rock." },
+      { name: "Agaete", how: "Bus, 1h", cost: 6, tags: ["beach", "nature"], note: "Natural sea pools and a coffee-growing valley." }
+    ],
+    tips: [
+      "Global buses cover the whole island cheaply.",
+      "A natural reef keeps the water at Las Canteras calm for swimming."
+    ]
+  },
+  {
+    id: "funchal", code: "FNC", name: "Funchal (Madeira)", country: "Portugal", lat: 32.65, lon: -16.91,
+    costs: { hostel: 25, food: 20, transit: 3, activities: 10 },
+    interests: ["hiking", "nature", "food", "wine", "islands", "festivals"],
+    season:    [4,  4,  4,  5,  5,  5,  4,  4,  5,  5,  4,  5],
+    priceMult: [0.9,  1.0,  1.0,  1.1,  1.0,  1.1,  1.2,  1.3,  1.1,  1.0,  0.9,  1.4],
+    bestTime: "Spring and autumn for hiking. The New Year's fireworks are world famous, and prices rise to match.",
+    itinerary: [
+      [["Painted doors of the old town", 0], ["Mercado dos Lavradores", 5], ["Poncha bar", 5]],
+      [["Cable car to Monte", 13], ["Wicker toboggan ride down", 20], ["Dinner in the Zona Velha", 12]],
+      [["Levada walk", 5], ["Madeira wine tasting", 8], ["Seafront sunset", 0]]
+    ],
+    dayTrips: [
+      { name: "Pico do Arieiro to Pico Ruivo", how: "Taxi or tour, 45 min", cost: 30, tags: ["hiking", "nature"], note: "Ridge hike above the clouds between the two highest peaks." },
+      { name: "Porto Moniz", how: "Bus, 2h30", cost: 10, tags: ["beach", "nature"], note: "Volcanic rock pools on the north coast." },
+      { name: "Porto Santo", how: "Ferry, 2h30", cost: 50, tags: ["islands", "beach"], note: "Island with a 9 km golden beach." }
+    ],
+    tips: [
+      "Poncha, the local drink, costs a couple of euros.",
+      "Check levada trail status before hiking; some close after storms."
+    ]
+  },
+  {
+    id: "pontadelgada", code: "PDL", name: "Ponta Delgada (Azores)", country: "Portugal", lat: 37.74, lon: -25.67,
+    costs: { hostel: 22, food: 22, transit: 4, activities: 10 },
+    interests: ["nature", "hiking", "islands", "food"],
+    season:    [2,  2,  3,  4,  5,  5,  5,  5,  5,  4,  2,  2],
+    priceMult: [0.8,  0.8,  0.9,  1.0,  1.1,  1.2,  1.3,  1.4,  1.1,  1.0,  0.8,  0.9],
+    bestTime: "May–September. The weather changes fast, so always bring a rain jacket.",
+    itinerary: [
+      [["Portas da Cidade and the old town", 0], ["Pineapple greenhouse visit", 3], ["Seafood dinner", 14]],
+      [["Whale-watching tour", 55], ["Harbor cafés", 4], ["Bars in the center", 8]],
+      [["Gorreana tea plantation", 0], ["Coastal walk", 0], ["Dinner in town", 12]]
+    ],
+    dayTrips: [
+      { name: "Sete Cidades", how: "Bus, 45 min", cost: 5, tags: ["nature", "hiking"], note: "Twin crater lakes, one blue, one green." },
+      { name: "Furnas", how: "Bus, 1h15", cost: 20, tags: ["nature", "food"], note: "Hot springs and a stew cooked in volcanic ground." },
+      { name: "Lagoa do Fogo", how: "Taxi or tour, 40 min", cost: 20, tags: ["hiking", "nature"], note: "A wild crater lake with a steep hike down." }
+    ],
+    tips: [
+      "Renting a car with friends is often cheaper than tours.",
+      "The Terra Nostra pool in Furnas is warm and iron-orange; wear an old swimsuit."
+    ]
+  },
+  {
+    id: "faro", code: "FAO", name: "Faro (Algarve)", country: "Portugal", lat: 37.02, lon: -7.93,
+    costs: { hostel: 20, food: 20, transit: 3, activities: 8 },
+    interests: ["beach", "nature", "islands", "food", "hiking"],
+    season:    [3,  3,  4,  5,  5,  5,  4,  4,  5,  4,  3,  3],
+    priceMult: [0.8,  0.8,  0.9,  1.0,  1.1,  1.3,  1.4,  1.5,  1.2,  1.0,  0.8,  0.8],
+    bestTime: "May–June and September. The Algarve is packed in July and August.",
+    itinerary: [
+      [["Old town inside the walls", 0], ["Chapel of Bones", 2], ["Dinner in the old town", 12]],
+      [["Ferry to Ilha Deserta", 12], ["Beach day", 0], ["Seafood by the marina", 14]],
+      [["Ria Formosa lagoon walk", 0], ["Market lunch", 8], ["Bars on Rua do Prior", 10]]
+    ],
+    dayTrips: [
+      { name: "Lagos & Ponta da Piedade", how: "Train, 1h45", cost: 15, tags: ["beach", "hiking"], note: "Golden cliffs, grottoes and sea kayaking." },
+      { name: "Tavira", how: "Train, 35 min", cost: 6, tags: ["beach", "islands"], note: "Pretty river town with a ferry to Ilha de Tavira." },
+      { name: "Benagil Caves", how: "Bus + boat, 1h30", cost: 30, tags: ["beach", "islands", "nature"], note: "The famous sea cave with a hole in its roof." }
+    ],
+    tips: [
+      "Faro airport is a 20-minute bus from town.",
+      "Algarve regional trains are cheap but infrequent; check times."
+    ]
+  },
+  {
+    id: "bilbao", code: "BIO", name: "Bilbao", country: "Spain", lat: 43.26, lon: -2.93,
+    costs: { hostel: 28, food: 26, transit: 4, activities: 10 },
+    interests: ["art", "food", "architecture", "hiking", "nature"],
+    season:    [2,  2,  3,  4,  5,  5,  5,  5,  5,  4,  2,  3],
+    priceMult: [0.9,  0.9,  0.9,  1.0,  1.0,  1.1,  1.2,  1.3,  1.1,  1.0,  0.9,  0.9],
+    bestTime: "May–September. August's Aste Nagusia festival is a huge free party.",
+    itinerary: [
+      [["Guggenheim Museum", 14], ["Riverside walk", 0], ["Pintxos in the Casco Viejo", 18]],
+      [["La Ribera market", 5], ["Funicular up Artxanda", 2], ["Bars on Calle Ledesma", 12]],
+      [["Getxo and the hanging bridge", 3], ["Beach at Sopelana", 0], ["Dinner in town", 14]]
+    ],
+    dayTrips: [
+      { name: "San Juan de Gaztelugatxe", how: "Bus, 1h", cost: 5, tags: ["hiking", "nature", "islands"], note: "Stairway to a chapel on a sea rock." },
+      { name: "Mundaka", how: "Train, 1h", cost: 4, tags: ["beach"], note: "Fishing village famous for its surf wave." },
+      { name: "Gernika", how: "Train, 50 min", cost: 4, tags: ["history"], note: "The town Picasso's painting is named after." }
+    ],
+    tips: [
+      "The Guggenheim has a student discount; bring ID.",
+      "Some neighborhoods do cheap drink-and-pintxo deals on Thursday evenings."
+    ]
+  },
+  {
+    id: "ibiza", code: "IBZ", name: "Ibiza", country: "Spain", lat: 38.91, lon: 1.43,
+    costs: { hostel: 35, food: 28, transit: 4, activities: 12 },
+    interests: ["nightlife", "beach", "islands", "nature", "music", "festivals"],
+    season:    [2,  2,  2,  3,  5,  5,  4,  4,  5,  4,  2,  2],
+    priceMult: [0.7,  0.7,  0.8,  1.0,  1.2,  1.5,  1.8,  1.9,  1.3,  1.0,  0.7,  0.7],
+    bestTime: "Late May–June and September for beaches with fewer crowds. Clubs run roughly May–October; winter is very quiet.",
+    itinerary: [
+      [["Dalt Vila old town", 0], ["Talamanca beach", 0], ["Bars around the port", 15]],
+      [["Cala Comte beach", 4], ["Sunset in Sant Antoni", 8], ["Club night (tickets vary widely)", 40]],
+      [["Recovery at Las Salinas beach", 4], ["Hippy market (Wednesdays, Es Canar)", 0], ["Dinner in Ibiza town", 14]]
+    ],
+    dayTrips: [
+      { name: "Formentera", how: "Ferry, 30 min", cost: 45, tags: ["islands", "beach"], note: "Caribbean-blue water and white sand." },
+      { name: "Cala Salada", how: "Bus, 40 min", cost: 4, tags: ["beach", "nature"], note: "Pine-fringed cove with clear water." },
+      { name: "Sant Antoni", how: "Bus, 25 min", cost: 4, tags: ["nightlife", "beach"], note: "Sunset strip and bars." }
+    ],
+    tips: [
+      "Club tickets are much cheaper online in advance.",
+      "The Disco Bus runs all night between clubs and towns."
+    ]
+  },
+  {
+    id: "palermo", code: "PMO", name: "Palermo", country: "Italy", lat: 38.12, lon: 13.36,
+    costs: { hostel: 20, food: 18, transit: 3, activities: 8 },
+    interests: ["food", "markets", "history", "architecture", "beach", "streetart"],
+    season:    [3,  3,  4,  5,  5,  4,  3,  3,  5,  5,  4,  3],
+    priceMult: [0.8,  0.8,  0.9,  1.1,  1.1,  1.2,  1.3,  1.4,  1.1,  1.0,  0.8,  0.9],
+    bestTime: "April–June and September–October. August is hot and busy.",
+    itinerary: [
+      [["Street food at Ballarò market", 6], ["Cathedral and Quattro Canti", 0], ["Aperitivo in the Vucciria", 8]],
+      [["Palatine Chapel mosaics", 15], ["Teatro Massimo from outside", 0], ["Arancine crawl", 6]],
+      [["Bus to Mondello beach", 3], ["Beach afternoon", 0], ["Dinner in the Kalsa", 12]]
+    ],
+    dayTrips: [
+      { name: "Monreale", how: "Bus, 40 min", cost: 10, tags: ["art", "history"], note: "Cathedral covered in gold mosaics." },
+      { name: "Cefalù", how: "Train, 1h", cost: 12, tags: ["beach", "architecture"], note: "Beach town under a giant rock." },
+      { name: "Zingaro Nature Reserve", how: "Bus, 1h30", cost: 12, tags: ["hiking", "beach", "nature"], note: "Coastal path between hidden coves." }
+    ],
+    tips: [
+      "Street food is king: panelle, arancine and sfincione cost €1–3.",
+      "Many churches charge small entry fees; carry coins."
+    ]
+  },
+  {
+    id: "bari", code: "BRI", name: "Bari", country: "Italy", lat: 41.12, lon: 16.87,
+    costs: { hostel: 22, food: 18, transit: 3, activities: 8 },
+    interests: ["food", "beach", "history", "architecture"],
+    season:    [3,  3,  4,  5,  5,  4,  3,  3,  5,  5,  3,  3],
+    priceMult: [0.8,  0.8,  0.9,  1.0,  1.1,  1.2,  1.3,  1.3,  1.1,  1.0,  0.8,  0.9],
+    bestTime: "May–June and September. A great base for exploring Puglia by train.",
+    itinerary: [
+      [["Bari Vecchia and the pasta makers on Arco Basso", 0], ["Focaccia and street food", 5], ["Evening on the seafront", 0]],
+      [["Basilica di San Nicola", 0], ["Pane e Pomodoro beach", 0], ["Bars on Piazza Mercantile", 10]],
+      [["Castello Svevo", 9], ["Raw seafood at the old port", 10], ["Dinner in Murat", 12]]
+    ],
+    dayTrips: [
+      { name: "Polignano a Mare", how: "Train, 30 min", cost: 5, tags: ["beach", "architecture"], note: "Cliff-top town above a tiny cove." },
+      { name: "Alberobello", how: "Train, 1h30", cost: 12, tags: ["architecture", "history"], note: "Cone-roofed trulli houses." },
+      { name: "Matera", how: "Train, 1h30", cost: 15, tags: ["history", "architecture"], note: "Ancient cave city carved into a ravine." }
+    ],
+    tips: [
+      "Regional trains around Puglia cost a few euros.",
+      "Buy a bag of handmade orecchiette straight from the makers in Bari Vecchia."
+    ]
+  },
+  {
+    id: "cagliari", code: "CAG", name: "Cagliari (Sardinia)", country: "Italy", lat: 39.22, lon: 9.11,
+    costs: { hostel: 22, food: 20, transit: 3, activities: 8 },
+    interests: ["beach", "history", "nature", "food", "islands", "hiking"],
+    season:    [2,  3,  3,  4,  5,  5,  4,  4,  5,  4,  3,  2],
+    priceMult: [0.8,  0.8,  0.9,  1.0,  1.1,  1.3,  1.4,  1.5,  1.2,  1.0,  0.8,  0.8],
+    bestTime: "May–June and September for Sardinia's beaches without the August crowds.",
+    itinerary: [
+      [["Castello district and bastions", 0], ["San Benedetto market lunch", 8], ["Sunset at Bastione di Saint Remy", 0]],
+      [["Poetto beach", 0], ["Flamingos in Molentargius park", 0], ["Bars in the Marina district", 10]],
+      [["Sella del Diavolo hike", 0], ["Swim at Calamosca cove", 0], ["Seafood dinner", 14]]
+    ],
+    dayTrips: [
+      { name: "Villasimius", how: "Bus, 1h15", cost: 8, tags: ["beach", "nature"], note: "Turquoise beaches on the southeast tip." },
+      { name: "Nora", how: "Bus, 1h", cost: 15, tags: ["history", "beach"], note: "Phoenician-Roman ruins by the sea." },
+      { name: "Chia", how: "Bus, 1h15", cost: 8, tags: ["beach"], note: "Dunes and some of Sardinia's best beaches." }
+    ],
+    tips: [
+      "Poetto beach is reachable by city bus.",
+      "Renting a car with friends is the best way to reach remote beaches."
+    ]
+  },
+  {
+    id: "thessaloniki", code: "SKG", name: "Thessaloniki", country: "Greece", lat: 40.64, lon: 22.94,
+    costs: { hostel: 18, food: 18, transit: 2, activities: 6 },
+    interests: ["food", "nightlife", "history", "beach", "cafes"],
+    season:    [2,  2,  3,  4,  5,  5,  4,  4,  5,  4,  3,  3],
+    priceMult: [0.8,  0.8,  0.9,  1.0,  1.0,  1.1,  1.1,  1.1,  1.0,  1.0,  0.9,  0.9],
+    bestTime: "May–June and September–October. A big student city with great cheap food and late nights.",
+    itinerary: [
+      [["White Tower and the waterfront", 0], ["Bougatsa pastry breakfast", 3], ["Bars in Ladadika", 10]],
+      [["Rotunda and the Arch of Galerius", 6], ["Ano Poli old town viewpoint", 0], ["Ouzeri dinner", 12]],
+      [["Modiano and Kapani markets", 5], ["Waterfront walk to the Umbrellas sculpture", 0], ["Bars on Valaoritou", 10]]
+    ],
+    dayTrips: [
+      { name: "Halkidiki", how: "Bus, 1h30", cost: 15, tags: ["beach"], note: "Pine-backed beaches with clear water." },
+      { name: "Mount Olympus", how: "Train + bus, 1h30", cost: 15, tags: ["hiking", "nature"], note: "Home of the gods, with gorge trails." },
+      { name: "Meteora", how: "Train, 4h", cost: 30, tags: ["hiking", "history"], note: "Monasteries on rock pillars; best as an overnight." }
+    ],
+    tips: [
+      "Ouzeri meals are shared small plates; order a few and a carafe.",
+      "It's a student city, so prices are low and nightlife runs late."
+    ]
+  },
+  {
+    id: "chania", code: "CHQ", name: "Chania (Crete)", country: "Greece", lat: 35.51, lon: 24.02,
+    costs: { hostel: 22, food: 20, transit: 3, activities: 8 },
+    interests: ["beach", "hiking", "food", "history", "nature", "islands"],
+    season:    [3,  3,  4,  5,  5,  5,  4,  4,  5,  5,  4,  3],
+    priceMult: [0.8,  0.8,  0.9,  1.0,  1.1,  1.3,  1.4,  1.4,  1.2,  1.0,  0.8,  0.8],
+    bestTime: "May–June and September–October. Samaria Gorge is open roughly May–October.",
+    itinerary: [
+      [["Venetian harbor and lighthouse", 0], ["Municipal market", 5], ["Harborside dinner", 14]],
+      [["Old town lanes", 0], ["Nea Chora beach", 0], ["Raki bars", 8]],
+      [["Bus to Agia Marina beach", 3], ["Beach afternoon", 0], ["Taverna dinner", 12]]
+    ],
+    dayTrips: [
+      { name: "Samaria Gorge", how: "Bus + ferry, 1h30", cost: 35, tags: ["hiking", "nature"], note: "A 16 km hike down to the Libyan Sea (May–October)." },
+      { name: "Balos Lagoon", how: "Boat or bus, 1h30", cost: 30, tags: ["beach", "islands"], note: "Shallow turquoise lagoon." },
+      { name: "Elafonissi", how: "Bus, 2h", cost: 16, tags: ["beach", "nature"], note: "Pink-sand beach with shallow lagoons." }
+    ],
+    tips: [
+      "KTEL buses reach most beaches cheaply.",
+      "Tavernas often bring free raki and dessert after dinner."
+    ]
+  },
+  {
+    id: "corfu", code: "CFU", name: "Corfu", country: "Greece", lat: 39.62, lon: 19.92,
+    costs: { hostel: 22, food: 22, transit: 3, activities: 8 },
+    interests: ["beach", "islands", "history", "architecture", "nature", "castles"],
+    season:    [2,  2,  3,  4,  5,  5,  4,  4,  5,  4,  2,  2],
+    priceMult: [0.8,  0.8,  0.8,  1.0,  1.1,  1.3,  1.4,  1.5,  1.2,  1.0,  0.8,  0.8],
+    bestTime: "May–June and September. Many places close November–March.",
+    itinerary: [
+      [["Corfu old town lanes", 0], ["Coffee under the Liston arcade", 4], ["Dinner in the old town", 12]],
+      [["Old Fortress", 10], ["Swim at Faliraki", 0], ["Sunset at the New Fortress", 0]],
+      [["Bus to Paleokastritsa", 4], ["Beach and a boat to the caves", 15], ["Taverna dinner", 12]]
+    ],
+    dayTrips: [
+      { name: "Paxos", how: "Ferry, 1h", cost: 40, tags: ["islands", "beach"], note: "Tiny island with blue caves." },
+      { name: "Achilleion Palace", how: "Bus, 30 min", cost: 12, tags: ["castles"], note: "Empress Sisi's summer palace." },
+      { name: "Canal d'Amour", how: "Bus, 1h15", cost: 6, tags: ["beach", "nature"], note: "Sandstone coves and swim-through channels." }
+    ],
+    tips: [
+      "Green KTEL buses cover the island; blue buses serve the town.",
+      "West-coast sunsets beat the town side."
+    ]
+  },
+  {
+    id: "tirana", code: "TIA", name: "Tirana", country: "Albania", lat: 41.33, lon: 19.82,
+    costs: { hostel: 12, food: 14, transit: 1, activities: 5 },
+    interests: ["history", "food", "nightlife", "cafes", "beach", "hiking"],
+    season:    [2,  3,  3,  4,  5,  5,  4,  4,  5,  4,  3,  2],
+    priceMult: [0.9,  0.9,  0.9,  1.0,  1.0,  1.1,  1.2,  1.2,  1.0,  1.0,  0.9,  0.9],
+    bestTime: "May–June and September. One of Europe's cheapest countries, with the Riviera beaches close by.",
+    itinerary: [
+      [["Skanderbeg Square and the Et'hem Bey Mosque", 0], ["Bunk'Art 1 museum", 12], ["Bars in Blloku", 8]],
+      [["Dajti Express cable car", 14], ["Grand Park lake", 0], ["Traditional dinner", 8]],
+      [["Pazari i Ri market", 4], ["House of Leaves museum", 7], ["Cafés in Blloku", 5]]
+    ],
+    dayTrips: [
+      { name: "Krujë", how: "Bus, 1h", cost: 5, tags: ["history", "castles"], note: "Hilltop castle and an old bazaar." },
+      { name: "Berat", how: "Bus, 2h30", cost: 10, tags: ["history", "architecture"], note: "The town of a thousand windows." },
+      { name: "Durrës", how: "Bus, 1h", cost: 3, tags: ["beach", "history"], note: "Roman amphitheater and a long beach." }
+    ],
+    tips: [
+      "Coffee is often under €1; café culture is huge.",
+      "Furgons (minibuses) are the cheapest way between towns."
+    ]
+  },
+  {
+    id: "sarajevo", code: "SJJ", name: "Sarajevo", country: "Bosnia & Herzegovina", lat: 43.86, lon: 18.41,
+    costs: { hostel: 15, food: 14, transit: 1, activities: 6 },
+    interests: ["history", "food", "cafes", "hiking", "nature"],
+    season:    [2,  2,  3,  4,  5,  5,  5,  5,  5,  4,  2,  3],
+    priceMult: [0.9,  0.9,  0.9,  1.0,  1.0,  1.1,  1.1,  1.1,  1.0,  1.0,  0.9,  1.0],
+    bestTime: "May–September. Winter is snowy and cheap for skiing nearby.",
+    itinerary: [
+      [["Baščaršija old bazaar", 0], ["Ćevapi lunch", 5], ["Bosnian coffee", 2]],
+      [["War Tunnel museum", 10], ["Latin Bridge", 0], ["Sunset at the Yellow Bastion", 0]],
+      [["Cable car to the Trebević bobsled track", 15], ["Gallery 11/07/95", 6], ["Old town bars", 8]]
+    ],
+    dayTrips: [
+      { name: "Mostar", how: "Train, 2h", cost: 15, tags: ["history", "architecture"], note: "The famous Old Bridge and its divers." },
+      { name: "Blagaj", how: "Bus, 2h30", cost: 12, tags: ["nature", "history"], note: "Dervish house at the source of a river." },
+      { name: "Lukomir", how: "Tour, 1h30", cost: 35, tags: ["hiking", "nature"], note: "Remote highland village." }
+    ],
+    tips: [
+      "The convertible mark is pegged to the euro (about 2 KM = €1).",
+      "The train to Mostar is one of Europe's most scenic rides."
+    ]
+  },
+  {
+    id: "vilnius", code: "VNO", name: "Vilnius", country: "Lithuania", lat: 54.69, lon: 25.28,
+    costs: { hostel: 16, food: 18, transit: 2, activities: 6 },
+    interests: ["history", "architecture", "cafes", "streetart", "nightlife"],
+    season:    [2,  2,  2,  3,  4,  5,  5,  5,  4,  3,  2,  4],
+    priceMult: [0.8,  0.8,  0.8,  0.9,  1.0,  1.1,  1.1,  1.1,  1.0,  0.9,  0.8,  1.0],
+    bestTime: "June–August. Užupis celebrates its tongue-in-cheek independence day on 1 April.",
+    itinerary: [
+      [["Old Town and the Gates of Dawn", 0], ["Cepelinai (potato dumplings) lunch", 6], ["Bars on Vokiečių street", 8]],
+      [["The Republic of Užupis", 0], ["Gediminas Tower", 5], ["Dinner in the old town", 10]],
+      [["KGB museum", 6], ["Street art near the train station", 0], ["Hales market", 5]]
+    ],
+    dayTrips: [
+      { name: "Trakai Castle", how: "Bus, 40 min", cost: 12, tags: ["castles", "islands"], note: "Island castle on a lake; try kibinai pastries." },
+      { name: "Kaunas", how: "Train, 1h15", cost: 10, tags: ["architecture", "history"], note: "Interwar modernist architecture." },
+      { name: "Hill of Crosses", how: "Train + bus, 3h", cost: 20, tags: ["history"], note: "Over 100,000 crosses on a small hill." }
+    ],
+    tips: [
+      "Trakai is best at sunset.",
+      "Vilnius is compact; walk everywhere."
+    ]
+  },
+  {
+    id: "wroclaw", code: "WRO", name: "Wrocław", country: "Poland", lat: 51.11, lon: 17.03,
+    costs: { hostel: 16, food: 16, transit: 3, activities: 6 },
+    interests: ["architecture", "history", "nightlife", "streetart", "festivals"],
+    season:    [2,  2,  3,  4,  5,  5,  5,  5,  4,  3,  2,  4],
+    priceMult: [0.8,  0.8,  0.9,  1.0,  1.0,  1.0,  1.0,  1.0,  1.0,  0.9,  0.8,  1.0],
+    bestTime: "May–September. Hunt for the 600+ bronze dwarfs hidden around town.",
+    itinerary: [
+      [["Market Square", 0], ["Dwarf hunt around the old town", 0], ["Pubs on the square", 8]],
+      [["Ostrów Tumski at dusk, when the lamplighter comes", 0], ["Racławice Panorama", 8], ["Bars on Pasaż Niepolda", 10]],
+      [["Hala Targowa market", 5], ["Centennial Hall and Japanese Garden", 5], ["Oder river boulevards", 5]]
+    ],
+    dayTrips: [
+      { name: "Książ Castle", how: "Train, 1h30", cost: 18, tags: ["castles"], note: "Poland's third-largest castle." },
+      { name: "Szklarska Poręba", how: "Train, 2h30", cost: 15, tags: ["hiking", "nature"], note: "Mountain trails and waterfalls." }
+    ],
+    tips: [
+      "Poland's regional trains are very cheap; book on the PKP app.",
+      "Milk bars serve full meals for about €5."
+    ]
+  },
+  {
+    id: "cluj", code: "CLJ", name: "Cluj-Napoca", country: "Romania", lat: 46.77, lon: 23.59,
+    costs: { hostel: 14, food: 15, transit: 1, activities: 6 },
+    interests: ["nightlife", "festivals", "music", "history", "hiking", "nature"],
+    season:    [2,  2,  3,  4,  5,  5,  5,  5,  5,  4,  2,  3],
+    priceMult: [0.8,  0.8,  0.9,  1.0,  1.0,  1.1,  1.3,  1.8,  1.0,  0.9,  0.8,  0.9],
+    bestTime: "May–September. The Untold festival (August) and Electric Castle (July) draw huge crowds.",
+    itinerary: [
+      [["Union Square and St. Michael's Church", 0], ["Lunch at a covrigi bakery", 3], ["Bars in the old town", 8]],
+      [["Botanical Garden", 3], ["Cetățuia Hill view", 0], ["Student bars", 8]],
+      [["Central Park and the Casino", 0], ["Ethnographic Museum", 3], ["Club night", 10]]
+    ],
+    dayTrips: [
+      { name: "Turda Salt Mine", how: "Bus, 45 min", cost: 12, tags: ["history", "nature"], note: "An underground theme park in a salt mine." },
+      { name: "Turda Gorge", how: "Bus, 1h", cost: 5, tags: ["hiking", "nature"], note: "Easy hike through limestone cliffs." },
+      { name: "Sighișoara", how: "Train, 3h", cost: 15, tags: ["history", "castles"], note: "Medieval citadel, Dracula's birthplace." }
+    ],
+    tips: [
+      "Untold tickets are much cheaper in early-bird sales.",
+      "It's a university city; weekday lunch menus cost €5–7."
+    ]
+  },
+  {
+    id: "reykjavik", code: "KEF", name: "Reykjavík", country: "Iceland", lat: 64.15, lon: -21.94,
+    costs: { hostel: 45, food: 40, transit: 6, activities: 15 },
+    interests: ["nature", "hiking", "music", "architecture", "festivals"],
+    season:    [3,  3,  3,  3,  4,  5,  5,  5,  4,  3,  3,  3],
+    priceMult: [0.8,  0.9,  0.9,  0.9,  1.0,  1.2,  1.3,  1.3,  1.0,  0.9,  0.8,  1.0],
+    bestTime: "June–August for the midnight sun; September–March for northern lights. It's expensive, so a short trip goes a long way.",
+    itinerary: [
+      [["Hallgrímskirkja and the old town", 0], ["Hot dog at Bæjarins Beztu", 5], ["Happy-hour bars on Laugavegur", 15]],
+      [["Harpa concert hall", 0], ["Geothermal pool (Sundhöllin)", 10], ["Northern lights hunt (winter)", 0]],
+      [["Grótta lighthouse walk", 0], ["Perlan viewpoint", 0], ["Supermarket picnic dinner", 10]]
+    ],
+    dayTrips: [
+      { name: "Golden Circle", how: "Bus tour, 8h", cost: 70, tags: ["nature", "hiking"], note: "Þingvellir, Geysir and Gullfoss." },
+      { name: "Reykjanes", how: "Bus, 1h", cost: 25, tags: ["nature"], note: "Lava fields and hot springs; cheaper than the Blue Lagoon." },
+      { name: "South Coast", how: "Tour, 10h", cost: 85, tags: ["nature", "hiking", "beach"], note: "Waterfalls and black-sand beaches." }
+    ],
+    tips: [
+      "Happy hours halve drink prices; apps list them.",
+      "Tap water is excellent; buy groceries at Bónus."
+    ]
+  },
+  {
+    id: "bordeaux", code: "BOD", name: "Bordeaux", country: "France", lat: 44.84, lon: -0.58,
+    costs: { hostel: 30, food: 28, transit: 4, activities: 8 },
+    interests: ["wine", "food", "architecture", "beach", "nature"],
+    season:    [2,  2,  3,  4,  5,  5,  4,  4,  5,  4,  2,  3],
+    priceMult: [0.8,  0.8,  0.9,  1.0,  1.1,  1.1,  1.1,  1.1,  1.1,  1.0,  0.8,  0.9],
+    bestTime: "May–June and September–October, when the grape harvest happens.",
+    itinerary: [
+      [["Place de la Bourse and the Water Mirror", 0], ["Lunch at Marché des Capucins", 10], ["Wine bar in Saint-Pierre", 12]],
+      [["La Cité du Vin", 22], ["Antique shops in Chartrons", 0], ["Bistro dinner", 15]],
+      [["Bike along the Garonne quays", 8], ["Darwin eco-space and street art", 0], ["Bars in Saint-Michel", 10]]
+    ],
+    dayTrips: [
+      { name: "Saint-Émilion", how: "Train, 40 min", cost: 25, tags: ["wine", "history"], note: "Hilltop wine village with underground churches." },
+      { name: "Dune du Pilat", how: "Train + bus, 1h30", cost: 15, tags: ["beach", "nature", "hiking"], note: "Europe's tallest sand dune." },
+      { name: "Arcachon", how: "Train, 50 min", cost: 15, tags: ["beach", "food"], note: "Oysters and a seaside town." }
+    ],
+    tips: [
+      "Many wine bars do tasting flights for under €10.",
+      "Under 28? Ask about youth fares on French regional trains."
+    ]
+  },
+  {
+    id: "hamburg", code: "HAM", name: "Hamburg", country: "Germany", lat: 53.55, lon: 9.99,
+    costs: { hostel: 30, food: 28, transit: 7, activities: 10 },
+    interests: ["nightlife", "music", "architecture", "markets", "history"],
+    season:    [2,  2,  3,  4,  5,  5,  5,  5,  4,  3,  2,  4],
+    priceMult: [0.8,  0.8,  0.9,  1.0,  1.0,  1.1,  1.1,  1.1,  1.0,  0.9,  0.8,  1.0],
+    bestTime: "May–September. The Sunday Fish Market is legendary.",
+    itinerary: [
+      [["Speicherstadt warehouse district", 0], ["Elbphilharmonie Plaza (free)", 0], ["Bars on the Reeperbahn", 12]],
+      [["Miniatur Wunderland", 20], ["Harbor ferry 62 (public transport)", 4], ["Dinner in Sternschanze", 12]],
+      [["Fish Market at dawn (Sundays)", 5], ["Walk around the Alster lake", 0], ["Live music on the Kiez", 12]]
+    ],
+    dayTrips: [
+      { name: "Lübeck", how: "Train, 45 min", cost: 20, tags: ["history", "architecture"], note: "Medieval Hanseatic town and marzipan." },
+      { name: "Lüneburg", how: "Train, 30 min", cost: 15, tags: ["architecture"], note: "Crooked brick houses and a lively student scene." }
+    ],
+    tips: [
+      "Harbor ferries are regular public transport: a cheap harbor tour.",
+      "The Elbphilharmonie viewing plaza is free with a timed ticket."
+    ]
+  },
+  {
+    id: "cologne", code: "CGN", name: "Cologne", country: "Germany", lat: 50.94, lon: 6.96,
+    costs: { hostel: 28, food: 24, transit: 6, activities: 8 },
+    interests: ["history", "nightlife", "festivals", "wine", "architecture", "art"],
+    season:    [3,  4,  3,  4,  5,  5,  5,  5,  4,  3,  3,  4],
+    priceMult: [1.0,  1.5,  1.0,  1.0,  1.0,  1.0,  1.1,  1.0,  1.0,  1.0,  1.2,  1.1],
+    bestTime: "May–August for beer gardens along the Rhine. Carnival (February) is a massive street party.",
+    itinerary: [
+      [["Cathedral and tower climb", 6], ["Kölsch in a brewhouse", 8], ["Old Town bars", 10]],
+      [["Chocolate Museum", 16], ["Rhine promenade", 0], ["Belgian Quarter", 12]],
+      [["Museum Ludwig", 13], ["Hohenzollern Bridge love locks", 0], ["Street art and bars in Ehrenfeld", 10]]
+    ],
+    dayTrips: [
+      { name: "Rhine Valley", how: "Train, 1h30", cost: 30, tags: ["castles", "wine", "nature"], note: "Castles and vineyards along the Middle Rhine." },
+      { name: "Aachen", how: "Train, 40 min", cost: 20, tags: ["history", "architecture"], note: "Charlemagne's cathedral and thermal springs." },
+      { name: "Brühl palaces", how: "Train, 20 min", cost: 15, tags: ["castles"], note: "Rococo palaces and gardens." }
+    ],
+    tips: [
+      "Kölsch comes in small glasses and keeps coming until you put a coaster on top.",
+      "The Rhine Valley is covered by regional trains; no tour needed."
+    ]
   }
 ];
 </script>
@@ -1515,19 +2309,50 @@ const SLOTS = ["Morning", "Afternoon", "Evening"];
 const BOARD_ROWS = 5;
 const LIST_LIMIT = 10;
 
-// Places you can only reach by plane or boat, and places without useful rail links.
-const ISLANDS = new Set(["dublin", "valletta", "palma"]);
-const NO_RAIL = new Set(["athens", "istanbul", "dubrovnik"]);
-// Ferry routes between cities in the list: round-trip cost (EUR) and hours each way.
+// Which landmass each place is on. Buses and trains only run within the same landmass;
+// everything else is by plane or boat. Anything not listed is mainland Europe (incl. the UK and Istanbul).
+const LAND = {
+  marrakech: "morocco", fez: "morocco", tangier: "morocco", agadir: "morocco", essaouira: "morocco",
+  tunis: "tunisia", amman: "jordan", tbilisi: "georgia",
+  dublin: "ireland", valletta: "malta", palma: "mallorca", ibiza: "ibiza", tenerife: "tenerife",
+  laspalmas: "grancanaria", funchal: "madeira", pontadelgada: "azores", palermo: "sicily",
+  cagliari: "sardinia", chania: "crete", corfu: "corfu", paphos: "cyprus", reykjavik: "iceland"
+};
+const landOf = (id) => LAND[id] || "europe";
+// Places without useful rail links (buses only overland).
+const NO_RAIL = new Set(["athens", "istanbul", "dubrovnik", "agadir", "essaouira", "tirana", "sarajevo", "amman"]);
+// Ferry routes between places in the list: round-trip cost (EUR) and hours each way.
+// Spain–Tangier fares include the bus to the port at Tarifa.
 const FERRIES = {
   "barcelona-palma": { cost: 90, hours: 7 },
   "palma-valencia": { cost: 90, hours: 8 },
+  "ibiza-palma": { cost: 80, hours: 2.5 },
+  "barcelona-ibiza": { cost: 100, hours: 8 },
+  "ibiza-valencia": { cost: 90, hours: 5 },
   "barcelona-rome": { cost: 140, hours: 20 },
+  "malaga-tangier": { cost: 80, hours: 4.5 },
+  "seville-tangier": { cost: 90, hours: 5.5 },
+  "palermo-tunis": { cost: 110, hours: 10 },
+  "naples-palermo": { cost: 90, hours: 10.5 },
+  "athens-chania": { cost: 80, hours: 9 },
+  "bari-corfu": { cost: 110, hours: 9 },
+  "bari-dubrovnik": { cost: 110, hours: 10 },
+  "laspalmas-tenerife": { cost: 60, hours: 1.5 },
   "stockholm-tallinn": { cost: 80, hours: 16 },
   "riga-stockholm": { cost: 80, hours: 17 },
   "dublin-london": { cost: 100, hours: 8 },
   "dublin-edinburgh": { cost: 90, hours: 9 },
   "dubrovnik-split": { cost: 70, hours: 4.5 }
+};
+// Where budget airlines actually fly from, when it isn't the obvious city airport.
+const BUDGET_AIRPORTS = {
+  florence: "Pisa (PSA) or Bologna (BLQ)", venice: "Treviso (TSF) or Marco Polo (VCE)",
+  milan: "Bergamo (BGY) or Malpensa (MXP)", paris: "Beauvais (BVA), Orly or CDG",
+  brussels: "Charleroi (CRL) or Zaventem", stockholm: "Skavsta (NYO) or Arlanda",
+  london: "Stansted, Luton or Gatwick", rome: "Ciampino (CIA) or Fiumicino",
+  barcelona: "El Prat or Girona (GRO)", tbilisi: "Kutaisi (KUT) or Tbilisi", tenerife: "Tenerife South (TFS) or North",
+  reykjavik: "Keflavík (KEF)", salzburg: "Salzburg or Munich (MUC)", sansebastian: "Biarritz (BIQ) or Bilbao (BIO)",
+  essaouira: "Essaouira or Marrakech (RAK)"
 };
 
 // Current choices. The page opens with an example search already filled in.
@@ -1562,7 +2387,7 @@ function distanceKm(a, b) {
 function transportOptions(home, dest, month) {
   const km = distanceKm(home, dest);
   const mult = dest.priceMult[month];
-  const overWater = ISLANDS.has(home.id) || ISLANDS.has(dest.id);
+  const overWater = landOf(home.id) !== landOf(dest.id);
   const opts = [];
   if (!overWater && km <= 1600) {
     opts.push({ mode: "bus", cost: Math.round(Math.max(18, km * 0.1) * mult), hours: km / 70 + 0.5 });
@@ -1580,16 +2405,8 @@ function transportOptions(home, dest, month) {
 
 // Pick the option to use: the traveler's own pick if they made one, otherwise the best
 // balance of price and time (each hour on the road counts as €8, both ways).
-// Longest sensible trip each way: 3 hours per day of the trip. Flights always qualify, and
-// overnight ferries (up to 20h) do too on trips of 3+ days, since you sleep on board.
-function tooLong(o) {
-  if (o.mode === "flight") return false;
-  if (o.mode === "boat" && state.days >= 3 && o.hours <= 20) return false;
-  return o.hours > state.days * 3;
-}
-
 function pickTransport(dest, opts) {
-  const allowed = opts.filter(o => state.modes.has(o.mode) && !tooLong(o));
+  const allowed = opts.filter(o => state.modes.has(o.mode));
   if (!allowed.length) return null;
   const chosen = allowed.find(o => o.mode === modeChoice.get(dest.id));
   return chosen || allowed.reduce((best, o) => (o.cost + o.hours * 16 < best.cost + best.hours * 16 ? o : best));
@@ -1676,6 +2493,7 @@ function setFlaps(group, text) {
   chars.forEach((ch, i) => {
     const cell = group.children[i];
     const shown = ch === " " ? " " : ch;
+    cell.classList.toggle("blank", ch === " ");
     if (cell.textContent !== shown) {
       cell.textContent = shown;
       cell.classList.remove("flip");
@@ -1693,7 +2511,7 @@ function buildBoard() {
     row.className = "brow";
     row.type = "button";
     row.innerHTML = '<span class="g dest"></span><span class="g fare"></span>' +
-      '<span class="g col-via via"></span><span class="g col-remark remark"></span>';
+      '<span class="col-via via"></span><span class="col-remark remark"></span>';
     row.addEventListener("click", () => {
       if (!row.dataset.id) return;
       expanded.add(row.dataset.id);
@@ -1713,10 +2531,11 @@ function renderBoard({ home, fits, stretch }) {
     const s = t ? season(t.dest.season[state.month]) : null;
     setFlaps(row.querySelector(".dest"), padText(t ? t.dest.name : "", 13));
     setFlaps(row.querySelector(".fare"), padText(t ? euro(t.cost.total) : "", 5, true));
-    setFlaps(row.querySelector(".via"), padText(t ? MODES[t.cost.transport.mode].board : "", 5));
+    const via = row.querySelector(".via");
+    via.textContent = t ? MODES[t.cost.transport.mode].label : "";
     const remark = row.querySelector(".remark");
-    setFlaps(remark, padText(t ? (t.over ? "STRETCH" : s.board) : "", 10));
-    remark.className = "g col-remark remark " + (t ? (t.over ? "stretch" : s.tone) : "");
+    remark.textContent = t ? (t.over ? "A little over" : s.text.replace(" to go", "")) : "";
+    remark.className = "col-remark remark " + (t ? (t.over ? "stretch" : s.tone) : "");
     row.disabled = !t;
     row.dataset.id = t ? t.dest.id : "";
     row.setAttribute("aria-label", t ? `${t.dest.name}, about ${euro(t.cost.total)}. Show trip.` : "Empty");
@@ -1739,12 +2558,13 @@ function transportSection(dest, cost) {
     <h4>Getting there</h4>
     <div class="options" role="radiogroup" aria-label="Transport to ${dest.name}">
       ${allowed.map(o => `<button type="button" class="option" role="radio" data-act="mode" data-id="${dest.id}" data-v="${o.mode}"
-          aria-checked="${o.mode === cost.transport.mode}" ${tooLong(o) ? "disabled" : ""}>
+          aria-checked="${o.mode === cost.transport.mode}">
           <strong>${MODES[o.mode].label}</strong>
-          <span>~${hrs(o.hours)} each way${tooLong(o) ? ` · too long for ${state.days} days` : ""}</span>
-          <span class="mono">${euro(o.cost)}</span>
+          <span>~${hrs(o.hours)} each way</span>
+          <span class="num">${euro(o.cost)}</span>
         </button>`).join("")}
     </div>
+    ${BUDGET_AIRPORTS[state.home] && allowed.some(o => o.mode === "flight") ? `<p class="fine">Flying from ${byId(state.home).name}? Budget airlines usually use ${BUDGET_AIRPORTS[state.home]}.</p>` : ""}
     <p class="fine">Round-trip prices. ${hidden ? `${hidden} more option${hidden > 1 ? "s" : ""} hidden by your travel filter.` : "Pick one to update the total."}</p>
   </div>`;
 }
@@ -1803,7 +2623,7 @@ function dayTripsSection(dest, cost) {
       ${dest.dayTrips.map((d, i) => {
         const on = current === d;
         return `<div class="daytrip${on ? " on" : ""}">
-          <div class="dt-head"><strong>${d.name}</strong><span class="mono">~${euro(d.cost)}</span></div>
+          <div class="dt-head"><strong>${d.name}</strong><span class="num">~${euro(d.cost)}</span></div>
           <span class="dt-how">${d.how}</span>
           <p>${d.note}</p>
           <div class="dt-tags">${d.tags.map(t => `<span class="tag${state.interests.has(t) ? " hit" : ""}">${INTERESTS[t]}</span>`).join("")}</div>
@@ -1821,16 +2641,16 @@ function itinerarySection(dest, cost) {
   const days = dest.itinerary.slice(0, cityDays).map((day, d) => {
     const total = day.reduce((sum, [, c]) => sum + c, 0);
     return `<div class="day">
-      <div class="day-head"><strong>Day ${d + 1}</strong><span class="mono">${total ? euro(total) : "Free"}</span></div>
+      <div class="day-head"><strong>Day ${d + 1}</strong><span class="num">${total ? euro(total) : "Free"}</span></div>
       <ol>${day.map(([what, c], s) => `<li><span class="slot">${SLOTS[s]}</span>
         <span class="what"><span>${what}</span><span>${c ? euro(c) : "free"}</span></span></li>`).join("")}</ol>
     </div>`;
   });
   if (cost.dayTrip) {
-    days.push(`<div class="day trip-day"><div class="day-head"><strong>Day ${cityDays + 1}</strong><span class="mono">Day trip</span></div>
+    days.push(`<div class="day trip-day"><div class="day-head"><strong>Day ${cityDays + 1}</strong><span class="num">Day trip</span></div>
       <ol><li><span class="slot">${cost.dayTrip.how}</span><span class="what"><span>${cost.dayTrip.name}: ${cost.dayTrip.note}</span><span>${euro(cost.dayTrip.cost)}</span></span></li></ol></div>`);
   } else if (state.days > 3) {
-    days.push(`<div class="day"><div class="day-head"><strong>Day 4</strong><span class="mono">Free day</span></div>
+    days.push(`<div class="day"><div class="day-head"><strong>Day 4</strong><span class="num">Free day</span></div>
       <ol><li><span class="what"><span>Pick a day trip below, or explore at your own pace.</span></span></li></ol></div>`);
   }
   return `<div><h4>Your ${state.days}-day plan</h4><div class="days">${days.join("")}</div></div>`;
@@ -1860,7 +2680,7 @@ function ticket(trip, home, over) {
   const left = state.budget - cost.total;
   const isOpen = expanded.has(dest.id);
   return `
-  <article class="ticket${over ? " stretch" : ""}" id="t-${dest.id}">
+  <article class="ticket sticker${over ? " stretch" : ""}" id="t-${dest.id}">
     <div class="t-main">
       <div class="route"><span>${home.code}</span><span class="line"></span><span>${dest.code}</span>
         <span class="mode">${MODES[cost.transport.mode].label} · ~${hrs(cost.transport.hours)}</span></div>
@@ -1897,9 +2717,9 @@ function renderResults({ home, fits, stretch }) {
   $("#results-sub").textContent = `From ${home.name} · ${state.days} days · ${MONTHS_FULL[state.month]} · ${euro(state.budget)} per person`;
   const out = [];
   if (!state.modes.size) {
-    out.push(`<div class="empty">Pick at least one way to travel under "Getting there by".</div>`);
+    out.push(`<div class="empty sticker">Pick at least one way to travel under "Getting there by".</div>`);
   } else if (!n) {
-    out.push(`<div class="empty">No trips fit ${euro(state.budget)} for ${state.days} days in ${MONTHS_FULL[state.month]}. Try a shorter trip, a cheaper month, more ways to travel, or move the budget slider up.</div>`);
+    out.push(`<div class="empty sticker">No trips fit ${euro(state.budget)} for ${state.days} days in ${MONTHS_FULL[state.month]}. Try a shorter trip, a cheaper month, more ways to travel, or move the budget slider up.</div>`);
   }
   const shown = showAll ? fits : fits.slice(0, LIST_LIMIT);
   shown.forEach(t => out.push(ticket(t, home, false)));
@@ -1963,6 +2783,7 @@ function dayTripIndexAfterRemove(button) {
   return cards.indexOf(button.closest(".daytrip"));
 }
 
+document.getElementById("city-count").textContent = CITIES.length;
 setupControls();
 buildBoard();
 // Open the top pick so the first view shows a full plan.
