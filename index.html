@@ -92,7 +92,7 @@ select {
 }
 input[type="range"] { width: 100%; accent-color: var(--accent); margin: 0; }
 .range-scale { display: flex; justify-content: space-between; font: 400 12px var(--mono); color: var(--muted); }
-.seg-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--line); border-radius: 10px; padding: 3px; }
+.seg-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border: 1px solid var(--line); border-radius: 10px; padding: 3px; }
 .seg-row .pick { border: 0; }
 .months { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
 .pick, .chip { border: 1px solid var(--line); background: var(--bg); font-size: 14px; font-weight: 500; transition: background .12s, color .12s, border-color .12s; }
@@ -107,6 +107,11 @@ input[type="range"] { width: 100%; accent-color: var(--accent); margin: 0; }
 .results-head { display: grid; gap: 4px; margin-bottom: 20px; }
 .results-head h2 { font-size: clamp(26px, 3vw, 32px); }
 .results-head p { margin: 0; color: var(--muted); }
+.group { font-size: 17px; margin: 18px 0 2px; display: flex; gap: 8px; align-items: baseline; }
+.group:first-child { margin-top: 0; }
+.group span { font: 400 14px var(--mono); color: var(--muted); }
+.sort { display: flex; gap: 6px; margin-top: 12px; }
+.sort .pick { padding: 6px 12px; }
 .list { display: grid; gap: 12px; }
 .divider { margin: 20px 0 4px; font-size: 14px; color: var(--muted); }
 .empty { padding: 24px; border: 1px dashed var(--line); border-radius: 14px; color: var(--muted); }
@@ -116,6 +121,8 @@ input[type="range"] { width: 100%; accent-color: var(--accent); margin: 0; }
 .ticket.stretch .t-main, .ticket.stretch .t-stub { opacity: .85; }
 .t-main { padding: 20px; display: grid; gap: 10px; min-width: 0; align-content: start; }
 .route { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font: 400 13px/1 var(--mono); color: var(--muted); }
+.route .kind { color: var(--accent); font-family: var(--sans); font-weight: 600; }
+.esc-note { margin: -4px 0 0; color: var(--muted); max-width: 60ch; }
 .route .line { flex: 0 1 40px; height: 1px; background: var(--line); }
 .route .mode { margin-left: 8px; padding-left: 10px; border-left: 1px solid var(--line); font-family: var(--sans); }
 .t-main h3 { font-size: 24px; line-height: 1.15; }
@@ -191,6 +198,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); margin: 0; }
 .day .slot { font-size: 12px; font-weight: 500; color: var(--muted); }
 .day .what { display: flex; gap: 8px; justify-content: space-between; font-size: 15px; line-height: 1.4; }
 .day .what span:last-child { font: 400 13px var(--mono); color: var(--muted); white-space: nowrap; }
+.day .what.solo span { font: inherit; color: inherit; white-space: normal; }
 .daytrip { display: flex; flex-direction: column; gap: 6px; }
 .daytrip .dt-head { margin-bottom: 0; }
 .daytrip.on { border-color: var(--good); box-shadow: 0 0 0 1px var(--good); }
@@ -222,7 +230,7 @@ footer { max-width: 1120px; margin: 0 auto; padding-block: 24px 40px; border-top
     </div>
     <div class="intro">
       <h1>Where to next, on a student budget?</h1>
-      <p class="tagline">Set your budget, trip length and month. Get places that fit, the best time to go, a day-by-day plan, and every way to get there.</p>
+      <p class="tagline">Set your budget, trip length and month. Get day trips and weekend escapes near you, bigger trips further away, the best time to go, and every way to get there.</p>
     </div>
     <div class="picks-head">
       <h2 id="picks-title">Top picks</h2>
@@ -425,6 +433,10 @@ footer { max-width: 1120px; margin: 0 auto; padding-block: 24px 40px; border-top
       <div class="results-head">
         <h2 id="results-title">Trips that fit</h2>
         <p id="results-sub"></p>
+        <div class="sort" role="group" aria-label="Sort trips">
+          <button type="button" class="pick" data-v="best">Best match</button>
+          <button type="button" class="pick" data-v="cheap">Cheapest first</button>
+        </div>
       </div>
       <div class="list" id="results">
         <noscript><div class="empty">Weekender needs JavaScript turned on to plan trips.</div></noscript>
@@ -459,6 +471,11 @@ window.CITIES = [
     tips: [
       "The Picasso Museum is free on Thursday evenings and the first Sunday of each month (book online).",
       "Buy a T-casual 10-ride metro card instead of single tickets."
+    ],
+    weekends: [
+      { name: "Girona & Tossa de Mar", how: "Train + bus, 1h15", travel: 30, stay: 25, sights: 10, tags: ["history", "beach", "architecture"], note: "Medieval Girona, then a walled village on the Costa Brava.", days: ["Girona's old town, river houses and city walls", "Bus to Tossa de Mar: castle walls and a beach afternoon"] },
+      { name: "Tarragona & Reus", how: "Train, 1h15", travel: 20, stay: 22, sights: 12, tags: ["history", "beach", "architecture"], note: "Roman ruins by the sea and Gaudí's hometown.", days: ["Roman amphitheatre and Tarragona's old town", "Beach morning, then Reus's modernista route"] },
+      { name: "Vall de Núria", how: "Train + rack railway, 2h30", travel: 55, stay: 30, sights: 0, tags: ["hiking", "nature"], note: "A Pyrenees valley you can only reach by rack railway.", days: ["Rack railway up and a lakeside hike", "Summit trail, then back down the valley"] }
     ]
   },
   {
@@ -481,6 +498,11 @@ window.CITIES = [
     tips: [
       "The Prado and Reina Sofía offer free entry during the last two hours on most days.",
       "Order the menú del día at lunch: 3 courses and a drink for about €13."
+    ],
+    weekends: [
+      { name: "Toledo overnight", how: "Bus, 1h", travel: 12, stay: 20, sights: 15, tags: ["history", "architecture", "castles"], note: "See Toledo at night, after the day-trippers leave.", days: ["Cathedral, synagogues and the old Jewish quarter", "Sunrise at Mirador del Valle, marzipan, head back"] },
+      { name: "Segovia & La Granja", how: "Bus, 1h15", travel: 18, stay: 22, sights: 15, tags: ["castles", "history", "nature"], note: "Aqueduct, Alcázar and royal gardens.", days: ["Aqueduct, Alcázar and a roast lunch", "Royal palace gardens at La Granja"] },
+      { name: "Cuenca", how: "Train, 1h", travel: 30, stay: 22, sights: 8, tags: ["architecture", "hiking", "nature"], note: "Houses hanging off a cliff and gorge walks.", days: ["Hanging Houses and the San Pablo bridge", "Hike the Júcar gorge trail"] }
     ]
   },
   {
@@ -503,6 +525,11 @@ window.CITIES = [
     tips: [
       "Tapas often cost €3–4: order several instead of full plates.",
       "The Real Alcázar has free entry slots on Monday evenings; book online early."
+    ],
+    weekends: [
+      { name: "Cádiz & Jerez", how: "Train, 1h45", travel: 25, stay: 22, sights: 12, tags: ["beach", "food", "wine"], note: "Sherry cellars and a beach city on the Atlantic.", days: ["Sherry bodega tour in Jerez", "Cádiz old town and La Caleta beach"] },
+      { name: "Ronda & Setenil", how: "Bus, 2h", travel: 25, stay: 22, sights: 5, tags: ["nature", "hiking", "architecture"], note: "A gorge-top town and a village built under rocks.", days: ["Ronda's bridge and gorge walk", "Bus to Setenil de las Bodegas"] },
+      { name: "Córdoba overnight", how: "Train, 45 min", travel: 40, stay: 20, sights: 15, tags: ["history", "architecture"], note: "The Mezquita at opening time, flower patios at dusk.", days: ["Mezquita and the Jewish quarter", "Alcázar gardens and the Roman bridge"] }
     ]
   },
   {
@@ -525,6 +552,11 @@ window.CITIES = [
     tips: [
       "Load 'zapping' credit on a Navegante card: much cheaper than single tickets.",
       "Skip Tram 28 queues: walk the route or board early at the Martim Moniz end."
+    ],
+    weekends: [
+      { name: "Sintra & Cascais", how: "Train, 40 min", travel: 10, stay: 22, sights: 25, tags: ["castles", "beach", "hiking"], note: "Palaces one day, beaches the next.", days: ["Pena Palace and the Moorish Castle trail", "Coastal walk from Cascais to Boca do Inferno"] },
+      { name: "Óbidos & Nazaré", how: "Bus, 1h15", travel: 25, stay: 22, sights: 0, tags: ["history", "beach"], note: "A walled village and the giant-wave surf town.", days: ["Walk Óbidos's walls, ginjinha in a chocolate cup", "Nazaré beach and lighthouse cliffs"] },
+      { name: "Évora", how: "Bus, 1h30", travel: 25, stay: 20, sights: 8, tags: ["history", "wine"], note: "Roman temple, a bone chapel and Alentejo wine.", days: ["Roman temple and the Chapel of Bones", "Alentejo winery visit"] }
     ]
   },
   {
@@ -547,6 +579,11 @@ window.CITIES = [
     tips: [
       "Get an Andante card for the metro and buses.",
       "A francesinha is huge; one is a full meal."
+    ],
+    weekends: [
+      { name: "Douro Valley overnight", how: "Train, 2h", travel: 25, stay: 25, sights: 15, tags: ["wine", "nature"], note: "Sleep among the vineyards in Pinhão.", days: ["Riverside train to Pinhão and a quinta tasting", "River walk, back via Peso da Régua"] },
+      { name: "Braga & Guimarães", how: "Train, 1h", travel: 12, stay: 20, sights: 8, tags: ["history", "castles"], note: "Portugal's birthplace and a baroque stairway.", days: ["Bom Jesus stairs and Braga old town", "Guimarães castle and old center"] },
+      { name: "Peneda-Gerês", how: "Bus, 2h", travel: 20, stay: 22, sights: 0, tags: ["hiking", "nature"], note: "Portugal's only national park: waterfalls and granite villages.", days: ["Waterfall hike near Gerês", "Swim in a mountain pool, visit Soajo village"] }
     ]
   },
   {
@@ -569,6 +606,11 @@ window.CITIES = [
     tips: [
       "Under 26 and living in the EU on a long-stay visa? Most national museums, including the Louvre and Orsay, are free.",
       "Bakery lunch: a sandwich plus a pastry is often under €8."
+    ],
+    weekends: [
+      { name: "Rouen & Étretat", how: "Train + bus, 1h30", travel: 45, stay: 28, sights: 5, tags: ["beach", "history", "hiking"], note: "A medieval city and Normandy's chalk cliffs.", days: ["Rouen cathedral and half-timbered old town", "Étretat cliff-top walk"] },
+      { name: "Loire castles", how: "Train, 1h15–2h", travel: 50, stay: 25, sights: 20, tags: ["castles", "wine"], note: "Château country by bike.", days: ["Bike from Tours to Chenonceau", "Amboise and a wine tasting"] },
+      { name: "Reims & Épernay", how: "Train, 45 min", travel: 50, stay: 28, sights: 25, tags: ["wine", "architecture"], note: "Champagne cellars and a Gothic cathedral.", days: ["Reims cathedral and a champagne cellar", "Avenue de Champagne in Épernay"] }
     ]
   },
   {
@@ -591,6 +633,11 @@ window.CITIES = [
     tips: [
       "Tap in with a contactless card; daily fare caps apply automatically.",
       "Most major museums are free (donations welcome)."
+    ],
+    weekends: [
+      { name: "Cotswolds", how: "Train, 1h30", travel: 35, stay: 30, sights: 0, tags: ["nature", "hiking", "architecture"], note: "Honey-stone villages and country walks.", days: ["Walk Bourton-on-the-Water to the Slaughters", "Chipping Campden and a pub lunch"] },
+      { name: "Bath & Bristol", how: "Coach, 2h30", travel: 25, stay: 28, sights: 20, tags: ["history", "streetart"], note: "Roman baths and Banksy's hometown.", days: ["Roman Baths and the Royal Crescent", "Bristol street art and the harbourside"] },
+      { name: "Seven Sisters & Brighton", how: "Train, 1h30", travel: 30, stay: 28, sights: 0, tags: ["hiking", "beach", "nightlife"], note: "White-cliff walk, then a night out in Brighton.", days: ["Seven Sisters cliff walk", "Brighton's lanes, pier and beach"] }
     ]
   },
   {
@@ -613,6 +660,11 @@ window.CITIES = [
     tips: [
       "Anne Frank House tickets sell out; they're released online about 6 weeks ahead.",
       "The ferries behind Centraal station are free."
+    ],
+    weekends: [
+      { name: "Texel island", how: "Train + ferry, 2h", travel: 25, stay: 30, sights: 0, tags: ["islands", "beach", "nature"], note: "Dunes, seals and cycling on a Wadden island.", days: ["Bike through the dunes to the beach", "Seal centre and the red lighthouse"] },
+      { name: "Giethoorn", how: "Train + bus, 2h", travel: 30, stay: 35, sights: 10, tags: ["nature", "islands"], note: "A car-free village of canals and thatched roofs.", days: ["Rent a whisper boat through the canals", "Cycle the Weerribben national park"] },
+      { name: "Rotterdam & Delft", how: "Train, 1h", travel: 25, stay: 25, sights: 5, tags: ["architecture", "art"], note: "Cube houses and Delft blue.", days: ["Rotterdam's architecture and the Markthal", "Delft canals and pottery"] }
     ]
   },
   {
@@ -635,6 +687,11 @@ window.CITIES = [
     tips: [
       "Book the free Reichstag dome visit online a few days ahead.",
       "A 24-hour AB ticket beats buying single rides."
+    ],
+    weekends: [
+      { name: "Saxon Switzerland", how: "Train, 2h30", travel: 40, stay: 22, sights: 0, tags: ["hiking", "nature"], note: "Sandstone towers and the Bastei bridge.", days: ["Hike to the Bastei bridge", "Schrammsteine ridge trail"] },
+      { name: "Leipzig", how: "Train, 1h15", travel: 30, stay: 20, sights: 5, tags: ["music", "nightlife", "streetart"], note: "Cheaper, artsier and full of students.", days: ["Bach's church and the Spinnerei galleries", "Canals and bars on Karl-Heine-Strasse"] },
+      { name: "Spreewald overnight", how: "Train, 1h", travel: 25, stay: 25, sights: 15, tags: ["nature", "islands"], note: "Punt boats, forest canals and pickles.", days: ["Punt boat from Lübbenau", "Kayak and cycle through the forest"] }
     ]
   },
   {
@@ -657,6 +714,11 @@ window.CITIES = [
     tips: [
       "Avoid exchange booths near Old Town; pay by card or use a bank ATM.",
       "Weekday lunch menus (polední menu) cost €6–9."
+    ],
+    weekends: [
+      { name: "Český Krumlov", how: "Bus, 3h", travel: 25, stay: 18, sights: 10, tags: ["castles", "architecture"], note: "Fairy-tale river town; stay the night.", days: ["Castle, gardens and old town", "Raft or canoe down the Vltava"] },
+      { name: "Bohemian Switzerland", how: "Train + bus, 2h", travel: 20, stay: 18, sights: 5, tags: ["hiking", "nature"], note: "Europe's biggest natural sandstone arch.", days: ["Hike to Pravčická brána", "Boat through the Kamenice gorges"] },
+      { name: "Brno", how: "Train, 2h30", travel: 20, stay: 18, sights: 5, tags: ["nightlife", "architecture", "history"], note: "Czechia's student city, with cheap bars.", days: ["Špilberk castle and the old town", "Villa Tugendhat, then cocktail bars"] }
     ]
   },
   {
@@ -679,6 +741,11 @@ window.CITIES = [
     tips: [
       "Standing-room opera tickets go on sale shortly before each performance.",
       "Vienna's tap water is excellent; skip bottled water."
+    ],
+    weekends: [
+      { name: "Bratislava overnight", how: "Train, 1h", travel: 20, stay: 18, sights: 10, tags: ["history", "castles", "nightlife"], note: "A second country, an hour away.", days: ["Castle hill and the old town", "Devín castle ruins by the river"] },
+      { name: "Wachau: Melk & Dürnstein", how: "Train + boat, 1h15", travel: 30, stay: 25, sights: 15, tags: ["wine", "nature"], note: "Abbey, castle ruins, apricots and wine.", days: ["Melk Abbey, then a boat to Dürnstein", "Hike to the castle ruins, then a wine tavern"] },
+      { name: "Semmering", how: "Train, 1h30", travel: 25, stay: 25, sights: 20, tags: ["hiking", "nature"], note: "UNESCO mountain railway and alpine trails.", days: ["Walk the railway hiking trail", "Cable car up the Rax plateau"] }
     ]
   },
   {
@@ -701,6 +768,11 @@ window.CITIES = [
     tips: [
       "Pay in forints, not euros; euro prices are usually worse.",
       "Go to the baths on a weekday morning for smaller crowds."
+    ],
+    weekends: [
+      { name: "Danube Bend", how: "Train, 45 min", travel: 10, stay: 18, sights: 5, tags: ["history", "nature", "hiking"], note: "Szentendre, Visegrád and Esztergom along the river.", days: ["Szentendre's galleries, boat to Visegrád", "Hike up to Visegrád citadel, Esztergom basilica"] },
+      { name: "Lake Balaton", how: "Train, 1h45", travel: 20, stay: 20, sights: 5, tags: ["beach", "nature", "wine"], note: "Hungary's 'sea': beaches and wine.", days: ["Swim at Balatonfüred", "Tihany peninsula views and lavender"] },
+      { name: "Eger", how: "Train, 2h", travel: 12, stay: 16, sights: 10, tags: ["wine", "castles", "history"], note: "Castle, thermal baths and cheap wine cellars.", days: ["Eger castle and the baths", "Wine cellars in the Valley of Beautiful Women"] }
     ]
   },
   {
@@ -723,6 +795,10 @@ window.CITIES = [
     tips: [
       "Milk bars (bar mleczny) serve full meals for €4–6.",
       "Free entry slots at Auschwitz go fast; book online well ahead."
+    ],
+    weekends: [
+      { name: "Zakopane", how: "Bus, 2h", travel: 16, stay: 18, sights: 5, tags: ["hiking", "nature"], note: "Tatra mountain trails and wooden houses.", days: ["Hike to Morskie Oko lake", "Gubałówka funicular and the market"] },
+      { name: "Ojców valley", how: "Bus, 1h", travel: 6, stay: 18, sights: 5, tags: ["hiking", "castles", "nature"], note: "Limestone valley with a hilltop castle.", days: ["Ojców valley trails", "Pieskowa Skała castle"] }
     ]
   },
   {
@@ -745,6 +821,11 @@ window.CITIES = [
     tips: [
       "The Colosseum is free on the first Sunday of each month; expect crowds.",
       "Refill your bottle at the free 'nasoni' water fountains."
+    ],
+    weekends: [
+      { name: "Orvieto & Civita", how: "Train + bus, 1h30", travel: 25, stay: 25, sights: 10, tags: ["architecture", "wine"], note: "A cathedral town and the 'dying city' on a cliff.", days: ["Orvieto cathedral and underground caves", "Civita di Bagnoregio across its footbridge"] },
+      { name: "Lake Bracciano", how: "Train, 1h", travel: 8, stay: 25, sights: 10, tags: ["nature", "beach", "castles"], note: "Lake swims and a castle.", days: ["Odescalchi castle", "Swim and kayak on the lake"] },
+      { name: "Sperlonga & Gaeta", how: "Train + bus, 1h45", travel: 20, stay: 28, sights: 0, tags: ["beach"], note: "Romans' favorite affordable beaches.", days: ["Sperlonga's white village and beach", "Gaeta's split mountain and old town"] }
     ]
   },
   {
@@ -767,6 +848,11 @@ window.CITIES = [
     tips: [
       "The Uffizi and Accademia are free on the first Sunday of each month.",
       "Book museum tickets online to skip long lines."
+    ],
+    weekends: [
+      { name: "Pisa & Lucca", how: "Train, 1h", travel: 20, stay: 22, sights: 10, tags: ["architecture", "history"], note: "The leaning tower one day, cycling Lucca's walls the next.", days: ["Pisa's Field of Miracles, then the train to Lucca", "Bike the city walls and climb the Guinigi Tower"] },
+      { name: "Cinque Terre", how: "Train, 2h30", travel: 40, stay: 30, sights: 15, tags: ["hiking", "beach", "nature"], note: "Five cliffside villages linked by trails and a local train.", days: ["Hike Monterosso to Vernazza, then swim", "Manarola and Riomaggiore at sunset"] },
+      { name: "Siena & Val d'Orcia", how: "Bus, 1h15", travel: 20, stay: 25, sights: 10, tags: ["architecture", "nature", "wine"], note: "Gothic Siena and postcard Tuscan hills.", days: ["Siena's Campo and cathedral", "Bus to Pienza and Montepulciano"] }
     ]
   },
   {
@@ -789,6 +875,11 @@ window.CITIES = [
     tips: [
       "EU students under 25 get free entry to many archaeological sites; bring your student ID.",
       "A souvlaki pita costs €3–4 and makes a cheap meal."
+    ],
+    weekends: [
+      { name: "Hydra", how: "Ferry, 2h", travel: 55, stay: 30, sights: 0, tags: ["islands", "beach"], note: "A car-free island of donkeys and swimming rocks.", days: ["Harbor, then the coastal walk to swim spots", "Hike up to the monastery"] },
+      { name: "Nafplio & Mycenae", how: "Bus, 2h", travel: 30, stay: 25, sights: 15, tags: ["history", "beach", "castles"], note: "Greece's prettiest small town and an ancient citadel.", days: ["Mycenae and the Lion Gate", "Palamidi fortress and a swim"] },
+      { name: "Delphi & Arachova", how: "Bus, 2h45", travel: 35, stay: 25, sights: 12, tags: ["history", "hiking"], note: "The ancient oracle and a mountain village.", days: ["Delphi's sanctuary and museum", "Arachova village and a mountain walk"] }
     ]
   },
   {
@@ -811,6 +902,11 @@ window.CITIES = [
     tips: [
       "The City of Arts and Sciences is free to walk around; only the museums inside charge.",
       "Rent a Valenbisi bike: the old riverbed park crosses the whole city."
+    ],
+    weekends: [
+      { name: "Albufera & El Palmar", how: "Bus, 30 min", travel: 6, stay: 25, sights: 10, tags: ["nature", "food"], note: "Paella where it was invented.", days: ["Boat on the lagoon at sunset", "Paella lunch in El Palmar"] },
+      { name: "Xàtiva & Bocairent", how: "Train, 1h", travel: 15, stay: 20, sights: 5, tags: ["castles", "history"], note: "A hilltop castle and a village carved into rock.", days: ["Xàtiva castle", "Bocairent's old quarter and caves"] },
+      { name: "Montanejos", how: "Bus, 2h", travel: 20, stay: 25, sights: 0, tags: ["hiking", "nature"], note: "Turquoise river pools in the mountains.", days: ["Swim at Fuente de los Baños", "Hike the Estrecho gorge"] }
     ]
   },
   {
@@ -833,6 +929,10 @@ window.CITIES = [
     tips: [
       "Granada still gives a free tapa with each drink, so dinner can cost the price of a few drinks.",
       "Alhambra tickets sell out; book on the official site as soon as your dates are set."
+    ],
+    weekends: [
+      { name: "Las Alpujarras", how: "Bus, 1h30", travel: 15, stay: 20, sights: 0, tags: ["hiking", "nature"], note: "White villages in the Sierra Nevada.", days: ["Pampaneira, Bubión and Capileira", "Hike the Poqueira gorge"] },
+      { name: "Nerja & Frigiliana", how: "Bus, 1h30", travel: 20, stay: 25, sights: 15, tags: ["beach", "architecture"], note: "Beach, caves and a whitewashed hill village.", days: ["Nerja caves and beach", "Frigiliana's lanes"] }
     ]
   },
   {
@@ -855,6 +955,11 @@ window.CITIES = [
     tips: [
       "Many Málaga museums are free on Sunday afternoons.",
       "The airport is 15 minutes from the center on the cheap C1 train."
+    ],
+    weekends: [
+      { name: "Caminito del Rey & El Chorro", how: "Train, 45 min", travel: 10, stay: 20, sights: 20, tags: ["hiking", "nature"], note: "Cliffside boardwalk and turquoise reservoirs.", days: ["Walk the Caminito del Rey", "Swim and climb around El Chorro"] },
+      { name: "Ronda", how: "Bus, 1h45", travel: 25, stay: 22, sights: 5, tags: ["architecture", "nature"], note: "The gorge-top town, best at sunset.", days: ["Puente Nuevo and the gorge path", "Bullring and the old town"] },
+      { name: "Tarifa", how: "Bus, 2h", travel: 30, stay: 25, sights: 0, tags: ["beach", "nature"], note: "Kitesurf town where you can see Africa.", days: ["Beach and kite-watching", "Whale watching, or a ferry to Tangier"] }
     ]
   },
   {
@@ -877,6 +982,10 @@ window.CITIES = [
     tips: [
       "Pintxos cost €3–5; the hot dishes made to order are worth it.",
       "Stay in Gros: cheaper than the old town and next to the surf beach."
+    ],
+    weekends: [
+      { name: "Hondarribia & Hendaye", how: "Bus, 30 min", travel: 5, stay: 25, sights: 0, tags: ["food", "beach"], note: "Colorful Basque fishing town and a hop into France.", days: ["Hondarribia's walled old town and pintxos", "Small boat across to Hendaye's beach"] },
+      { name: "Getaria & Zumaia", how: "Bus, 40 min", travel: 6, stay: 25, sights: 0, tags: ["hiking", "beach", "wine"], note: "Txakoli wine, grilled fish and dramatic cliffs.", days: ["Getaria's grilled fish and txakoli", "Zumaia's flysch cliff walk"] }
     ]
   },
   {
@@ -899,6 +1008,11 @@ window.CITIES = [
     tips: [
       "Coastal trains cost a few euros; skip taxis entirely.",
       "Buses along the coast are about €2 a ride."
+    ],
+    weekends: [
+      { name: "Villefranche & Èze", how: "Bus, 30 min", travel: 4, stay: 30, sights: 0, tags: ["beach", "hiking"], note: "A bay village and a hilltop eagle's nest.", days: ["Swim in Villefranche", "Èze village and the Nietzsche path"] },
+      { name: "Menton & Ventimiglia", how: "Train, 35 min", travel: 12, stay: 30, sights: 0, tags: ["beach", "food", "markets"], note: "Lemon town, then a hop into Italy.", days: ["Menton's old town and beach", "Train to Ventimiglia's Friday market"] },
+      { name: "Gorges du Verdon", how: "Bus, 2h30", travel: 25, stay: 28, sights: 15, tags: ["nature", "hiking"], note: "Europe's Grand Canyon, with kayaks.", days: ["Kayak on Lac de Sainte-Croix", "Rim road viewpoints and a hike"] }
     ]
   },
   {
@@ -921,6 +1035,10 @@ window.CITIES = [
     tips: [
       "Bouchons have set lunch menus much cheaper than dinner.",
       "The funicular up Fourvière uses a normal transit ticket."
+    ],
+    weekends: [
+      { name: "Annecy", how: "Train, 2h", travel: 35, stay: 30, sights: 0, tags: ["nature", "beach", "hiking"], note: "Alpine lake and canals.", days: ["Old town canals and a lake swim", "Bike around the lake"] },
+      { name: "Beaujolais villages", how: "Train, 45 min", travel: 20, stay: 25, sights: 10, tags: ["wine", "nature"], note: "Golden-stone villages and vineyards.", days: ["Oingt and the golden villages", "Wine tasting in Villefranche"] }
     ]
   },
   {
@@ -943,6 +1061,11 @@ window.CITIES = [
     tips: [
       "Check the calanques access map the night before; trails can close on windy, dry days.",
       "The Frioul ferry costs about the same as a bus ticket."
+    ],
+    weekends: [
+      { name: "Calanques & Cassis", how: "Bus, 30 min", travel: 8, stay: 30, sights: 0, tags: ["hiking", "beach"], note: "Hike to turquoise coves, sleep by the harbor.", days: ["Hike to Sugiton or En-Vau", "Boat along the coves from Cassis"] },
+      { name: "Avignon & Pont du Gard", how: "Train, 1h", travel: 25, stay: 25, sights: 15, tags: ["history", "architecture"], note: "Papal palace and a Roman aqueduct.", days: ["Palais des Papes and the broken bridge", "Bus to the Pont du Gard for a swim"] },
+      { name: "Luberon villages", how: "Bus, 1h30", travel: 20, stay: 30, sights: 0, tags: ["nature", "architecture"], note: "Gordes, Roussillon and lavender in July.", days: ["Gordes and the Sénanque abbey", "Ochre trail in Roussillon"] }
     ]
   },
   {
@@ -965,6 +1088,11 @@ window.CITIES = [
     tips: [
       "Most big museums are free.",
       "Many Fringe shows are free or pay-what-you-want."
+    ],
+    weekends: [
+      { name: "Pitlochry", how: "Train, 2h", travel: 40, stay: 25, sights: 0, tags: ["hiking", "nature", "wine"], note: "Highland forest walks and whisky.", days: ["Forest walk and the salmon ladder", "Distillery visit"] },
+      { name: "St Andrews", how: "Train + bus, 1h30", travel: 25, stay: 25, sights: 0, tags: ["beach", "history"], note: "Beaches, ruins and a famous golf course.", days: ["Cathedral ruins and West Sands beach", "Fife coastal path to Crail"] },
+      { name: "Glencoe", how: "Bus, 3h", travel: 40, stay: 25, sights: 0, tags: ["hiking", "nature"], note: "Dramatic Highland glens.", days: ["Lost Valley hike", "Loch Leven walk"] }
     ]
   },
   {
@@ -987,6 +1115,10 @@ window.CITIES = [
     tips: [
       "Get a Leap Card; fares are much cheaper than paying cash.",
       "Trad sessions in pubs are free; just buy a drink."
+    ],
+    weekends: [
+      { name: "Galway", how: "Bus, 2h30", travel: 25, stay: 25, sights: 0, tags: ["music", "nightlife"], note: "Ireland's trad-music capital.", days: ["Latin Quarter pubs and live sessions", "Salthill promenade walk"] },
+      { name: "Wicklow & Glendalough", how: "Bus, 1h15", travel: 25, stay: 28, sights: 0, tags: ["hiking", "nature"], note: "Lakes, monastic ruins and mountain trails.", days: ["Glendalough's upper lake loop", "Wicklow Way section"] }
     ]
   },
   {
@@ -1009,6 +1141,10 @@ window.CITIES = [
     tips: [
       "Under 26? Belgian rail sells cheap youth tickets for any domestic trip.",
       "Many museums are free on the first Wednesday afternoon of the month."
+    ],
+    weekends: [
+      { name: "Ghent & Bruges", how: "Train, 35 min", travel: 25, stay: 25, sights: 10, tags: ["architecture", "nightlife"], note: "Two canal towns in one weekend.", days: ["Ghent castle and student bars", "Bruges canals and belfry"] },
+      { name: "Dinant & the Ardennes", how: "Train, 1h30", travel: 25, stay: 25, sights: 5, tags: ["nature", "castles", "hiking"], note: "Cliffside citadel and river kayaking.", days: ["Dinant's citadel", "Kayak the Lesse river"] }
     ]
   },
   {
@@ -1031,6 +1167,10 @@ window.CITIES = [
     tips: [
       "Harbor swimming spots are free and clean.",
       "Supermarket lunches save a lot; restaurant lunches easily cost €20+."
+    ],
+    weekends: [
+      { name: "Møns Klint", how: "Train + bus, 2h", travel: 30, stay: 30, sights: 0, tags: ["nature", "hiking", "beach"], note: "White chalk cliffs and dark night skies.", days: ["Cliff stairs and beach walk", "Forest trails and the GeoCenter"] },
+      { name: "Helsingør & Louisiana", how: "Train, 45 min", travel: 25, stay: 30, sights: 30, tags: ["castles", "art"], note: "Hamlet's castle and a seaside art museum.", days: ["Louisiana Museum of Modern Art", "Kronborg Castle"] }
     ]
   },
   {
@@ -1053,6 +1193,10 @@ window.CITIES = [
     tips: [
       "The metro stations double as a free art gallery.",
       "Public ferries run on your transit card and cost much less than tour boats."
+    ],
+    weekends: [
+      { name: "Utö", how: "Ferry, 2h30", travel: 30, stay: 30, sights: 0, tags: ["islands", "nature", "beach"], note: "An outer-archipelago island with bike trails.", days: ["Bike to rocky swimming spots", "Windmill viewpoint and bakery"] },
+      { name: "Uppsala & Sigtuna", how: "Train, 40 min", travel: 25, stay: 28, sights: 5, tags: ["history"], note: "Viking mounds and Sweden's oldest town.", days: ["Uppsala cathedral and Viking mounds", "Sigtuna's old main street"] }
     ]
   },
   {
@@ -1075,6 +1219,10 @@ window.CITIES = [
     tips: [
       "The Bayern-Ticket covers a day of regional trains for a group; split it with friends.",
       "Beer gardens let you bring your own food; just buy the drinks."
+    ],
+    weekends: [
+      { name: "Füssen & Neuschwanstein", how: "Train, 2h", travel: 30, stay: 28, sights: 17, tags: ["castles", "hiking"], note: "The fairy-tale castle; split a Bayern-Ticket to keep it cheap.", days: ["Neuschwanstein and Marienbrücke", "Alpsee lake walk"] },
+      { name: "Garmisch & Partnachklamm", how: "Train, 1h30", travel: 30, stay: 28, sights: 8, tags: ["hiking", "nature"], note: "Alpine gorge and mountain lakes.", days: ["Partnach Gorge", "Eibsee lake loop"] }
     ]
   },
   {
@@ -1097,6 +1245,10 @@ window.CITIES = [
     tips: [
       "Book Supersaver train tickets in advance on the SBB app.",
       "Public fountains all over the city have drinkable water."
+    ],
+    weekends: [
+      { name: "Lucerne & Rigi", how: "Train, 45 min", travel: 40, stay: 40, sights: 30, tags: ["nature", "hiking"], note: "Lake town and the 'queen of mountains'.", days: ["Chapel Bridge and the old town", "Rigi railway and ridge hike"] },
+      { name: "Appenzell", how: "Train, 1h30", travel: 40, stay: 35, sights: 0, tags: ["hiking", "nature", "food"], note: "Cliffside inns and cheese country.", days: ["Hike to Äscher cliff restaurant", "Village and cheese dairy"] }
     ]
   },
   {
@@ -1119,6 +1271,10 @@ window.CITIES = [
     tips: [
       "Buses are cheap, but the old town is walkable.",
       "Go to Hallstatt early to beat the tour groups."
+    ],
+    weekends: [
+      { name: "Hallstatt", how: "Bus, 2h30", travel: 25, stay: 30, sights: 0, tags: ["nature", "architecture"], note: "Lakeside village; stay to see it without crowds.", days: ["Village and salt mine viewpoint", "Lake walk at sunrise"] },
+      { name: "Berchtesgaden & Königssee", how: "Bus, 50 min", travel: 12, stay: 28, sights: 20, tags: ["nature", "hiking", "islands"], note: "Boat across an emerald lake.", days: ["Boat to St. Bartholomä", "Hike above the lake"] }
     ]
   },
   {
@@ -1141,6 +1297,11 @@ window.CITIES = [
     tips: [
       "Stay in Mestre on the mainland: hostels are half the price, 15 minutes away by bus.",
       "A 24-hour vaporetto pass pays for itself after three rides."
+    ],
+    weekends: [
+      { name: "Verona & Lake Garda", how: "Train, 1h15", travel: 25, stay: 28, sights: 5, tags: ["history", "beach", "nature"], note: "Roman arena and a lake beach.", days: ["Verona's arena and Juliet's balcony", "Train to Peschiera and swim in Lake Garda"] },
+      { name: "Cortina (Dolomites)", how: "Bus, 2h", travel: 30, stay: 35, sights: 0, tags: ["hiking", "nature"], note: "Jagged peaks and alpine lakes.", days: ["Lago di Sorapis hike", "Cinque Torri trails"] },
+      { name: "Padua & Vicenza", how: "Train, 30 min", travel: 12, stay: 22, sights: 15, tags: ["art", "architecture"], note: "Giotto's chapel and Palladio's villas.", days: ["Scrovegni Chapel in Padua", "Palladian Vicenza"] }
     ]
   },
   {
@@ -1163,6 +1324,11 @@ window.CITIES = [
     tips: [
       "Aperitivo: one drink (€8–12) often comes with a buffet big enough for dinner.",
       "Last Supper tickets sell out months ahead; watch for last-minute releases."
+    ],
+    weekends: [
+      { name: "Lake Como", how: "Train, 1h", travel: 15, stay: 30, sights: 10, tags: ["nature", "beach"], note: "Lakeside towns by ferry.", days: ["Varenna and Bellagio by ferry", "Greenway walk"] },
+      { name: "Bergamo & Lake Iseo", how: "Train, 1h", travel: 15, stay: 25, sights: 0, tags: ["architecture", "islands"], note: "A walled hilltop town and Europe's biggest lake island.", days: ["Bergamo's Città Alta", "Monte Isola by boat"] },
+      { name: "Cinque Terre", how: "Train, 3h", travel: 45, stay: 30, sights: 15, tags: ["hiking", "beach"], note: "Cliffside villages on the Ligurian coast.", days: ["Monterosso to Vernazza trail", "Manarola at sunset"] }
     ]
   },
   {
@@ -1186,6 +1352,10 @@ window.CITIES = [
     tips: [
       "A real Neapolitan margherita costs €5–8.",
       "Pompeii is free on the first Sunday of each month."
+    ],
+    weekends: [
+      { name: "Procida", how: "Ferry, 1h", travel: 30, stay: 30, sights: 0, tags: ["islands", "beach"], note: "A colorful, cheaper alternative to Capri.", days: ["Marina Corricella and a beach", "Walk the island"] },
+      { name: "Amalfi Coast", how: "Train + bus, 2h", travel: 20, stay: 30, sights: 0, tags: ["beach", "hiking"], note: "Cliffside towns and the Path of the Gods.", days: ["Path of the Gods hike", "Positano beach"] }
     ]
   },
   {
@@ -1208,6 +1378,10 @@ window.CITIES = [
     tips: [
       "Bologna is a rail hub, so it's a great base for cheap day trips.",
       "About 40 km of porticoes mean rain rarely matters."
+    ],
+    weekends: [
+      { name: "Ravenna & Rimini", how: "Train, 1h", travel: 20, stay: 25, sights: 12, tags: ["art", "beach"], note: "Byzantine mosaics and a beach night.", days: ["Ravenna's mosaics", "Rimini beach"] },
+      { name: "Parma & Modena", how: "Train, 25 min–1h", travel: 18, stay: 22, sights: 20, tags: ["food", "wine"], note: "A food lover's weekend.", days: ["Parmesan and prosciutto in Parma", "Balsamic tasting in Modena"] }
     ]
   },
   {
@@ -1230,6 +1404,10 @@ window.CITIES = [
     tips: [
       "The Dubrovnik Pass includes the walls; buy it only if you'll see several sights.",
       "Stay in Lapad or Gruž and bus in; it's much cheaper than the old town."
+    ],
+    weekends: [
+      { name: "Kotor", how: "Bus, 2h30", travel: 30, stay: 18, sights: 10, tags: ["history", "hiking"], note: "Walled bay town in Montenegro.", days: ["Climb the fortress walls", "Boat to Our Lady of the Rocks"] },
+      { name: "Mljet island", how: "Ferry, 1h30", travel: 40, stay: 30, sights: 25, tags: ["islands", "nature"], note: "National park island with saltwater lakes.", days: ["Bike around the lakes", "Monastery on the islet"] }
     ]
   },
   {
@@ -1252,6 +1430,11 @@ window.CITIES = [
     tips: [
       "Public Jadrolinija ferries cost less than tourist catamarans.",
       "Krka is cheaper and quieter before June."
+    ],
+    weekends: [
+      { name: "Hvar", how: "Ferry, 1h", travel: 25, stay: 30, sights: 0, tags: ["islands", "beach", "nightlife"], note: "Lavender, coves and beach bars.", days: ["Fortress and a beach", "Boat to the Pakleni islands"] },
+      { name: "Krka & Šibenik", how: "Bus, 1h30", travel: 20, stay: 22, sights: 25, tags: ["nature", "history"], note: "Waterfalls and a stone cathedral town.", days: ["Krka waterfall walk", "Šibenik cathedral and fortresses"] },
+      { name: "Makarska & Biokovo", how: "Bus, 1h15", travel: 12, stay: 25, sights: 10, tags: ["beach", "hiking"], note: "Beach town under a huge mountain.", days: ["Makarska beaches", "Biokovo skywalk"] }
     ]
   },
   {
@@ -1274,6 +1457,11 @@ window.CITIES = [
     tips: [
       "Bled's Ojstrica viewpoint is free and has the classic lake view.",
       "Ljubljana's tap water is excellent; carry a bottle."
+    ],
+    weekends: [
+      { name: "Lake Bled & Bohinj", how: "Bus, 1h20", travel: 20, stay: 25, sights: 10, tags: ["nature", "hiking", "beach"], note: "Two alpine lakes in one weekend.", days: ["Bled island and Ojstrica viewpoint", "Swim in Lake Bohinj"] },
+      { name: "Piran", how: "Bus, 2h", travel: 20, stay: 25, sights: 0, tags: ["beach", "architecture"], note: "A Venetian seaside town on Slovenia's tiny coast.", days: ["Old town and the walls", "Swim off the rocks"] },
+      { name: "Soča Valley", how: "Bus, 2h45", travel: 25, stay: 25, sights: 0, tags: ["hiking", "nature", "beach"], note: "Emerald river for rafting and swimming.", days: ["Soča gorge walk", "River swim in Bovec"] }
     ]
   },
   {
@@ -1295,6 +1483,10 @@ window.CITIES = [
     tips: [
       "Plitvice tickets cost much less outside June–September.",
       "One espresso buys you an hour on a café terrace."
+    ],
+    weekends: [
+      { name: "Plitvice Lakes", how: "Bus, 2h", travel: 30, stay: 25, sights: 25, tags: ["nature", "hiking"], note: "Turquoise terraced lakes; stay nearby to go early.", days: ["Upper lakes trail", "Lower lakes and big waterfall"] },
+      { name: "Rovinj", how: "Bus, 3h30", travel: 40, stay: 25, sights: 0, tags: ["beach", "food"], note: "Istria's prettiest harbor town.", days: ["Old town and rocky beaches", "Truffles and olive oil in the hills"] }
     ]
   },
   {
@@ -1316,6 +1508,10 @@ window.CITIES = [
     tips: [
       "Many museums have one free day a week; check before you go.",
       "Milk bars serve full meals for €4–6."
+    ],
+    weekends: [
+      { name: "Kazimierz Dolny", how: "Bus, 2h30", travel: 20, stay: 20, sights: 0, tags: ["architecture", "art"], note: "Artists' town on the Vistula.", days: ["Market square and galleries", "Loess gorges walk"] },
+      { name: "Białowieża Forest", how: "Train + bus, 3h", travel: 25, stay: 20, sights: 10, tags: ["nature", "hiking"], note: "Europe's last primeval forest, with wild bison.", days: ["Guided strict-reserve walk", "Bison reserve"] }
     ]
   },
   {
@@ -1338,6 +1534,10 @@ window.CITIES = [
     tips: [
       "The SKM commuter train links Gdańsk, Sopot and Gdynia for pocket change.",
       "Give Malbork at least half a day."
+    ],
+    weekends: [
+      { name: "Hel Peninsula", how: "Train or ferry, 2h", travel: 20, stay: 22, sights: 0, tags: ["beach", "nature"], note: "A long sandy spit on the Baltic.", days: ["Beach and seal sanctuary", "Bike the peninsula"] },
+      { name: "Malbork & Toruń", how: "Train, 40 min–2h", travel: 25, stay: 18, sights: 20, tags: ["castles", "history", "food"], note: "The biggest brick castle and gingerbread town.", days: ["Malbork castle", "Toruń's old town and gingerbread"] }
     ]
   },
   {
@@ -1359,6 +1559,11 @@ window.CITIES = [
     tips: [
       "The old town is small; you may not need transport at all.",
       "Helsinki ferries are cheaper booked a week ahead."
+    ],
+    weekends: [
+      { name: "Lahemaa National Park", how: "Bus, 1h", travel: 10, stay: 22, sights: 0, tags: ["nature", "hiking"], note: "Bog boardwalks and manor houses.", days: ["Viru bog boardwalk", "Käsmu fishing village"] },
+      { name: "Helsinki", how: "Ferry, 2h", travel: 40, stay: 30, sights: 5, tags: ["architecture", "islands"], note: "Finland's capital and a sea fortress.", days: ["Design district and cathedral", "Suomenlinna fortress"] },
+      { name: "Pärnu", how: "Bus, 2h", travel: 15, stay: 22, sights: 0, tags: ["beach"], note: "Estonia's summer beach capital.", days: ["Beach day", "Old town and spa"] }
     ]
   },
   {
@@ -1381,6 +1586,10 @@ window.CITIES = [
     tips: [
       "Lido buffets are cheap, filling and very Latvian.",
       "Riga's old town is small; walking beats the tram."
+    ],
+    weekends: [
+      { name: "Sigulda & Cēsis", how: "Train, 1h15", travel: 12, stay: 18, sights: 10, tags: ["castles", "hiking"], note: "Castles and trails in the Gauja valley.", days: ["Sigulda castles and Turaida", "Cēsis medieval castle"] },
+      { name: "Jūrmala", how: "Train, 30 min", travel: 5, stay: 20, sights: 0, tags: ["beach", "nature"], note: "Long sandy beach and wooden villas.", days: ["Beach and Jomas street", "Ķemeri bog boardwalk"] }
     ]
   },
   {
@@ -1402,6 +1611,10 @@ window.CITIES = [
     tips: [
       "Get an İstanbulkart: ferries, trams and metro are very cheap with it.",
       "Prices change quickly with inflation; check recent costs before you go."
+    ],
+    weekends: [
+      { name: "Princes' Islands", how: "Ferry, 1h30", travel: 5, stay: 25, sights: 0, tags: ["islands", "beach"], note: "Car-free islands for cycling and swimming.", days: ["Bike around Büyükada", "Heybeliada's beaches"] },
+      { name: "Bursa", how: "Ferry + bus, 2h30", travel: 15, stay: 15, sights: 5, tags: ["food", "history"], note: "Home of the İskender kebab and Ottoman baths.", days: ["Grand Mosque and silk bazaar", "Cable car up Uludağ"] }
     ]
   },
   {
@@ -1424,6 +1637,11 @@ window.CITIES = [
     tips: [
       "Fill your bottle with free mineral water at the springs near Banya Bashi.",
       "Free walking tours start daily in the center."
+    ],
+    weekends: [
+      { name: "Rila Monastery & Seven Lakes", how: "Bus, 2h30", travel: 25, stay: 15, sights: 5, tags: ["hiking", "history"], note: "A striped monastery and glacial lakes.", days: ["Rila Monastery", "Seven Rila Lakes ridge hike"] },
+      { name: "Plovdiv", how: "Bus, 2h", travel: 15, stay: 14, sights: 5, tags: ["history", "streetart"], note: "Roman theatre and the artsy Kapana quarter.", days: ["Roman theatre and old town", "Kapana street art and cafés"] },
+      { name: "Bansko", how: "Bus, 3h", travel: 18, stay: 14, sights: 0, tags: ["hiking", "nature"], note: "Pirin mountain town.", days: ["Pirin trails", "Old town taverns"] }
     ]
   },
   {
@@ -1445,6 +1663,10 @@ window.CITIES = [
     tips: [
       "Use a ride-hailing app instead of street taxis.",
       "Peleș Castle is closed on Mondays."
+    ],
+    weekends: [
+      { name: "Brașov & Bran", how: "Train, 2h30", travel: 20, stay: 14, sights: 15, tags: ["castles", "hiking"], note: "Dracula's castle and a mountain town.", days: ["Brașov old town and Tâmpa hill", "Bran Castle"] },
+      { name: "Sinaia", how: "Train, 1h30", travel: 15, stay: 16, sights: 10, tags: ["castles", "hiking"], note: "Peleș Castle and Bucegi trails.", days: ["Peleș Castle (closed Mondays)", "Cable car and a Bucegi hike"] }
     ]
   },
   {
@@ -1467,6 +1689,10 @@ window.CITIES = [
     tips: [
       "The fast train makes Novi Sad a very easy day trip.",
       "Cash is still common in small bars and bakeries."
+    ],
+    weekends: [
+      { name: "Novi Sad", how: "Train, 40 min", travel: 10, stay: 14, sights: 0, tags: ["nightlife", "history"], note: "Fortress town with a big student scene.", days: ["Petrovaradin fortress", "Danube beach and bars"] },
+      { name: "Tara National Park", how: "Bus, 3h30", travel: 25, stay: 18, sights: 0, tags: ["hiking", "nature"], note: "Views over the Drina river canyon.", days: ["Banjska Stena viewpoint", "Forest trails"] }
     ]
   },
   {
@@ -1489,6 +1715,10 @@ window.CITIES = [
     tips: [
       "A Tallinja card makes buses much cheaper.",
       "Pastizzi (flaky pastries) cost under €1."
+    ],
+    weekends: [
+      { name: "Gozo", how: "Bus + ferry, 1h30", travel: 10, stay: 25, sights: 0, tags: ["islands", "hiking", "beach"], note: "Malta's quieter sister island.", days: ["Citadel and cliffs at Dwejra", "Ramla red beach"] },
+      { name: "Mdina & Rabat", how: "Bus, 30 min", travel: 4, stay: 22, sights: 5, tags: ["history"], note: "The silent walled city.", days: ["Mdina's lanes", "Catacombs in Rabat"] }
     ]
   },
   {
@@ -1511,6 +1741,10 @@ window.CITIES = [
     tips: [
       "Take the bus to Sóller instead of the vintage train: same views, far cheaper.",
       "Coves get crowded by 11am in summer; go early."
+    ],
+    weekends: [
+      { name: "Sóller & Deià", how: "Bus, 45 min", travel: 10, stay: 28, sights: 0, tags: ["hiking", "nature", "beach"], note: "Orange groves, mountain trails and a village above the sea.", days: ["Tram to Port de Sóller", "Hike to Deià and swim"] },
+      { name: "East-coast coves", how: "Bus, 1h15", travel: 10, stay: 30, sights: 0, tags: ["beach"], note: "Turquoise calas near Santanyí.", days: ["Caló des Moro", "Cala Llombards"] }
     ]
   },
   {
@@ -1533,6 +1767,10 @@ window.CITIES = [
     tips: [
       "Agree on prices before any service, and haggle in the souks: start around a third of the asking price.",
       "Many riad hostels include breakfast on the roof."
+    ],
+    weekends: [
+      { name: "Imlil & the Atlas", how: "Shared taxi, 1h30", travel: 15, stay: 12, sights: 10, tags: ["hiking", "nature"], note: "Berber villages and mountain trails.", days: ["Village trek with a local guide", "Hike toward Toubkal refuge"] },
+      { name: "Aït Benhaddou & Ouarzazate", how: "Bus, 4h", travel: 20, stay: 12, sights: 5, tags: ["history", "architecture", "nature"], note: "A movie-set kasbah over the High Atlas.", days: ["Tizi n'Tichka pass and Aït Benhaddou", "Ouarzazate film studios"] }
     ]
   },
   {
@@ -1554,6 +1792,10 @@ window.CITIES = [
     tips: [
       "Hire an official guide for your first medina walk; getting lost is easy.",
       "Tannery shops let you look for free, but expect a sales pitch."
+    ],
+    weekends: [
+      { name: "Chefchaouen", how: "Bus, 4h", travel: 15, stay: 12, sights: 0, tags: ["architecture", "hiking"], note: "The blue mountain town.", days: ["Medina wander", "Hike to the Spanish mosque"] },
+      { name: "Meknes & Volubilis", how: "Train, 45 min", travel: 10, stay: 12, sights: 10, tags: ["history"], note: "Roman ruins and an imperial city.", days: ["Volubilis ruins", "Meknes medina"] }
     ]
   },
   {
@@ -1576,6 +1818,10 @@ window.CITIES = [
     tips: [
       "Ferries from Tarifa arrive in the city port, a short walk from the medina.",
       "High-speed Al Boraq trains run from Tangier to Rabat and Casablanca."
+    ],
+    weekends: [
+      { name: "Chefchaouen", how: "Bus, 3h", travel: 12, stay: 12, sights: 0, tags: ["architecture", "hiking"], note: "The blue town in the Rif.", days: ["Medina wander", "Akchour waterfalls hike"] },
+      { name: "Asilah & Larache", how: "Train, 45 min", travel: 8, stay: 15, sights: 0, tags: ["beach", "streetart"], note: "Whitewashed murals and quiet beaches.", days: ["Asilah medina murals", "Larache and Lixus ruins"] }
     ]
   },
   {
@@ -1597,6 +1843,10 @@ window.CITIES = [
     tips: [
       "Local buses to Taghazout cost under €1.",
       "Winter is warm enough for the beach when Europe is freezing."
+    ],
+    weekends: [
+      { name: "Taghazout surf weekend", how: "Bus, 40 min", travel: 3, stay: 15, sights: 25, tags: ["beach"], note: "Surf lessons in a laid-back village.", days: ["Surf lesson", "Paradise Valley swim"] },
+      { name: "Tafraoute", how: "Bus, 3h", travel: 12, stay: 12, sights: 0, tags: ["hiking", "nature"], note: "Painted rocks and almond valleys.", days: ["Painted rocks", "Ammeln valley walk"] }
     ]
   },
   {
@@ -1618,6 +1868,9 @@ window.CITIES = [
     tips: [
       "Pick your fish at the port stalls and they'll grill it for you.",
       "Bring a jacket: the wind can be strong."
+    ],
+    weekends: [
+      { name: "Sidi Kaouki", how: "Bus, 30 min", travel: 4, stay: 15, sights: 0, tags: ["beach"], note: "A quiet surf beach south of town.", days: ["Surf or horse ride on the beach", "Sunset and back"] }
     ]
   },
   {
@@ -1640,6 +1893,11 @@ window.CITIES = [
     tips: [
       "The TGM light rail runs to Carthage, Sidi Bou Said and La Marsa for pennies.",
       "Shared louage minibuses are the cheapest way between cities."
+    ],
+    weekends: [
+      { name: "Sidi Bou Said & Carthage", how: "Light rail, 30 min", travel: 2, stay: 25, sights: 10, tags: ["architecture", "history", "beach"], note: "Blue-and-white village and ancient ruins.", days: ["Sidi Bou Said's lanes", "Carthage ruins and La Marsa beach"] },
+      { name: "Hammamet & Nabeul", how: "Train, 1h", travel: 5, stay: 20, sights: 0, tags: ["beach", "markets"], note: "Beaches and pottery markets.", days: ["Hammamet medina and beach", "Nabeul pottery market"] },
+      { name: "Kairouan & El Jem", how: "Bus, 2h30", travel: 15, stay: 15, sights: 12, tags: ["history"], note: "A holy city and a Roman colosseum in the desert.", days: ["Great Mosque of Kairouan", "El Jem amphitheatre"] }
     ]
   },
   {
@@ -1662,6 +1920,10 @@ window.CITIES = [
     tips: [
       "Buy the Jordan Pass online before arriving: it waives the visa fee and includes Petra.",
       "Falafel and hummus breakfasts cost a couple of euros."
+    ],
+    weekends: [
+      { name: "Petra & Wadi Rum", how: "Bus, 3h30", travel: 25, stay: 25, sights: 70, tags: ["history", "hiking", "nature"], note: "Sleep in a desert camp under the stars.", days: ["Petra to the Monastery", "Jeep tour in Wadi Rum"] },
+      { name: "Dead Sea & Wadi Mujib", how: "Bus, 1h", travel: 15, stay: 30, sights: 20, tags: ["nature", "hiking", "beach"], note: "Float, then wade up a canyon.", days: ["Wadi Mujib siq trail", "Dead Sea float"] }
     ]
   },
   {
@@ -1684,6 +1946,9 @@ window.CITIES = [
     tips: [
       "Budget flights often land in Kutaisi; a cheap shuttle bus runs to Tbilisi (about 4 hours).",
       "Many EU passport holders can visit visa-free; check yours before booking."
+    ],
+    weekends: [
+      { name: "Kazbegi", how: "Minibus, 3h", travel: 15, stay: 15, sights: 0, tags: ["hiking", "nature"], note: "Mountain church below Mount Kazbek.", days: ["Gergeti Trinity Church hike", "Juta valley"] }
     ]
   },
   {
@@ -1706,6 +1971,10 @@ window.CITIES = [
     tips: [
       "Intercity and airport buses are cheap; taxis are not.",
       "Order a meze to share: it's a full feast for a group."
+    ],
+    weekends: [
+      { name: "Troodos villages", how: "Bus, 1h30", travel: 10, stay: 25, sights: 5, tags: ["hiking", "wine"], note: "Pine forests, painted churches and village wine.", days: ["Omodos village and winery", "Caledonia waterfall trail"] },
+      { name: "Latchi & Akamas", how: "Bus, 1h", travel: 6, stay: 25, sights: 0, tags: ["beach", "hiking"], note: "Wild peninsula with clear water.", days: ["Baths of Aphrodite trail", "Boat to the Blue Lagoon"] }
     ]
   },
   {
@@ -1728,6 +1997,10 @@ window.CITIES = [
     tips: [
       "Get a Ten+ bus card for much cheaper rides.",
       "The Teide cable car sells out; book ahead or hike instead."
+    ],
+    weekends: [
+      { name: "Masca & Los Gigantes", how: "Bus, 1h30", travel: 10, stay: 25, sights: 0, tags: ["hiking", "beach"], note: "A ravine village and huge sea cliffs.", days: ["Masca village", "Los Gigantes cliffs and pool"] },
+      { name: "La Gomera", how: "Ferry, 1h", travel: 45, stay: 25, sights: 0, tags: ["islands", "hiking"], note: "Laurel forests and whistled language.", days: ["Garajonay forest", "Valle Gran Rey"] }
     ]
   },
   {
@@ -1750,6 +2023,10 @@ window.CITIES = [
     tips: [
       "Global buses cover the whole island cheaply.",
       "A natural reef keeps the water at Las Canteras calm for swimming."
+    ],
+    weekends: [
+      { name: "Maspalomas & Mogán", how: "Bus, 1h", travel: 8, stay: 25, sights: 0, tags: ["beach"], note: "Dunes and a fishing port.", days: ["Maspalomas dunes", "Puerto de Mogán"] },
+      { name: "Tejeda & Roque Nublo", how: "Bus, 1h30", travel: 8, stay: 22, sights: 0, tags: ["hiking", "nature"], note: "Mountain village and the island's icon.", days: ["Roque Nublo hike", "Tejeda village"] }
     ]
   },
   {
@@ -1772,6 +2049,10 @@ window.CITIES = [
     tips: [
       "Poncha, the local drink, costs a couple of euros.",
       "Check levada trail status before hiking; some close after storms."
+    ],
+    weekends: [
+      { name: "Porto Moniz & Seixal", how: "Bus, 2h30", travel: 10, stay: 25, sights: 0, tags: ["beach", "nature"], note: "Lava pools and black-sand beaches.", days: ["Natural pools", "Seixal beach"] },
+      { name: "Santana & Pico Ruivo", how: "Bus, 1h30", travel: 10, stay: 25, sights: 0, tags: ["hiking"], note: "Thatched houses and the island's highest peak.", days: ["Santana's houses", "Pico Ruivo hike"] }
     ]
   },
   {
@@ -1794,6 +2075,9 @@ window.CITIES = [
     tips: [
       "Renting a car with friends is often cheaper than tours.",
       "The Terra Nostra pool in Furnas is warm and iron-orange; wear an old swimsuit."
+    ],
+    weekends: [
+      { name: "Furnas", how: "Bus, 1h15", travel: 10, stay: 25, sights: 10, tags: ["nature", "food"], note: "Hot springs and volcano-cooked stew.", days: ["Terra Nostra pool", "Lake Furnas and cozido"] }
     ]
   },
   {
@@ -1816,6 +2100,10 @@ window.CITIES = [
     tips: [
       "Faro airport is a 20-minute bus from town.",
       "Algarve regional trains are cheap but infrequent; check times."
+    ],
+    weekends: [
+      { name: "Lagos", how: "Train, 1h45", travel: 15, stay: 22, sights: 0, tags: ["beach", "hiking"], note: "Golden cliffs and grottoes.", days: ["Ponta da Piedade", "Kayak to the caves"] },
+      { name: "Tavira & Cacela Velha", how: "Train, 35 min", travel: 8, stay: 22, sights: 0, tags: ["beach", "islands"], note: "A river town and a lagoon village.", days: ["Tavira old town", "Cacela Velha's lagoon beach"] }
     ]
   },
   {
@@ -1838,6 +2126,10 @@ window.CITIES = [
     tips: [
       "The Guggenheim has a student discount; bring ID.",
       "Some neighborhoods do cheap drink-and-pintxo deals on Thursday evenings."
+    ],
+    weekends: [
+      { name: "Mundaka & Gaztelugatxe", how: "Bus, 1h", travel: 8, stay: 25, sights: 0, tags: ["hiking", "beach"], note: "Surf village and a chapel on a sea rock.", days: ["San Juan de Gaztelugatxe steps", "Mundaka and the Urdaibai estuary"] },
+      { name: "Rioja wine towns", how: "Bus, 1h30", travel: 20, stay: 25, sights: 15, tags: ["wine"], note: "Haro and Laguardia's wineries.", days: ["Haro bodegas", "Laguardia's walled town"] }
     ]
   },
   {
@@ -1860,6 +2152,10 @@ window.CITIES = [
     tips: [
       "Club tickets are much cheaper online in advance.",
       "The Disco Bus runs all night between clubs and towns."
+    ],
+    weekends: [
+      { name: "Formentera", how: "Ferry, 30 min", travel: 45, stay: 35, sights: 0, tags: ["islands", "beach"], note: "Caribbean-blue water and white sand.", days: ["Ses Illetes beach", "Bike to the lighthouse"] },
+      { name: "North Ibiza", how: "Bus, 45 min", travel: 6, stay: 30, sights: 0, tags: ["beach", "nature"], note: "Quiet coves away from the clubs.", days: ["Portinatx coves", "Cala Xarraca"] }
     ]
   },
   {
@@ -1882,6 +2178,11 @@ window.CITIES = [
     tips: [
       "Street food is king: panelle, arancine and sfincione cost €1–3.",
       "Many churches charge small entry fees; carry coins."
+    ],
+    weekends: [
+      { name: "Cefalù", how: "Train, 1h", travel: 12, stay: 25, sights: 5, tags: ["beach", "architecture"], note: "A beach town under a giant rock.", days: ["Cathedral and beach", "Rocca di Cefalù hike"] },
+      { name: "Trapani & Erice", how: "Bus, 2h", travel: 20, stay: 22, sights: 5, tags: ["history", "food"], note: "Salt pans at sunset and a hilltop medieval town.", days: ["Erice by cable car", "Salt pans and couscous"] },
+      { name: "Valley of the Temples", how: "Bus, 2h", travel: 20, stay: 20, sights: 12, tags: ["history"], note: "Greek temples in Agrigento.", days: ["Temples at sunset", "Scala dei Turchi white cliffs"] }
     ]
   },
   {
@@ -1904,6 +2205,11 @@ window.CITIES = [
     tips: [
       "Regional trains around Puglia cost a few euros.",
       "Buy a bag of handmade orecchiette straight from the makers in Bari Vecchia."
+    ],
+    weekends: [
+      { name: "Polignano & Monopoli", how: "Train, 30 min", travel: 6, stay: 25, sights: 0, tags: ["beach"], note: "Cliff-top towns and tiny coves.", days: ["Polignano's cove", "Monopoli old port"] },
+      { name: "Alberobello & Matera", how: "Train, 1h30", travel: 20, stay: 22, sights: 10, tags: ["architecture", "history"], note: "Trulli houses and cave city.", days: ["Alberobello's trulli", "Matera's Sassi"] },
+      { name: "Lecce & Salento", how: "Train, 1h30", travel: 20, stay: 22, sights: 0, tags: ["architecture", "beach"], note: "Baroque town and turquoise beaches.", days: ["Lecce's baroque center", "Bus to a Salento beach"] }
     ]
   },
   {
@@ -1926,6 +2232,9 @@ window.CITIES = [
     tips: [
       "Poetto beach is reachable by city bus.",
       "Renting a car with friends is the best way to reach remote beaches."
+    ],
+    weekends: [
+      { name: "Villasimius", how: "Bus, 1h15", travel: 8, stay: 30, sights: 0, tags: ["beach"], note: "Turquoise beaches in the southeast.", days: ["Spiaggia del Simius", "Punta Molentis"] }
     ]
   },
   {
@@ -1948,6 +2257,11 @@ window.CITIES = [
     tips: [
       "Ouzeri meals are shared small plates; order a few and a carafe.",
       "It's a student city, so prices are low and nightlife runs late."
+    ],
+    weekends: [
+      { name: "Halkidiki", how: "Bus, 1h30", travel: 15, stay: 25, sights: 0, tags: ["beach"], note: "Pine-backed beaches.", days: ["Kassandra beaches", "Afitos village"] },
+      { name: "Meteora", how: "Train, 4h", travel: 30, stay: 20, sights: 15, tags: ["hiking", "history"], note: "Monasteries on rock pillars.", days: ["Monasteries", "Sunset rock hike"] },
+      { name: "Mount Olympus", how: "Train + bus, 1h30", travel: 15, stay: 22, sights: 0, tags: ["hiking", "nature"], note: "Gorge trails below the home of the gods.", days: ["Enipeas gorge", "Litochoro village"] }
     ]
   },
   {
@@ -1970,6 +2284,9 @@ window.CITIES = [
     tips: [
       "KTEL buses reach most beaches cheaply.",
       "Tavernas often bring free raki and dessert after dinner."
+    ],
+    weekends: [
+      { name: "Samaria Gorge & Sfakia", how: "Bus, 1h30", travel: 30, stay: 25, sights: 10, tags: ["hiking"], note: "Hike the gorge, sleep by the Libyan Sea.", days: ["Samaria Gorge (May–Oct)", "Loutro by boat"] }
     ]
   },
   {
@@ -1992,6 +2309,9 @@ window.CITIES = [
     tips: [
       "Green KTEL buses cover the island; blue buses serve the town.",
       "West-coast sunsets beat the town side."
+    ],
+    weekends: [
+      { name: "Paxos", how: "Ferry, 1h", travel: 40, stay: 30, sights: 0, tags: ["islands", "beach"], note: "Tiny island with blue caves.", days: ["Gaios harbor", "Boat to Antipaxos beaches"] }
     ]
   },
   {
@@ -2014,6 +2334,9 @@ window.CITIES = [
     tips: [
       "Coffee is often under €1; café culture is huge.",
       "Furgons (minibuses) are the cheapest way between towns."
+    ],
+    weekends: [
+      { name: "Berat", how: "Bus, 2h30", travel: 10, stay: 12, sights: 5, tags: ["history", "architecture"], note: "The town of a thousand windows.", days: ["Castle quarter", "Osumi canyon"] }
     ]
   },
   {
@@ -2036,6 +2359,9 @@ window.CITIES = [
     tips: [
       "The convertible mark is pegged to the euro (about 2 KM = €1).",
       "The train to Mostar is one of Europe's most scenic rides."
+    ],
+    weekends: [
+      { name: "Mostar & Blagaj", how: "Train, 2h", travel: 15, stay: 14, sights: 5, tags: ["history", "nature"], note: "The Old Bridge and a river-source monastery.", days: ["Mostar old town", "Blagaj and Kravice waterfalls"] }
     ]
   },
   {
@@ -2058,6 +2384,9 @@ window.CITIES = [
     tips: [
       "Trakai is best at sunset.",
       "Vilnius is compact; walk everywhere."
+    ],
+    weekends: [
+      { name: "Trakai & Kaunas", how: "Bus, 40 min", travel: 12, stay: 18, sights: 10, tags: ["castles", "architecture"], note: "Island castle and interwar modernism.", days: ["Trakai island castle", "Kaunas old town"] }
     ]
   },
   {
@@ -2079,6 +2408,9 @@ window.CITIES = [
     tips: [
       "Poland's regional trains are very cheap; book on the PKP app.",
       "Milk bars serve full meals for about €5."
+    ],
+    weekends: [
+      { name: "Karpacz", how: "Bus, 2h", travel: 15, stay: 18, sights: 0, tags: ["hiking", "nature"], note: "Karkonosze mountain trails.", days: ["Śnieżka summit hike", "Wang church"] }
     ]
   },
   {
@@ -2101,6 +2433,10 @@ window.CITIES = [
     tips: [
       "Untold tickets are much cheaper in early-bird sales.",
       "It's a university city; weekday lunch menus cost €5–7."
+    ],
+    weekends: [
+      { name: "Apuseni Mountains", how: "Bus, 2h", travel: 12, stay: 14, sights: 5, tags: ["hiking", "nature"], note: "Caves, gorges and waterfalls.", days: ["Bear Cave", "Waterfall trail"] },
+      { name: "Sighișoara", how: "Train, 3h", travel: 15, stay: 14, sights: 5, tags: ["history", "castles"], note: "A medieval citadel.", days: ["Citadel and clock tower", "Viscri fortified church"] }
     ]
   },
   {
@@ -2123,6 +2459,9 @@ window.CITIES = [
     tips: [
       "Happy hours halve drink prices; apps list them.",
       "Tap water is excellent; buy groceries at Bónus."
+    ],
+    weekends: [
+      { name: "Golden Circle", how: "Bus, 1h30", travel: 50, stay: 40, sights: 0, tags: ["nature", "hiking"], note: "Geysers, waterfalls and a rift valley.", days: ["Þingvellir and Geysir", "Gullfoss and a hot spring"] }
     ]
   },
   {
@@ -2145,6 +2484,9 @@ window.CITIES = [
     tips: [
       "Many wine bars do tasting flights for under €10.",
       "Under 28? Ask about youth fares on French regional trains."
+    ],
+    weekends: [
+      { name: "Arcachon & Dune du Pilat", how: "Train, 50 min", travel: 16, stay: 30, sights: 0, tags: ["beach", "nature", "food"], note: "Europe's tallest dune and oysters.", days: ["Climb the Dune du Pilat", "Oysters at Cap Ferret"] }
     ]
   },
   {
@@ -2166,6 +2508,9 @@ window.CITIES = [
     tips: [
       "Harbor ferries are regular public transport: a cheap harbor tour.",
       "The Elbphilharmonie viewing plaza is free with a timed ticket."
+    ],
+    weekends: [
+      { name: "Lübeck & Travemünde", how: "Train, 45 min", travel: 20, stay: 22, sights: 5, tags: ["history", "beach"], note: "Hanseatic town and a Baltic beach.", days: ["Lübeck's old town", "Travemünde beach"] }
     ]
   },
   {
@@ -2188,6 +2533,10 @@ window.CITIES = [
     tips: [
       "Kölsch comes in small glasses and keeps coming until you put a coaster on top.",
       "The Rhine Valley is covered by regional trains; no tour needed."
+    ],
+    weekends: [
+      { name: "Rhine Valley", how: "Train, 1h30", travel: 30, stay: 25, sights: 10, tags: ["castles", "wine", "hiking"], note: "Castles and vineyard trails.", days: ["Bacharach and a castle hike", "Boat past the Loreley"] },
+      { name: "Cochem (Mosel)", how: "Train, 2h", travel: 30, stay: 25, sights: 10, tags: ["castles", "wine"], note: "A castle above a wine village.", days: ["Reichsburg castle", "Mosel wine tasting"] }
     ]
   }
 ];
@@ -2300,7 +2649,8 @@ const state = {
   days: 3,
   month: (new Date().getMonth() + 1) % 12,
   interests: new Set(["food", "history"]),
-  modes: new Set(Object.keys(MODES))
+  modes: new Set(Object.keys(MODES)),
+  sort: "best" // or "cheap"
 };
 const expanded = new Set();       // trips whose plan is open
 const modeChoice = new Map();     // city id -> chosen transport mode
@@ -2346,8 +2696,18 @@ function transportOptions(home, dest, month) {
 
 // Pick the option to use: the traveler's own pick if they made one, otherwise the best
 // balance of price and time (each hour on the road counts as €8, both ways).
+// Longest sensible trip each way: 3 hours per day of the trip (2½ hours for a day trip).
+// Flights always qualify on longer trips, and overnight ferries (up to 20h) do too on
+// trips of 3+ days, since you sleep on board.
+function tooLong(o) {
+  if (state.days === 1) return o.mode === "flight" || o.hours > 2.5;
+  if (o.mode === "flight") return false;
+  if (o.mode === "boat" && state.days >= 3 && o.hours <= 20) return false;
+  return o.hours > state.days * 3;
+}
+
 function pickTransport(dest, opts) {
-  const allowed = opts.filter(o => state.modes.has(o.mode));
+  const allowed = opts.filter(o => state.modes.has(o.mode) && !tooLong(o));
   if (!allowed.length) return null;
   const chosen = allowed.find(o => o.mode === modeChoice.get(dest.id));
   return chosen || allowed.reduce((best, o) => (o.cost + o.hours * 16 < best.cost + best.hours * 16 ? o : best));
@@ -2356,6 +2716,7 @@ function pickTransport(dest, opts) {
 // ---------------------------------------------------------------- trip cost
 
 function chosenDayTrip(dest) {
+  if (state.days === 1) return null;
   const pick = dayTripChoice.has(dest.id) ? dayTripChoice.get(dest.id) : (state.days === 4 ? 0 : -1);
   return pick >= 0 ? dest.dayTrips[pick] : null;
 }
@@ -2364,7 +2725,7 @@ function estimateTrip(home, dest) {
   const options = transportOptions(home, dest, state.month);
   const transport = pickTransport(dest, options);
   if (!transport) return null;
-  const nights = Math.max(1, state.days - 1);
+  const nights = state.days - 1; // 0 for a day trip
   const lodging = Math.round(nights * dest.costs.hostel * dest.priceMult[state.month]);
   const food = state.days * dest.costs.food;
   const dayTrip = chosenDayTrip(dest);
@@ -2375,7 +2736,58 @@ function estimateTrip(home, dest) {
            total: transport.cost + lodging + food + local + extra };
 }
 
+// ---------------------------------------------------------------- nearby escapes
+// Cheap trips from the home city to small places nearby: day trips (1 day) and
+// weekend escapes (1 night away). Cities in the main list are ranked alongside these.
+
+// "Train + bus, 1h15" -> { mode: "train", hours: 1.25 }
+function parseHow(how) {
+  const s = how.toLowerCase();
+  const mode = /ferry|boat/.test(s) ? "boat" : /train|rail|s-bahn|rer|dart|metro|tram/.test(s) ? "train" : "bus";
+  const h = s.match(/(\d+)h(\d+)?/), m = s.match(/(\d+)\s*min/);
+  const fromH = h ? Number(h[1]) + (h[2] ? Number(h[2]) / 60 : 0) : null;
+  const fromM = m ? Number(m[1]) / 60 : null;
+  // Ranges like "40 min–1h15": use whichever time comes first.
+  const hours = fromH !== null && fromM !== null ? (h.index < m.index ? fromH : fromM) : (fromH ?? fromM ?? 1);
+  return { mode, hours };
+}
+
+function nearbyEscapes(home) {
+  const dayTrips = home.dayTrips.map((d, i) => ({ ...d, id: `${home.id}-day-${i}`, overnight: false }));
+  const firstWords = new Set(home.dayTrips.map(d => d.name.split(/[ &,]/)[0]));
+  const weekends = home.weekends.map((w, i) => ({ ...w, id: `${home.id}-wkd-${i}`, overnight: true }));
+  if (state.days === 1) {
+    // A weekend escape also works as a day trip if it's close and doesn't repeat a day trip.
+    return [...dayTrips, ...weekends.filter(w => !firstWords.has(w.name.split(/[ &,]/)[0]))];
+  }
+  return state.days === 2 ? weekends : [];
+}
+
+function estimateEscape(home, esc) {
+  const transport = parseHow(esc.how);
+  if (!state.modes.has(transport.mode)) return null;
+  if (state.days === 1 && transport.hours > 2.5) return null;
+  const mult = home.priceMult[state.month];
+  const nights = state.days - 1;
+  const food = state.days * home.costs.food;
+  if (!esc.overnight) {
+    // Day-trip prices already include round-trip travel and the main entry fee.
+    return { transport, nights, food, travel: esc.cost, sights: 0, stay: 0, total: esc.cost + food };
+  }
+  const travel = Math.round(esc.travel * mult);
+  const stay = Math.round(nights * esc.stay * mult);
+  return { transport, nights, food, travel, sights: esc.sights, stay, total: travel + stay + esc.sights + food };
+}
+
 // ---------------------------------------------------------------- ranking
+
+// Best match = what you like + how good the month is + budget left over.
+// Short trips are about saving money, so price counts for more on 1–2 day trips.
+function rankScore(interest, season, savings) {
+  return state.days <= 2
+    ? 0.35 * interest + 0.25 * season + 0.4 * savings
+    : 0.45 * interest + 0.35 * season + 0.2 * savings;
+}
 
 function findTrips() {
   const home = byId(state.home);
@@ -2391,11 +2803,20 @@ function findTrips() {
     const interestScore = wanted.length ? (matched.length + 0.6 * viaDayTrip.length) / wanted.length : 1;
     const seasonScore = dest.season[state.month] / 5;
     const savings = Math.max(0, Math.min(1, 1 - cost.total / state.budget));
-    // What you like (45%), how good the month is (35%), budget left over (20%).
-    const score = 0.45 * interestScore + 0.35 * seasonScore + 0.2 * savings;
+    const score = rankScore(interestScore, seasonScore, savings);
     trips.push({ dest, cost, matched, viaDayTrip, score });
   });
-  trips.sort((a, b) => b.score - a.score);
+  nearbyEscapes(home).forEach(esc => {
+    const cost = estimateEscape(home, esc);
+    if (!cost) return;
+    const dest = { id: esc.id, name: esc.name, country: `Near ${home.name}`, code: home.code, season: home.season, escape: esc };
+    const matched = wanted.filter(i => esc.tags.includes(i));
+    const interestScore = wanted.length ? (matched.length + 0.5 * (wanted.length - matched.length)) / wanted.length : 1;
+    const savings = Math.max(0, Math.min(1, 1 - cost.total / state.budget));
+    const score = rankScore(interestScore, home.season[state.month] / 5, savings);
+    trips.push({ dest, cost, matched, viaDayTrip: [], score });
+  });
+  trips.sort(state.sort === "cheap" ? (a, b) => a.cost.total - b.cost.total : (a, b) => b.score - a.score);
   return {
     home,
     fits: trips.filter(t => t.cost.total <= state.budget),
@@ -2423,7 +2844,13 @@ function priceLevel(mult) {
 
 function renderPostcards({ home, fits, stretch }) {
   $("#picks-title").textContent = `Top picks from ${home.name} in ${MONTHS_FULL[state.month]}`;
-  const top = [...fits.map(t => ({ ...t, over: false })), ...stretch.map(t => ({ ...t, over: true }))].slice(0, 3);
+  let pool = fits;
+  if (state.days <= 2) {
+    // Short trips: lead with the cheap escapes near home (2 of them on a 2-day trip, plus the best city).
+    const near = fits.filter(t => t.dest.escape), far = fits.filter(t => !t.dest.escape);
+    pool = state.days === 1 ? [...near, ...far] : [...near.slice(0, 2), ...far, ...near.slice(2)];
+  }
+  const top = [...pool.map(t => ({ ...t, over: false })), ...stretch.map(t => ({ ...t, over: true }))].slice(0, 3);
   if (!top.length) {
     $("#postcards").innerHTML = `<p class="picks-empty">Nothing fits yet. Try a bigger budget or another month.</p>`;
     return;
@@ -2431,12 +2858,12 @@ function renderPostcards({ home, fits, stretch }) {
   $("#postcards").innerHTML = top.map((t, i) => {
     const s = season(t.dest.season[state.month]);
     return `<button type="button" class="postcard" data-id="${t.dest.id}" aria-label="${t.dest.name}, about ${euro(t.cost.total)}. See the plan.">
-      <span class="rank">${home.code} → ${t.dest.code}</span>
+      <span class="rank">${t.dest.escape ? `${home.code} · ${t.dest.escape.overnight && state.days === 2 ? "weekend escape" : "day trip"}` : `${home.code} → ${t.dest.code}`}</span>
       <h3>${t.dest.name}</h3>
       <span class="country">${t.dest.country}</span>
       <span class="pc-price num">${euro(t.cost.total)}</span>
       <span class="pc-note ${t.over ? "warn" : s.tone}">${t.over ? "A little over budget" : s.text}</span>
-      <span class="pc-meta">${MODES[t.cost.transport.mode].label} · ~${hrs(t.cost.transport.hours)} · ${state.days} days</span>
+      <span class="pc-meta">${MODES[t.cost.transport.mode].label} · ~${hrs(t.cost.transport.hours)} · ${dayWord(state.days)}</span>
     </button>`;
   }).join("");
 }
@@ -2457,9 +2884,9 @@ function transportSection(dest, cost) {
     <h4>Getting there</h4>
     <div class="options" role="radiogroup" aria-label="Transport to ${dest.name}">
       ${allowed.map(o => `<button type="button" class="option" role="radio" data-act="mode" data-id="${dest.id}" data-v="${o.mode}"
-          aria-checked="${o.mode === cost.transport.mode}">
+          aria-checked="${o.mode === cost.transport.mode}" ${tooLong(o) ? "disabled" : ""}>
           <strong>${MODES[o.mode].label}${o.live ? ' <span class="live">live</span>' : ""}</strong>
-          <span>~${hrs(o.hours)} each way</span>
+          <span>~${hrs(o.hours)} each way${tooLong(o) ? ` · too long for ${state.days === 1 ? "a day trip" : dayWord(state.days)}` : ""}</span>
           <span class="num">${euro(o.cost)}</span>
         </button>`).join("")}
     </div>
@@ -2483,15 +2910,22 @@ function liveNote(cost) {
        : status === "none" ? `<p class="fine">No recent live fare for this route and month, so this is an estimate.</p>` : "";
 }
 
+const dayWord = (n) => `${n} day${n === 1 ? "" : "s"}`;
+
 function costSection(cost) {
-  const scale = Math.max(state.budget, cost.total) * 1.02;
   const parts = [
     ["c1", `${MODES[cost.transport.mode].label} round trip`, `~${hrs(cost.transport.hours)} each way`, cost.transport.cost],
     ["c2", "Hostel", `${cost.nights} night${cost.nights > 1 ? "s" : ""}`, cost.lodging],
-    ["c3", "Food", `${state.days} days`, cost.food],
+    ["c3", "Food", dayWord(state.days), cost.food],
     ["c4", "Local transport & sights", "", cost.local]
-  ];
+  ].filter(p => p[3] > 0);
   if (cost.dayTrip) parts.push(["c5", `Day trip: ${cost.dayTrip.name}`, "travel + entry", cost.extra]);
+  return costBlock(parts, cost.total);
+}
+
+function costBlock(parts, total) {
+  const cost = { total };
+  const scale = Math.max(state.budget, cost.total) * 1.02;
   const mark = state.budget / scale * 100;
   return `
     <div>
@@ -2565,7 +2999,7 @@ function itinerarySection(dest, cost) {
       <ol><li><span class="slot">${cost.dayTrip.how}</span><span class="what"><span>${cost.dayTrip.name}: ${cost.dayTrip.note}</span><span>${euro(cost.dayTrip.cost)}</span></span></li></ol></div>`);
   } else if (state.days > 3) {
     days.push(`<div class="day"><div class="day-head"><strong>Day 4</strong><span class="num">Free day</span></div>
-      <ol><li><span class="what"><span>Pick a day trip below, or explore at your own pace.</span></span></li></ol></div>`);
+      <ol><li><span class="what solo"><span>Pick a day trip below, or explore at your own pace.</span></span></li></ol></div>`);
   }
   return `<div><h4>Your ${state.days}-day plan</h4><div class="days">${days.join("")}</div></div>`;
 }
@@ -2619,35 +3053,113 @@ function ticket(trip, home, over) {
     ${isOpen ? `<div class="details">
       <div class="two">${costSection(cost)}${transportSection(dest, cost)}</div>
       ${itinerarySection(dest, cost)}
-      ${dayTripsSection(dest, cost)}
+      ${state.days > 1 ? dayTripsSection(dest, cost) : ""}
       ${whenSection(dest)}
       ${extrasSection(home, dest, cost)}
     </div>` : ""}
   </article>`;
 }
 
+function escapePlan(home, esc, cost) {
+  const leg = `${esc.how.split(",")[0]} from ${home.name}, ~${hrs(cost.transport.hours)}`;
+  let days;
+  if (!esc.overnight) {
+    days = [[["Getting there", leg], ["The day", esc.note], ["Evening", `Back in ${home.name}`]]];
+  } else if (state.days === 1) {
+    days = [[["Getting there", leg], ["The day", esc.days[0]], ["Evening", `Back in ${home.name}`]]];
+  } else {
+    days = [[["Getting there", leg], ["Explore", esc.days[0]], ["Night", "Stay over nearby"]],
+            [["Explore", esc.days[1]], ["Evening", `Back in ${home.name}`]]];
+  }
+  const cards = days.map((d, i) => `<div class="day">
+      <div class="day-head"><strong>${days.length > 1 ? `Day ${i + 1}` : "Your day"}</strong></div>
+      <ol>${d.map(([slot, what]) => `<li><span class="slot">${slot}</span><span class="what solo"><span>${what}</span></span></li>`).join("")}</ol>
+    </div>`).join("");
+  const more = esc.overnight && state.days === 1 ? `<p class="fine">Stay the night to also see: ${esc.days[1]}. Switch to 2 days to price it.</p>` : "";
+  return `<div><h4>Your plan</h4><div class="days">${cards}</div>${more}</div>`;
+}
+
+function escapeTicket(trip, home, over) {
+  const { dest, cost, matched } = trip;
+  const esc = dest.escape;
+  const left = state.budget - cost.total;
+  const isOpen = expanded.has(dest.id);
+  const kind = esc.overnight && state.days === 2 ? "Weekend escape" : "Day trip";
+  const parts = [
+    ["c1", esc.overnight ? `${MODES[cost.transport.mode].label} round trip` : "Travel + entry", `~${hrs(cost.transport.hours)} each way`, cost.travel],
+    ["c2", "Stay", `${cost.nights} night`, cost.stay],
+    ["c3", "Food", dayWord(state.days), cost.food],
+    ["c4", "Sights & entry", "", cost.sights]
+  ].filter(p => p[3] > 0);
+  const mode = cost.transport.mode;
+  const book = mode === "boat"
+    ? `<a href="https://www.directferries.com/" target="_blank" rel="noopener">Ferries ↗</a>`
+    : `<a href="https://www.omio.com/" target="_blank" rel="noopener">${MODES[mode].label} tickets ↗</a>`;
+  return `
+  <article class="ticket${over ? " stretch" : ""}" id="t-${dest.id}">
+    <div class="t-main">
+      <div class="route"><span>${home.code}</span><span class="line"></span><span class="kind">${kind}</span>
+        <span class="mode">${esc.how}</span></div>
+      <h3>${dest.name}<small>near ${home.name}</small></h3>
+      <p class="esc-note">${esc.note}</p>
+      <div class="tags">${matched.map(m => `<span class="tag">${INTERESTS[m]}</span>`).join("")}</div>
+    </div>
+    <div class="t-stub">
+      <div>
+        <span class="eyebrow">Est. total</span>
+        <strong class="price">${euro(cost.total)}</strong>
+        <span class="left ${left >= 0 ? "good" : "warn"}">${left >= 0 ? `${euro(left)} under budget` : `${euro(-left)} over budget`}</span>
+      </div>
+      <button class="open-btn" type="button" data-act="open" data-id="${dest.id}" aria-expanded="${isOpen}">${isOpen ? "Hide plan" : "See the plan"}</button>
+    </div>
+    ${isOpen ? `<div class="details">
+      <div class="two">${costBlock(parts, cost.total)}${escapePlan(home, esc, cost)}</div>
+      <div class="two">
+        <div><h4>Save money</h4><ul class="tips">
+          <li>Regional trains and buses usually have fixed fares, so you rarely need to book ahead.</li>
+          <li>Leave early: you get a full day there, and the first departures are often the quietest.</li>
+          ${cost.stay ? "<li>Small towns empty out after the day-trippers leave, and guesthouses there are often cheaper than city hostels.</li>" : ""}
+        </ul></div>
+        <div><h4>Check live prices</h4><div class="links">
+          ${book}
+          ${cost.stay ? `<a href="https://www.google.com/search?q=${encodeURIComponent("cheap places to stay " + dest.name)}" target="_blank" rel="noopener">Places to stay ↗</a>` : ""}
+          <a href="https://www.getyourguide.com/s/?q=${encodeURIComponent(dest.name.split(/ [&(]/)[0])}${GYG_PARTNER_ID ? `&partner_id=${GYG_PARTNER_ID}` : ""}" target="_blank" rel="noopener">Tours &amp; tickets ↗</a>
+        </div></div>
+      </div>
+    </div>` : ""}
+  </article>`;
+}
+
+const card = (t, home, over) => t.dest.escape ? escapeTicket(t, home, over) : ticket(t, home, over);
+
 function renderResults({ home, fits, stretch }) {
   const n = fits.length;
   $("#results-title").textContent = n ? `${n} trip${n === 1 ? "" : "s"} fit your budget` : "Nothing fits yet";
-  $("#results-sub").textContent = `From ${home.name} · ${state.days} days · ${MONTHS_FULL[state.month]} · ${euro(state.budget)} per person`;
+  $("#results-sub").textContent = `From ${home.name} · ${dayWord(state.days)} · ${MONTHS_FULL[state.month]} · ${euro(state.budget)} per person`;
   const out = [];
   if (!state.modes.size) {
     out.push(`<div class="empty">Pick at least one way to travel under "Getting there by".</div>`);
   } else if (!n) {
-    out.push(`<div class="empty">No trips fit ${euro(state.budget)} for ${state.days} days in ${MONTHS_FULL[state.month]}. Try a shorter trip, a cheaper month, more ways to travel, or move the budget slider up.</div>`);
+    out.push(`<div class="empty">No trips fit ${euro(state.budget)} for ${dayWord(state.days)} in ${MONTHS_FULL[state.month]}. Try a shorter trip, a cheaper month, more ways to travel, or move the budget slider up.</div>`);
   }
-  const shown = showAll ? fits : fits.slice(0, LIST_LIMIT);
-  shown.forEach(t => out.push(ticket(t, home, false)));
-  if (shown.length < n) {
-    out.push(`<button type="button" class="more-btn" data-act="more">Show all ${n} trips</button>`);
+  const near = fits.filter(t => t.dest.escape), far = fits.filter(t => !t.dest.escape);
+  if (near.length) {
+    out.push(`<h3 class="group">${state.days === 1 ? "Day trips" : "Weekend escapes"} near ${home.name} <span>${near.length}</span></h3>`);
+    near.forEach(t => out.push(card(t, home, false)));
+    if (far.length) out.push(`<h3 class="group">${state.days === 1 ? "Cities you can do in a day" : "Cities within reach"} <span>${far.length}</span></h3>`);
+  }
+  const shown = showAll ? far : far.slice(0, LIST_LIMIT);
+  shown.forEach(t => out.push(card(t, home, false)));
+  if (shown.length < far.length) {
+    out.push(`<button type="button" class="more-btn" data-act="more">Show all ${far.length} cities</button>`);
   } else if (stretch.length) {
     out.push(`<div class="divider eyebrow">Worth stretching for · up to 20% over</div>`);
-    stretch.forEach(t => out.push(ticket(t, home, true)));
+    stretch.forEach(t => out.push(card(t, home, true)));
   }
   $("#results").innerHTML = out.join("");
   // Look up live flight fares for any open plan (only if a price worker is set up).
   [...fits, ...stretch]
-    .filter(t => expanded.has(t.dest.id) && t.cost.options.some(o => o.mode === "flight"))
+    .filter(t => expanded.has(t.dest.id) && (t.cost.options || []).some(o => o.mode === "flight"))
     .forEach(t => fetchLiveFare(home, t.dest));
 }
 
@@ -2658,6 +3170,7 @@ function update() {
   document.querySelectorAll("#days .pick").forEach(b => b.setAttribute("aria-pressed", Number(b.dataset.v) === state.days));
   document.querySelectorAll("#months .pick").forEach(b => b.setAttribute("aria-pressed", Number(b.dataset.v) === state.month));
   document.querySelectorAll("#interests .chip").forEach(b => b.setAttribute("aria-pressed", state.interests.has(b.dataset.v)));
+  document.querySelectorAll(".sort .pick").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === state.sort));
   document.querySelectorAll("#modes .chip").forEach(b => b.setAttribute("aria-pressed", state.modes.has(b.dataset.v)));
   const result = findTrips();
   renderPostcards(result);
@@ -2667,7 +3180,7 @@ function update() {
 function toggle(set, value) { set.has(value) ? set.delete(value) : set.add(value); }
 
 function setupControls() {
-  $("#days").innerHTML = [2, 3, 4].map(d => `<button type="button" class="pick" data-v="${d}">${d} days</button>`).join("");
+  $("#days").innerHTML = [1, 2, 3, 4].map(d => `<button type="button" class="pick" data-v="${d}">${dayWord(d)}</button>`).join("");
   $("#months").innerHTML = MONTHS.map((m, i) => `<button type="button" class="pick" data-v="${i}" aria-label="${MONTHS_FULL[i]}">${m}</button>`).join("");
   $("#interests").innerHTML = Object.entries(INTERESTS).map(([k, label]) => `<button type="button" class="chip" data-v="${k}">${label}</button>`).join("");
   $("#modes").innerHTML = Object.entries(MODES).map(([k, m]) => `<button type="button" class="chip" data-v="${k}">${m.label}</button>`).join("");
@@ -2679,6 +3192,7 @@ function setupControls() {
   $("#days").addEventListener("click", (e) => { const b = e.target.closest(".pick"); if (b) { state.days = Number(b.dataset.v); changed(); } });
   $("#months").addEventListener("click", (e) => { const b = e.target.closest(".pick"); if (b) { state.month = Number(b.dataset.v); changed(); } });
   $("#interests").addEventListener("click", (e) => { const b = e.target.closest(".chip"); if (b) { toggle(state.interests, b.dataset.v); changed(); } });
+  document.querySelector(".sort").addEventListener("click", (e) => { const b = e.target.closest(".pick"); if (b) { state.sort = b.dataset.v; changed(); } });
   $("#modes").addEventListener("click", (e) => { const b = e.target.closest(".chip"); if (b) { toggle(state.modes, b.dataset.v); changed(); } });
 
   $("#postcards").addEventListener("click", (e) => {

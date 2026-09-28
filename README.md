@@ -19,7 +19,7 @@ Everything is in one file, `index.html`, so it works however it's opened (double
 | Section | What it does |
 |---|---|
 | `<style>` | The design: clean, minimal layout with one accent color, light theme only |
-| City data `<script>` | 80 cities: costs, month-by-month scores, 3-day itineraries, 2–4 nearby day trips each (231 total), and tips |
+| City data `<script>` | 80 cities: costs, month-by-month scores, 3-day itineraries, 2–4 day trips each (231), 1–3 weekend escapes each (177), and tips |
 | App `<script>` | Estimates costs, ranks destinations, and updates the board and tickets as you change settings |
 
 **How costs are estimated:** hostel nights, food, local transport and sights, plus round-trip travel. Travel options are estimated from distance:
@@ -29,7 +29,9 @@ Everything is in one file, `index.html`, so it works however it's opened (double
 
 By default the app picks the best mix of price and travel time; you can switch options for any trip. Adding a day trip swaps it in for your last city day and adds its travel and entry cost. Lodging and travel prices are adjusted for how busy the chosen month is.
 
-**How trips are ranked:** 45% interest match (interests you can only get on a day trip count a bit less) + 35% how good the month is + 20% how much budget is left over.
+**Short trips (1–2 days):** with 1 day, the app shows day trips from your host city plus other cities you can reach by train or bus in 2½ hours or less (no hostel cost). With 2 days, it adds weekend escapes to small places nearby with one night away (e.g. Pisa & Lucca from Florence). These appear in their own section above the cities.
+
+**How trips are ranked:** 45% interest match (interests you can only get on a day trip count a bit less) + 35% how good the month is + 20% how much budget is left over. On 1–2 day trips price counts for more (35/25/40). There's also a "Cheapest first" sort.
 
 ## Milestones
 - [x] Week 3: Idea set
