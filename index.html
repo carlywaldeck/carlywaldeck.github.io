@@ -8,7 +8,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap">
 <style>
+/* Light theme only, even when the device is in dark mode. */
 :root {
+  color-scheme: light;
   --bg: #FFFFFF;
   --soft: #F5F6F8;
   --ink: #111318;
@@ -24,23 +26,6 @@
   --sans: "Geist", "Helvetica Neue", "Segoe UI", system-ui, -apple-system, sans-serif;
   --mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --bg: #0E0F12; --soft: #17191E; --ink: #F1F2F4; --muted: #9A9FAB; --line: #262931;
-    --accent: #8C98FF; --accent-ink: #0E0F12; --accent-soft: #1D2140;
-    --good: #5CCB93; --good-soft: #13271D; --mid: #E7B25A; --mid-soft: #2B2112; --warn: #F08878; --warn-soft: #2E1714;
-    --s2: #252A4D; --s3: #3C4691; --s4: #6D7BEF;
-  }
-}
-:root[data-theme="dark"] {
-  color-scheme: dark;
-  --bg: #0E0F12; --soft: #17191E; --ink: #F1F2F4; --muted: #9A9FAB; --line: #262931;
-  --accent: #8C98FF; --accent-ink: #0E0F12; --accent-soft: #1D2140;
-  --good: #5CCB93; --good-soft: #13271D; --mid: #E7B25A; --mid-soft: #2B2112; --warn: #F08878; --warn-soft: #2E1714;
-  --s2: #252A4D; --s3: #3C4691; --s4: #6D7BEF;
-}
-
 * { box-sizing: border-box; }
 body { margin: 0; padding-inline: 16px; background: var(--bg); color: var(--ink); font: 400 16px/1.6 var(--sans); -webkit-font-smoothing: antialiased; }
 button, select, input { font: inherit; color: inherit; }

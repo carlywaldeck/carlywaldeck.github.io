@@ -18,7 +18,7 @@ Everything is in one file, `index.html`, so it works however it's opened (double
 
 | Section | What it does |
 |---|---|
-| `<style>` | The design: clean, minimal layout with one accent color, light and dark themes |
+| `<style>` | The design: clean, minimal layout with one accent color, light theme only |
 | City data `<script>` | 80 cities: costs, month-by-month scores, 3-day itineraries, 2–4 nearby day trips each (231 total), and tips |
 | App `<script>` | Estimates costs, ranks destinations, and updates the board and tickets as you change settings |
 
