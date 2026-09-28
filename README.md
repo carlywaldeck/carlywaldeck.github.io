@@ -20,7 +20,7 @@ Everything is in one file, `index.html`, so it works however it's opened (double
 |---|---|
 | `<style>` | The design: clean, minimal layout with one accent color, light theme only |
 | City data `<script>` | 80 cities: costs, month-by-month scores, 3-day itineraries, 2–4 day trips each (231), 1–3 weekend escapes each (177), and tips |
-| App `<script>` | Estimates costs, ranks destinations, and updates the board and tickets as you change settings |
+| App `<script>` | Estimates costs, ranks destinations, updates the list and map as you change settings |
 
 **How costs are estimated:** hostel nights, food, local transport and sights, plus round-trip travel. Travel options are estimated from distance:
 - **Bus** and **train** only within the same landmass (e.g. mainland Europe, or within Morocco), no train where rail links are poor, limited to about 3 hours each way per day of the trip
@@ -39,6 +39,9 @@ By default the app picks the best mix of price and travel time; you can switch o
 - [ ] Week 10: Peer user testing
 - [ ] Week 12: Final product
 - [ ] Week 13: Final presentation
+
+## Map
+Switch the results to **Map** to see every trip from your host city: markers colored by price (well under budget / near budget / a little over), routes drawn by transport (train solid, bus dotted, boat dashed, flights as arcs), and both stops for two-stop escapes. Hover to highlight, click for a summary and "See the plan", drag to pan, scroll or use the buttons to zoom. The map is drawn in SVG from Natural Earth country outlines (public domain) embedded in the page, so it needs no map service.
 
 ## Live prices
 The app is ready for real flight fares via a small free Cloudflare Worker ([`api/worker.js`](api/worker.js)) and the Travelpayouts API, plus GetYourGuide and Omio affiliate links. Step-by-step setup: [docs/LIVE_PRICES.md](docs/LIVE_PRICES.md). Until it's set up, everything uses estimates.
