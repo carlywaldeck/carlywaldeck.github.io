@@ -18,7 +18,7 @@ Everything is in one file, `index.html`, so it works however it's opened (double
 
 | Section | What it does |
 |---|---|
-| `<style>` | The design: clean, minimal layout with one accent color, light theme only |
+| `<style>` | The design: dark, cinematic globe app with floating glass panels |
 | City data `<script>` | 80 cities: costs, month-by-month scores, 3-day itineraries, 2–4 day trips each (231), 1–3 weekend escapes each (177), and tips |
 | App `<script>` | Estimates costs, ranks destinations, updates the list and map as you change settings |
 
@@ -40,8 +40,13 @@ By default the app picks the best mix of price and travel time; you can switch o
 - [ ] Week 12: Final product
 - [ ] Week 13: Final presentation
 
-## Map
-Switch the results to **Map** to see every trip from your host city: markers colored by price (well under budget / near budget / a little over), routes drawn by transport (train solid, bus dotted, boat dashed, flights as arcs), and both stops for two-stop escapes. Hover to highlight, click for a summary and "See the plan", drag to pan, scroll or use the buttons to zoom. The map is drawn in SVG from Natural Earth country outlines (public domain) embedded in the page, so it needs no map service.
+## The globe
+The app is built around a 3D globe (orthographic projection drawn on canvas with [d3-geo](https://d3js.org/d3-geo), country outlines from Natural Earth, public domain).
+- On load, the camera flies in from space to your host city.
+- Routes to your top trips lift off the surface as glowing arcs (flights higher, trains and buses low), with a small light travelling along each one.
+- Markers are colored by price: lime = well under budget, amber = near budget, pink = a little over.
+- Selecting a trip, from the list or the globe, flies the camera there Earth-zoom style and shows a summary card. **Open the plan** slides in the full plan.
+- Drag to spin, scroll to zoom, **Fit trips** to reframe, **Whole Earth** to pull back to space.
 
 ## Live prices
 The app is ready for real flight fares via a small free Cloudflare Worker ([`api/worker.js`](api/worker.js)) and the Travelpayouts API, plus GetYourGuide and Omio affiliate links. Step-by-step setup: [docs/LIVE_PRICES.md](docs/LIVE_PRICES.md). Until it's set up, everything uses estimates.
