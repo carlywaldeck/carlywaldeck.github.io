@@ -18,7 +18,7 @@ Everything is in one file, `index.html`, so it works however it's opened (double
 
 | Section | What it does |
 |---|---|
-| `<style>` | The design: bright "daylight" globe app with floating frosted-glass panels and a coral accent |
+| `<style>` | The design: light, minimal dot-matrix globe app with floating frosted-glass panels and a coral accent |
 | City data `<script>` | 80 cities: costs, month-by-month scores, 3-day itineraries, 2–4 day trips each (231), 1–3 weekend escapes each (177), and tips |
 | App `<script>` | Estimates costs, ranks destinations, updates the list and map as you change settings |
 
@@ -43,7 +43,7 @@ By default the app picks the best mix of price and travel time; you can switch o
 - [ ] Week 13: Final presentation
 
 ## The globe
-The app is built around a 3D globe (orthographic projection drawn on canvas with [d3-geo](https://d3js.org/d3-geo), country outlines from Natural Earth, public domain).
+The app is built around a 3D dot-matrix globe: land is drawn as ~19,000 dots spread evenly on a Fibonacci spiral (sampled from Natural Earth land, public domain), and zooming into a region cross-fades to a clean detailed map with hairline borders. Projection and map drawing use [d3-geo](https://d3js.org/d3-geo) on canvas; the dots are projected by hand for speed.
 - On load, the camera flies in from space to your host city.
 - Routes to your top trips lift off the surface as arcs (flights higher, trains and buses low).
 - Markers are colored by price: teal = great value (good price for your budget and a good month to go), amber = okay, rose = pricey or off-season.
