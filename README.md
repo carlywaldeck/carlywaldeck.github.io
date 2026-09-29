@@ -31,6 +31,8 @@ By default the app picks the best mix of price and travel time; you can switch o
 
 **Short trips (1–2 days):** with 1 day, the app shows day trips from your host city plus other cities you can reach by train or bus in 2½ hours or less (no hostel cost). With 2 days, it adds weekend escapes to small places nearby with one night away (e.g. Pisa & Lucca from Florence). These appear in their own section above the cities.
 
+**Trip lengths:** pick any combination of 1–4 days; results are grouped by length.
+
 **How trips are ranked:** 45% interest match (interests you can only get on a day trip count a bit less) + 35% how good the month is + 20% how much budget is left over. On 1–2 day trips price counts for more (35/25/40). There's also a "Cheapest first" sort.
 
 ## Milestones
@@ -43,8 +45,8 @@ By default the app picks the best mix of price and travel time; you can switch o
 ## The globe
 The app is built around a 3D globe (orthographic projection drawn on canvas with [d3-geo](https://d3js.org/d3-geo), country outlines from Natural Earth, public domain).
 - On load, the camera flies in from space to your host city.
-- Routes to your top trips lift off the surface as glowing arcs (flights higher, trains and buses low), with a small light travelling along each one.
-- Markers are colored by price: teal = well under budget, amber = near budget, rose = a little over.
+- Routes to your top trips lift off the surface as arcs (flights higher, trains and buses low).
+- Markers are colored by price: teal = great value (good price for your budget and a good month to go), amber = okay, rose = pricey or off-season.
 - Selecting a trip, from the list or the globe, flies the camera there Earth-zoom style and shows a summary card. **Open the plan** slides in the full plan.
 - Drag to spin, scroll to zoom, **Fit trips** to reframe, **Whole Earth** to pull back to space.
 

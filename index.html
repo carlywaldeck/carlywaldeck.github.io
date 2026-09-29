@@ -269,6 +269,22 @@ select option, select optgroup { background: #FFFFFF; color: var(--ink); }
 .sources { font-size: 12px; color: var(--muted); margin: 0; border-top: 1px solid var(--line); padding-top: 14px; }
 .sources a { color: var(--muted); }
 @media (max-width: 760px) { .hero { margin: calc(-1 * (env(safe-area-inset-top, 0px) + 20px)) -18px 18px; } .hero img { height: 200px; } .spot-img { height: 110px; margin: 0 -16px 10px; } }
+/* ---------- Interests box, value label, match line ---------- */
+.interests-box { margin-top: 10px; padding: 12px; border-radius: 12px; background: var(--accent-soft); border: 1px solid rgba(255,106,77,.25); display: grid; gap: 8px; }
+.ib-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.ib-head h3 { font-size: 13px; font-weight: 600; }
+.ib-head span { font-size: 12px; color: var(--muted); }
+.interests-box .chips { gap: 5px; }
+.interests-box .chip { background: #fff; padding: 4px 10px; font-size: 12.5px; }
+.interests-box .chip[aria-pressed="true"] { background: var(--accent); }
+.match { color: var(--accent) !important; font-weight: 500; }
+.interests-box:not(.open) .chip:nth-child(n+9):not([aria-pressed="true"]) { display: none; }
+.ib-more { justify-self: start; border: 0; background: none; padding: 0; font-size: 12px; font-weight: 500; color: var(--accent); }
+.spot-meta.value { display: flex; align-items: center; gap: 7px; }
+.spot-meta.value i { width: 9px; height: 9px; border-radius: 50%; background: var(--dot-good); }
+.spot-meta.value.mid i { background: var(--dot-mid); } .spot-meta.value.warn i { background: var(--dot-warn); }
+.field > span b { text-transform: none; letter-spacing: 0; font: 500 10px var(--sans); color: var(--accent); margin-left: 4px; }
+@media (max-width: 760px) { .interests-box .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 2px; } .interests-box .chip { flex-shrink: 0; } }
 </style>
 </head>
 <body>
@@ -438,25 +454,24 @@ select option, select optgroup { background: #FFFFFF; color: var(--ink); }
     <label class="field budget"><span>Budget <b id="budget-out">€300</b></span>
       <input id="budget" type="range" min="50" max="1000" step="10" value="300" aria-label="Budget per person">
     </label>
-    <div class="field"><span id="days-label">Days</span><div class="seg" id="days" role="group" aria-labelledby="days-label"></div></div>
+    <div class="field"><span id="days-label">Days <b>pick any</b></span><div class="seg" id="days" role="group" aria-labelledby="days-label"></div></div>
     <label class="field"><span>Month</span><select id="month"></select></label>
     <label class="field"><span>Currency</span><select id="currency">
       <option value="EUR">€ EUR</option><option value="USD">$ USD</option><option value="GBP">£ GBP</option>
     </select></label>
   </div>
   <button type="button" class="bar-btn" id="settings-btn" aria-expanded="false">Settings</button>
-  <button type="button" class="bar-btn" id="filters-btn" aria-expanded="false" aria-controls="filters">Filters<i id="filters-count"></i></button>
+  <button type="button" class="bar-btn" id="filters-btn" aria-expanded="false" aria-controls="filters">Transport<i id="filters-count"></i></button>
 </header>
 
 <div class="popover" id="filters" hidden>
-  <div><h3 id="int-label">I'm into</h3><div class="chips" id="interests" role="group" aria-labelledby="int-label"></div></div>
   <div><h3 id="modes-label">Getting there by</h3><div class="chips" id="modes" role="group" aria-labelledby="modes-label"></div></div>
 </div>
 
 <div class="legend" aria-hidden="true">
-  <span><i style="background:var(--dot-good)"></i>Well under budget</span>
-  <span><i style="background:var(--dot-mid)"></i>Near budget</span>
-  <span><i style="background:var(--dot-warn)"></i>A little over</span>
+  <span><i style="background:var(--dot-good)"></i>Great value (good price + good time)</span>
+  <span><i style="background:var(--dot-mid)"></i>Okay value</span>
+  <span><i style="background:var(--dot-warn)"></i>Pricey or off-season</span>
   <span><i class="l"></i>Train</span>
   <span><i class="l dot"></i>Bus</span>
   <span><i class="l dash"></i>Flight / boat</span>
@@ -467,6 +482,11 @@ select option, select optgroup { background: #FFFFFF; color: var(--ink); }
     <span class="eyebrow"><span id="city-count">80</span> places · Europe, North Africa &amp; beyond</span>
     <h2 id="results-title">Trips</h2>
     <p id="results-sub"></p>
+    <div class="interests-box">
+      <div class="ib-head"><h3 id="int-label">I'm into</h3><span id="int-count"></span></div>
+      <div class="chips" id="interests" role="group" aria-labelledby="int-label"></div>
+      <button type="button" class="ib-more" id="int-more" aria-expanded="false">+ 8 more interests</button>
+    </div>
     <div class="sort" role="group" aria-label="Sort trips">
       <button type="button" class="pick" data-v="best">Best match</button>
       <button type="button" class="pick" data-v="cheap">Cheapest first</button>
@@ -2696,8 +2716,9 @@ const state = {
   budget: 300,
   days: 3,
   month: (new Date().getMonth() + 1) % 12,
-  interests: new Set(["food", "history"]),
+  interests: new Set(), // none picked: rank by price and timing until you choose
   modes: new Set(Object.keys(MODES)),
+  daysSet: new Set([3]), // trip lengths to show (any combination of 1–4)
   sort: "best", // or "cheap"
   currency: "EUR",
   view: "list"  // or "map"
@@ -2832,14 +2853,40 @@ function estimateEscape(home, esc) {
 // ---------------------------------------------------------------- ranking
 
 // Best match = what you like + how good the month is + budget left over.
-// Short trips are about saving money, so price counts for more on 1–2 day trips.
+// With interests picked, matching them is the biggest factor. Short trips lean more on price.
 function rankScore(interest, season, savings) {
+  if (!state.interests.size) {
+    return state.days <= 2 ? 0.35 * season + 0.65 * savings : 0.55 * season + 0.45 * savings;
+  }
   return state.days <= 2
-    ? 0.35 * interest + 0.25 * season + 0.4 * savings
-    : 0.45 * interest + 0.35 * season + 0.2 * savings;
+    ? 0.5 * interest + 0.15 * season + 0.35 * savings
+    : 0.6 * interest + 0.2 * season + 0.2 * savings;
 }
 
+// Run a calculation as if one trip length were selected (most of the trip math depends on it).
+function withDays(d, fn) {
+  const prev = state.days;
+  state.days = d;
+  try { return fn(); } finally { state.days = prev; }
+}
+
+// All selected trip lengths together. Each trip remembers its length and gets a unique key.
 function findTrips() {
+  const lengths = [...state.daysSet].sort((a, b) => a - b);
+  let home = byId(state.home);
+  const fits = [], stretch = [];
+  for (const d of lengths) {
+    const r = withDays(d, findTripsFor);
+    home = r.home;
+    const tag = (t) => ({ ...t, days: d, key: `${t.dest.id}@${d}` });
+    fits.push(...r.fits.map(tag));
+    stretch.push(...r.stretch.map(tag));
+  }
+  const cmp = state.sort === "cheap" ? (a, b) => a.cost.total - b.cost.total : (a, b) => b.score - a.score;
+  return { home, fits: fits.sort(cmp), stretch: stretch.sort(cmp) };
+}
+
+function findTripsFor() {
   const home = byId(state.home);
   const wanted = [...state.interests];
   const trips = [];
@@ -2854,17 +2901,17 @@ function findTrips() {
     const seasonScore = dest.season[state.month] / 5;
     const savings = Math.max(0, Math.min(1, 1 - cost.total / state.budget));
     const score = rankScore(interestScore, seasonScore, savings);
-    trips.push({ dest, cost, matched, viaDayTrip, score });
+    trips.push({ dest, cost, matched, viaDayTrip, score, fitsInterests: !wanted.length || matched.length + viaDayTrip.length > 0 });
   });
   nearbyEscapes(home).forEach(esc => {
     const cost = estimateEscape(home, esc);
     if (!cost) return;
     const dest = { id: esc.id, name: esc.name, country: `Near ${home.name}`, code: home.code, season: home.season, escape: esc };
     const matched = wanted.filter(i => esc.tags.includes(i));
-    const interestScore = wanted.length ? (matched.length + 0.5 * (wanted.length - matched.length)) / wanted.length : 1;
+    const interestScore = wanted.length ? (matched.length + 0.25 * (wanted.length - matched.length)) / wanted.length : 1;
     const savings = Math.max(0, Math.min(1, 1 - cost.total / state.budget));
     const score = rankScore(interestScore, home.season[state.month] / 5, savings);
-    trips.push({ dest, cost, matched, viaDayTrip: [], score });
+    trips.push({ dest, cost, matched, viaDayTrip: [], score, fitsInterests: !wanted.length || matched.length > 0 });
   });
   trips.sort(state.sort === "cheap" ? (a, b) => a.cost.total - b.cost.total : (a, b) => b.score - a.score);
   return {
@@ -3340,11 +3387,13 @@ function observeThumbs() {
   renderLive();
 }
 
+const toF = (c) => Math.round(c * 9 / 5 + 32);
+
 function weatherLine(t) {
   const c = tripClimate(t);
   if (!c) return "";
   const m = state.month;
-  return `${c.hi[m]}° / ${c.lo[m]}° · ${c.wet[m]} rainy day${c.wet[m] === 1 ? "" : "s"} in ${MONTHS[m]}`;
+  return `${toF(c.hi[m])}°F / ${toF(c.lo[m])}°F · ${c.wet[m]} rainy day${c.wet[m] === 1 ? "" : "s"} in ${MONTHS[m]}`;
 }
 
 function weatherSection(t) {
@@ -3356,17 +3405,17 @@ function weatherSection(t) {
   const warm = (v) => v >= 28 ? "hot" : v >= 22 ? "warm" : v >= 15 ? "mild" : v >= 8 ? "cool" : "cold";
   return `<div>
     <h4>Typical weather</h4>
-    <p class="wx-summary"><strong>${MONTHS_FULL[m]}:</strong> highs around ${c.hi[m]}°C, lows ${c.lo[m]}°C,
+    <p class="wx-summary"><strong>${MONTHS_FULL[m]}:</strong> highs around ${toF(c.hi[m])}°F, lows ${toF(c.lo[m])}°F,
       ${c.wet[m]} rainy day${c.wet[m] === 1 ? "" : "s"} and about ${c.sun[m]} hours of sun a day.</p>
     <div class="wx" role="img" aria-label="Average high temperature and rainy days for each month">
-      ${c.hi.map((hi, i) => `<div class="wx-col${i === m ? " sel" : ""}" title="${MONTHS_FULL[i]}: ${hi}°/${c.lo[i]}°C, ${c.wet[i]} rainy days, ${c.sun[i]}h sun">
-        <span class="wx-temp ${warm(hi)}">${hi}°</span>
+      ${c.hi.map((hi, i) => `<div class="wx-col${i === m ? " sel" : ""}" title="${MONTHS_FULL[i]}: ${toF(hi)}°F / ${toF(c.lo[i])}°F, ${c.wet[i]} rainy days, ${c.sun[i]}h sun">
+        <span class="wx-temp ${warm(hi)}">${toF(hi)}°</span>
         <span class="wx-bar"><i style="height:${Math.round((hi - minLo) / Math.max(1, maxHi - minLo) * 100)}%"></i></span>
         <span class="wx-rain">${c.wet[i]}</span>
         <span class="wx-m">${MONTHS[i][0]}</span>
       </div>`).join("")}
     </div>
-    <p class="fine">Top: average daily high. Bottom row: rainy days (1 mm+). Averages of 2019–2024 weather records.</p>
+    <p class="fine">Top: average daily high (°F). Bottom row: rainy days (0.04 in+ of rain). Averages of 2019–2024 weather records.</p>
   </div>`;
 }
 
@@ -3433,14 +3482,31 @@ function escapeDetails(home, dest, cost) {
 // ---------------------------------------------------------------- trip helpers
 
 const isEscape = (t) => !!t.dest.escape;
-const tripKind = (t) => isEscape(t) ? (t.dest.escape.overnight && state.days === 2 ? "Weekend escape" : "Day trip") : t.dest.country;
-const tone = (t) => t.over ? "warn" : t.cost.total <= state.budget * 0.6 ? "good" : "mid";
+const tripKind = (t) => isEscape(t) ? (t.dest.escape.overnight && t.days === 2 ? "Weekend escape" : "Day trip") : t.dest.country;
+const daysLabel = () => { const l = [...state.daysSet].sort((a, b) => a - b); return l.length === 1 ? dayWord(l[0]) : `${l.join(", ")} days`; };
 
-// All trips in display order: nearby escapes first on short trips, then cities, then a little over budget.
+// Color = overall value: half price (vs your budget), half how good the month is to go.
+function valueScore(t) {
+  const s = ((t.dest.season || current.home.season)[state.month] - 1) / 4;
+  const p = t.cost.total <= state.budget ? 1 - 0.6 * (t.cost.total / state.budget) : 0;
+  return 0.5 * p + 0.5 * s;
+}
+const tone = (t) => t.over ? "warn" : valueScore(t) >= 0.72 ? "good" : valueScore(t) >= 0.5 ? "mid" : "warn";
+const TONE_TEXT = { good: "Great value: good price and a good time to go", mid: "Okay value", warn: "Pricey for your budget or off-season" };
+
+// Display order: for each trip length, nearby escapes first (1–2 days) then cities; trips that
+// don't match your interests come after all the matches; a little over budget comes last.
 function orderedTrips({ fits, stretch }) {
-  const near = fits.filter(isEscape), far = fits.filter(t => !isEscape(t));
-  const main = state.days <= 2 ? [...near, ...far] : fits;
-  return [...main.map(t => ({ ...t, over: false })), ...stretch.map(t => ({ ...t, over: true }))];
+  const lengths = [...state.daysSet].sort((a, b) => a - b);
+  const arrange = (list, d) => d <= 2 ? [...list.filter(isEscape), ...list.filter(t => !isEscape(t))] : list;
+  const main = [], others = [];
+  for (const d of lengths) {
+    const ofLen = fits.filter(t => t.days === d);
+    main.push(...arrange(ofLen.filter(t => t.fitsInterests), d));
+    others.push(...arrange(ofLen.filter(t => !t.fitsInterests), d));
+  }
+  return [...main.map(t => ({ ...t, over: false })), ...others.map(t => ({ ...t, over: false, other: true })),
+          ...stretch.map(t => ({ ...t, over: true }))];
 }
 
 // [lon, lat] points for a trip: a city, or the stops of an escape.
@@ -3459,36 +3525,46 @@ function renderPanel(result) {
   const { home, fits } = result;
   const trips = current.trips;
   const n = fits.length;
+  const multi = state.daysSet.size > 1;
   $("#results-title").textContent = n ? `${n} trip${n === 1 ? "" : "s"} fit` : "Nothing fits yet";
-  $("#results-sub").textContent = `From ${home.name} · ${dayWord(state.days)} · ${MONTHS_FULL[state.month]} · ${euro(state.budget)}`;
+  $("#results-sub").textContent = `From ${home.name} · ${daysLabel()} · ${MONTHS_FULL[state.month]} · ${euro(state.budget)}`;
   if (!state.modes.size) {
-    $("#results").innerHTML = `<p class="empty">Pick at least one way to travel in Filters.</p>`;
+    $("#results").innerHTML = `<p class="empty">Pick at least one way to travel under Transport.</p>`;
     return;
   }
   if (!trips.length) {
-    $("#results").innerHTML = `<p class="empty">Nothing fits ${euro(state.budget)} for ${dayWord(state.days)} in ${MONTHS_FULL[state.month]}. Try a shorter trip, another month, or a bigger budget.</p>`;
+    $("#results").innerHTML = `<p class="empty">Nothing fits ${euro(state.budget)} for ${daysLabel()} in ${MONTHS_FULL[state.month]}. Try another trip length, another month, or a bigger budget.</p>`;
     return;
   }
   const groups = [];
-  const near = trips.filter(t => !t.over && isEscape(t));
-  const far = trips.filter(t => !t.over && !isEscape(t));
-  const over = trips.filter(t => t.over);
-  if (near.length) groups.push([`${state.days === 1 ? "Day trips" : "Weekend escapes"} near ${home.name}`, near]);
-  if (far.length) groups.push([near.length ? (state.days === 1 ? "Cities you can do in a day" : "Cities within reach") : "Cities", far]);
+  const main = trips.filter(t => !t.over && !t.other);
+  for (const d of [...state.daysSet].sort((a, b) => a - b)) {
+    const pre = multi ? `${dayWord(d)} · ` : "";
+    const near = main.filter(t => t.days === d && isEscape(t));
+    const far = main.filter(t => t.days === d && !isEscape(t));
+    if (near.length) groups.push([`${pre}${d === 1 ? "Day trips" : "Weekend escapes"} near ${home.name}`, near]);
+    if (far.length) groups.push([`${pre}${near.length ? (d === 1 ? "Cities you can do in a day" : "Cities within reach") : "Cities"}`, far]);
+  }
+  const other = trips.filter(t => t.other), over = trips.filter(t => t.over);
+  if (other.length) groups.push(["Also fits, but doesn't match your interests", other]);
   if (over.length) groups.push(["A little over budget", over]);
   $("#results").innerHTML = groups.map(([title, list]) => `
     <h3 class="group">${title}<span>${list.length}</span></h3>
-    ${list.map(t => `<button type="button" class="row ${tone(t)}${ui.selected === t.dest.id ? " active" : ""}" data-id="${t.dest.id}">
+    ${list.map(t => {
+      const likes = [...(t.matched || []), ...(t.viaDayTrip || [])].map(m => INTERESTS[m]);
+      return `<button type="button" class="row ${tone(t)}${ui.selected === t.key ? " active" : ""}" data-id="${t.key}" title="${TONE_TEXT[tone(t)]}">
         <span class="thumb" data-wiki="${t.dest.name.replace(/"/g, "&quot;")}"><i class="dot"></i></span>
         <span class="row-main"><strong>${t.dest.name}</strong>
-          <small>${tripKind(t)} · ${MODES[t.cost.transport.mode].label} ${hrs(t.cost.transport.hours)}</small></span>
+          <small>${multi ? `${dayWord(t.days)} · ` : ""}${tripKind(t)} · ${MODES[t.cost.transport.mode].label} ${hrs(t.cost.transport.hours)}</small>
+          ${state.interests.size && likes.length ? `<small class="match">✓ ${likes.join(" · ")}</small>` : ""}</span>
         <span class="row-price num">${euro(t.cost.total)}</span>
-      </button>`).join("")}`).join("");
+      </button>`;
+    }).join("")}`).join("");
 }
 
 // ---------------------------------------------------------------- spotlight card + plan drawer
 
-function tripById(id) { return current.trips.find(t => t.dest.id === id); }
+function tripById(key) { return current.trips.find(t => t.key === key); }
 
 function renderSpot() {
   const t = tripById(ui.selected);
@@ -3507,10 +3583,11 @@ function renderSpot() {
     <h2>${t.dest.name}</h2>
     <div class="spot-price"><strong class="num">${euro(t.cost.total)}</strong>
       <span class="${left >= 0 ? "good" : "warn"}">${left >= 0 ? `${euro(left)} under budget` : `${euro(-left)} over`}</span></div>
-    <p class="spot-meta">${MODES[t.cost.transport.mode].label} · ~${hrs(t.cost.transport.hours)} each way · ${dayWord(state.days)}
+    <p class="spot-meta">${MODES[t.cost.transport.mode].label} · ~${hrs(t.cost.transport.hours)} each way · ${dayWord(t.days)}
       · <span class="${s.tone}">${s.text.toLowerCase()} in ${MONTHS[state.month]}</span></p>
+    <p class="spot-meta value ${tone(t)}"><i></i>${TONE_TEXT[tone(t)]}</p>
     ${wx ? `<p class="spot-meta wx-line">${wx}</p>` : ""}
-    <button type="button" class="cta" data-act="open-plan" data-id="${t.dest.id}">Open the plan</button>`;
+    <button type="button" class="cta" data-act="open-plan" data-id="${t.key}">Open the plan</button>`;
 }
 
 function renderDrawer(fromLive) {
@@ -3519,6 +3596,10 @@ function renderDrawer(fromLive) {
   if (!t) { drawer.hidden = true; document.body.classList.remove("drawer-open"); return; }
   drawer.hidden = false;
   document.body.classList.add("drawer-open");
+  withDays(t.days, () => drawDrawer(t));
+}
+
+function drawDrawer(t) {
   const home = current.home, { dest, cost, matched = [], viaDayTrip = [] } = t;
   const s = season((dest.season || home.season)[state.month]);
   const left = state.budget - cost.total;
@@ -3623,7 +3704,7 @@ function globeInit() {
     }
     const hit = hitTest(e);
     if (hit !== ui.hover) {
-      ui.hover = hit;
+      ui.hover = hit; G.fxDirty = true;
       fx.style.cursor = hit ? "pointer" : "";
       document.querySelectorAll(".row").forEach(r => r.classList.toggle("hover", r.dataset.id === hit));
     }
@@ -3635,7 +3716,7 @@ function globeInit() {
     const hit = hitTest(e);
     if (hit) select(hit);
   });
-  fx.addEventListener("pointerleave", () => { ui.hover = null; });
+  fx.addEventListener("pointerleave", () => { ui.hover = null; G.fxDirty = true; });
   fx.addEventListener("wheel", (e) => {
     e.preventDefault();
     G.anim = null;
@@ -3746,7 +3827,7 @@ function globeFlyToTrip(t) {
 
 function globeUpdate() {
   if (!G.ok) return;
-  const key = [state.home, state.days, state.month, state.budget, [...state.modes].join(), [...state.interests].join()].join("|");
+  const key = [state.home, [...state.daysSet].join(), state.month, state.budget, [...state.modes].join(), [...state.interests].join()].join("|");
   if (key !== G.fitKey) {
     const first = !G.fitKey;
     G.fitKey = key;
@@ -3834,19 +3915,24 @@ function strokeSegments(ctx, pts) {
   ctx.stroke();
 }
 
-function drawFx(now) {
+function drawFx() {
   const ctx = fxCtx, { W, H, dpr } = G;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.clearRect(0, 0, W, H);
   if (!current.home) return;
   const home = current.home, homeP = [home.lon, home.lat];
-  const focus = ui.hover || ui.selected;
-  const trips = current.trips;
-  const time = (now - G.start) / 1000;
+  const focusKey = ui.hover || ui.selected;
+  const focusTrip = focusKey ? tripById(focusKey) : null;
+  // One marker per place: when a place appears for several trip lengths, show the highlighted
+  // version if there is one, otherwise the first (best-ranked) one.
+  const slot = new Map(), trips = [];
+  current.trips.forEach(t => { if (!slot.has(t.dest.id)) { slot.set(t.dest.id, trips.length); trips.push(t); } });
+  if (focusTrip) trips[slot.get(focusTrip.dest.id)] = focusTrip;
+  const isFocusT = (t) => focusTrip && t === focusTrip;
 
-  // Routes: top 10 plus whatever is highlighted.
+  // Routes (static): top 10 plus whatever is highlighted.
   trips.forEach((t, i) => {
-    const isFocus = t.dest.id === focus;
+    const isFocus = isFocusT(t);
     if (i >= 10 && !isFocus) return;
     const pts = tripPoints(t);
     if (!pts.length) return;
@@ -3855,23 +3941,13 @@ function drawFx(now) {
     const col = TONE_COLORS[tone(t)];
     ctx.save();
     ctx.strokeStyle = col;
-    ctx.globalAlpha = isFocus ? 1 : focus ? 0.25 : 0.75;
+    ctx.globalAlpha = isFocus ? 1 : focusTrip ? 0.25 : 0.7;
     ctx.lineWidth = isFocus ? 2.6 : 1.6;
-    ctx.shadowColor = col; ctx.shadowBlur = isFocus ? 8 : 3;
     ctx.setLineDash(mode === "bus" ? [1.5, 5] : mode === "train" ? [] : [7, 6]);
-    ctx.lineDashOffset = -time * 24;
     for (let s = 0; s < chain.length - 1; s++) {
       const dist = d3.geoDistance(chain[s], chain[s + 1]);
       const alt = mode === "flight" ? Math.min(0.28, 0.08 + dist * 0.55) : Math.min(0.05, dist * 0.35);
-      const arc = arcPoints(chain[s], chain[s + 1], alt);
-      strokeSegments(ctx, arc);
-      // a small comet travelling along the route
-      if ((isFocus || i < 5) && !reduceMotion && s === chain.length - 2) {
-        const k = Math.floor(((time * 0.35 + i * 0.13) % 1) * (arc.length - 1));
-        const p = arc[k];
-        if (p) { ctx.setLineDash([]); ctx.shadowColor = "rgba(20,40,80,.5)"; ctx.shadowBlur = 4; ctx.fillStyle = "#FFFFFF"; ctx.globalAlpha = isFocus ? 1 : 0.8;
-          ctx.beginPath(); ctx.arc(p[0], p[1], isFocus ? 2.6 : 1.8, 0, 7); ctx.fill(); }
-      }
+      strokeSegments(ctx, arcPoints(chain[s], chain[s + 1], alt));
     }
     ctx.restore();
   });
@@ -3886,30 +3962,27 @@ function drawFx(now) {
     const main = pts[pts.length - 1];
     if (!visible(main)) return;
     const [x, y] = projection(main);
-    const isFocus = t.dest.id === focus;
+    const isFocus = isFocusT(t);
     const col = TONE_COLORS[tone(t)];
     pts.slice(0, -1).forEach(p => { if (visible(p)) { const [sx, sy] = projection(p);
       ctx.strokeStyle = col; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(sx, sy, 3, 0, 7); ctx.stroke(); } });
     const r = isFocus ? 6.5 : i < 10 ? 4.5 : 3;
     ctx.save();
     ctx.shadowColor = "rgba(20,40,80,0.35)"; ctx.shadowBlur = isFocus ? 8 : 4;
-    ctx.fillStyle = col; ctx.globalAlpha = t.over && !isFocus ? 0.7 : 1;
+    ctx.fillStyle = col; ctx.globalAlpha = (t.over || t.other) && !isFocus ? 0.6 : 1;
     ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill();
     ctx.restore();
     ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.stroke();
     if (isFocus) { ctx.strokeStyle = "#13233F"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, r + 4, 0, 7); ctx.stroke(); }
-    G.markers.push({ id: t.dest.id, x, y });
+    G.markers.push({ id: t.key, x, y });
     if (i < 6 || isFocus) labels.push({ t, x, y, isFocus, i });
   });
 
-  // Home: pulsing rings
+  // Home (static ring)
   if (visible(homeP)) {
     const [hx, hy] = projection(homeP);
-    for (let k = 0; k < 2; k++) {
-      const ph = reduceMotion ? 0.4 : (time * 0.6 + k * 0.5) % 1;
-      ctx.strokeStyle = `rgba(19,35,63,${0.6 * (1 - ph)})`; ctx.lineWidth = 1.2;
-      ctx.beginPath(); ctx.arc(hx, hy, 6 + ph * 18, 0, 7); ctx.stroke();
-    }
+    ctx.strokeStyle = "rgba(19,35,63,0.35)"; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.arc(hx, hy, 11, 0, 7); ctx.stroke();
     ctx.fillStyle = "#13233F"; ctx.beginPath(); ctx.arc(hx, hy, 5.5, 0, 7); ctx.fill();
     ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 2; ctx.stroke();
     labels.push({ home: true, x: hx, y: hy });
@@ -3952,11 +4025,16 @@ function hitTest(e) {
   return best;
 }
 
+// Redraw only when something changed (nothing on the globe animates by itself any more).
 function frame(now) {
   const animating = stepAnim(now);
-  if (animating || G.dirty) { drawBase(); G.dirty = animating; if (!animating) G.dirty = false; }
-  projection.rotate([G.rot[0], G.rot[1]]).scale(G.scale).translate([G.cx, G.cy]);
-  drawFx(now);
+  const baseChanged = animating || G.dirty;
+  if (baseChanged) { drawBase(); G.dirty = false; }
+  if (baseChanged || G.fxDirty) {
+    projection.rotate([G.rot[0], G.rot[1]]).scale(G.scale).translate([G.cx, G.cy]);
+    drawFx();
+    G.fxDirty = false;
+  }
   requestAnimationFrame(frame);
 }
 
@@ -3965,12 +4043,13 @@ function frame(now) {
 function update() {
   $("#budget-out").textContent = euro(state.budget);
   $("#month").value = String(state.month);
-  document.querySelectorAll("#days .pick").forEach(b => b.setAttribute("aria-pressed", Number(b.dataset.v) === state.days));
+  document.querySelectorAll("#days .pick").forEach(b => b.setAttribute("aria-pressed", state.daysSet.has(Number(b.dataset.v))));
   document.querySelectorAll("#interests .chip").forEach(b => b.setAttribute("aria-pressed", state.interests.has(b.dataset.v)));
   document.querySelectorAll("#modes .chip").forEach(b => b.setAttribute("aria-pressed", state.modes.has(b.dataset.v)));
   document.querySelectorAll(".sort .pick").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === state.sort));
   const hidden = Object.keys(MODES).length - state.modes.size;
-  $("#filters-count").textContent = state.interests.size + (hidden ? 1 : 0) || "";
+  $("#filters-count").textContent = hidden ? `${state.modes.size}/4` : "";
+  $("#int-count").textContent = state.interests.size ? `${state.interests.size} picked` : "Pick any to rank trips by what you like";
   const result = findTrips();
   current = { home: result.home, trips: orderedTrips(result) };
   if (ui.selected && !tripById(ui.selected)) ui.selected = null;
@@ -3995,7 +4074,21 @@ function setupControls() {
   $("#budget").addEventListener("input", (e) => { state.budget = Number(e.target.value); changed(); });
   $("#month").addEventListener("change", (e) => { state.month = Number(e.target.value); changed(); });
   $("#currency").addEventListener("change", (e) => { state.currency = e.target.value; changed(); });
-  $("#days").addEventListener("click", (e) => { const b = e.target.closest(".pick"); if (b) { state.days = Number(b.dataset.v); changed(); } });
+  // Trip lengths toggle on and off; at least one stays selected.
+  $("#days").addEventListener("click", (e) => {
+    const b = e.target.closest(".pick");
+    if (!b) return;
+    const d = Number(b.dataset.v);
+    if (state.daysSet.has(d) && state.daysSet.size === 1) return;
+    toggle(state.daysSet, d);
+    state.days = Math.min(...state.daysSet);
+    changed();
+  });
+  $("#int-more").addEventListener("click", () => {
+    const box = document.querySelector(".interests-box"), open = box.classList.toggle("open");
+    $("#int-more").setAttribute("aria-expanded", String(open));
+    $("#int-more").textContent = open ? "Show fewer" : "+ 8 more interests";
+  });
   $("#interests").addEventListener("click", (e) => { const b = e.target.closest(".chip"); if (b) { toggle(state.interests, b.dataset.v); changed(); } });
   $("#modes").addEventListener("click", (e) => { const b = e.target.closest(".chip"); if (b) { toggle(state.modes, b.dataset.v); changed(); } });
   document.querySelector(".sort").addEventListener("click", (e) => { const b = e.target.closest(".pick"); if (b) { state.sort = b.dataset.v; changed(); } });
@@ -4013,8 +4106,8 @@ function setupControls() {
 
   // Trip list: hover highlights the route, click flies there.
   $("#results").addEventListener("click", (e) => { const r = e.target.closest(".row"); if (r) select(r.dataset.id); });
-  $("#results").addEventListener("mouseover", (e) => { const r = e.target.closest(".row"); ui.hover = r ? r.dataset.id : null; });
-  $("#results").addEventListener("mouseleave", () => { ui.hover = null; });
+  $("#results").addEventListener("mouseover", (e) => { const r = e.target.closest(".row"); const id = r ? r.dataset.id : null; if (id !== ui.hover) { ui.hover = id; G.fxDirty = true; } });
+  $("#results").addEventListener("mouseleave", () => { ui.hover = null; G.fxDirty = true; });
 
   // Spotlight card and drawer buttons
   document.addEventListener("click", (e) => {
@@ -4041,7 +4134,7 @@ globeInit();
 loadRates();
 update();
 // Start with the top pick highlighted.
-if (current.trips[0]) select(current.trips[0].dest.id, { fly: false });
+if (current.trips[0]) select(current.trips[0].key, { fly: false });
 </script>
 </body>
 </html>
