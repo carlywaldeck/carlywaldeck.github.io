@@ -3368,7 +3368,7 @@ function pickTransport(dest, opts) {
 
 function chosenDayTrip(dest) {
   if (state.days === 1) return null;
-  const pick = dayTripChoice.has(dest.id) ? dayTripChoice.get(dest.id) : (state.days === 4 ? 0 : -1);
+  const pick = dayTripChoice.has(dest.id) ? dayTripChoice.get(dest.id) : (state.days >= 4 ? 0 : -1);
   return pick >= 0 ? dest.dayTrips[pick] : null;
 }
 
@@ -3449,7 +3449,7 @@ function priceScore(total) { return total > state.budget ? 0 : Math.max(0, Math.
 // Best trip length for a trip, from how long it takes to get there (hours each way).
 function idealDays(hours, escape) {
   if (escape) return escape.overnight ? 2 : 1;
-  return hours <= 1.5 ? 1.5 : hours <= 3.5 ? 2.5 : hours <= 6 ? 3 : 3.5;
+  return hours <= 1.5 ? 1.5 : hours <= 3.5 ? 2.5 : hours <= 6 ? 3.5 : 4.5;
 }
 function lengthScore(days, hours, escape) {
   const off = Math.max(0, Math.abs(days - idealDays(hours, escape)) - 0.5);
@@ -3589,7 +3589,7 @@ function liveNote(cost) {
        : status === "none" ? `<p class="fine">No recent live fare for this route and month, so this is an estimate.</p>` : "";
 }
 
-const dayWord = (n) => `${n} day${n === 1 ? "" : "s"}`;
+const dayWord = (n) => n >= 5 ? "5+ days" : `${n} day${n === 1 ? "" : "s"}`;
 
 function costSection(cost) {
   const parts = [
@@ -3664,7 +3664,7 @@ function dayTripsSection(dest, cost) {
 }
 
 function itinerarySection(dest, cost) {
-  const cityDays = cost.dayTrip ? state.days - 1 : Math.min(state.days, 3);
+  const cityDays = Math.min(3, cost.dayTrip ? state.days - 1 : state.days);
   const days = dest.itinerary.slice(0, cityDays).map((day, d) => {
     const total = day.reduce((sum, [, c]) => sum + c, 0);
     return `<div class="day">
@@ -3676,11 +3676,12 @@ function itinerarySection(dest, cost) {
   if (cost.dayTrip) {
     days.push(`<div class="day trip-day"><div class="day-head"><strong>Day ${cityDays + 1}</strong><span class="num">Day trip</span></div>
       <ol><li><span class="slot">${cost.dayTrip.how}</span><span class="what"><span>${cost.dayTrip.name}: ${cost.dayTrip.note}</span><span>${euro(cost.dayTrip.cost)}</span></span></li></ol></div>`);
-  } else if (state.days > 3) {
-    days.push(`<div class="day"><div class="day-head"><strong>Day 4</strong><span class="num">Free day</span></div>
-      <ol><li><span class="what solo"><span>Pick a day trip below, or explore at your own pace.</span></span></li></ol></div>`);
   }
-  return `<div><h4>Your ${state.days}-day plan</h4><div class="days">${days.join("")}</div></div>`;
+  for (let d = days.length + 1; d <= state.days; d++) {
+    days.push(`<div class="day"><div class="day-head"><strong>Day ${d}</strong><span class="num">Free day</span></div>
+      <ol><li><span class="what solo"><span>${cost.dayTrip ? "Add another day trip from the list below, or slow down and explore." : "Pick a day trip below, or explore at your own pace."}</span></span></li></ol></div>`);
+  }
+  return `<div><h4>Your ${state.days}-day plan${state.days >= 5 ? " (priced for 5 days; add more at the same daily cost)" : ""}</h4><div class="days">${days.join("")}</div></div>`;
 }
 
 // TikTok searches for the place: always fresh videos, no API key needed.
@@ -4480,7 +4481,7 @@ function partNote(t, k) {
   if (k === "price") return t.cost.total > state.budget ? "over your budget" : `leaves ${euro(state.budget - t.cost.total)} of ${euro(state.budget)}`;
   if (k === "season") return season((t.dest.season || current.home.season)[state.month]).text.toLowerCase() + ` in ${MONTHS[state.month]}`;
   if (k === "interest") { const n = (t.matched || []).length + (t.viaDayTrip || []).length; return `${n} of ${state.interests.size} matched`; }
-  if (k === "length") { const d = idealDays(t.cost.transport.hours, t.dest.escape); return p >= 0.95 ? `${dayWord(t.days)} suits the trip` : `best as ${d <= 1.5 ? "1–2 days" : d <= 2.5 ? "2–3 days" : d <= 3 ? "3 days" : "3–4 days"}`; }
+  if (k === "length") { const d = idealDays(t.cost.transport.hours, t.dest.escape); return p >= 0.95 ? `${dayWord(t.days)} suits the trip` : `best as ${d <= 1.5 ? "1–2 days" : d <= 2.5 ? "2–3 days" : d <= 3.5 ? "3–4 days" : "4–5+ days"}`; }
   if (k === "taste") return tasteReason(t) || "based on your ratings";
   return "";
 }
@@ -5221,7 +5222,7 @@ function closeLanding(fly = true) {
 }
 function setupLanding() {
   $("#lp-month").innerHTML = MONTHS_FULL.map((m, i) => `<option value="${i}">${m}</option>`).join("");
-  $("#lp-days").innerHTML = [1, 2, 3, 4].map(d => `<button type="button" class="pick" data-v="${d}" aria-label="${dayWord(d)}">${d}</button>`).join("");
+  $("#lp-days").innerHTML = [1, 2, 3, 4, 5].map(d => `<button type="button" class="pick" data-v="${d}" aria-label="${d === 5 ? "5 or more days" : dayWord(d)}">${d === 5 ? "5+" : d}</button>`).join("");
   $("#lp-interests").innerHTML = Object.entries(INTERESTS).map(([k, label]) => `<button type="button" class="chip" data-v="${k}">${label}</button>`).join("");
   lpHomeSearch = makeCitySearch($("#lp-home-input"), $("#lp-home-list"), { text: () => byId(state.home).name, pick: setHome, prefix: "lh" });
   makeCitySearch($("#lp-been-input"), $("#lp-been-list"), { text: () => "", pick: (id) => { markBeen(id, 0); update(); }, exclude: (c) => !!been[c.id] || c.id === state.home, prefix: "lb" });
@@ -5254,7 +5255,7 @@ function loadCriteria() {
   if (!c) return;
   if (byId(c.home)) state.home = c.home;
   if (c.budget >= 50 && c.budget <= 1000) state.budget = c.budget;
-  const days = (c.days || []).filter(d => d >= 1 && d <= 4);
+  const days = (c.days || []).filter(d => d >= 1 && d <= 5);
   if (days.length) { state.daysSet = new Set(days); state.days = Math.min(...days); }
   if (c.month >= 0 && c.month <= 11) state.month = c.month;
   state.interests = new Set((c.interests || []).filter(k => INTERESTS[k]));
@@ -5266,7 +5267,7 @@ function loadCriteria() {
 function toggle(set, value) { set.has(value) ? set.delete(value) : set.add(value); }
 
 function setupControls() {
-  $("#days").innerHTML = [1, 2, 3, 4].map(d => `<button type="button" class="pick" data-v="${d}" aria-label="${dayWord(d)}">${d}</button>`).join("");
+  $("#days").innerHTML = [1, 2, 3, 4, 5].map(d => `<button type="button" class="pick" data-v="${d}" aria-label="${d === 5 ? "5 or more days" : dayWord(d)}">${d === 5 ? "5+" : d}</button>`).join("");
   $("#month").innerHTML = MONTHS_FULL.map((m, i) => `<option value="${i}">${m}</option>`).join("");
   $("#int-more").textContent = `+ ${Object.keys(INTERESTS).length - 8} more interests`;
   $("#interests").innerHTML = Object.entries(INTERESTS).map(([k, label]) => `<button type="button" class="chip" data-v="${k}">${label}</button>`).join("");

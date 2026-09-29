@@ -37,7 +37,7 @@ By default the app picks the best mix of price and travel time; you can switch o
 - **Price:** how much of your budget it leaves (over budget scores 0 here).
 - **Timing:** how good your month is for that place.
 - **Your interests:** how many of the interests you picked it matches (a city's day trips count a bit less). Left out if you pick none.
-- **Trip length:** whether your number of days suits the distance. Under 1½ hours away is best as 1–2 days, a 2–3½ hour trip as 2–3 days, and farther trips as 3–4 days. Day trips suit 1 day and weekend escapes 2.
+- **Trip length:** whether your number of days suits the distance. Under 1½ hours away is best as 1–2 days, a 2–3½ hour trip as 2–3 days, a 3½–6 hour trip as 3–4 days, and farther trips as 4–5+ days. Day trips suit 1 day and weekend escapes 2.
 - **Your taste:** what the taste model predicts you'll think of it (below).
 
 With interests picked, the weights are 35% interests, 25% price, 20% timing and 20% trip length. Without them, they're 35% price, 35% timing and 30% trip length. The taste model then counts for 10% (from your profile alone) up to 30% (once you've rated 4+ places). Colors follow the score: teal is 7.5–10, gold 5.5–7.4, and rose is below 5.5 or over budget.
