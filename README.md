@@ -1,6 +1,6 @@
 # Weekender (working name)
 
-A budget trip planner for study-abroad students in Europe, covering 80 places across Europe, North Africa and the Middle East: enter your budget, trip length and free months, and get destinations that fit, the best time to go, and a sample itinerary.
+A budget trip planner for study-abroad students in Europe, covering 100 places across Europe, North Africa and the Middle East: enter your budget, trip length and free months, and get destinations that fit, the best time to go, and a sample itinerary.
 
 GSB 5576 semester project. See [docs/IDEA.md](docs/IDEA.md) for the full idea set.
 
@@ -18,8 +18,8 @@ Everything is in one file, `index.html`, so it works however it's opened (double
 
 | Section | What it does |
 |---|---|
-| `<style>` | The design: light globe app with a photo-real Earth, floating frosted-glass panels and a coral accent |
-| City data `<script>` | 80 cities: costs, month-by-month scores, 3-day itineraries, 2–4 day trips each (231), 1–3 weekend escapes each (177), and tips |
+| `<style>` | The design: a cinematic globe in space, with light frosted-glass panels and a coral accent |
+| City data `<script>` | 100 cities: costs, month-by-month scores, 3-day itineraries, 3–5 day trips each, 2–4 weekend escapes each (548 escapes in all), and tips. 29 interests, from food and beaches to hidden gems, film locations and hot springs |
 | App `<script>` | Estimates costs, ranks destinations, updates the list and map as you change settings |
 
 **How costs are estimated:** hostel nights, food, local transport and sights, plus round-trip travel. Travel options are estimated from distance:
@@ -43,7 +43,7 @@ By default the app picks the best mix of price and travel time; you can switch o
 - [ ] Week 13: Final presentation
 
 ## The globe
-The app is built around a photo-real 3D Earth: NASA's public-domain Blue Marble satellite imagery ([NASA Visible Earth](https://visibleearth.nasa.gov/collection/1484/blue-marble)) is wrapped on a sphere by a small WebGL2 shader that adds sunlight shading, terrain relief from a height map, a glint on the oceans and a thin atmosphere. The imagery is embedded in `index.html`, so it works offline too (this makes the page about 3 MB). Zooming into a region softens the photo and cross-fades in crisp coastlines and borders so routes and labels stay readable. Routes, markers and labels are drawn on a canvas overlay with [d3-geo](https://d3js.org/d3-geo), using the same rotation as the shader so they line up exactly. If a browser has no WebGL2, the app falls back to a dot-matrix globe (~19,000 dots sampled from Natural Earth land on a Fibonacci spiral).
+The app is built around a cinematic 3D globe floating in space: a lit navy planet with glowing coastlines, an atmosphere halo and a star field. Every place in the app glows faintly like a city light at night. Trips are glowing arcs (flights arc high; trains and buses stay low), the selected route turns coral, and destination markers glow in their value color. Nothing animates on its own: the globe only redraws when you drag, zoom or change a setting. Projection and drawing use [d3-geo](https://d3js.org/d3-geo) on canvas with Natural Earth outlines (public domain).
 - On load, the camera flies in from space to your host city.
 - Routes to your top trips lift off the surface as arcs (flights higher, trains and buses low).
 - Markers are colored by price: teal = great value (good price for your budget and a good month to go), amber = okay, rose = pricey or off-season.
