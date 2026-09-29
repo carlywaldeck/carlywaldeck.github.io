@@ -61,9 +61,9 @@ Because the app has no server, the model only learns from your own ratings. Lear
 - [ ] Week 13: Final presentation
 
 ## The globe
-The app is built around a 3D globe on a soft daylight backdrop: warm off-white land on a soft gray-blue ocean, lightly shaded for depth. Every place in the app is marked with a small dot. Trips are arcs (flights arc high; trains and buses stay low), the selected route turns blue, and destination markers use their value color. Nothing animates on its own: the globe only redraws when you drag, zoom or change a setting. Projection and drawing use [d3-geo](https://d3js.org/d3-geo) on canvas with Natural Earth outlines (public domain).
+The app is built around a 3D globe on a soft daylight backdrop: warm white land on a clear blue ocean, lightly shaded for depth (colors live in one `MAP` object, so the palette is easy to swap). Every place in the app is marked with a small dot. Trips are arcs (flights arc high; trains and buses stay low), the selected route turns blue, and destination markers use their value color. Nothing animates on its own: the globe only redraws when you drag, zoom or change a setting. Projection and drawing use [d3-geo](https://d3js.org/d3-geo) on canvas with Natural Earth outlines (public domain).
 
-**Landing page:** the app opens on a short form (where you're based, month, budget, trip lengths, interests, optional age range and travel style, and places you've been). **Show my trips** flies you into the globe, and everything stays editable from the top bar. Click the Weekender logo to go back.
+**Landing page:** the app opens on a short form (where you're based, month, currency (€, $ or £), budget, trip lengths, interests, optional age range and travel style, and places you've been). **Show my trips** flies you into the globe, and everything stays editable from the top bar. Click the Weekender logo to go back.
 
 **Finding your city:** the From box is a search field. Type any part of a city or country name (accents optional, so "malaga" finds Málaga), then use the arrow keys and Enter, or click a result.
 - On load, the camera flies in from space to your host city.
@@ -71,6 +71,8 @@ The app is built around a 3D globe on a soft daylight backdrop: warm off-white l
 - Markers are colored by score: teal = strong pick (7.5–10), gold = decent (5.5–7.4), rose = weaker or over budget. The top 12 picks get full markers; the rest are small dots.
 - Selecting a trip, from the list or the globe, flies the camera there Earth-zoom style and shows a summary card. **Open the plan** slides in the full plan.
 - Drag to spin, scroll to zoom, **Fit trips** to reframe, **Whole Earth** to pull back to space.
+
+**TikTok:** every plan has a "See it on TikTok" row that opens TikTok searches for the place (things to do, on a budget, where to eat, your matching interests, hidden gems). Searches always show current videos and need no API key.
 
 ## Live data (free, keyless APIs)
 When the site runs somewhere that allows outside requests (e.g. GitHub Pages), it enriches every trip with:

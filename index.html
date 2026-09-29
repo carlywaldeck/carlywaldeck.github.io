@@ -358,7 +358,8 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
 .lp-field > label, .lp-field > span { font-size: 14px; font-weight: 600; }
 .lp-field small { font-weight: 400; color: var(--muted); margin-left: 4px; }
 .lp-field b { font: 500 13px var(--mono); color: var(--accent); margin-left: 4px; }
-.lp-row { display: grid; grid-template-columns: 1fr 1.3fr; gap: 16px; }
+.lp-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.lp-row .lp-budget { grid-column: 1 / -1; }
 .landing-card select, .landing-card input[type=text] { width: 100%; font-size: 15px; padding: 9px 12px; border-radius: 10px; }
 .landing-card input[type=text] { background: var(--soft); border: 1px solid var(--line); }
 .landing-card input[type=text]:focus { outline: none; border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px var(--accent-soft); }
@@ -374,6 +375,7 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
   .lp-row { grid-template-columns: 1fr; }
   .landing-card { padding: 18px; }
 }
+.links.tiktok { margin-top: 8px; }
 </style>
 </head>
 <body>
@@ -483,7 +485,9 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
       </div>
       <div class="lp-row">
         <div class="lp-field"><label for="lp-month">When?</label><select id="lp-month"></select></div>
-        <div class="lp-field"><label for="lp-budget">Budget per person <b id="lp-budget-out"></b></label>
+        <div class="lp-field"><label for="lp-currency">Currency</label><select id="lp-currency">
+          <option value="EUR">€ Euros</option><option value="USD">$ US dollars</option><option value="GBP">£ Pounds</option></select></div>
+        <div class="lp-field lp-budget"><label for="lp-budget">Budget per person <b id="lp-budget-out"></b></label>
           <input id="lp-budget" type="range" min="50" max="1000" step="10"></div>
       </div>
       <div class="lp-field"><span id="lp-days-label">How many days? <small>pick any</small></span><div class="seg" id="lp-days" role="group" aria-labelledby="lp-days-label"></div></div>
@@ -3674,6 +3678,21 @@ function itinerarySection(dest, cost) {
   return `<div><h4>Your ${state.days}-day plan</h4><div class="days">${days.join("")}</div></div>`;
 }
 
+// TikTok searches for the place: always fresh videos, no API key needed.
+function tiktokSection(dest, matched = []) {
+  const place = (dest.name.split(" (")[0]).replace(/ overnight$/, "");
+  const q = (s) => `https://www.tiktok.com/search?q=${encodeURIComponent(s)}`;
+  const topics = [
+    ["Things to do", `things to do in ${place}`],
+    ["On a budget", `${place} on a budget`],
+    ["Where to eat", `where to eat in ${place}`],
+    ...matched.slice(0, 2).map(k => [INTERESTS[k], `${place} ${INTERESTS[k].toLowerCase()}`]),
+    ["Hidden gems", `${place} hidden gems`]
+  ];
+  return `<div><h4>See it on TikTok</h4><p class="note">Real videos from people who've been. Opens TikTok search.</p>
+    <div class="links tiktok">${topics.map(([label, s]) => `<a href="${q(s)}" target="_blank" rel="noopener">♪ ${label} ↗</a>`).join("")}</div></div>`;
+}
+
 function extrasSection(home, dest, cost) {
   const mode = cost.transport.mode;
   const q = encodeURIComponent(`Flights from ${home.name} to ${dest.name}`);
@@ -4589,7 +4608,7 @@ function drawDrawer(t) {
         ${w.page ? `<a class="more" href="${w.page}" target="_blank" rel="noopener">Read more on Wikipedia ↗</a>` : ""}</div>` : "";
   const live = `${weatherSection(t)}${holidaySection(t)}`;
   const body = isEscape(t)
-    ? `<p class="lede">${dest.escape.note}</p><div class="stack">${scoreSection(t)}${about}${live}${escapeDetails(home, dest, cost)}${sourcesNote()}</div>`
+    ? `<p class="lede">${dest.escape.note}</p><div class="stack">${scoreSection(t)}${about}${tiktokSection(dest, matched)}${live}${escapeDetails(home, dest, cost)}${sourcesNote()}</div>`
     : `<div class="stack">
         ${scoreSection(t)}
         ${costSection(cost)}
@@ -4599,6 +4618,7 @@ function drawDrawer(t) {
         ${about}
         ${live}
         ${whenSection(dest)}
+        ${tiktokSection(dest, matched)}
         ${extrasSection(home, dest, cost)}
         ${sourcesNote()}
       </div>`;
@@ -4843,6 +4863,11 @@ function visible(p) {
 }
 
 // Every known place (cities, escapes, day trips) as a faint dot on the map, built once.
+// Globe colors: land and ocean clearly different, both soft.
+const MAP = {
+  ocean: ["#BCD6EE", "#A3C6E8", "#86B1DD"], land: ["#FFFEFA", "#F8F5EE", "#ECE7DC"],
+  coast: "rgba(60,85,120,0.35)", border: "rgba(60,85,120,0.14)", glow: "rgba(150,190,235,0.45)"
+};
 let LIGHTS = null;
 function cityLights() {
   if (LIGHTS) return LIGHTS;
@@ -4865,13 +4890,13 @@ function drawBase() {
   shadow.addColorStop(0, "rgba(40,50,70,0.12)"); shadow.addColorStop(1, "rgba(40,50,70,0)");
   ctx.fillStyle = shadow; ctx.beginPath(); ctx.arc(cx, cy + r * 0.08, r * 1.15, 0, 7); ctx.fill();
   const glow = ctx.createRadialGradient(cx, cy, r * 0.98, cx, cy, r * 1.14);
-  glow.addColorStop(0, "rgba(175,190,212,0.4)"); glow.addColorStop(1, "rgba(175,190,212,0)");
+  glow.addColorStop(0, MAP.glow); glow.addColorStop(1, "rgba(255,255,255,0)");
   ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(cx, cy, r * 1.14, 0, 7); ctx.fill();
 
   // Ocean: light blue, lit from the upper left
   const lx = cx - r * 0.4, ly = cy - r * 0.45;
   const ocean = ctx.createRadialGradient(lx, ly, r * 0.05, cx, cy, r);
-  ocean.addColorStop(0, "#E4E9EF"); ocean.addColorStop(0.6, "#D5DDE6"); ocean.addColorStop(1, "#C3CEDA");
+  MAP.ocean.forEach((c, i) => ocean.addColorStop([0, 0.6, 1][i], c));
   ctx.fillStyle = ocean; disc(); ctx.fill();
 
   ctx.beginPath(); pathFast(graticule);
@@ -4879,13 +4904,13 @@ function drawBase() {
 
   // Land: white with a gentle falloff, crisp coastlines, faint borders
   const landFill = ctx.createRadialGradient(lx, ly, r * 0.05, cx, cy, r);
-  landFill.addColorStop(0, "#FCFBF8"); landFill.addColorStop(0.65, "#F5F3EF"); landFill.addColorStop(1, "#E8E5DF");
+  MAP.land.forEach((c, i) => landFill.addColorStop([0, 0.65, 1][i], c));
   ctx.beginPath(); (moving ? pathFast : pathDetail)(moving ? GEO.land110 : GEO.land50);
   ctx.fillStyle = landFill; ctx.fill();
-  ctx.strokeStyle = "rgba(70,80,100,0.3)"; ctx.lineWidth = 0.7; ctx.stroke();
+  ctx.strokeStyle = MAP.coast; ctx.lineWidth = 0.7; ctx.stroke();
   if (!moving) {
     ctx.beginPath(); pathDetail(GEO.borders50);
-    ctx.strokeStyle = "rgba(70,80,100,0.12)"; ctx.lineWidth = 0.5; ctx.stroke();
+    ctx.strokeStyle = MAP.border; ctx.lineWidth = 0.5; ctx.stroke();
   }
 
   // Every place in the app as a tiny dot, for texture
@@ -5075,6 +5100,7 @@ function frame(now) {
 function update() {
   $("#budget-out").textContent = euro(state.budget);
   $("#month").value = String(state.month);
+  $("#currency").value = state.currency;
   document.querySelectorAll("#days .pick").forEach(b => b.setAttribute("aria-pressed", state.daysSet.has(Number(b.dataset.v))));
   document.querySelectorAll("#interests .chip").forEach(b => b.setAttribute("aria-pressed", state.interests.has(b.dataset.v)));
   document.querySelectorAll("#modes .chip").forEach(b => b.setAttribute("aria-pressed", state.modes.has(b.dataset.v)));
@@ -5168,6 +5194,7 @@ function setupCitySearch() {
 function landingOpen() { return document.body.classList.contains("landing-open"); }
 function renderLanding() {
   $("#lp-month").value = String(state.month);
+  $("#lp-currency").value = state.currency;
   $("#lp-budget").value = String(state.budget);
   $("#lp-budget-out").textContent = euro(state.budget);
   document.querySelectorAll("#lp-days .pick").forEach(b => b.setAttribute("aria-pressed", state.daysSet.has(Number(b.dataset.v))));
@@ -5200,6 +5227,7 @@ function setupLanding() {
   });
   const changed = () => { update(); renderLanding(); };
   $("#lp-month").addEventListener("change", (e) => { state.month = Number(e.target.value); changed(); });
+  $("#lp-currency").addEventListener("change", (e) => { state.currency = e.target.value; changed(); });
   $("#lp-budget").addEventListener("input", (e) => { state.budget = Number(e.target.value); changed(); });
   $("#lp-days").addEventListener("click", (e) => {
     const b = e.target.closest(".pick"); if (!b) return;
