@@ -4213,7 +4213,11 @@ function whenSection(dest) {
   return `
     <div>
       <h4>When to go</h4>
-      <p class="best">${dest.bestTime}</p>
+      ${dest.data && dest.data.season ? (() => {
+        const top = Math.max(...dest.season), best = dest.season.map((q, i) => q === top ? MONTHS_FULL[i] : null).filter(Boolean);
+        const list = best.length > 1 ? `${best.slice(0, -1).join(", ")} and ${best[best.length - 1]}` : best[0];
+        return `<p class="best"><b>Best by the data:</b> ${list} (weather records and tourist crowds).</p><p class="note">Local tip: ${dest.bestTime}</p>`;
+      })() : `<p class="best">${dest.bestTime}</p>`}
       <div class="chart" role="img" aria-label="Month by month: bar height shows how good the month is, color shows prices">
         ${dest.season.map((q, i) => {
           const p = priceLevel(dest.priceMult[i]);
