@@ -74,6 +74,19 @@ The app is built around a 3D globe on a soft daylight backdrop: sage-green land 
 
 **TikTok:** every plan has a "See it on TikTok" row that opens TikTok searches for the place (things to do, on a budget, where to eat, your matching interests, hidden gems). Searches always show current videos and need no API key.
 
+## Open data behind the numbers
+Best months, seasonal price swings, daily costs and interest tags come from public data, not guesses. A GitHub Action (`.github/workflows/data.yml`) runs `scripts/build-data.mjs` once a month, and whenever the scripts change. It saves the results to `data/city-data.json` and writes `data/REPORT.md`, which compares them with the original hand-written estimates. `scripts/embed-data.mjs` then copies the data into `index.html`, so the page still works as one file. You can also run it by hand: **Actions → Refresh city data → Run workflow**.
+
+| What | Source | How it's used |
+|---|---|---|
+| Weather by month | Open-Meteo historical weather (ERA5), daily 2020–2024 | Comfort = 0.55 × temperature (best at a 25°C high) + 0.25 × fewer rainy days + 0.2 × sunshine |
+| Crowds by month | Eurostat `tour_occ_nim` (nights in tourist accommodation, by country); Wikipedia pageviews where Eurostat has none | Best months = 0.65 × comfort + 0.35 × fewer crowds, ranked into 1–5; prices rise 40% of the way with the crowd index |
+| Price level | Eurostat `prc_ppp_ind` (restaurants & hotels, EU = 100); World Bank price level ratio elsewhere | Daily costs = an EU-average city × the country's price level × 0.83–1.17 for how touristy the city is |
+| What's there | OpenStreetMap via Overpass: counts of restaurants, bars, museums, beaches, peaks, viewpoints… within set distances | Each interest's strength (0–1) is the city's rank among all 100; tagged when in the top 40% |
+| Popularity | Wikipedia pageviews 2022–2024 | Touristy-city price premium; "hidden gems" = many sights but fewer visitors |
+
+Festivals, film locations and old towns have no reliable open data, so those tags stay hand-picked. So do the itineraries, tips and day trips. Each plan shows **The data behind this**, e.g. weather for your month, crowd level, price level, OpenStreetMap counts and popularity, each with its source.
+
 ## Live data (free, keyless APIs)
 When the site runs somewhere that allows outside requests (e.g. GitHub Pages), it enriches every trip with:
 - **Photos and summaries** from the [Wikipedia REST API](https://en.wikipedia.org/api/rest_v1/) (images from Wikimedia Commons, credited on each photo)

@@ -1,0 +1,56 @@
+# Refreshes the open data behind Weekender (climate, crowds, prices, OpenStreetMap, Wikipedia)
+# and embeds it into index.html. Runs monthly, when the data scripts change, or by hand
+# (Actions tab → "Refresh city data" → Run workflow).
+name: Refresh city data
+
+on:
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "Only these city ids, comma-separated (blank = all)"
+        required: false
+      skip:
+        description: "Skip sources: wikipedia,climate,crowds,prices,osm (blank = none)"
+        required: false
+  schedule:
+    - cron: "17 4 2 * *" # 04:17 UTC on the 2nd of each month
+  push:
+    branches: [main]
+    paths:
+      - "scripts/build-data.mjs"
+      - "scripts/embed-data.mjs"
+      - "data/cities-meta.json"
+      - ".github/workflows/data.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: city-data
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Fetch open data
+        env:
+          ONLY: ${{ github.event.inputs.only }}
+          SKIP: ${{ github.event.inputs.skip }}
+        run: node scripts/build-data.mjs
+      - name: Embed it into the app
+        run: node scripts/embed-data.mjs
+      - name: Commit the new data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/city-data.json data/REPORT.md index.html
+          if git diff --cached --quiet; then echo "No changes"; exit 0; fi
+          git commit -m "Refresh city data from open sources"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

@@ -381,6 +381,13 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
   .landing-card { padding: 18px; }
 }
 .links.tiktok { margin-top: 8px; }
+.facts { margin: 8px 0 0; display: grid; grid-template-columns: 140px 1fr; gap: 10px 14px; font-size: 14px; }
+.facts dt { color: var(--muted); font-size: 13px; }
+.facts dd { margin: 0; }
+.facts dd > small { display: block; color: var(--muted); font-size: 11px; margin-top: 2px; letter-spacing: .02em; }
+.facts .osm { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
+.facts .osm small { color: var(--muted); font-size: 12px; }
+@media (max-width: 760px) { .facts { grid-template-columns: 1fr; gap: 2px; } .facts dd { margin-bottom: 8px; } }
 </style>
 </head>
 <body>
@@ -479,6 +486,7 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
         <li><b>One score per trip</b> mixing price, timing, your interests and whether the trip length fits.</li>
         <li><b>Places you've been</b> stop showing up, and your star ratings teach it your taste.</li>
         <li><b>Change anything later</b> from the bar at the top of the globe.</li>
+        <li id="lp-data" hidden><b>Built on open data:</b> 5 years of weather records, official tourism and price statistics, and OpenStreetMap.</li>
       </ul>
     </div>
     <form class="landing-card" id="landing-form">
@@ -3176,11 +3184,45 @@ window.CITIES = [
 ];
 </script>
 <script>
+// Real data for each city (climate, crowds, prices, OpenStreetMap counts, Wikipedia popularity),
+// written by scripts/embed-data.mjs from data/city-data.json. See data/REPORT.md.
+/* CITY_DATA:START */
+window.CITY_DATA = null;
+/* CITY_DATA:END */
+</script>
+<script>
 // ======================================================================
 // Weekender app logic
 // ======================================================================
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+// ---------------------------------------------------------------- open data
+// When data/city-data.json has been embedded (by the GitHub Action), it replaces the hand-written
+// estimates: best months (climate + crowds), seasonal price swings (crowds), daily costs (official
+// price levels) and interest tags (OpenStreetMap). Itineraries, tips and escapes stay hand-written.
+const DATA = window.CITY_DATA || null;
+const EDITORIAL_INTERESTS = ["festivals", "film", "villages"];
+(function applyCityData() {
+  if (!DATA) return;
+  for (const c of CITIES) {
+    const d = DATA.cities[c.id];
+    if (!d) continue;
+    c.estimate = { season: c.season, priceMult: c.priceMult, costs: c.costs, interests: c.interests };
+    if (d.season) c.season = d.season;
+    if (d.priceMult) c.priceMult = d.priceMult;
+    if (d.costs) c.costs = d.costs;
+    if (d.interests) c.interests = d.interests;
+    c.data = d;
+  }
+})();
+// How strongly a city offers an interest, 0–1: the OpenStreetMap rank when there is data,
+// otherwise 1 if it's tagged and 0 if not.
+function strength(c, k) {
+  const s = c.data && c.data.strengths && c.data.strengths[k];
+  if (s != null && !EDITORIAL_INTERESTS.includes(k)) return s;
+  return c.interests.includes(k) ? 1 : 0;
+}
 const MONTHS_FULL = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const INTERESTS = {
   food: "Food", nightlife: "Nightlife", history: "History", art: "Art & museums",
@@ -3502,7 +3544,7 @@ function findTripsFor() {
     const parts = {
       price: priceScore(cost.total),
       season: (dest.season[state.month] - 1) / 4,
-      interest: wanted.length ? (matched.length + 0.6 * viaDayTrip.length) / wanted.length : null,
+      interest: wanted.length ? wanted.reduce((s, i) => s + Math.max(strength(dest, i), tripTags.has(i) ? 0.6 : 0), 0) / wanted.length : null,
       length: lengthScore(state.days, cost.transport.hours, null),
       taste: tasteFor(dest.id)
     };
@@ -4216,7 +4258,7 @@ function sourcesNote() {
   const offline = liveStatus.ok === 0 && liveStatus.failed > 0 && !Object.keys(liveCache).length;
   return `<p class="sources">${offline
     ? "Photos, weather records, holidays and live exchange rates couldn't load here (this preview blocks outside services). They load on the published site."
-    : `Sources: photos and summaries from <a href="https://en.wikipedia.org" target="_blank" rel="noopener">Wikipedia</a> / Wikimedia Commons ·
+    : `Sources: ${DATA ? `best months, prices and interests from open data (Open-Meteo, Eurostat, World Bank, <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a>, Wikipedia), updated ${DATA.generated} · ` : ""}photos and summaries from <a href="https://en.wikipedia.org" target="_blank" rel="noopener">Wikipedia</a> / Wikimedia Commons ·
        weather from <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> (ERA5, CC BY 4.0) ·
        holidays from <a href="https://date.nager.at" target="_blank" rel="noopener">Nager.Date</a> ·
        exchange rates ${ratesLive ? `from ${ratesLive.source}${ratesLive.date ? ` (${ratesLive.date})` : ""}` : "approximate"} (<a href="https://www.frankfurter.app" target="_blank" rel="noopener">Frankfurter</a>, <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener">Rates by Exchange Rate API</a>).`}</p>`;
@@ -4401,7 +4443,8 @@ function tasteReason(t) {
   }
   if (best && best.sim > 0.45) return best.r >= 4 ? `similar to ${best.name}, which you rated ${best.r}★` : best.r <= 2 ? `similar to ${best.name}, which you rated ${best.r}★` : `a bit like ${best.name}`;
   const tags = INTEREST_KEYS.map((k, i) => ({ k, c: (pl.city ? pl.city.interests : pl.escape.tags).includes(k) ? TASTE.w[i] : 0 })).sort((a, b) => b.c - a.c);
-  return tags[0].c > 0.05 ? `you tend to rate ${INTERESTS[tags[0].k].toLowerCase()} places highly` : "";
+  if (tags[0].c <= 0.05) return "";
+  return TASTE.n ? `you tend to rate ${INTERESTS[tags[0].k].toLowerCase()} places highly` : `strong on ${INTERESTS[tags[0].k].toLowerCase()}, which fits your profile`;
 }
 // What the model has learned, in words: the interests with the biggest positive and negative weights.
 function tasteSummary() {
@@ -4479,7 +4522,11 @@ const scoreBadge = (t, cls = "") => `<span class="score ${tone(t)} ${cls}" title
 function partNote(t, k) {
   const p = t.parts[k];
   if (k === "price") return t.cost.total > state.budget ? "over your budget" : `leaves ${euro(state.budget - t.cost.total)} of ${euro(state.budget)}`;
-  if (k === "season") return season((t.dest.season || current.home.season)[state.month]).text.toLowerCase() + ` in ${MONTHS[state.month]}`;
+  if (k === "season") {
+    const c = isEscape(t) ? current.home : byId(t.dest.id), cl = c && c.data && c.data.climate, m = state.month;
+    return season((t.dest.season || current.home.season)[m]).text.toLowerCase() + ` in ${MONTHS[m]}` +
+      (cl ? `: highs ~${toF(cl.high[m])}°F, ${Math.round(cl.rainDays[m])} rainy days` : "");
+  }
   if (k === "interest") { const n = (t.matched || []).length + (t.viaDayTrip || []).length; return `${n} of ${state.interests.size} matched`; }
   if (k === "length") { const d = idealDays(t.cost.transport.hours, t.dest.escape); return p >= 0.95 ? `${dayWord(t.days)} suits the trip` : `best as ${d <= 1.5 ? "1–2 days" : d <= 2.5 ? "2–3 days" : d <= 3.5 ? "3–4 days" : "4–5+ days"}`; }
   if (k === "taste") return tasteReason(t) || "based on your ratings";
@@ -4614,9 +4661,10 @@ function drawDrawer(t) {
         ${w.page ? `<a class="more" href="${w.page}" target="_blank" rel="noopener">Read more on Wikipedia ↗</a>` : ""}</div>` : "";
   const live = `${weatherSection(t)}${holidaySection(t)}`;
   const body = isEscape(t)
-    ? `<p class="lede">${dest.escape.note}</p><div class="stack">${scoreSection(t)}${about}${tiktokSection(dest, matched)}${live}${escapeDetails(home, dest, cost)}${sourcesNote()}</div>`
+    ? `<p class="lede">${dest.escape.note}</p><div class="stack">${scoreSection(t)}${dataSection(t)}${about}${tiktokSection(dest, matched)}${live}${escapeDetails(home, dest, cost)}${sourcesNote()}</div>`
     : `<div class="stack">
         ${scoreSection(t)}
+        ${dataSection(t)}
         ${costSection(cost)}
         ${transportSection(dest, cost)}
         ${itinerarySection(dest, cost)}
@@ -4644,6 +4692,33 @@ function drawDrawer(t) {
     </div>
     ${body}`;
   if (!isEscape(t) && (cost.options || []).some(o => o.mode === "flight")) fetchLiveFare(home, dest);
+}
+
+const fmtViews = (n) => n >= 1e6 ? `${(n / 1e6).toFixed(1)}M` : n >= 1e3 ? `${Math.round(n / 1e3)}k` : String(n);
+function dataSection(t) {
+  const c = isEscape(t) ? current.home : byId(t.dest.id);
+  const d = c && c.data;
+  if (!d) return "";
+  const m = state.month, rows = [];
+  if (d.climate) rows.push(["Weather in " + MONTHS_FULL[m], `highs around ${toF(d.climate.high[m])}°F (${Math.round(d.climate.high[m])}°C), ${Math.round(d.climate.rainDays[m])} rainy days, ${d.climate.sunHours[m]}h of sun a day`,
+    `Open-Meteo, ${d.climate.years || "2020–2024"} daily records`]);
+  if (d.crowds) {
+    const x = d.crowds.index[m];
+    rows.push(["Crowds in " + MONTHS_FULL[m], `${x >= 1.15 ? "busier than usual" : x <= 0.85 ? "quieter than usual" : "about average"}: ${x.toFixed(2)}× the yearly average of ${d.crowds.source === "eurostat" ? `tourist nights in ${c.country}` : "Wikipedia interest"}`,
+      d.crowds.source === "eurostat" ? "Eurostat" : "Wikipedia pageviews"]);
+  }
+  if (d.price) rows.push(["Prices", `${d.price.source === "eurostat" ? "restaurants & hotels" : "everyday prices"} in ${c.country} cost ${Math.round(d.price.level * 100)}% of the EU average, so about ${euro(c.costs.hostel)} for a hostel bed and ${euro(c.costs.food)} a day for food`,
+    d.price.source === "eurostat" ? `Eurostat, ${d.price.year}` : `World Bank, ${d.price.year}`]);
+  if (d.osm && DATA.osm) {
+    const want = [...state.interests].filter(k => d.osm[k] != null);
+    const top = Object.keys(d.osm).filter(k => !want.includes(k)).sort((a, b) => (d.strengths[b] || 0) - (d.strengths[a] || 0)).slice(0, Math.max(0, 5 - want.length));
+    const items = [...want, ...top].slice(0, 6).map(k => `<li><b class="num">${d.osm[k].toLocaleString()}</b> ${DATA.osm[k].label} <small>within ${DATA.osm[k].radiusKm} km · top ${Math.max(1, Math.round((1 - (d.strengths[k] || 0)) * 100))}%</small></li>`);
+    if (items.length) rows.push(["What's there", `<ul class="osm">${items.join("")}</ul>`, "OpenStreetMap"]);
+  }
+  if (d.wikipedia) rows.push(["Popularity", `about ${fmtViews(d.wikipedia.monthlyViews)} Wikipedia views a month${d.popularity != null ? ` (more than ${Math.round(d.popularity * 100)}% of places here)` : ""}`, "Wikipedia"]);
+  return `<div><h4>The data behind this${isEscape(t) ? ` (${current.home.name}, the nearest city)` : ""}</h4>
+    <dl class="facts">${rows.map(([k, v, src]) => `<dt>${k}</dt><dd>${v}<small>${src}</small></dd>`).join("")}</dl>
+    <p class="fine">Updated ${DATA.generated} from open data. <a href="https://github.com/carlywaldeck/gsb-5576-project/blob/main/data/REPORT.md" target="_blank" rel="noopener">How it's calculated ↗</a></p></div>`;
 }
 
 function scoreSection(t) {
@@ -5242,6 +5317,7 @@ function setupLanding() {
     toggle(state.daysSet, d); state.days = Math.min(...state.daysSet); changed();
   });
   $("#lp-interests").addEventListener("click", (e) => { const b = e.target.closest(".chip"); if (b) { toggle(state.interests, b.dataset.v); changed(); } });
+  $("#lp-data").hidden = !DATA;
   $("#landing-form").addEventListener("submit", (e) => { e.preventDefault(); closeLanding(true); });
   $("#brand").addEventListener("click", openLanding);
 }
