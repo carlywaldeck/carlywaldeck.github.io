@@ -33,7 +33,25 @@ By default the app picks the best mix of price and travel time; you can switch o
 
 **Trip lengths:** pick any combination of 1–4 days; results are grouped by length.
 
-**How trips are ranked:** 45% interest match (interests you can only get on a day trip count a bit less) + 35% how good the month is + 20% how much budget is left over. On 1–2 day trips price counts for more (35/25/40). There's also a "Cheapest first" sort.
+**How trips are scored (1–10):** every trip gets one score that mixes
+- **Price:** how much of your budget it leaves (over budget scores 0 here).
+- **Timing:** how good your month is for that place.
+- **Your interests:** how many of the interests you picked it matches (a city's day trips count a bit less). Left out if you pick none.
+- **Trip length:** whether your number of days suits the distance. Under 1½ hours away is best as 1–2 days, a 2–3½ hour trip as 2–3 days, and farther trips as 3–4 days. Day trips suit 1 day and weekend escapes 2.
+- **Your taste:** what the taste model predicts you'll think of it (below).
+
+With interests picked, the weights are 35% interests, 25% price, 20% timing and 20% trip length. Without them, they're 35% price, 35% timing and 30% trip length. The taste model then counts for 10% (from your profile alone) up to 30% (once you've rated 4+ places). Colors follow the score: teal is 7.5–10, gold 5.5–7.4, and rose is below 5.5 or over budget.
+
+## Places you've been and the taste model
+Add places you've been from the landing page, the **Been there** button or **I've been here** on any trip. They stop being suggested, and you can rate each one from 1 to 5 stars. Everything is saved in your browser only (localStorage): your search, your optional age range and travel style, and your ratings. Nothing is sent anywhere.
+
+The taste model is a small machine-learning model that runs in the page:
+- **Features:** each place is described by 32 numbers: its 29 interest tags (a city's day-trip tags count 0.35), its cost per day, and its latitude and longitude. Every feature is centered on the average city.
+- **Starting point (prior):** before you rate anything, the model starts from what you told it. Your picked interests get a positive weight. Your age range and who you travel with add small nudges, e.g. 18–21 leans toward nightlife, festivals and cheaper places, and traveling with a partner leans toward views, villages, food and wine. These are assumptions, and ratings override them.
+- **Learning:** ridge regression pulled toward that prior, `w = (XᵀX + λI)⁻¹ (Xᵀy + λ·w₀)` with λ = 1.5, where y is each rating mapped to −1…+1. It's solved exactly (Gaussian elimination) and retrains instantly on every change. With few ratings it stays close to the prior; each rating moves it toward your real taste.
+- **Explanations:** the plan shows why a place scored as it did, e.g. "similar to Barcelona, which you rated 5★" (cosine similarity to your rated places) or "you tend to rate beach places highly" (the biggest positive weight). The Been there panel shows what the model has learned overall.
+
+Because the app has no server, the model only learns from your own ratings. Learning from other travelers who share your age, travel style and interests (collaborative filtering) would need a shared database of ratings; that would be a natural next step.
 
 ## Milestones
 - [x] Week 3: Idea set
@@ -43,12 +61,14 @@ By default the app picks the best mix of price and travel time; you can switch o
 - [ ] Week 13: Final presentation
 
 ## The globe
-The app is built around a 3D globe on a soft daylight backdrop: white continents on a light-blue ocean, shaded for depth, with a pale atmosphere glow. Every place in the app is marked with a small dot. Trips are arcs (flights arc high; trains and buses stay low), the selected route turns blue, and destination markers use their value color. Nothing animates on its own: the globe only redraws when you drag, zoom or change a setting. Projection and drawing use [d3-geo](https://d3js.org/d3-geo) on canvas with Natural Earth outlines (public domain).
+The app is built around a 3D globe on a soft daylight backdrop: warm off-white land on a soft gray-blue ocean, lightly shaded for depth. Every place in the app is marked with a small dot. Trips are arcs (flights arc high; trains and buses stay low), the selected route turns blue, and destination markers use their value color. Nothing animates on its own: the globe only redraws when you drag, zoom or change a setting. Projection and drawing use [d3-geo](https://d3js.org/d3-geo) on canvas with Natural Earth outlines (public domain).
+
+**Landing page:** the app opens on a short form (where you're based, month, budget, trip lengths, interests, optional age range and travel style, and places you've been). **Show my trips** flies you into the globe, and everything stays editable from the top bar. Click the Weekender logo to go back.
 
 **Finding your city:** the From box is a search field. Type any part of a city or country name (accents optional, so "malaga" finds Málaga), then use the arrow keys and Enter, or click a result.
 - On load, the camera flies in from space to your host city.
 - Routes to your top trips lift off the surface as arcs (flights higher, trains and buses low).
-- Markers are colored by price: teal = great value (good price for your budget and a good month to go), amber = okay, rose = pricey or off-season.
+- Markers are colored by score: teal = strong pick (7.5–10), gold = decent (5.5–7.4), rose = weaker or over budget. The top 12 picks get full markers; the rest are small dots.
 - Selecting a trip, from the list or the globe, flies the camera there Earth-zoom style and shows a summary card. **Open the plan** slides in the full plan.
 - Drag to spin, scroll to zoom, **Fit trips** to reframe, **Whole Earth** to pull back to space.
 

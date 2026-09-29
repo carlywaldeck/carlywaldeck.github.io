@@ -27,7 +27,7 @@
   --good: #0B8A7C; --good-soft: rgba(14, 159, 142, 0.12);
   --mid: #8F6A00;  --mid-soft: rgba(224, 176, 0, 0.16);
   --warn: #C73558; --warn-soft: rgba(224, 71, 107, 0.12);
-  --dot-good: #12A594; --dot-mid: #E0B000; --dot-warn: #E8527A;
+  --dot-good: #1A9E8C; --dot-mid: #D4A21A; --dot-warn: #D9667F;
   --s2: #D6E4F7; --s3: #9DBCE6; --s4: #4F82C9;
   --shadow: 0 10px 40px rgba(30, 60, 110, 0.12), 0 1px 3px rgba(30, 60, 110, 0.08);
   --display: "Unbounded", "Geist", system-ui, sans-serif;
@@ -75,13 +75,13 @@ select option, select optgroup { background: #FFFFFF; color: var(--ink); }
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%235D6B85' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='6' cy='6' r='4.5'/%3E%3Cpath d='m9.5 9.5 3.5 3.5'/%3E%3C/svg%3E");
   background-repeat: no-repeat; background-position: 10px 50%; }
 #home-input:focus { outline: none; border-color: var(--accent); background-color: #fff; box-shadow: 0 0 0 3px var(--accent-soft); }
-#home-list { position: absolute; z-index: 30; top: calc(100% + 6px); left: 0; width: 280px; max-height: 340px; overflow-y: auto; margin: 0; padding: 6px; list-style: none;
+#home-list, .city-list { position: absolute; z-index: 30; top: calc(100% + 6px); left: 0; width: 280px; max-height: 340px; overflow-y: auto; margin: 0; padding: 6px; list-style: none;
   background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); }
-#home-list li { display: flex; justify-content: space-between; gap: 10px; padding: 7px 10px; border-radius: 8px; cursor: pointer; }
-#home-list li small { color: var(--muted); font-size: 12px; white-space: nowrap; }
-#home-list li[aria-selected="true"] { background: var(--accent-soft); }
-#home-list li mark { background: none; color: var(--accent); font-weight: 600; }
-#home-list .empty { color: var(--muted); cursor: default; }
+#home-list li, .city-list li { display: flex; justify-content: space-between; gap: 10px; padding: 7px 10px; border-radius: 8px; cursor: pointer; }
+#home-list li small, .city-list li small { color: var(--muted); font-size: 12px; white-space: nowrap; }
+#home-list li[aria-selected="true"], .city-list li[aria-selected="true"] { background: var(--accent-soft); }
+#home-list li mark, .city-list li mark { background: none; color: var(--accent); font-weight: 600; }
+#home-list .empty, .city-list .empty { color: var(--muted); cursor: default; }
 @media (max-width: 760px) { #home-input { width: 100%; } #home-list { width: 100%; } }
 .field.budget input { width: 150px; accent-color: var(--accent); margin: 6px 0 4px; }
 .seg { display: flex; background: var(--soft); border: 1px solid var(--line); border-radius: 9px; padding: 2px; }
@@ -298,6 +298,82 @@ select option, select optgroup { background: #FFFFFF; color: var(--ink); }
 .spot-meta.value.mid i { background: var(--dot-mid); } .spot-meta.value.warn i { background: var(--dot-warn); }
 .field > span b { text-transform: none; letter-spacing: 0; font: 500 10px var(--sans); color: var(--accent); margin-left: 4px; }
 @media (max-width: 760px) { .interests-box .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 2px; } .interests-box .chip { flex-shrink: 0; } }
+
+/* ---------- Score ---------- */
+.score { display: inline-block; min-width: 34px; text-align: center; font: 600 12px/1.6 var(--mono); border-radius: 7px; padding: 0 6px; background: var(--good-soft); color: var(--good); }
+.score.mid { background: var(--mid-soft); color: var(--mid); } .score.warn { background: var(--warn-soft); color: var(--warn); }
+.score.big { font-size: 20px; line-height: 1.5; padding: 0 9px; border-radius: 9px; }
+.row-right { display: grid; justify-items: end; gap: 3px; }
+.spot-score { display: flex; align-items: center; gap: 10px; margin-top: 8px; font-size: 13px; color: var(--muted); }
+.spot-score b { color: var(--ink); font-weight: 600; }
+.bars { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 7px; }
+.bars li { display: grid; grid-template-columns: 110px 1fr; align-items: center; gap: 4px 10px; font-size: 13px; }
+.bars li i { height: 6px; border-radius: 3px; background: var(--soft); overflow: hidden; }
+.bars li b { display: block; height: 100%; border-radius: 3px; background: var(--accent); opacity: .75; }
+.bars li small { grid-column: 2; color: var(--muted); font-size: 12px; }
+.bars.mini { gap: 4px; margin-top: 6px; }
+.bars.mini li { grid-template-columns: 96px 1fr; font-size: 12px; color: var(--muted); }
+.bars.mini li i { height: 4px; }
+.spot-actions { display: flex; gap: 8px; align-items: center; margin-top: 12px; }
+.spot-actions .cta { margin-top: 0; flex: 1; }
+.ghost { border: 1px solid var(--line); background: none; border-radius: 11px; padding: 10px 12px; font-weight: 500; color: var(--ink); white-space: nowrap; }
+.ghost:hover { border-color: var(--hover-line); }
+.note { margin: 4px 0 0; font-size: 13px; color: var(--muted); }
+/* ---------- Been there + stars ---------- */
+.been-pop { right: calc(16px + min(400px, 34vw) + 16px); }
+.been-pop .city-search input { width: 100%; background: var(--soft); border: 1px solid var(--line); border-radius: 9px; padding: 8px 10px; margin-top: 10px; }
+.been-pop .city-list { width: 100%; }
+.been-items { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; max-height: 260px; overflow-y: auto; }
+.been-items li { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 9px; background: var(--soft); }
+.been-items li.note { background: none; padding: 0; }
+.bi-name { flex: 1; min-width: 0; display: grid; font-weight: 500; }
+.bi-name small { font-weight: 400; font-size: 12px; color: var(--muted); }
+.bi-x { border: 0; background: none; color: var(--muted); font-size: 18px; line-height: 1; padding: 0 4px; }
+.stars { display: inline-flex; }
+.stars button { border: 0; background: none; padding: 0 1px; font-size: 17px; line-height: 1; color: #D5D9E0; }
+.stars button[aria-pressed="true"] { color: #E5A800; }
+.stars button:hover, .stars button:hover ~ button { transform: none; }
+.rate-big .stars button { font-size: 30px; padding: 0 3px; }
+.rate-big { margin: 10px 0 6px; }
+.taste h3 { margin-bottom: 6px; }
+.taste .taste-h { margin-top: 16px; }
+.profile-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.profile-row label { display: grid; gap: 4px; font-size: 12px; color: var(--muted); }
+.profile-row select { width: 100%; }
+.taste b { color: var(--ink); font-weight: 600; }
+/* ---------- Landing ---------- */
+button.brand { border: 0; background: none; padding: 0; color: var(--ink); cursor: pointer; }
+.landing { position: fixed; inset: 0; z-index: 20; overflow-y: auto; background: linear-gradient(115deg, rgba(247,248,250,.97) 0%, rgba(247,248,250,.9) 45%, rgba(247,248,250,.55) 100%); backdrop-filter: blur(2px); }
+body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, body.landing-open .legend, body.landing-open .hud { visibility: hidden; }
+.landing-inner { min-height: 100%; max-width: 1180px; margin: 0 auto; padding: 56px 32px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 520px); gap: 56px; align-items: center; }
+.brand.big { font-size: 26px; }
+.landing-copy h1 { font: 600 clamp(32px, 4.4vw, 52px)/1.08 var(--display); letter-spacing: -0.035em; margin: 28px 0 16px; }
+.landing-copy p { font-size: 17px; color: var(--muted); max-width: 520px; margin: 0; }
+.lp-points { list-style: none; padding: 0; margin: 28px 0 0; display: grid; gap: 12px; max-width: 500px; }
+.lp-points li { padding-left: 22px; position: relative; color: var(--muted); }
+.lp-points li::before { content: ""; position: absolute; left: 0; top: .6em; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.lp-points b { color: var(--ink); font-weight: 600; }
+.landing-card { background: #fff; border: 1px solid var(--line); border-radius: 20px; box-shadow: var(--shadow); padding: 26px; display: grid; gap: 20px; }
+.lp-field { display: grid; gap: 8px; min-width: 0; }
+.lp-field > label, .lp-field > span { font-size: 14px; font-weight: 600; }
+.lp-field small { font-weight: 400; color: var(--muted); margin-left: 4px; }
+.lp-field b { font: 500 13px var(--mono); color: var(--accent); margin-left: 4px; }
+.lp-row { display: grid; grid-template-columns: 1fr 1.3fr; gap: 16px; }
+.landing-card select, .landing-card input[type=text] { width: 100%; font-size: 15px; padding: 9px 12px; border-radius: 10px; }
+.landing-card input[type=text] { background: var(--soft); border: 1px solid var(--line); }
+.landing-card input[type=text]:focus { outline: none; border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px var(--accent-soft); }
+.landing-card .city-list { width: 100%; }
+#lp-budget { width: 100%; accent-color: var(--accent); margin: 8px 0 0; }
+#lp-days .pick { width: 48px; padding: 7px 0; }
+#lp-interests .chip { font-size: 13px; }
+.lp-go { margin-top: 4px; padding: 14px; font-size: 16px; }
+@media (max-width: 860px) {
+  .landing-inner { grid-template-columns: 1fr; gap: 24px; padding: 28px 16px 40px; }
+  .landing-copy h1 { margin: 18px 0 10px; }
+  .lp-points { display: none; }
+  .lp-row { grid-template-columns: 1fr; }
+  .landing-card { padding: 18px; }
+}
 </style>
 </head>
 <body>
@@ -308,7 +384,7 @@ select option, select optgroup { background: #FFFFFF; color: var(--ink); }
 </div>
 
 <header class="topbar glass">
-  <div class="brand">weekender<span>.</span></div>
+  <button type="button" class="brand" id="brand" title="Back to the start">weekender<span>.</span></button>
   <div class="controls">
     <div class="field city-field"><span id="home-label">From</span>
       <div class="city-search">
@@ -327,17 +403,31 @@ select option, select optgroup { background: #FFFFFF; color: var(--ink); }
     </select></label>
   </div>
   <button type="button" class="bar-btn" id="settings-btn" aria-expanded="false">Settings</button>
+  <button type="button" class="bar-btn" id="been-btn" aria-expanded="false" aria-controls="been-pop">Been there<i id="been-count"></i></button>
   <button type="button" class="bar-btn" id="filters-btn" aria-expanded="false" aria-controls="filters">Transport<i id="filters-count"></i></button>
 </header>
+
+<div class="popover been-pop" id="been-pop" hidden>
+  <div>
+    <h3 id="been-label">Places I've been</h3>
+    <p class="note">They won't be suggested again. Rate them and your scores start to follow your taste.</p>
+    <div class="city-search">
+      <input id="been-input" type="text" role="combobox" aria-labelledby="been-label" aria-autocomplete="list" aria-expanded="false" aria-controls="been-list" autocomplete="off" spellcheck="false" placeholder="Add a city you've visited">
+      <ul id="been-list" class="city-list" role="listbox" aria-labelledby="been-label" hidden></ul>
+    </div>
+  </div>
+  <ul class="been-items" id="been-items"></ul>
+  <div class="taste" id="taste-box"></div>
+</div>
 
 <div class="popover" id="filters" hidden>
   <div><h3 id="modes-label">Getting there by</h3><div class="chips" id="modes" role="group" aria-labelledby="modes-label"></div></div>
 </div>
 
 <div class="legend" aria-hidden="true">
-  <span><i style="background:var(--dot-good)"></i>Great value (good price + good time)</span>
-  <span><i style="background:var(--dot-mid)"></i>Okay value</span>
-  <span><i style="background:var(--dot-warn)"></i>Pricey or off-season</span>
+  <span><i style="background:var(--dot-good)"></i>Strong pick (score 7.5–10)</span>
+  <span><i style="background:var(--dot-mid)"></i>Decent pick (5.5–7.4)</span>
+  <span><i style="background:var(--dot-warn)"></i>Weaker pick or over budget</span>
   <span><i class="l" style="border-color:#2F5BEA"></i>Selected route</span>
   <span><i class="l"></i>Train</span>
   <span><i class="l dot"></i>Bus</span>
@@ -370,6 +460,46 @@ select option, select optgroup { background: #FFFFFF; color: var(--ink); }
   <button type="button" id="zoom-fit">Fit trips</button>
   <button type="button" id="zoom-earth">Whole Earth</button>
 </div>
+
+
+<section class="landing" id="landing" aria-labelledby="lp-title">
+  <div class="landing-inner">
+    <div class="landing-copy">
+      <div class="brand big">weekender<span>.</span></div>
+      <h1 id="lp-title">Cheap trips from wherever you're studying.</h1>
+      <p>Tell us where you're based, your budget and what you're into. Weekender scores 100 cities and 500+ day trips and weekend escapes from 1 to 10 for you, then shows them on a globe.</p>
+      <ul class="lp-points">
+        <li><b>One score per trip</b> mixing price, timing, your interests and whether the trip length fits.</li>
+        <li><b>Places you've been</b> stop showing up, and your star ratings teach it your taste.</li>
+        <li><b>Change anything later</b> from the bar at the top of the globe.</li>
+      </ul>
+    </div>
+    <form class="landing-card" id="landing-form">
+      <div class="lp-field"><label id="lp-home-label" for="lp-home-input">Where are you based?</label>
+        <div class="city-search">
+          <input id="lp-home-input" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="lp-home-list" autocomplete="off" spellcheck="false" placeholder="Search a city">
+          <ul id="lp-home-list" class="city-list" role="listbox" aria-labelledby="lp-home-label" hidden></ul>
+        </div>
+      </div>
+      <div class="lp-row">
+        <div class="lp-field"><label for="lp-month">When?</label><select id="lp-month"></select></div>
+        <div class="lp-field"><label for="lp-budget">Budget per person <b id="lp-budget-out"></b></label>
+          <input id="lp-budget" type="range" min="50" max="1000" step="10"></div>
+      </div>
+      <div class="lp-field"><span id="lp-days-label">How many days? <small>pick any</small></span><div class="seg" id="lp-days" role="group" aria-labelledby="lp-days-label"></div></div>
+      <div class="lp-field"><span id="lp-int-label">What are you into? <small>pick a few</small></span><div class="chips" id="lp-interests" role="group" aria-labelledby="lp-int-label"></div></div>
+      <div class="lp-field"><span>A bit about you <small>optional, helps tailor your scores</small></span><div id="lp-profile"></div></div>
+      <div class="lp-field"><span id="lp-been-label">Places you've already been <small>optional</small></span>
+        <div class="city-search">
+          <input id="lp-been-input" type="text" role="combobox" aria-labelledby="lp-been-label" aria-autocomplete="list" aria-expanded="false" aria-controls="lp-been-list" autocomplete="off" spellcheck="false" placeholder="Add a city you've visited">
+          <ul id="lp-been-list" class="city-list" role="listbox" aria-labelledby="lp-been-label" hidden></ul>
+        </div>
+        <ul class="been-items" id="lp-been"></ul>
+      </div>
+      <button type="submit" class="cta lp-go">Show my trips →</button>
+    </form>
+  </div>
+</section>
 
 <aside class="drawer" id="drawer" hidden aria-label="Trip plan">
   <button type="button" class="x" data-act="close-drawer" aria-label="Close plan">×</button>
@@ -3161,7 +3291,8 @@ const state = {
   daysSet: new Set([3]), // trip lengths to show (any combination of 1–4)
   sort: "best", // or "cheap"
   currency: "EUR",
-  view: "list"  // or "map"
+  view: "list", // or "map"
+  profile: { age: "", with: "" } // optional, feeds the taste model's starting point
 };
 const expanded = new Set();       // trips whose plan is open
 const modeChoice = new Map();     // city id -> chosen transport mode
@@ -3295,15 +3426,34 @@ function estimateEscape(home, esc) {
 
 // ---------------------------------------------------------------- ranking
 
-// Best match = what you like + how good the month is + budget left over.
-// With interests picked, matching them is the biggest factor. Short trips lean more on price.
-function rankScore(interest, season, savings) {
-  if (!state.interests.size) {
-    return state.days <= 2 ? 0.35 * season + 0.65 * savings : 0.55 * season + 0.45 * savings;
-  }
-  return state.days <= 2
-    ? 0.5 * interest + 0.15 * season + 0.35 * savings
-    : 0.6 * interest + 0.2 * season + 0.2 * savings;
+// Every trip gets a score from 1 to 10, mixing:
+//   price     how much of your budget it leaves (over budget = 0)
+//   timing    how good the month is to go
+//   interests how well it matches what you picked (left out when you pick none)
+//   length    whether the trip length suits the distance (a far flight on a 1-day trip scores low)
+//   taste     what the model has learned from places you've rated (see "taste model" below)
+const SCORE_WEIGHTS = { interest: 0.35, price: 0.25, season: 0.2, length: 0.2 };
+const SCORE_WEIGHTS_NO_INTERESTS = { price: 0.35, season: 0.35, length: 0.3 };
+
+function priceScore(total) { return total > state.budget ? 0 : Math.max(0, Math.min(1, 1.15 - total / state.budget)); }
+
+// Best trip length for a trip, from how long it takes to get there (hours each way).
+function idealDays(hours, escape) {
+  if (escape) return escape.overnight ? 2 : 1;
+  return hours <= 1.5 ? 1.5 : hours <= 3.5 ? 2.5 : hours <= 6 ? 3 : 3.5;
+}
+function lengthScore(days, hours, escape) {
+  const off = Math.max(0, Math.abs(days - idealDays(hours, escape)) - 0.5);
+  const s = Math.max(0, Math.min(1, 1 - 0.4 * off));
+  return !escape && days === 1 ? s * 0.85 : s; // a whole city in one day is a rush
+}
+
+function scoreTrip(parts) {
+  const wts = parts.interest == null ? SCORE_WEIGHTS_NO_INTERESTS : SCORE_WEIGHTS;
+  const base = Object.entries(wts).reduce((s, [k, w]) => s + w * parts[k], 0);
+  const wT = tasteWeight();
+  const s = parts.taste == null || !wT ? base : (1 - wT) * base + wT * parts.taste;
+  return { score: s, score10: Math.round((1 + 9 * s) * 10) / 10 };
 }
 
 // Run a calculation as if one trip length were selected (most of the trip math depends on it).
@@ -3334,27 +3484,35 @@ function findTripsFor() {
   const wanted = [...state.interests];
   const trips = [];
   CITIES.forEach(dest => {
-    if (dest.id === home.id) return;
+    if (dest.id === home.id || been[dest.id]) return;
     const cost = estimateTrip(home, dest);
     if (!cost) return;
     const tripTags = new Set(dest.dayTrips.flatMap(d => d.tags));
     const matched = wanted.filter(i => dest.interests.includes(i));
     const viaDayTrip = wanted.filter(i => !dest.interests.includes(i) && tripTags.has(i));
-    const interestScore = wanted.length ? (matched.length + 0.6 * viaDayTrip.length) / wanted.length : 1;
-    const seasonScore = dest.season[state.month] / 5;
-    const savings = Math.max(0, Math.min(1, 1 - cost.total / state.budget));
-    const score = rankScore(interestScore, seasonScore, savings);
-    trips.push({ dest, cost, matched, viaDayTrip, score, fitsInterests: !wanted.length || matched.length + viaDayTrip.length > 0 });
+    const parts = {
+      price: priceScore(cost.total),
+      season: (dest.season[state.month] - 1) / 4,
+      interest: wanted.length ? (matched.length + 0.6 * viaDayTrip.length) / wanted.length : null,
+      length: lengthScore(state.days, cost.transport.hours, null),
+      taste: tasteFor(dest.id)
+    };
+    trips.push({ dest, cost, matched, viaDayTrip, parts, ...scoreTrip(parts), fitsInterests: !wanted.length || matched.length + viaDayTrip.length > 0 });
   });
   nearbyEscapes(home).forEach(esc => {
+    if (been[esc.id]) return;
     const cost = estimateEscape(home, esc);
     if (!cost) return;
     const dest = { id: esc.id, name: esc.name, country: `Near ${home.name}`, code: home.code, season: home.season, escape: esc };
     const matched = wanted.filter(i => esc.tags.includes(i));
-    const interestScore = wanted.length ? (matched.length + 0.25 * (wanted.length - matched.length)) / wanted.length : 1;
-    const savings = Math.max(0, Math.min(1, 1 - cost.total / state.budget));
-    const score = rankScore(interestScore, home.season[state.month] / 5, savings);
-    trips.push({ dest, cost, matched, viaDayTrip: [], score, fitsInterests: !wanted.length || matched.length > 0 });
+    const parts = {
+      price: priceScore(cost.total),
+      season: (home.season[state.month] - 1) / 4,
+      interest: wanted.length ? matched.length / wanted.length : null,
+      length: lengthScore(state.days, cost.transport.hours, esc),
+      taste: tasteFor(esc.id)
+    };
+    trips.push({ dest, cost, matched, viaDayTrip: [], parts, ...scoreTrip(parts), fitsInterests: !wanted.length || matched.length > 0 });
   });
   trips.sort(state.sort === "cheap" ? (a, b) => a.cost.total - b.cost.total : (a, b) => b.score - a.score);
   return {
@@ -4068,20 +4226,244 @@ function escapeDetails(home, dest, cost) {
     </div></div>`;
 }
 
+
+// ---------------------------------------------------------------- places you've been + taste model
+// Places you've been are saved in this browser only. Each is { r: rating 0-5 (0 = not rated), n: name }.
+// Keys are city ids ("lisbon") or escape ids ("florence-wkd-0").
+const STORE_KEY = "weekender:v1";
+const store = {
+  get() { try { return JSON.parse(localStorage.getItem(STORE_KEY) || "{}"); } catch { return {}; } },
+  set(patch) { try { localStorage.setItem(STORE_KEY, JSON.stringify({ ...store.get(), ...patch })); } catch { /* private mode or blocked */ } }
+};
+let been = store.get().been || {};
+function saveBeen() { store.set({ been }); trainTaste(); }
+
+// Look up what a been-key refers to: a city, or an escape near a home city.
+function beenPlace(id) {
+  const c = byId(id);
+  if (c) return { name: c.name, sub: c.country, city: c };
+  const m = id.match(/^([a-z]+)-(day|wkd)-(\d+)$/);
+  const home = m && byId(m[1]);
+  const e = home && (m[2] === "day" ? home.dayTrips : home.weekends)[Number(m[3])];
+  return e ? { name: e.name, sub: `Near ${home.name}`, escape: e, home } : null;
+}
+
+// ---- The taste model: ridge regression (a regularized linear model) trained in the browser.
+// Each place is described by 32 numbers: its 29 interest tags (a city's day trips count a little),
+// how expensive it is per day, and where it is (latitude and longitude). The model learns one
+// weight per number from your star ratings, then predicts how much you'd like every other place.
+// Ridge regularization keeps it from over-reacting when you've only rated a few places.
+const INTEREST_KEYS = Object.keys(INTERESTS);
+function profileOf(place) {
+  const tags = {};
+  if (place.city) {
+    const c = place.city;
+    [...c.dayTrips, ...c.weekends].forEach(e => e.tags.forEach(k => { tags[k] = 0.35; }));
+    c.interests.forEach(k => { tags[k] = 1; });
+    return { tags, lat: c.lat, lon: c.lon, cost: c.costs.hostel + c.costs.food + c.costs.transit + c.costs.activities };
+  }
+  const e = place.escape, h = place.home, pt = (PLACES[e.name] || [[h.lat, h.lon]])[0];
+  e.tags.forEach(k => { tags[k] = 1; });
+  return { tags, lat: pt[0], lon: pt[1], cost: h.costs.hostel + h.costs.food + h.costs.transit + h.costs.activities };
+}
+const rawFeatures = (pr) => [...INTEREST_KEYS.map(k => pr.tags[k] || 0), (pr.cost - 70) / 30, (pr.lat - 45) / 10, (pr.lon - 10) / 15];
+// Center every feature on the average city, so "has lots of tags" isn't mistaken for taste.
+let FEAT_MEAN = null;
+function features(place) {
+  if (!FEAT_MEAN) {
+    const all = CITIES.map(c => rawFeatures(profileOf({ city: c })));
+    FEAT_MEAN = all[0].map((_, j) => all.reduce((s, x) => s + x[j], 0) / all.length);
+  }
+  return rawFeatures(profileOf(place)).map((v, j) => v - FEAT_MEAN[j]);
+}
+
+// Solve (A) w = b by Gaussian elimination with partial pivoting.
+function solve(A, b) {
+  const n = b.length, M = A.map((row, i) => [...row, b[i]]);
+  for (let c = 0; c < n; c++) {
+    let piv = c;
+    for (let r = c + 1; r < n; r++) if (Math.abs(M[r][c]) > Math.abs(M[piv][c])) piv = r;
+    [M[c], M[piv]] = [M[piv], M[c]];
+    for (let r = 0; r < n; r++) {
+      if (r === c || !M[c][c]) continue;
+      const f = M[r][c] / M[c][c];
+      for (let k = c; k <= n; k++) M[r][k] -= f * M[c][k];
+    }
+  }
+  return M.map((row, i) => row[n] / (row[i] || 1));
+}
+
+// ---- Starting point ("prior") from what you told us: your interests and, optionally, your age
+// range and who you travel with. These are assumptions, not data: every star rating pulls the
+// model away from them toward what you actually liked. Nothing here leaves your browser.
+// Weights are per feature: interest keys, plus "cost" (negative = prefers cheaper places).
+const PROFILE_PRIORS = {
+  age: {
+    "18-21": { nightlife: 0.2, festivals: 0.15, beach: 0.1, music: 0.1, cost: -0.15 },
+    "22-25": { nightlife: 0.1, food: 0.05, hiking: 0.05, cost: -0.08 },
+    "26+":   { food: 0.12, wine: 0.15, spas: 0.1, villages: 0.08, nightlife: -0.05 }
+  },
+  with: {
+    solo:    { offbeat: 0.12, cafes: 0.1, hiking: 0.06, art: 0.05, cost: -0.1 },
+    friends: { nightlife: 0.15, beach: 0.1, festivals: 0.1, sports: 0.05 },
+    partner: { views: 0.15, villages: 0.12, food: 0.1, wine: 0.1, nightlife: -0.1 }
+  }
+};
+const PROFILE_LABELS = {
+  age: { "18-21": "18–21", "22-25": "22–25", "26+": "26+" },
+  with: { solo: "Solo", friends: "With friends", partner: "With a partner" }
+};
+function priorWeights() {
+  const w0 = Array(INTEREST_KEYS.length + 3).fill(0);
+  const idx = (k) => k === "cost" ? INTEREST_KEYS.length : INTEREST_KEYS.indexOf(k);
+  state.interests.forEach(k => { w0[idx(k)] += 0.25; });
+  for (const dim of ["age", "with"]) {
+    const pri = PROFILE_PRIORS[dim][state.profile[dim]];
+    if (pri) for (const [k, v] of Object.entries(pri)) w0[idx(k)] += v;
+  }
+  return w0;
+}
+const hasPrior = () => state.interests.size > 0 || !!state.profile.age || !!state.profile.with;
+
+// Training: ridge regression pulled toward the prior instead of toward zero,
+//   w = (XᵀX + λI)⁻¹ (Xᵀy + λ·w0)
+// With no ratings this is just the prior; each rating moves it toward your real taste.
+let TASTE = { n: 0, w: null, bias: 0, rows: [], v: 0 };
+function trainTaste() {
+  const rows = Object.entries(been)
+    .filter(([, b]) => b.r > 0)
+    .map(([id, b]) => { const pl = beenPlace(id); return pl ? { id, name: pl.name, r: b.r, x: features(pl), y: (b.r - 3) / 2 } : null; })
+    .filter(Boolean);
+  TASTE = { n: rows.length, w: null, bias: 0, rows, v: TASTE.v + 1 };
+  tasteCache.clear();
+  if (!rows.length && !hasPrior()) return;
+  const w0 = priorWeights(), d = w0.length, lambda = 1.5;
+  const yMean = rows.length ? rows.reduce((s, r) => s + r.y, 0) / rows.length : 0;
+  const A = Array.from({ length: d }, (_, i) => Array.from({ length: d }, (_, j) => (i === j ? lambda : 0)));
+  const b = w0.map(v => lambda * v);
+  for (const r of rows) for (let i = 0; i < d; i++) {
+    b[i] += r.x[i] * (r.y - yMean);
+    for (let j = 0; j < d; j++) A[i][j] += r.x[i] * r.x[j];
+  }
+  TASTE.w = solve(A, b);
+  TASTE.bias = yMean * rows.length / (rows.length + 2); // shrink toward "neutral" with few ratings
+}
+// How much the taste model counts toward the score: 10% from your profile alone, up to 30% with 4+ ratings.
+const tasteWeight = () => TASTE.w ? Math.min(0.3, 0.1 + 0.05 * TASTE.n) : 0;
+const tasteCache = new Map();
+function tasteFor(id) {
+  if (!TASTE.w) return null;
+  const key = TASTE.v + "|" + id;
+  if (tasteCache.has(key)) return tasteCache.get(key);
+  const pl = beenPlace(id);
+  if (!pl) return null;
+  const x = features(pl);
+  const y = TASTE.bias + x.reduce((s, v, i) => s + v * TASTE.w[i], 0);
+  const v = Math.max(0, Math.min(1, 0.5 + 0.5 * y));
+  tasteCache.set(key, v);
+  return v;
+}
+// A short "why": the rated place it's most similar to, or the interest that pushed it up most.
+function tasteReason(t) {
+  if (!TASTE.w) return "";
+  const pl = beenPlace(t.dest.id);
+  if (!pl) return "";
+  const x = features(pl), norm = (v) => Math.hypot(...v) || 1;
+  let best = null;
+  for (const r of TASTE.rows) {
+    const sim = x.reduce((s, v, i) => s + v * r.x[i], 0) / (norm(x) * norm(r.x));
+    if (!best || sim > best.sim) best = { ...r, sim };
+  }
+  if (best && best.sim > 0.45) return best.r >= 4 ? `similar to ${best.name}, which you rated ${best.r}★` : best.r <= 2 ? `similar to ${best.name}, which you rated ${best.r}★` : `a bit like ${best.name}`;
+  const tags = INTEREST_KEYS.map((k, i) => ({ k, c: (pl.city ? pl.city.interests : pl.escape.tags).includes(k) ? TASTE.w[i] : 0 })).sort((a, b) => b.c - a.c);
+  return tags[0].c > 0.05 ? `you tend to rate ${INTERESTS[tags[0].k].toLowerCase()} places highly` : "";
+}
+// What the model has learned, in words: the interests with the biggest positive and negative weights.
+function tasteSummary() {
+  if (!TASTE.w) return null;
+  const ws = INTEREST_KEYS.map((k, i) => ({ k, w: TASTE.w[i] })).sort((a, b) => b.w - a.w);
+  return { likes: ws.filter(x => x.w > 0.06).slice(0, 4).map(x => INTERESTS[x.k]),
+           dislikes: ws.filter(x => x.w < -0.06).slice(-3).reverse().map(x => INTERESTS[x.k]),
+           cheap: TASTE.w[INTEREST_KEYS.length] < -0.08, pricey: TASTE.w[INTEREST_KEYS.length] > 0.08 };
+}
+
+const starsHtml = (id, r, label) => `<span class="stars" role="group" aria-label="${label}">${[1, 2, 3, 4, 5].map(n =>
+  `<button type="button" data-act="rate" data-id="${id}" data-v="${n}" aria-label="${n} star${n > 1 ? "s" : ""}" aria-pressed="${n <= r}">★</button>`).join("")}</span>`;
+
+function beenListHtml() {
+  const ids = Object.keys(been);
+  if (!ids.length) return `<li class="note">Nothing yet. Add places above, or use “I've been here” on any trip.</li>`;
+  return ids.map(id => {
+    const pl = beenPlace(id); if (!pl) return "";
+    return `<li><span class="bi-name">${pl.name}<small>${pl.sub}</small></span>${starsHtml(id, been[id].r, `Rate ${pl.name}`)}
+      <button type="button" class="bi-x" data-act="unbeen" data-id="${id}" aria-label="Remove ${pl.name}">×</button></li>`;
+  }).join("");
+}
+const profileSelects = (pre) => `<div class="profile-row">
+  <label>Age <select data-profile="age" id="${pre}-age"><option value="">Rather not say</option>${Object.entries(PROFILE_LABELS.age).map(([k, l]) => `<option value="${k}">${l}</option>`).join("")}</select></label>
+  <label>Usually travel <select data-profile="with" id="${pre}-with"><option value="">Rather not say</option>${Object.entries(PROFILE_LABELS.with).map(([k, l]) => `<option value="${k}">${l}</option>`).join("")}</select></label>
+</div>`;
+function tasteHtml() {
+  const n = TASTE.n;
+  const about = `<h3>About you</h3>${profileSelects("pp")}`;
+  if (!TASTE.w) return `${about}<h3 class="taste-h">Your taste</h3><p class="note">Pick some interests, tell us a bit about you, or rate places you've been, and every score starts adapting to you.</p>`;
+  const s = tasteSummary();
+  const src = [state.interests.size ? "your interests" : "", state.profile.age || state.profile.with ? "your profile" : "", n ? `${n} rating${n > 1 ? "s" : ""}` : ""].filter(Boolean);
+  return `${about}<h3 class="taste-h">Your taste · from ${src.join(", ").replace(/, ([^,]*)$/, " and $1")}</h3>
+    <p class="note">${s.likes.length ? `${n ? "You rate" : "You'll probably like"} <b>${s.likes.join(", ")}</b> places${n ? " highly" : ""}.` : "No strong likes yet."}
+    ${s.dislikes.length ? ` Less so <b>${s.dislikes.join(", ")}</b>.` : ""}${s.cheap ? " You seem happiest somewhere cheap." : s.pricey ? " You don't mind pricier places." : ""}
+    This makes up ${Math.round(tasteWeight() * 100)}% of each score${n < 4 ? "; rating more places raises it to 30% and makes it more personal" : ""}.</p>`;
+}
+function renderBeen() {
+  const n = Object.keys(been).length;
+  $("#been-count").textContent = n ? String(n) : "";
+  $("#been-items").innerHTML = beenListHtml();
+  $("#taste-box").innerHTML = tasteHtml();
+  if ($("#lp-been")) $("#lp-been").innerHTML = beenListHtml();
+  document.querySelectorAll("select[data-profile]").forEach(s => { s.value = state.profile[s.dataset.profile] || ""; });
+}
+function markBeen(id, rating = 0) {
+  const pl = beenPlace(id);
+  if (!pl || id === state.home) return;
+  been[id] = { r: rating, n: pl.name };
+  saveBeen();
+}
+function renderRatingPrompt(spot) {
+  const pl = beenPlace(ui.rating);
+  spot.hidden = false; spot.classList.remove("with-img");
+  spot.innerHTML = `
+    <button type="button" class="x" data-act="rate-skip" aria-label="Close">×</button>
+    <span class="eyebrow">Added to places you've been</span>
+    <h2>How was ${pl ? pl.name : "it"}?</h2>
+    <p class="spot-meta">Your rating teaches Weekender what you like. It won't suggest this place again.</p>
+    <div class="rate-big">${starsHtml(ui.rating, (been[ui.rating] || {}).r || 0, "Your rating")}</div>
+    <button type="button" class="ghost" data-act="rate-skip">Skip rating</button>`;
+}
+
 // ---------------------------------------------------------------- trip helpers
 
 const isEscape = (t) => !!t.dest.escape;
 const tripKind = (t) => isEscape(t) ? (t.dest.escape.overnight && t.days === 2 ? "Weekend escape" : "Day trip") : t.dest.country;
 const daysLabel = () => { const l = [...state.daysSet].sort((a, b) => a - b); return l.length === 1 ? dayWord(l[0]) : `${l.join(", ")} days`; };
 
-// Color = overall value: half price (vs your budget), half how good the month is to go.
-function valueScore(t) {
-  const s = ((t.dest.season || current.home.season)[state.month] - 1) / 4;
-  const p = t.cost.total <= state.budget ? 1 - 0.6 * (t.cost.total / state.budget) : 0;
-  return 0.5 * p + 0.5 * s;
+// Color = the 1-10 score.
+const tone = (t) => t.over ? "warn" : t.score10 >= 7.5 ? "good" : t.score10 >= 5.5 ? "mid" : "warn";
+const TONE_TEXT = { good: "Strong pick", mid: "Decent pick", warn: "Weaker pick" };
+const PART_LABELS = { price: "Price", season: "Timing", interest: "Your interests", length: "Trip length", taste: "Your taste" };
+const scoreBadge = (t, cls = "") => `<span class="score ${tone(t)} ${cls}" title="Score ${t.score10} out of 10">${t.score10.toFixed(1)}</span>`;
+function partNote(t, k) {
+  const p = t.parts[k];
+  if (k === "price") return t.cost.total > state.budget ? "over your budget" : `leaves ${euro(state.budget - t.cost.total)} of ${euro(state.budget)}`;
+  if (k === "season") return season((t.dest.season || current.home.season)[state.month]).text.toLowerCase() + ` in ${MONTHS[state.month]}`;
+  if (k === "interest") { const n = (t.matched || []).length + (t.viaDayTrip || []).length; return `${n} of ${state.interests.size} matched`; }
+  if (k === "length") { const d = idealDays(t.cost.transport.hours, t.dest.escape); return p >= 0.95 ? `${dayWord(t.days)} suits the trip` : `best as ${d <= 1.5 ? "1–2 days" : d <= 2.5 ? "2–3 days" : d <= 3 ? "3 days" : "3–4 days"}`; }
+  if (k === "taste") return tasteReason(t) || "based on your ratings";
+  return "";
 }
-const tone = (t) => t.over ? "warn" : valueScore(t) >= 0.72 ? "good" : valueScore(t) >= 0.5 ? "mid" : "warn";
-const TONE_TEXT = { good: "Great value: good price and a good time to go", mid: "Okay value", warn: "Pricey for your budget or off-season" };
+function scoreBars(t, mini) {
+  const keys = ["price", "season", "interest", "length", "taste"].filter(k => t.parts[k] != null && (k !== "taste" || tasteWeight()));
+  return `<ul class="bars${mini ? " mini" : ""}">${keys.map(k => `<li><span>${PART_LABELS[k]}</span><i><b style="width:${Math.round(t.parts[k] * 100)}%"></b></i>${mini ? "" : `<small>${partNote(t, k)}</small>`}</li>`).join("")}</ul>`;
+}
 
 // Display order: for each trip length, nearby escapes first (1–2 days) then cities; trips that
 // don't match your interests come after all the matches; a little over budget comes last.
@@ -4108,7 +4490,7 @@ function tripPoints(t) {
 // ---------------------------------------------------------------- panel (trip list)
 
 let current = { home: null, trips: [] };
-const ui = { selected: null, hover: null, drawer: null };
+const ui = { selected: null, hover: null, drawer: null, rating: null };
 
 function renderPanel(result) {
   const { home, fits } = result;
@@ -4141,12 +4523,12 @@ function renderPanel(result) {
     <h3 class="group">${title}<span>${list.length}</span></h3>
     ${list.map(t => {
       const likes = [...(t.matched || []), ...(t.viaDayTrip || [])].map(m => INTERESTS[m]);
-      return `<button type="button" class="row ${tone(t)}${ui.selected === t.key ? " active" : ""}" data-id="${t.key}" title="${TONE_TEXT[tone(t)]}">
+      return `<button type="button" class="row ${tone(t)}${ui.selected === t.key ? " active" : ""}" data-id="${t.key}" title="${TONE_TEXT[tone(t)]}: ${t.score10}/10">
         <span class="thumb" data-wiki="${t.dest.name.replace(/"/g, "&quot;")}"><i class="dot"></i></span>
         <span class="row-main"><strong>${t.dest.name}</strong>
           <small>${multi ? `${dayWord(t.days)} · ` : ""}${tripKind(t)} · ${MODES[t.cost.transport.mode].label} ${hrs(t.cost.transport.hours)}</small>
           ${state.interests.size && likes.length ? `<small class="match">✓ ${likes.join(" · ")}</small>` : ""}</span>
-        <span class="row-price num">${euro(t.cost.total)}</span>
+        <span class="row-right">${scoreBadge(t)}<span class="row-price num">${euro(t.cost.total)}</span></span>
       </button>`;
     }).join("")}`).join("");
 }
@@ -4156,8 +4538,9 @@ function renderPanel(result) {
 function tripById(key) { return current.trips.find(t => t.key === key); }
 
 function renderSpot() {
-  const t = tripById(ui.selected);
   const spot = $("#spot");
+  if (ui.rating) { renderRatingPrompt(spot); return; }
+  const t = tripById(ui.selected);
   if (!t) { spot.hidden = true; return; }
   const s = season((t.dest.season || current.home.season)[state.month]);
   const left = state.budget - t.cost.total;
@@ -4174,9 +4557,13 @@ function renderSpot() {
       <span class="${left >= 0 ? "good" : "warn"}">${left >= 0 ? `${euro(left)} under budget` : `${euro(-left)} over`}</span></div>
     <p class="spot-meta">${MODES[t.cost.transport.mode].label} · ~${hrs(t.cost.transport.hours)} each way · ${dayWord(t.days)}
       · <span class="${s.tone}">${s.text.toLowerCase()} in ${MONTHS[state.month]}</span></p>
-    <p class="spot-meta value ${tone(t)}"><i></i>${TONE_TEXT[tone(t)]}</p>
+    <div class="spot-score">${scoreBadge(t, "big")}<span><b>${TONE_TEXT[tone(t)]}</b> · score out of 10</span></div>
+    ${scoreBars(t, true)}
     ${wx ? `<p class="spot-meta wx-line">${wx}</p>` : ""}
-    <button type="button" class="cta" data-act="open-plan" data-id="${t.key}">Open the plan</button>`;
+    <div class="spot-actions">
+      <button type="button" class="cta" data-act="open-plan" data-id="${t.key}">Open the plan</button>
+      <button type="button" class="ghost" data-act="been" data-id="${t.key}">I've been here</button>
+    </div>`;
 }
 
 function renderDrawer(fromLive) {
@@ -4202,8 +4589,9 @@ function drawDrawer(t) {
         ${w.page ? `<a class="more" href="${w.page}" target="_blank" rel="noopener">Read more on Wikipedia ↗</a>` : ""}</div>` : "";
   const live = `${weatherSection(t)}${holidaySection(t)}`;
   const body = isEscape(t)
-    ? `<p class="lede">${dest.escape.note}</p><div class="stack">${about}${live}${escapeDetails(home, dest, cost)}${sourcesNote()}</div>`
+    ? `<p class="lede">${dest.escape.note}</p><div class="stack">${scoreSection(t)}${about}${live}${escapeDetails(home, dest, cost)}${sourcesNote()}</div>`
     : `<div class="stack">
+        ${scoreSection(t)}
         ${costSection(cost)}
         ${transportSection(dest, cost)}
         ${itinerarySection(dest, cost)}
@@ -4232,6 +4620,12 @@ function drawDrawer(t) {
   if (!isEscape(t) && (cost.options || []).some(o => o.mode === "flight")) fetchLiveFare(home, dest);
 }
 
+function scoreSection(t) {
+  return `<div><h4>Score ${t.score10.toFixed(1)} / 10 · ${TONE_TEXT[tone(t)]}</h4>
+    <p class="note">A mix of price, timing${state.interests.size ? ", your interests" : ""}, whether ${dayWord(t.days)} suits the trip${tasteWeight() ? " and your ratings of places you've been" : ""}.</p>
+    ${scoreBars(t, false)}</div>`;
+}
+
 function select(id, { fly = true } = {}) {
   ui.selected = id;
   renderSpot();
@@ -4253,7 +4647,7 @@ const G = {
 };
 let projection, baseCtx, fxCtx, pathFast, pathDetail, fxPath, graticule;
 const reduceMotion = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-const TONE_COLORS = { good: "#12A594", mid: "#E0B000", warn: "#E8527A" };
+const TONE_COLORS = { good: "#1A9E8C", mid: "#D4A21A", warn: "#D9667F" };
 const LABEL_COLORS = { good: "#0B8A7C", mid: "#8F6A00", warn: "#C73558" };
 const globeDirty = () => { G.dirty = true; };
 
@@ -4349,7 +4743,7 @@ function drawStars() {
   const c = $("#stars"), ctx = c.getContext("2d"), { W, H } = G;
   ctx.setTransform(G.dpr, 0, 0, G.dpr, 0, 0);
   const bg = ctx.createLinearGradient(0, 0, 0, H);
-  bg.addColorStop(0, "#E6EEF9"); bg.addColorStop(1, "#F6F8FC");
+  bg.addColorStop(0, "#EEF0F4"); bg.addColorStop(1, "#F7F8FA");
   ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
   const lift = ctx.createRadialGradient(G.cx, G.cy, 0, G.cx, G.cy, Math.max(W, H) * 0.65);
   lift.addColorStop(0, "rgba(255,255,255,0.95)"); lift.addColorStop(1, "rgba(255,255,255,0)");
@@ -4398,6 +4792,13 @@ function frameTarget() {
   return { rot: [-center[0], -center[1]], scale };
 }
 
+function globeIntro() {
+  if (!G.ok) return;
+  G.fitKey = "";
+  if (G.pendingIntro && !reduceMotion) { const f = frameTarget(); flyTo(f.rot, f.scale, 2400); G.fitKey = globeKey(); }
+  else globeUpdate();
+  G.pendingIntro = false;
+}
 function fitGlobe(animate) {
   if (!G.ok || !current.home) return;
   const f = frameTarget();
@@ -4414,13 +4815,18 @@ function globeFlyToTrip(t) {
   flyTo([-center[0], -center[1]], (G.availR * 0.7) / Math.sin(Math.min(maxAng, 1.4)));
 }
 
+const globeKey = () => [state.home, [...state.daysSet].join(), state.month, state.budget, [...state.modes].join(), [...state.interests].join(), Object.keys(been).length].join("|");
 function globeUpdate() {
   if (!G.ok) return;
-  const key = [state.home, [...state.daysSet].join(), state.month, state.budget, [...state.modes].join(), [...state.interests].join()].join("|");
+  const key = globeKey();
   if (key !== G.fitKey) {
     const first = !G.fitKey;
     G.fitKey = key;
-    if (first && !reduceMotion) {
+    if (landingOpen()) {
+      const h = byId(state.home);
+      G.anim = null; G.rot = [-h.lon - 25, -Math.max(10, h.lat * 0.55)]; G.scale = globeFullScale() * 0.95;
+      G.pendingIntro = true;
+    } else if (first && !reduceMotion) {
       // Intro: start out in space, then fly in to the host city.
       const f = frameTarget();
       G.rot = [f.rot[0] + 70, -15]; G.scale = globeFullScale() * 0.75;
@@ -4456,36 +4862,36 @@ function drawBase() {
 
   // Soft shadow under the planet and a pale-blue atmosphere around it
   const shadow = ctx.createRadialGradient(cx, cy + r * 0.08, r * 0.9, cx, cy + r * 0.08, r * 1.15);
-  shadow.addColorStop(0, "rgba(40,70,130,0.16)"); shadow.addColorStop(1, "rgba(40,70,130,0)");
+  shadow.addColorStop(0, "rgba(40,50,70,0.12)"); shadow.addColorStop(1, "rgba(40,50,70,0)");
   ctx.fillStyle = shadow; ctx.beginPath(); ctx.arc(cx, cy + r * 0.08, r * 1.15, 0, 7); ctx.fill();
   const glow = ctx.createRadialGradient(cx, cy, r * 0.98, cx, cy, r * 1.14);
-  glow.addColorStop(0, "rgba(140,185,245,0.55)"); glow.addColorStop(1, "rgba(140,185,245,0)");
+  glow.addColorStop(0, "rgba(175,190,212,0.4)"); glow.addColorStop(1, "rgba(175,190,212,0)");
   ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(cx, cy, r * 1.14, 0, 7); ctx.fill();
 
   // Ocean: light blue, lit from the upper left
   const lx = cx - r * 0.4, ly = cy - r * 0.45;
   const ocean = ctx.createRadialGradient(lx, ly, r * 0.05, cx, cy, r);
-  ocean.addColorStop(0, "#EAF2FC"); ocean.addColorStop(0.6, "#CFE0F5"); ocean.addColorStop(1, "#AFC8EA");
+  ocean.addColorStop(0, "#E4E9EF"); ocean.addColorStop(0.6, "#D5DDE6"); ocean.addColorStop(1, "#C3CEDA");
   ctx.fillStyle = ocean; disc(); ctx.fill();
 
   ctx.beginPath(); pathFast(graticule);
-  ctx.strokeStyle = "rgba(40,80,150,0.07)"; ctx.lineWidth = 0.6; ctx.stroke();
+  ctx.strokeStyle = "rgba(70,80,100,0.05)"; ctx.lineWidth = 0.6; ctx.stroke();
 
   // Land: white with a gentle falloff, crisp coastlines, faint borders
   const landFill = ctx.createRadialGradient(lx, ly, r * 0.05, cx, cy, r);
-  landFill.addColorStop(0, "#FFFFFF"); landFill.addColorStop(0.65, "#F7F9FC"); landFill.addColorStop(1, "#E6ECF4");
+  landFill.addColorStop(0, "#FCFBF8"); landFill.addColorStop(0.65, "#F5F3EF"); landFill.addColorStop(1, "#E8E5DF");
   ctx.beginPath(); (moving ? pathFast : pathDetail)(moving ? GEO.land110 : GEO.land50);
   ctx.fillStyle = landFill; ctx.fill();
-  ctx.strokeStyle = "rgba(35,65,120,0.38)"; ctx.lineWidth = 0.7; ctx.stroke();
+  ctx.strokeStyle = "rgba(70,80,100,0.3)"; ctx.lineWidth = 0.7; ctx.stroke();
   if (!moving) {
     ctx.beginPath(); pathDetail(GEO.borders50);
-    ctx.strokeStyle = "rgba(35,65,120,0.13)"; ctx.lineWidth = 0.5; ctx.stroke();
+    ctx.strokeStyle = "rgba(70,80,100,0.12)"; ctx.lineWidth = 0.5; ctx.stroke();
   }
 
   // Every place in the app as a tiny dot, for texture
   if (!moving) {
     const L = cityLights(), zoom = Math.min(2, Math.max(1, r / globeFullScale()));
-    ctx.fillStyle = "rgba(35,65,120,0.22)";
+    ctx.fillStyle = "rgba(70,80,100,0.16)";
     ctx.beginPath();
     for (const p of L.small) if (visible(p)) { const [x, y] = projection(p); ctx.moveTo(x + 0.9 * zoom, y); ctx.arc(x, y, 0.9 * zoom, 0, 7); }
     for (const p of L.big) if (visible(p)) { const [x, y] = projection(p); ctx.moveTo(x + 1.5 * zoom, y); ctx.arc(x, y, 1.5 * zoom, 0, 7); }
@@ -4494,9 +4900,9 @@ function drawBase() {
 
   // Gentle shading toward the far side for depth, then a bright rim
   const shade = ctx.createRadialGradient(lx, ly, r * 0.35, cx, cy, r * 1.05);
-  shade.addColorStop(0, "rgba(30,60,120,0)"); shade.addColorStop(0.75, "rgba(30,60,120,0.06)"); shade.addColorStop(1, "rgba(30,60,120,0.2)");
+  shade.addColorStop(0, "rgba(40,50,70,0)"); shade.addColorStop(0.75, "rgba(40,50,70,0.04)"); shade.addColorStop(1, "rgba(40,50,70,0.14)");
   ctx.fillStyle = shade; disc(); ctx.fill();
-  ctx.strokeStyle = "rgba(255,255,255,0.9)"; ctx.lineWidth = 1.5; disc(); ctx.stroke();
+  ctx.strokeStyle = "rgba(255,255,255,0.8)"; ctx.lineWidth = 1.2; disc(); ctx.stroke();
 }
 
 // A great-circle arc lifted off the surface: orthographic projection of a point at
@@ -4560,7 +4966,7 @@ function drawFx() {
     ctx.globalAlpha = isFocus ? 0.18 : focusTrip ? 0.02 : 0.05;
     ctx.lineWidth = isFocus ? 8 : 5;
     arcs.forEach(a => strokeSegments(ctx, a));
-    ctx.globalAlpha = isFocus ? 1 : focusTrip ? 0.15 : 0.5;
+    ctx.globalAlpha = isFocus ? 1 : focusTrip ? 0.12 : 0.38;
     ctx.lineWidth = isFocus ? 2.2 : 1.1;
     arcs.forEach(a => strokeSegments(ctx, a));
     ctx.restore();
@@ -4580,9 +4986,15 @@ function drawFx() {
     const col = TONE_COLORS[tone(t)];
     pts.slice(0, -1).forEach(p => { if (visible(p)) { const [sx, sy] = projection(p);
       ctx.strokeStyle = col; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(sx, sy, 3, 0, 7); ctx.stroke(); } });
-    const r = isFocus ? 6 : i < 10 ? 4.2 : 3;
+    const top = i < 12 && !t.over && !t.other;
+    if (!top && !isFocus) {
+      ctx.fillStyle = col; ctx.globalAlpha = 0.45;
+      ctx.beginPath(); ctx.arc(x, y, 2.4, 0, 7); ctx.fill(); ctx.globalAlpha = 1;
+      G.markers.push({ id: t.key, x, y });
+      return;
+    }
+    const r = isFocus ? 6 : 4.4;
     ctx.save();
-    ctx.globalAlpha = (t.over || t.other) && !isFocus ? 0.5 : 1;
     const gr = r * (isFocus ? 4 : 3.2), halo = ctx.createRadialGradient(x, y, 0, x, y, gr);
     halo.addColorStop(0, col + "55"); halo.addColorStop(1, col + "00");
     ctx.fillStyle = halo; ctx.fillRect(x - gr, y - gr, gr * 2, gr * 2);
@@ -4670,6 +5082,12 @@ function update() {
   const hidden = Object.keys(MODES).length - state.modes.size;
   $("#filters-count").textContent = hidden ? `${state.modes.size}/4` : "";
   $("#int-count").textContent = state.interests.size ? `${state.interests.size} picked` : "Pick any to rank trips by what you like";
+  saveCriteria();
+  trainTaste();
+  // Keep the city boxes in sync (unless you're typing in one).
+  if (homeSearch && document.activeElement !== $("#home-input")) homeSearch.refresh();
+  if (lpHomeSearch && document.activeElement !== $("#lp-home-input")) lpHomeSearch.refresh();
+  renderBeen();
   const result = findTrips();
   current = { home: result.home, trips: orderedTrips(result) };
   if (ui.selected && !tripById(ui.selected)) ui.selected = null;
@@ -4680,29 +5098,26 @@ function update() {
   globeUpdate();
 }
 
-// ---- searchable "From" box (a combobox over all cities; the hidden <select> holds the value)
-const fold = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-function setupCitySearch() {
-  const input = $("#home-input"), list = $("#home-list");
-  const cities = [...CITIES].sort((a, b) => a.name.localeCompare(b.name));
+// ---- searchable city boxes (combobox over all cities). Used for "From", "Been there" and the landing page.
+const fold = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+function makeCitySearch(input, list, { text, pick, exclude = () => false, prefix }) {
   let matches = [], active = 0;
-  const current = () => byId(state.home).name;
-  input.value = current();
+  const all = () => [...CITIES].sort((a, b) => a.name.localeCompare(b.name)).filter(c => !exclude(c));
+  input.value = text();
   const esc = (s) => s.replace(/[&<>"]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]));
   const mark = (name, q) => {
     const i = q ? fold(name).indexOf(q) : -1;
     return i < 0 ? esc(name) : esc(name.slice(0, i)) + "<mark>" + esc(name.slice(i, i + q.length)) + "</mark>" + esc(name.slice(i + q.length));
   };
+  const rank = (x, f) => x.n.startsWith(f) ? 0 : x.n.includes(" " + f) ? 1 : x.n.includes(f) ? 2 : 3;
   function render(q) {
     const f = fold(q.trim());
-    matches = !f ? cities : cities
-      .map(c => ({ c, n: fold(c.name), k: fold(c.country) }))
-      .filter(x => x.n.includes(f) || x.k.includes(f))
-      .sort((a, b) => (a.n.startsWith(f) ? 0 : a.n.includes(" " + f) ? 1 : a.n.includes(f) ? 2 : 3) - (b.n.startsWith(f) ? 0 : b.n.includes(" " + f) ? 1 : b.n.includes(f) ? 2 : 3))
-      .map(x => x.c);
-    active = Math.max(0, matches.findIndex(c => c.id === state.home && !f));
+    const cities = all();
+    matches = !f ? cities : cities.map(c => ({ c, n: fold(c.name), k: fold(c.country) }))
+      .filter(x => x.n.includes(f) || x.k.includes(f)).sort((a, b) => rank(a, f) - rank(b, f)).map(x => x.c);
+    active = Math.max(0, matches.findIndex(c => c.name === text() && !f));
     list.innerHTML = matches.length
-      ? matches.map((c, i) => `<li role="option" id="ho-${c.id}" data-v="${c.id}" aria-selected="${i === active}">${mark(c.name, f)}<small>${esc(c.country)}</small></li>`).join("")
+      ? matches.map((c, i) => `<li role="option" id="${prefix}-${c.id}" data-v="${c.id}" aria-selected="${i === active}">${mark(c.name, f)}<small>${esc(c.country)}</small></li>`).join("")
       : `<li class="empty">No city matches “${esc(q)}”</li>`;
     open(true);
   }
@@ -4717,29 +5132,102 @@ function setupCitySearch() {
   function open(on) {
     list.hidden = !on;
     input.setAttribute("aria-expanded", String(on));
-    if (on && matches.length) { input.setAttribute("aria-activedescendant", "ho-" + matches[active].id); list.children[active].scrollIntoView({ block: "nearest" }); }
+    if (on && matches.length) { input.setAttribute("aria-activedescendant", `${prefix}-${matches[active].id}`); list.children[active].scrollIntoView({ block: "nearest" }); }
     if (!on) input.removeAttribute("aria-activedescendant");
   }
-  function choose(id) {
-    open(false);
-    if (id && id !== state.home) {
-      $("#home").value = id;
-      $("#home").dispatchEvent(new Event("change"));
-    }
-    input.value = current();
-  }
+  function choose(id) { open(false); if (id) pick(id); input.value = text(); }
   input.addEventListener("focus", () => { input.select(); render(""); });
   input.addEventListener("input", () => render(input.value));
   input.addEventListener("keydown", (e) => {
     if (e.key === "ArrowDown") { e.preventDefault(); list.hidden ? render("") : highlight(active + 1); }
     else if (e.key === "ArrowUp") { e.preventDefault(); highlight(active - 1); }
     else if (e.key === "Enter") { e.preventDefault(); if (matches[active]) { choose(matches[active].id); input.blur(); } }
-    else if (e.key === "Escape") { choose(null); input.blur(); }
+    else if (e.key === "Escape") { e.stopPropagation(); choose(null); input.blur(); }
   });
-  input.addEventListener("blur", () => { open(false); input.value = current(); });
+  input.addEventListener("blur", () => { open(false); input.value = text(); });
   list.addEventListener("mousedown", (e) => e.preventDefault()); // keep focus so the click lands
   list.addEventListener("click", (e) => { const li = e.target.closest("li[data-v]"); if (li) { choose(li.dataset.v); input.blur(); } });
-  $("#home").addEventListener("change", () => { input.value = current(); });
+  return { refresh: () => { input.value = text(); } };
+}
+
+function setHome(id) {
+  if (!id || id === state.home) return;
+  $("#home").value = id;
+  $("#home").dispatchEvent(new Event("change"));
+}
+let homeSearch, lpHomeSearch;
+function setupCitySearch() {
+  const homeName = () => byId(state.home).name;
+  homeSearch = makeCitySearch($("#home-input"), $("#home-list"), { text: homeName, pick: setHome, prefix: "ho" });
+  const addBeen = (id) => { markBeen(id, 0); update(); };
+  makeCitySearch($("#been-input"), $("#been-list"), { text: () => "", pick: addBeen, exclude: (c) => !!been[c.id] || c.id === state.home, prefix: "bn" });
+}
+
+
+// ---------------------------------------------------------------- landing page
+function landingOpen() { return document.body.classList.contains("landing-open"); }
+function renderLanding() {
+  $("#lp-month").value = String(state.month);
+  $("#lp-budget").value = String(state.budget);
+  $("#lp-budget-out").textContent = euro(state.budget);
+  document.querySelectorAll("#lp-days .pick").forEach(b => b.setAttribute("aria-pressed", state.daysSet.has(Number(b.dataset.v))));
+  document.querySelectorAll("#lp-interests .chip").forEach(b => b.setAttribute("aria-pressed", state.interests.has(b.dataset.v)));
+  if (lpHomeSearch) lpHomeSearch.refresh();
+}
+function openLanding() {
+  document.body.classList.add("landing-open");
+  $("#landing").hidden = false;
+  renderLanding();
+  $("#landing").scrollTop = 0;
+}
+function closeLanding(fly = true) {
+  document.body.classList.remove("landing-open");
+  $("#landing").hidden = true;
+  store.set({ started: true });
+  if (fly) globeIntro();
+  if (current.trips[0] && !ui.selected) select(current.trips[0].key, { fly: false });
+}
+function setupLanding() {
+  $("#lp-month").innerHTML = MONTHS_FULL.map((m, i) => `<option value="${i}">${m}</option>`).join("");
+  $("#lp-days").innerHTML = [1, 2, 3, 4].map(d => `<button type="button" class="pick" data-v="${d}" aria-label="${dayWord(d)}">${d}</button>`).join("");
+  $("#lp-interests").innerHTML = Object.entries(INTERESTS).map(([k, label]) => `<button type="button" class="chip" data-v="${k}">${label}</button>`).join("");
+  lpHomeSearch = makeCitySearch($("#lp-home-input"), $("#lp-home-list"), { text: () => byId(state.home).name, pick: setHome, prefix: "lh" });
+  makeCitySearch($("#lp-been-input"), $("#lp-been-list"), { text: () => "", pick: (id) => { markBeen(id, 0); update(); }, exclude: (c) => !!been[c.id] || c.id === state.home, prefix: "lb" });
+  $("#lp-profile").innerHTML = profileSelects("lp");
+  document.addEventListener("change", (e) => {
+    const s = e.target.closest("select[data-profile]");
+    if (s) { state.profile[s.dataset.profile] = s.value; update(); renderLanding(); }
+  });
+  const changed = () => { update(); renderLanding(); };
+  $("#lp-month").addEventListener("change", (e) => { state.month = Number(e.target.value); changed(); });
+  $("#lp-budget").addEventListener("input", (e) => { state.budget = Number(e.target.value); changed(); });
+  $("#lp-days").addEventListener("click", (e) => {
+    const b = e.target.closest(".pick"); if (!b) return;
+    const d = Number(b.dataset.v);
+    if (state.daysSet.has(d) && state.daysSet.size === 1) return;
+    toggle(state.daysSet, d); state.days = Math.min(...state.daysSet); changed();
+  });
+  $("#lp-interests").addEventListener("click", (e) => { const b = e.target.closest(".chip"); if (b) { toggle(state.interests, b.dataset.v); changed(); } });
+  $("#landing-form").addEventListener("submit", (e) => { e.preventDefault(); closeLanding(true); });
+  $("#brand").addEventListener("click", openLanding);
+}
+
+// Remember your search between visits (this browser only).
+function saveCriteria() {
+  store.set({ criteria: { home: state.home, budget: state.budget, days: [...state.daysSet], month: state.month, interests: [...state.interests], currency: state.currency, profile: state.profile } });
+}
+function loadCriteria() {
+  const c = store.get().criteria;
+  if (!c) return;
+  if (byId(c.home)) state.home = c.home;
+  if (c.budget >= 50 && c.budget <= 1000) state.budget = c.budget;
+  const days = (c.days || []).filter(d => d >= 1 && d <= 4);
+  if (days.length) { state.daysSet = new Set(days); state.days = Math.min(...days); }
+  if (c.month >= 0 && c.month <= 11) state.month = c.month;
+  state.interests = new Set((c.interests || []).filter(k => INTERESTS[k]));
+  if (["EUR", "USD", "GBP"].includes(c.currency)) state.currency = c.currency;
+  const pf = c.profile || {};
+  state.profile = { age: PROFILE_LABELS.age[pf.age] ? pf.age : "", with: PROFILE_LABELS.with[pf.with] ? pf.with : "" };
 }
 
 function toggle(set, value) { set.has(value) ? set.delete(value) : set.add(value); }
@@ -4778,6 +5266,14 @@ function setupControls() {
   $("#modes").addEventListener("click", (e) => { const b = e.target.closest(".chip"); if (b) { toggle(state.modes, b.dataset.v); changed(); } });
   document.querySelector(".sort").addEventListener("click", (e) => { const b = e.target.closest(".pick"); if (b) { state.sort = b.dataset.v; changed(); } });
 
+  // Places you've been: popover, "I've been here", star ratings
+  const bpop = $("#been-pop"), bbtn = $("#been-btn");
+  bbtn.addEventListener("click", () => { bpop.hidden = !bpop.hidden; bbtn.setAttribute("aria-expanded", String(!bpop.hidden)); if (!$("#filters").hidden) $("#filters-btn").click(); });
+  document.addEventListener("click", (e) => {
+    if (!bpop.hidden && !bpop.contains(e.target) && !bbtn.contains(e.target) && !e.target.closest("[data-act]")) { bpop.hidden = true; bbtn.setAttribute("aria-expanded", "false"); }
+  });
+  setupLanding();
+
   // Filters popover and (on phones) the settings toggle
   const pop = $("#filters"), btn = $("#filters-btn");
   btn.addEventListener("click", () => { pop.hidden = !pop.hidden; btn.setAttribute("aria-expanded", String(!pop.hidden)); });
@@ -4804,6 +5300,21 @@ function setupControls() {
     if (act === "close-drawer") { ui.drawer = null; renderDrawer(); }
     if (act === "mode") { modeChoice.set(id, v); update(); }
     if (act === "daytrip") { dayTripChoice.set(id, Number(v)); update(); }
+    if (act === "been") {
+      const t = tripById(id);
+      if (!t) return;
+      markBeen(t.dest.id, 0);
+      ui.rating = t.dest.id; ui.selected = null;
+      if (ui.drawer === id) { ui.drawer = null; renderDrawer(); }
+      update();
+    }
+    if (act === "rate") {
+      if (been[id]) { been[id].r = Number(v); saveBeen(); }
+      if (ui.rating === id) ui.rating = null;
+      update();
+    }
+    if (act === "rate-skip") { ui.rating = null; renderSpot(); }
+    if (act === "unbeen") { delete been[id]; saveBeen(); update(); }
   });
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
@@ -4814,12 +5325,14 @@ function setupControls() {
 }
 
 document.getElementById("city-count").textContent = CITIES.length;
+loadCriteria();
+trainTaste();
+document.body.classList.add("landing-open");
 setupControls();
 globeInit();
 loadRates();
 update();
-// Start with the top pick highlighted.
-if (current.trips[0]) select(current.trips[0].key, { fly: false });
+renderLanding();
 </script>
 </body>
 </html>
