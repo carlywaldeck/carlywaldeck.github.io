@@ -105,7 +105,7 @@ select option, select optgroup { background: #FFFFFF; color: var(--ink); }
 .group { display: flex; justify-content: space-between; font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding: 14px 10px 6px; }
 .group span { font-family: var(--mono); letter-spacing: 0; }
 .row {
-  width: 100%; display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; align-items: center; gap: 12px;
+  width: 100%; display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; align-items: center; gap: 12px;
   text-align: left; border: 0; background: none; border-radius: 10px; padding: 9px 10px; transition: background .12s;
 }
 .row:hover, .row.hover { background: var(--soft); }
@@ -152,7 +152,7 @@ select option, select optgroup { background: #FFFFFF; color: var(--ink); }
   animation: slide .35s cubic-bezier(.2, .8, .2, 1);
 }
 @keyframes slide { from { transform: translateX(40px); opacity: 0; } }
-.drawer .x { position: sticky; top: 0; float: right; margin: -8px -8px 0 0; z-index: 1; }
+.drawer .x { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 14px); right: 16px; z-index: 9; width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,.92); box-shadow: 0 2px 10px rgba(30,60,110,.18); color: var(--ink); font-size: 20px; }
 .dr-head { display: grid; gap: 6px; padding-bottom: 22px; border-bottom: 1px solid var(--line); margin-bottom: 26px; }
 .dr-head h2 { font: 600 34px/1.05 var(--display); letter-spacing: -0.04em; }
 .lede { color: var(--muted); margin: -8px 0 24px; }
@@ -239,6 +239,36 @@ select option, select optgroup { background: #FFFFFF; color: var(--ink); }
   .dr-head h2 { font-size: 26px; }
 }
 @media (prefers-reduced-motion: reduce) { .drawer { animation: none; } }
+/* ---------- Live data: photos, weather, holidays ---------- */
+.thumb { position: relative; width: 44px; height: 44px; border-radius: 10px; background: linear-gradient(135deg, #DCE8F6, #F7F3EA) center / cover no-repeat; }
+.thumb .dot { position: absolute; right: -2px; bottom: -2px; border: 2px solid #fff; width: 11px; height: 11px; }
+.spot.with-img { padding-top: 0; overflow: hidden; }
+.spot-img { height: 150px; margin: 0 -20px 12px; background: center / cover no-repeat; }
+.spot.with-img .x { color: #fff; background: rgba(19,35,63,.45); border-radius: 50%; width: 28px; height: 28px; font-size: 18px; top: 10px; }
+.wx-line { color: var(--ink); }
+.hero { margin: calc(-1 * (env(safe-area-inset-top, 0px) + 28px)) -28px 22px; position: relative; }
+.hero img { display: block; width: 100%; height: 260px; object-fit: cover; }
+.hero figcaption { position: absolute; right: 10px; bottom: 8px; font-size: 11px; color: #fff; background: rgba(19,35,63,.45); padding: 2px 8px; border-radius: 999px; }
+.hero figcaption a { color: #fff; }
+.local { font-size: 13px; color: var(--muted); }
+.about { margin: 0; color: var(--ink); }
+.more { display: inline-block; margin-top: 8px; font-size: 13px; color: var(--accent); text-decoration: none; font-weight: 500; }
+.wx-summary { margin: 0 0 14px; }
+.wx { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; }
+.wx-col { display: grid; justify-items: center; gap: 4px; padding: 6px 0; border-radius: 8px; }
+.wx-col.sel { background: var(--accent-soft); box-shadow: inset 0 0 0 1px rgba(255,106,77,.4); }
+.wx-temp { font: 500 11px var(--mono); }
+.wx-temp.hot { color: #D2462B; } .wx-temp.warm { color: #C77A0A; } .wx-temp.mild { color: #2F7A4F; } .wx-temp.cool { color: #3D6FB5; } .wx-temp.cold { color: #5B5FC7; }
+.wx-bar { height: 56px; width: 8px; background: var(--soft); border-radius: 4px; display: flex; align-items: flex-end; overflow: hidden; }
+.wx-bar i { display: block; width: 100%; background: linear-gradient(to top, #9DBCE6, #FF8A6B); border-radius: 4px; }
+.wx-rain { font: 400 11px var(--mono); color: #3D7CC9; }
+.wx-m { font: 400 11px var(--mono); color: var(--muted); }
+.hols { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.hols li { display: flex; gap: 12px; }
+.hols .num { color: var(--muted); min-width: 90px; font-size: 13px; }
+.sources { font-size: 12px; color: var(--muted); margin: 0; border-top: 1px solid var(--line); padding-top: 14px; }
+.sources a { color: var(--muted); }
+@media (max-width: 760px) { .hero { margin: calc(-1 * (env(safe-area-inset-top, 0px) + 20px)) -18px 18px; } .hero img { height: 200px; } .spot-img { height: 110px; margin: 0 -16px 10px; } }
 </style>
 </head>
 <body>
@@ -410,6 +440,9 @@ select option, select optgroup { background: #FFFFFF; color: var(--ink); }
     </label>
     <div class="field"><span id="days-label">Days</span><div class="seg" id="days" role="group" aria-labelledby="days-label"></div></div>
     <label class="field"><span>Month</span><select id="month"></select></label>
+    <label class="field"><span>Currency</span><select id="currency">
+      <option value="EUR">€ EUR</option><option value="USD">$ USD</option><option value="GBP">£ GBP</option>
+    </select></label>
   </div>
   <button type="button" class="bar-btn" id="settings-btn" aria-expanded="false">Settings</button>
   <button type="button" class="bar-btn" id="filters-btn" aria-expanded="false" aria-controls="filters">Filters<i id="filters-count"></i></button>
@@ -2666,6 +2699,7 @@ const state = {
   interests: new Set(["food", "history"]),
   modes: new Set(Object.keys(MODES)),
   sort: "best", // or "cheap"
+  currency: "EUR",
   view: "list"  // or "map"
 };
 const expanded = new Set();       // trips whose plan is open
@@ -2675,7 +2709,7 @@ let showAll = false;
 
 const $ = (sel) => document.querySelector(sel);
 const byId = (id) => CITIES.find(c => c.id === id);
-const euro = (n) => "€" + Math.round(n).toLocaleString("en-US");
+const euro = (n) => money(n); // prices are stored in EUR and shown in the chosen currency
 const hrs = (h) => h < 1 ? "<1h" : `${Math.round(h * 2) / 2}h`.replace(".5h", "½h");
 
 // ---------------------------------------------------------------- transport
@@ -3031,6 +3065,342 @@ function escapePlan(home, esc, cost) {
 }
 
 
+// ---------------------------------------------------------------- live data (free, keyless APIs)
+// Photos and summaries: Wikipedia REST API. Weather: Open-Meteo historical archive (ERA5).
+// Public holidays: Nager.Date. Exchange rates: ECB via Frankfurter, with ExchangeRate-API for
+// currencies the ECB doesn't publish. Everything is cached in the browser and optional: if a
+// service is unreachable (or blocked, as in some previews), the app keeps its built-in estimates.
+
+const CACHE_KEY = "weekender-live-v1";
+let liveCache = {};
+try { liveCache = JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch { liveCache = {}; }
+let saveTimer = null;
+function saveLiveCache() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => { try { localStorage.setItem(CACHE_KEY, JSON.stringify(liveCache)); } catch { /* storage full or blocked */ } }, 400);
+}
+const inflight = new Map();
+const failedAt = new Map(); // key -> time of last failure, so a down service isn't retried in a loop
+const liveStatus = { ok: 0, failed: 0 };
+
+// Cached value right now (or null), without waiting.
+function peek(key) { const hit = liveCache[key]; return hit ? hit.v : null; }
+
+// Fetch once, cache for ttlDays, fall back to a stale copy if the service fails.
+function cachedLoad(key, ttlDays, loader) {
+  const hit = liveCache[key];
+  if (hit && Date.now() - hit.t < ttlDays * 864e5) return Promise.resolve(hit.v);
+  if (inflight.has(key)) return inflight.get(key);
+  if (Date.now() - (failedAt.get(key) || 0) < 5 * 60e3) return Promise.resolve(hit ? hit.v : null);
+  const p = (async () => {
+    try {
+      const v = await loader();
+      liveCache[key] = { t: Date.now(), v };
+      saveLiveCache();
+      liveStatus.ok++;
+      return v;
+    } catch {
+      liveStatus.failed++;
+      failedAt.set(key, Date.now());
+      return hit ? hit.v : null;
+    } finally {
+      inflight.delete(key);
+      scheduleLiveRender();
+    }
+  })();
+  inflight.set(key, p);
+  return p;
+}
+
+async function getJSON(url, { allowEmpty = false } = {}) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 8000);
+  try {
+    const r = await fetch(url, { signal: ctrl.signal });
+    if (allowEmpty && (r.status === 204 || r.status === 404)) return null;
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    return await r.json();
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+let liveRenderQueued = false;
+function scheduleLiveRender() {
+  if (liveRenderQueued) return;
+  liveRenderQueued = true;
+  requestAnimationFrame(() => { liveRenderQueued = false; renderLive(); });
+}
+
+// ---- Wikipedia: photo + short summary
+
+// Article titles where the place name alone would be ambiguous or not an article.
+const WIKI_TITLES = {
+  "Split": "Split, Croatia", "Fez": "Fez, Morocco", "Faro (Algarve)": "Faro, Portugal", "Funchal (Madeira)": "Funchal",
+  "Ponta Delgada (Azores)": "Ponta Delgada", "Chania (Crete)": "Chania", "Cagliari (Sardinia)": "Cagliari", "Marrakech": "Marrakesh",
+  "Córdoba": "Córdoba, Spain", "Córdoba overnight": "Córdoba, Spain", "Toledo": "Toledo, Spain", "Toledo overnight": "Toledo, Spain",
+  "Cuenca": "Cuenca, Spain", "Cádiz & Jerez": "Jerez de la Frontera", "Ronda & Setenil": "Setenil de las Bodegas",
+  "Montserrat": "Montserrat (mountain)", "Girona & Tossa de Mar": "Tossa de Mar", "Vall de Núria": "Núria",
+  "Arrábida": "Arrábida Natural Park", "Óbidos & Nazaré": "Óbidos, Portugal", "Douro Valley": "Alto Douro Wine Region",
+  "Douro Valley overnight": "Alto Douro Wine Region", "Aveiro": "Aveiro, Portugal", "Braga & Guimarães": "Guimarães",
+  "Peneda-Gerês": "Peneda-Gerês National Park", "Versailles": "Palace of Versailles", "Rouen & Étretat": "Étretat",
+  "Loire castles": "Châteaux of the Loire Valley", "Reims & Épernay": "Épernay", "Windsor": "Windsor Castle",
+  "Bath & Bristol": "Bath, Somerset", "Seven Sisters & Brighton": "Seven Sisters, Sussex", "Texel island": "Texel",
+  "Rotterdam & Delft": "Delft", "Sachsenhausen": "Sachsenhausen concentration camp", "Karlštejn": "Karlštejn Castle",
+  "Wachau Valley": "Wachau", "Wachau: Melk & Dürnstein": "Melk Abbey", "Semmering": "Semmering railway",
+  "Auschwitz-Birkenau": "Auschwitz concentration camp", "Ojców valley": "Ojców National Park", "Tivoli": "Tivoli, Lazio",
+  "Orvieto & Civita": "Civita di Bagnoregio", "Sperlonga & Gaeta": "Sperlonga", "Hydra": "Hydra (island)",
+  "Albufera": "Albufera (Valencia)", "Albufera & El Palmar": "Albufera (Valencia)", "Sierra Nevada": "Sierra Nevada (Spain)",
+  "Las Alpujarras": "Alpujarras", "Pasaia coastal hike": "Pasaia", "Villefranche & Èze": "Villefranche-sur-Mer",
+  "Menton & Ventimiglia": "Menton", "Gorges du Verdon": "Verdon Gorge", "Calanques": "Calanques National Park",
+  "Calanques & Cassis": "Calanques National Park", "Avignon & Pont du Gard": "Pont du Gard", "Luberon villages": "Luberon",
+  "Beaujolais villages": "Beaujolais", "Highlands": "Scottish Highlands", "Glencoe": "Glen Coe", "Wicklow & Glendalough": "Glendalough",
+  "Dinant & the Ardennes": "Dinant", "Kronborg Castle": "Kronborg", "Louisiana Museum": "Louisiana Museum of Modern Art",
+  "Helsingør & Louisiana": "Kronborg", "Archipelago": "Stockholm archipelago", "Neuschwanstein": "Neuschwanstein Castle",
+  "Füssen & Neuschwanstein": "Neuschwanstein Castle", "Garmisch & Partnachklamm": "Partnach Gorge", "Dachau": "Dachau concentration camp",
+  "Tegernsee": "Tegernsee (lake)", "Cortina (Dolomites)": "Cortina d'Ampezzo", "Lido": "Lido di Venezia", "Vesuvius": "Mount Vesuvius",
+  "Mljet island": "Mljet", "Krka Waterfalls": "Krka National Park", "Krka & Šibenik": "Krka National Park", "Soča Valley": "Soča",
+  "Plitvice Lakes": "Plitvice Lakes National Park", "Kampinos Forest": "Kampinos National Park", "Malbork & Toruń": "Malbork Castle",
+  "Brașov & Bran Castle": "Bran Castle", "Brașov & Bran": "Bran Castle", "Sinaia & Peleș Castle": "Peleș Castle",
+  "Rila Monastery & Seven Lakes": "Rila Monastery", "Bosphorus to Anadolu Kavağı": "Anadolu Kavağı", "Gozo & Comino": "Gozo",
+  "Blue Grotto": "Blue Grotto (Malta)", "Sóller & Deià": "Sóller", "East-coast coves": "Santanyí", "Atlas Mountains & Imlil": "Imlil",
+  "Imlil & the Atlas": "Imlil", "Argan cooperatives": "Argan oil", "Taghazout surf weekend": "Taghazout", "Meknes & Volubilis": "Volubilis",
+  "Asilah & Larache": "Asilah", "Sidi Bou Said & Carthage": "Sidi Bou Said", "Kairouan & El Jem": "El Jem", "Petra & Wadi Rum": "Wadi Rum",
+  "Dead Sea & Wadi Mujib": "Dead Sea", "Kazbegi": "Stepantsminda", "Kakheti wine country": "Kakheti", "Blue Lagoon, Akamas": "Akamas",
+  "Latchi & Akamas": "Latchi", "Troodos villages": "Troodos Mountains", "Masca & Los Gigantes": "Masca", "Maspalomas Dunes": "Maspalomas",
+  "Maspalomas & Mogán": "Maspalomas", "Tejeda & Roque Nublo": "Roque Nublo", "Pico do Arieiro to Pico Ruivo": "Pico Ruivo",
+  "Porto Moniz & Seixal": "Porto Moniz", "Santana & Pico Ruivo": "Santana, Madeira", "Porto Santo": "Porto Santo Island",
+  "Sete Cidades": "Lagoa das Sete Cidades", "Lagos & Ponta da Piedade": "Ponta da Piedade", "Lagos": "Lagos, Portugal",
+  "Benagil Caves": "Benagil", "San Juan de Gaztelugatxe": "Gaztelugatxe", "Mundaka & Gaztelugatxe": "Gaztelugatxe", "Gernika": "Guernica",
+  "Rioja wine towns": "Haro, La Rioja", "North Ibiza": "Portinatx", "Sant Antoni": "Sant Antoni de Portmany", "Trapani & Erice": "Erice",
+  "Polignano & Monopoli": "Polignano a Mare", "Alberobello & Matera": "Alberobello", "Lecce & Salento": "Lecce", "Nora": "Nora (Sardinia)",
+  "Halkidiki": "Chalkidiki", "Samaria Gorge": "Samariá Gorge", "Samaria Gorge & Sfakia": "Samariá Gorge", "Balos Lagoon": "Balos",
+  "Elafonissi": "Elafonisi", "Canal d'Amour": "Sidari", "Achilleion Palace": "Achilleion (Corfu)", "Trakai Castle": "Trakai Island Castle",
+  "Trakai & Kaunas": "Trakai Island Castle", "Turda Salt Mine": "Salina Turda", "Dune du Pilat": "Dune of Pilat",
+  "Arcachon & Dune du Pilat": "Dune of Pilat", "Brühl palaces": "Augustusburg and Falkenlust Palaces, Brühl", "Rhine Valley": "Rhine Gorge",
+  "Cochem (Mosel)": "Cochem", "Golden Circle": "Golden Circle (Iceland)", "South Coast": "Skógafoss", "Reykjanes": "Reykjanes Peninsula",
+  "Lucerne & Rigi": "Lucerne", "Berchtesgaden & Königssee": "Königssee", "Verona & Lake Garda": "Verona", "Padua & Vicenza": "Padua",
+  "Bergamo & Lake Iseo": "Bergamo", "Ravenna & Rimini": "Ravenna", "Parma & Modena": "Parma", "Makarska & Biokovo": "Makarska",
+  "Lake Bled & Bohinj": "Lake Bled", "Sigulda & Cēsis": "Sigulda", "Mostar & Blagaj": "Mostar", "Delphi & Arachova": "Delphi",
+  "Nafplio & Mycenae": "Nafplio", "Siena & Val d'Orcia": "Siena", "Pisa & Lucca": "Pisa", "Uppsala & Sigtuna": "Uppsala",
+  "Segovia & La Granja": "Segovia", "Tarragona & Reus": "Tarragona", "Sintra & Cascais": "Sintra", "Ghent & Bruges": "Ghent",
+  "Hondarribia & Hendaye": "Hondarribia", "Getaria & Zumaia": "Getaria", "Caminito del Rey & El Chorro": "Caminito del Rey",
+  "Nerja & Frigiliana": "Nerja", "Xàtiva & Bocairent": "Xàtiva", "Hammamet & Nabeul": "Hammamet", "Tavira & Cacela Velha": "Tavira",
+  "Lübeck & Travemünde": "Lübeck", "Spreewald overnight": "Spreewald", "Bratislava overnight": "Bratislava", "Utö": "Utö, Sweden",
+  "Paradise Valley": "Paradise Valley, Morocco", "Chia": "Chia, Sardinia", "Tara National Park": "Tara National Park (Serbia)"
+};
+
+function wikiTitle(name) {
+  if (WIKI_TITLES[name]) return WIKI_TITLES[name];
+  return name.replace(/ overnight$/, "").replace(/ \(.*\)$/, "").split(" & ")[0].trim();
+}
+
+// Wikimedia thumbnails: ".../thumb/a/ab/File.jpg/320px-File.jpg" -> any standard width.
+const thumbAt = (src, w) => src && /\/\d+px-/.test(src) ? src.replace(/\/\d+px-/, `/${w}px-`) : src;
+
+function wikiInfo(name) {
+  const title = wikiTitle(name);
+  const key = "wiki:" + title;
+  const now = peek(key);
+  if (!liveCache[key] || Date.now() - liveCache[key].t > 30 * 864e5) {
+    cachedLoad(key, 30, async () => {
+      const d = await getJSON(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title.replace(/ /g, "_"))}`);
+      if (!d || d.type === "disambiguation") return { none: true };
+      const thumb = d.thumbnail && d.thumbnail.source;
+      const file = thumb ? decodeURIComponent((thumb.split("/thumb/")[1] || "").split("/")[2] || "") : "";
+      return {
+        title: d.title,
+        extract: d.extract || "",
+        thumb,
+        page: d.content_urls && d.content_urls.desktop && d.content_urls.desktop.page,
+        file
+      };
+    });
+  }
+  return now && !now.none ? now : null;
+}
+
+// ---- Open-Meteo: typical weather by month (averages of 2019–2024 daily records)
+
+function placeLatLon(t) {
+  if (t.dest.escape) { const p = (PLACES[t.dest.name] || [])[0]; return p ? { lat: p[0], lon: p[1] } : null; }
+  const c = byId(t.dest.id);
+  return c ? { lat: c.lat, lon: c.lon } : null;
+}
+
+function climateAt(lat, lon) {
+  const key = `clim:${lat.toFixed(2)},${lon.toFixed(2)}`;
+  if (!liveCache[key]) {
+    cachedLoad(key, 180, async () => {
+      const d = await getJSON(`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}` +
+        `&start_date=2019-01-01&end_date=2024-12-31&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,sunshine_duration&timezone=auto`);
+      const days = d.daily, sums = Array.from({ length: 12 }, () => ({ n: 0, hi: 0, lo: 0, wet: 0, sun: 0 }));
+      days.time.forEach((date, i) => {
+        const m = Number(date.slice(5, 7)) - 1, s = sums[m];
+        if (days.temperature_2m_max[i] == null) return;
+        s.n++; s.hi += days.temperature_2m_max[i]; s.lo += days.temperature_2m_min[i];
+        if ((days.precipitation_sum[i] || 0) >= 1) s.wet++;
+        s.sun += (days.sunshine_duration[i] || 0) / 3600;
+      });
+      const years = 6;
+      return {
+        hi: sums.map(s => Math.round(s.hi / s.n)), lo: sums.map(s => Math.round(s.lo / s.n)),
+        wet: sums.map(s => Math.round(s.wet / years)), sun: sums.map(s => Math.round(s.sun / s.n * 10) / 10)
+      };
+    });
+  }
+  return peek(key);
+}
+
+function tripClimate(t) { const p = placeLatLon(t); return p ? climateAt(p.lat, p.lon) : null; }
+
+// ---- Nager.Date: public holidays
+
+const COUNTRY_CODES = {
+  "Spain": "ES", "Portugal": "PT", "France": "FR", "UK": "GB", "Netherlands": "NL", "Germany": "DE", "Czechia": "CZ", "Austria": "AT",
+  "Hungary": "HU", "Poland": "PL", "Italy": "IT", "Greece": "GR", "Ireland": "IE", "Belgium": "BE", "Denmark": "DK", "Sweden": "SE",
+  "Switzerland": "CH", "Croatia": "HR", "Slovenia": "SI", "Estonia": "EE", "Latvia": "LV", "Lithuania": "LT", "Türkiye": "TR",
+  "Bulgaria": "BG", "Romania": "RO", "Serbia": "RS", "Malta": "MT", "Morocco": "MA", "Tunisia": "TN", "Jordan": "JO", "Georgia": "GE",
+  "Cyprus": "CY", "Albania": "AL", "Bosnia & Herzegovina": "BA", "Iceland": "IS"
+};
+const tripCountry = (t) => t.dest.escape ? current.home.country : t.dest.country;
+
+function holidaysIn(country, year) {
+  const code = COUNTRY_CODES[country];
+  if (!code) return null;
+  const key = `hol:${code}:${year}`;
+  if (!liveCache[key]) {
+    cachedLoad(key, 30, async () => {
+      const d = await getJSON(`https://date.nager.at/api/v3/PublicHolidays/${year}/${code}`, { allowEmpty: true });
+      return (d || []).filter(h => h.global !== false).map(h => ({ date: h.date, name: h.name }));
+    });
+  }
+  return peek(key);
+}
+
+// ---- Exchange rates
+
+const CURRENCIES = { EUR: "€", USD: "$", GBP: "£" };
+const LOCAL_CURRENCY = {
+  "UK": "GBP", "Czechia": "CZK", "Hungary": "HUF", "Poland": "PLN", "Sweden": "SEK", "Denmark": "DKK", "Switzerland": "CHF",
+  "Türkiye": "TRY", "Romania": "RON", "Serbia": "RSD", "Morocco": "MAD", "Tunisia": "TND", "Jordan": "JOD", "Georgia": "GEL",
+  "Albania": "ALL", "Bosnia & Herzegovina": "BAM", "Iceland": "ISK"
+};
+// Approximate fallback rates (EUR -> X), used only until live rates load.
+let rates = { EUR: 1, USD: 1.16, GBP: 0.86, CZK: 24.5, HUF: 395, PLN: 4.27, SEK: 11, DKK: 7.46, CHF: 0.94, TRY: 47, RON: 5.08,
+  RSD: 117, MAD: 10.6, TND: 3.4, JOD: 0.82, GEL: 3.15, ALL: 97, BAM: 1.956, ISK: 143 };
+let ratesLive = null; // { date, source } once live rates arrive
+
+function loadRates() {
+  const v = peek("rates");
+  if (v) applyRates(v);
+  cachedLoad("rates", 0.5, async () => {
+    const out = {}; const sources = []; let date = null;
+    try { const f = await getJSON("https://api.frankfurter.dev/v1/latest?base=EUR"); Object.assign(out, f.rates); date = f.date; sources.push("ECB via Frankfurter"); } catch { /* try the other source */ }
+    try {
+      const e = await getJSON("https://open.er-api.com/v6/latest/EUR");
+      if (e && e.rates) { for (const [k, r] of Object.entries(e.rates)) if (!(k in out)) out[k] = r; sources.push("ExchangeRate-API"); date = date || (e.time_last_update_utc || "").slice(5, 16); }
+    } catch { /* keep what we have */ }
+    if (!Object.keys(out).length) throw new Error("no rates");
+    return { rates: out, date, sources };
+  }).then(v2 => { if (v2) { applyRates(v2); update(); } });
+}
+function applyRates(v) { rates = { ...rates, ...v.rates, EUR: 1 }; ratesLive = { date: v.date, source: v.sources.join(" + ") }; }
+
+function money(eur, cur = state.currency) {
+  const v = eur * (rates[cur] || 1);
+  const sym = CURRENCIES[cur];
+  return sym ? sym + Math.round(v).toLocaleString("en-US") : `${Math.round(v).toLocaleString("en-US")} ${cur}`;
+}
+
+// ---- Rendering helpers for live data
+
+function renderLive() {
+  // Update row thumbnails in place, and the open card/drawer.
+  document.querySelectorAll(".row .thumb[data-wiki]").forEach(el => {
+    if (el.dataset.loaded) return;
+    const w = peek("wiki:" + wikiTitle(el.dataset.wiki));
+    if (w && w.thumb) { el.style.backgroundImage = `url("${thumbAt(w.thumb, 120)}")`; el.dataset.loaded = "1"; el.classList.add("has-img"); }
+  });
+  if (ui.selected) renderSpot();
+  if (ui.drawer) renderDrawer(true);
+}
+
+let thumbObserver = null;
+function observeThumbs() {
+  const els = document.querySelectorAll(".row .thumb[data-wiki]");
+  if (!("IntersectionObserver" in window)) { els.forEach(el => wikiInfo(el.dataset.wiki)); renderLive(); return; }
+  if (!thumbObserver) {
+    thumbObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { wikiInfo(e.target.dataset.wiki); thumbObserver.unobserve(e.target); } });
+      renderLive();
+    }, { root: $("#results"), rootMargin: "200px" });
+  }
+  els.forEach(el => thumbObserver.observe(el));
+  renderLive();
+}
+
+function weatherLine(t) {
+  const c = tripClimate(t);
+  if (!c) return "";
+  const m = state.month;
+  return `${c.hi[m]}° / ${c.lo[m]}° · ${c.wet[m]} rainy day${c.wet[m] === 1 ? "" : "s"} in ${MONTHS[m]}`;
+}
+
+function weatherSection(t) {
+  const c = tripClimate(t);
+  if (!c) {
+    return `<div><h4>Typical weather</h4><p class="fine">${inflight.size ? "Loading weather records…" : "Weather records aren't available right now; see the month guide below."}</p></div>`;
+  }
+  const m = state.month, maxHi = Math.max(...c.hi), minLo = Math.min(...c.lo);
+  const warm = (v) => v >= 28 ? "hot" : v >= 22 ? "warm" : v >= 15 ? "mild" : v >= 8 ? "cool" : "cold";
+  return `<div>
+    <h4>Typical weather</h4>
+    <p class="wx-summary"><strong>${MONTHS_FULL[m]}:</strong> highs around ${c.hi[m]}°C, lows ${c.lo[m]}°C,
+      ${c.wet[m]} rainy day${c.wet[m] === 1 ? "" : "s"} and about ${c.sun[m]} hours of sun a day.</p>
+    <div class="wx" role="img" aria-label="Average high temperature and rainy days for each month">
+      ${c.hi.map((hi, i) => `<div class="wx-col${i === m ? " sel" : ""}" title="${MONTHS_FULL[i]}: ${hi}°/${c.lo[i]}°C, ${c.wet[i]} rainy days, ${c.sun[i]}h sun">
+        <span class="wx-temp ${warm(hi)}">${hi}°</span>
+        <span class="wx-bar"><i style="height:${Math.round((hi - minLo) / Math.max(1, maxHi - minLo) * 100)}%"></i></span>
+        <span class="wx-rain">${c.wet[i]}</span>
+        <span class="wx-m">${MONTHS[i][0]}</span>
+      </div>`).join("")}
+    </div>
+    <p class="fine">Top: average daily high. Bottom row: rainy days (1 mm+). Averages of 2019–2024 weather records.</p>
+  </div>`;
+}
+
+function holidaySection(t) {
+  const country = tripCountry(t);
+  const [year] = travelMonth().split("-").map(Number);
+  const list = holidaysIn(country, year);
+  if (list === null) return COUNTRY_CODES[country] && inflight.size ? `<div><h4>Public holidays</h4><p class="fine">Checking holidays…</p></div>` : "";
+  const inMonth = list.filter(h => Number(h.date.slice(5, 7)) - 1 === state.month);
+  const fmt = (d) => new Date(d + "T12:00:00").toLocaleDateString("en-GB", { day: "numeric", month: "short", weekday: "short" });
+  return `<div><h4>Public holidays in ${MONTHS_FULL[state.month]} ${year}</h4>
+    ${inMonth.length
+      ? `<ul class="hols">${inMonth.map(h => `<li><span class="num">${fmt(h.date)}</span>${h.name}</li>`).join("")}</ul>
+         <p class="fine">Expect bigger crowds, higher prices and some closures around these dates, especially long weekends.</p>`
+      : `<p class="fine">No national public holidays in ${country} that month, so no holiday crowds.</p>`}
+  </div>`;
+}
+
+function localCurrencyNote(t) {
+  const code = LOCAL_CURRENCY[tripCountry(t)] || "EUR";
+  if (code === state.currency) return "";
+  return `<span class="local">≈ ${money(t.cost.total, code)} in local money</span>`;
+}
+
+function sourcesNote() {
+  const offline = liveStatus.ok === 0 && liveStatus.failed > 0 && !Object.keys(liveCache).length;
+  return `<p class="sources">${offline
+    ? "Photos, weather records, holidays and live exchange rates couldn't load here (this preview blocks outside services). They load on the published site."
+    : `Sources: photos and summaries from <a href="https://en.wikipedia.org" target="_blank" rel="noopener">Wikipedia</a> / Wikimedia Commons ·
+       weather from <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> (ERA5, CC BY 4.0) ·
+       holidays from <a href="https://date.nager.at" target="_blank" rel="noopener">Nager.Date</a> ·
+       exchange rates ${ratesLive ? `from ${ratesLive.source}${ratesLive.date ? ` (${ratesLive.date})` : ""}` : "approximate"} (<a href="https://www.frankfurter.app" target="_blank" rel="noopener">Frankfurter</a>, <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener">Rates by Exchange Rate API</a>).`}</p>`;
+}
+
 // ---------------------------------------------------------------- escape plan details
 
 function escapeDetails(home, dest, cost) {
@@ -3109,7 +3479,7 @@ function renderPanel(result) {
   $("#results").innerHTML = groups.map(([title, list]) => `
     <h3 class="group">${title}<span>${list.length}</span></h3>
     ${list.map(t => `<button type="button" class="row ${tone(t)}${ui.selected === t.dest.id ? " active" : ""}" data-id="${t.dest.id}">
-        <i class="dot"></i>
+        <span class="thumb" data-wiki="${t.dest.name.replace(/"/g, "&quot;")}"><i class="dot"></i></span>
         <span class="row-main"><strong>${t.dest.name}</strong>
           <small>${tripKind(t)} · ${MODES[t.cost.transport.mode].label} ${hrs(t.cost.transport.hours)}</small></span>
         <span class="row-price num">${euro(t.cost.total)}</span>
@@ -3127,7 +3497,11 @@ function renderSpot() {
   const s = season((t.dest.season || current.home.season)[state.month]);
   const left = state.budget - t.cost.total;
   spot.hidden = false;
+  const w = wikiInfo(t.dest.name);
+  const wx = weatherLine(t);
+  spot.classList.toggle("with-img", !!(w && w.thumb));
   spot.innerHTML = `
+    ${w && w.thumb ? `<div class="spot-img" style="background-image:url(&quot;${thumbAt(w.thumb, 500)}&quot;)"></div>` : ""}
     <button type="button" class="x" data-act="close-spot" aria-label="Close">×</button>
     <span class="eyebrow">${tripKind(t)}</span>
     <h2>${t.dest.name}</h2>
@@ -3135,10 +3509,11 @@ function renderSpot() {
       <span class="${left >= 0 ? "good" : "warn"}">${left >= 0 ? `${euro(left)} under budget` : `${euro(-left)} over`}</span></div>
     <p class="spot-meta">${MODES[t.cost.transport.mode].label} · ~${hrs(t.cost.transport.hours)} each way · ${dayWord(state.days)}
       · <span class="${s.tone}">${s.text.toLowerCase()} in ${MONTHS[state.month]}</span></p>
+    ${wx ? `<p class="spot-meta wx-line">${wx}</p>` : ""}
     <button type="button" class="cta" data-act="open-plan" data-id="${t.dest.id}">Open the plan</button>`;
 }
 
-function renderDrawer() {
+function renderDrawer(fromLive) {
   const drawer = $("#drawer");
   const t = tripById(ui.drawer);
   if (!t) { drawer.hidden = true; document.body.classList.remove("drawer-open"); return; }
@@ -3147,22 +3522,36 @@ function renderDrawer() {
   const home = current.home, { dest, cost, matched = [], viaDayTrip = [] } = t;
   const s = season((dest.season || home.season)[state.month]);
   const left = state.budget - cost.total;
+  const w = wikiInfo(dest.name);
+  const hero = w && w.thumb
+    ? `<figure class="hero"><img src="${thumbAt(w.thumb, 960)}" alt="${w.title || dest.name}" onerror="this.onerror=null;this.src='${w.thumb}'">
+        <figcaption>Photo: <a href="https://en.wikipedia.org/wiki/File:${encodeURIComponent(w.file || "")}" target="_blank" rel="noopener">Wikimedia Commons</a></figcaption></figure>`
+    : "";
+  const about = w && w.extract
+    ? `<div><h4>About ${w.title || dest.name}</h4><p class="about">${w.extract}</p>
+        ${w.page ? `<a class="more" href="${w.page}" target="_blank" rel="noopener">Read more on Wikipedia ↗</a>` : ""}</div>` : "";
+  const live = `${weatherSection(t)}${holidaySection(t)}`;
   const body = isEscape(t)
-    ? `<p class="lede">${dest.escape.note}</p><div class="stack">${escapeDetails(home, dest, cost)}</div>`
+    ? `<p class="lede">${dest.escape.note}</p><div class="stack">${about}${live}${escapeDetails(home, dest, cost)}${sourcesNote()}</div>`
     : `<div class="stack">
         ${costSection(cost)}
         ${transportSection(dest, cost)}
         ${itinerarySection(dest, cost)}
         ${state.days > 1 ? dayTripsSection(dest, cost) : ""}
+        ${about}
+        ${live}
         ${whenSection(dest)}
         ${extrasSection(home, dest, cost)}
+        ${sourcesNote()}
       </div>`;
   $("#drawer-body").innerHTML = `
+    ${hero}
     <div class="dr-head">
       <span class="eyebrow">${isEscape(t) ? `${tripKind(t)} from ${home.name}` : `${home.code} → ${dest.code} · ${dest.country}`}</span>
       <h2>${dest.name}</h2>
       <div class="spot-price"><strong class="num">${euro(cost.total)}</strong>
         <span class="${left >= 0 ? "good" : "warn"}">${left >= 0 ? `${euro(left)} under budget` : `${euro(-left)} over budget`}</span></div>
+      ${localCurrencyNote(t)}
       <div class="tags">
         <span class="tag ${s.tone}">${s.text} in ${MONTHS[state.month]}</span>
         ${matched.map(m => `<span class="tag">${INTERESTS[m]}</span>`).join("")}
@@ -3586,6 +3975,7 @@ function update() {
   current = { home: result.home, trips: orderedTrips(result) };
   if (ui.selected && !tripById(ui.selected)) ui.selected = null;
   renderPanel(result);
+  observeThumbs();
   renderSpot();
   renderDrawer();
   globeUpdate();
@@ -3604,6 +3994,7 @@ function setupControls() {
   $("#home").addEventListener("change", (e) => { state.home = e.target.value; modeChoice.clear(); ui.selected = null; ui.drawer = null; changed(); });
   $("#budget").addEventListener("input", (e) => { state.budget = Number(e.target.value); changed(); });
   $("#month").addEventListener("change", (e) => { state.month = Number(e.target.value); changed(); });
+  $("#currency").addEventListener("change", (e) => { state.currency = e.target.value; changed(); });
   $("#days").addEventListener("click", (e) => { const b = e.target.closest(".pick"); if (b) { state.days = Number(b.dataset.v); changed(); } });
   $("#interests").addEventListener("click", (e) => { const b = e.target.closest(".chip"); if (b) { toggle(state.interests, b.dataset.v); changed(); } });
   $("#modes").addEventListener("click", (e) => { const b = e.target.closest(".chip"); if (b) { toggle(state.modes, b.dataset.v); changed(); } });
@@ -3647,6 +4038,7 @@ function setupControls() {
 document.getElementById("city-count").textContent = CITIES.length;
 setupControls();
 globeInit();
+loadRates();
 update();
 // Start with the top pick highlighted.
 if (current.trips[0]) select(current.trips[0].dest.id, { fly: false });
