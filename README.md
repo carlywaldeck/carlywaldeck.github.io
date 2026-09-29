@@ -18,7 +18,7 @@ Everything is in one file, `index.html`, so it works however it's opened (double
 
 | Section | What it does |
 |---|---|
-| `<style>` | The design: a cinematic globe in space, with light frosted-glass panels and a coral accent |
+| `<style>` | The design: a light, polished globe with frosted-glass panels and a blue accent |
 | City data `<script>` | 100 cities: costs, month-by-month scores, 3-day itineraries, 3–5 day trips each, 2–4 weekend escapes each (548 escapes in all), and tips. 29 interests, from food and beaches to hidden gems, film locations and hot springs |
 | App `<script>` | Estimates costs, ranks destinations, updates the list and map as you change settings |
 
@@ -43,7 +43,9 @@ By default the app picks the best mix of price and travel time; you can switch o
 - [ ] Week 13: Final presentation
 
 ## The globe
-The app is built around a cinematic 3D globe floating in space: a lit navy planet with glowing coastlines, an atmosphere halo and a star field. Every place in the app glows faintly like a city light at night. Trips are glowing arcs (flights arc high; trains and buses stay low), the selected route turns coral, and destination markers glow in their value color. Nothing animates on its own: the globe only redraws when you drag, zoom or change a setting. Projection and drawing use [d3-geo](https://d3js.org/d3-geo) on canvas with Natural Earth outlines (public domain).
+The app is built around a 3D globe on a soft daylight backdrop: white continents on a light-blue ocean, shaded for depth, with a pale atmosphere glow. Every place in the app is marked with a small dot. Trips are arcs (flights arc high; trains and buses stay low), the selected route turns blue, and destination markers use their value color. Nothing animates on its own: the globe only redraws when you drag, zoom or change a setting. Projection and drawing use [d3-geo](https://d3js.org/d3-geo) on canvas with Natural Earth outlines (public domain).
+
+**Finding your city:** the From box is a search field. Type any part of a city or country name (accents optional, so "malaga" finds Málaga), then use the arrow keys and Enter, or click a result.
 - On load, the camera flies in from space to your host city.
 - Routes to your top trips lift off the surface as arcs (flights higher, trains and buses low).
 - Markers are colored by price: teal = great value (good price for your budget and a good month to go), amber = okay, rose = pricey or off-season.
