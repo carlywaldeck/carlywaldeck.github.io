@@ -320,7 +320,20 @@ select option, select optgroup { background: #FFFFFF; color: var(--ink); }
 .ghost:hover { border-color: var(--hover-line); }
 .note { margin: 4px 0 0; font-size: 13px; color: var(--muted); }
 /* ---------- Been there + stars ---------- */
-.been-pop { right: calc(16px + min(400px, 34vw) + 16px); }
+.lbl-short { display: none; }
+@media (max-width: 760px) { .bar-btn .lbl-short { display: inline; } }
+.been-pop { right: calc(16px + min(400px, 34vw) + 16px); max-height: calc(100vh - 110px); overflow-y: auto; }
+@media (max-width: 760px) {
+  .topbar { gap: 6px; padding: 9px 10px; }
+  .topbar .brand { font-size: 15px; }
+  .bar-btn { padding: 6px 8px; font-size: 12.5px; }
+  .been-pop { right: 10px; left: 10px; top: calc(env(safe-area-inset-top, 0px) + 64px); bottom: auto; max-height: calc(100vh - 90px); background: #fff; }
+  .spot .bars.mini { display: none; }
+  .bar-btn .lbl-long { display: none; }
+  .topbar { flex-wrap: nowrap; }
+  .settings-open .topbar { flex-wrap: wrap; }
+  .spot-actions .ghost { padding: 10px 9px; font-size: 13px; }
+}
 .been-pop .city-search input { width: 100%; background: var(--soft); border: 1px solid var(--line); border-radius: 9px; padding: 8px 10px; margin-top: 10px; }
 .been-pop .city-list { width: 100%; }
 .been-items { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; max-height: 260px; overflow-y: auto; }
@@ -416,8 +429,8 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
       <option value="EUR">€ EUR</option><option value="USD">$ USD</option><option value="GBP">£ GBP</option>
     </select></label>
   </div>
-  <button type="button" class="bar-btn" id="settings-btn" aria-expanded="false">Settings</button>
-  <button type="button" class="bar-btn" id="been-btn" aria-expanded="false" aria-controls="been-pop">Been there<i id="been-count"></i></button>
+  <button type="button" class="bar-btn" id="settings-btn" aria-label="Settings" aria-expanded="false"><span class="lbl-long">Settings</span><span class="lbl-short" aria-hidden="true">Edit</span></button>
+  <button type="button" class="bar-btn" id="been-btn" aria-label="Places I have been" aria-expanded="false" aria-controls="been-pop"><span class="lbl-long">Been there</span><span class="lbl-short" aria-hidden="true">Visited</span><i id="been-count"></i></button>
   <button type="button" class="bar-btn" id="filters-btn" aria-expanded="false" aria-controls="filters">Transport<i id="filters-count"></i></button>
 </header>
 
@@ -481,7 +494,7 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
     <div class="landing-copy">
       <div class="brand big">weekender<span>.</span></div>
       <h1 id="lp-title">Cheap trips from wherever you're studying.</h1>
-      <p>Tell us where you're based, your budget and what you're into. Weekender scores 120 cities and 600+ day trips and weekend escapes from 1 to 10 for you, then shows them on a globe.</p>
+      <p>Tell us where you're based, your budget and what you're into. Weekender scores 120 cities and 640+ day trips and weekend escapes from 1 to 10 for you, then shows them on a globe.</p>
       <ul class="lp-points">
         <li><b>One score per trip</b> mixing price, timing, your interests and whether the trip length fits.</li>
         <li><b>Places you've been</b> stop showing up, and your star ratings teach it your taste.</li>
@@ -505,7 +518,7 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
       </div>
       <div class="lp-field"><span id="lp-days-label">How many days? <small>pick any</small></span><div class="seg" id="lp-days" role="group" aria-labelledby="lp-days-label"></div></div>
       <div class="lp-field"><span id="lp-int-label">What are you into? <small>pick a few</small></span><div class="chips" id="lp-interests" role="group" aria-labelledby="lp-int-label"></div></div>
-      <div class="lp-field"><span>A bit about you <small>optional, helps tailor your scores</small></span><div id="lp-profile"></div></div>
+      <div class="lp-field"><span>A bit about you <small>optional: small starting nudges (our assumptions) until you rate places</small></span><div id="lp-profile"></div></div>
       <div class="lp-field"><span id="lp-been-label">Places you've already been <small>optional</small></span>
         <div class="city-search">
           <input id="lp-been-input" type="text" role="combobox" aria-labelledby="lp-been-label" aria-autocomplete="list" aria-expanded="false" aria-controls="lp-been-list" autocomplete="off" spellcheck="false" placeholder="Add a city you've visited">
@@ -942,7 +955,7 @@ window.CITIES = [
     interests: ["art", "architecture", "food", "history", "wine", "markets", "villages", "views"],
     season:    [3, 3, 4, 5, 5, 3, 2, 2, 4, 5, 3, 3],
     priceMult: [0.8, 0.8, 0.9, 1.1, 1.2, 1.3, 1.3, 1.2, 1.2, 1.1, 0.8, 0.9],
-    bestTime: "April–May and October. State museums are free on the first Sunday of each month.",
+    bestTime: "April–May and October. Summer is hot and crowded; November–February is quiet and cheap.",
     itinerary: [
       [["Duomo and Piazza della Signoria", 0], ["Lunch at Mercato Centrale", 10], ["Sunset at Piazzale Michelangelo", 0]],
       [["Uffizi Gallery", 25], ["Ponte Vecchio and the Oltrarno", 0], ["Aperitivo in Santo Spirito", 10]],
@@ -2679,7 +2692,7 @@ window.CITIES = [
       { name: "Fredrikstad", how: "Train, 1h", cost: 30, tags: ["history", "villages"], note: "One of Scandinavia's best-kept fortified old towns." }
     ],
     tips: [
-      "Buy an Ruter 24-hour ticket; it covers the metro, trams and the island ferries.",
+      "Buy a Ruter 24-hour ticket; it covers the metro, trams and the island ferries.",
       "Supermarket lunches and free swim spots along the fjord keep Norway affordable."
     ],
     weekends: [
@@ -2835,7 +2848,7 @@ window.CITIES = [
       { name: "Chester", how: "Train, 1h", cost: 20, tags: ["history", "villages"], note: "Roman walls and two-storey Tudor shopping rows." }
     ],
     tips: [
-      "Free buses loop the city centre, and trams reach the stadiums.",
+      "The city centre is walkable, and Metrolink trams reach both football stadiums.",
       "Book Premier League tickets through club members' exchanges; cup games and women's matches are much cheaper."
     ],
     weekends: [
@@ -2913,7 +2926,7 @@ window.CITIES = [
       { name: "Mount Etna", how: "Bus, 2h", cost: 30, tags: ["desert", "hiking", "views"], note: "Walk around extinct craters on Europe's most active volcano." }
     ],
     tips: [
-      "The AST bus to Etna leaves once a day at 8:15; that's the cheap way up.",
+      "The AST bus from Catania to Etna (Rifugio Sapienza) runs once a day in the morning; it's the cheap way up.",
       "Granita with a brioche is the Sicilian breakfast; skip the hotel buffet."
     ],
     weekends: [
@@ -3277,7 +3290,7 @@ window.CITIES = [
       { name: "Mols Bjerge", how: "Bus, 1h", cost: 12, tags: ["hiking", "beach", "nature"], note: "Hills and beaches in a national park." }
     ],
     tips: [
-      "ARoS is free on Wednesday evenings for students with ID (check the current offer).",
+      "The Aarhus Harbour Bath is free to swim in, right by the city center.",
       "A 24-hour Midttrafik ticket covers the city and the light rail."
     ],
     weekends: [
@@ -3304,7 +3317,7 @@ window.CITIES = [
     ],
     tips: [
       "Walk up to the castle via the Kurzer Buckel steps instead of paying for the funicular.",
-      "The Deutschlandticket (€58/month) covers all regional trains if you're staying a while."
+      "If you're staying a while, the monthly Deutschlandticket covers every regional train and bus in Germany."
     ],
     weekends: [
       { name: "Rothenburg ob der Tauber", how: "Train, 2h30", travel: 35, stay: 30, sights: 5, tags: ["villages", "history"], note: "A perfectly preserved walled town.", days: ["Walk the town walls", "Night watchman tour"] },
@@ -3381,7 +3394,7 @@ window.CITIES = [
       { name: "Pobiti Kamani", how: "Bus, 40 min", cost: 6, tags: ["desert", "offbeat"], note: "A 'stone forest' of natural columns in the sand." }
     ],
     tips: [
-      "Bulgaria uses the lev (fixed to the euro), and everything costs about half what it does in Western Europe.",
+      "Bulgaria switched to the euro in 2026, and prices are still about half of Western Europe's.",
       "Avoid late July–August if you don't want crowds and higher prices."
     ],
     weekends: [
@@ -3952,8 +3965,12 @@ function estimateTrip(home, dest) {
   const lodging = Math.round(nights * dest.costs.hostel * dest.priceMult[state.month]);
   const food = state.days * dest.costs.food;
   const dayTrip = chosenDayTrip(dest);
-  // A day trip replaces one day of city sightseeing.
-  const local = state.days * (dest.costs.transit + dest.costs.activities) - (dayTrip ? dest.costs.activities : 0);
+  // Sights: the real prices in the itinerary for the city days you'll do (a day trip replaces one),
+  // plus the daily activities allowance for any free days beyond the 3-day itinerary.
+  const cityDays = Math.min(3, dayTrip ? state.days - 1 : state.days);
+  const sights = dest.itinerary.slice(0, cityDays).reduce((s, day) => s + day.reduce((t, [, c]) => t + c, 0), 0);
+  const freeDays = Math.max(0, state.days - cityDays - (dayTrip ? 1 : 0));
+  const local = state.days * dest.costs.transit + sights + freeDays * dest.costs.activities;
   const extra = dayTrip ? dayTrip.cost : 0;
   return { dest, options, transport, lodging, food, local, dayTrip, extra, nights,
            total: transport.cost + lodging + food + local + extra };
@@ -4143,7 +4160,7 @@ function transportSection(dest, cost) {
     </div>
     ${liveNote(cost)}
     ${BUDGET_AIRPORTS[state.home] && allowed.some(o => o.mode === "flight") ? `<p class="fine">Flying from ${byId(state.home).name}? Budget airlines usually use ${BUDGET_AIRPORTS[state.home]}.</p>` : ""}
-    <p class="fine">Round-trip prices. ${hidden ? `${hidden} more option${hidden > 1 ? "s" : ""} hidden by your travel filter.` : "Pick one to update the total."}</p>
+    <p class="fine">Round-trip price estimates based on distance and season${cost.options.some(o => o.live) ? " (flights marked live are real fares)" : ""}; check live prices below before booking. ${hidden ? `${hidden} more option${hidden > 1 ? "s" : ""} hidden by your travel filter.` : "Pick one to update the total."}</p>
   </div>`;
 }
 
@@ -4168,7 +4185,7 @@ function costSection(cost) {
     ["c1", `${MODES[cost.transport.mode].label} round trip`, `~${hrs(cost.transport.hours)} each way`, cost.transport.cost],
     ["c2", "Hostel", `${cost.nights} night${cost.nights > 1 ? "s" : ""}`, cost.lodging],
     ["c3", "Food", dayWord(state.days), cost.food],
-    ["c4", "Local transport & sights", "", cost.local]
+    ["c4", "Local transport & sights", "as in the plan below", cost.local]
   ].filter(p => p[3] > 0);
   if (cost.dayTrip) parts.push(["c5", `Day trip: ${cost.dayTrip.name}`, "travel + entry", cost.extra]);
   return costBlock(parts, cost.total);
@@ -4718,7 +4735,7 @@ function wikiInfo(name) {
   return now && !now.none ? now : null;
 }
 
-// ---- Open-Meteo: typical weather by month (averages of 2019–2024 daily records)
+// ---- Open-Meteo: typical weather by month (averages of 2020–2024 daily records, the same years as the data pipeline)
 
 function placeLatLon(t) {
   if (t.dest.escape) { const p = (PLACES[t.dest.name] || [])[0]; return p ? { lat: p[0], lon: p[1] } : null; }
@@ -4727,11 +4744,11 @@ function placeLatLon(t) {
 }
 
 function climateAt(lat, lon) {
-  const key = `clim:${lat.toFixed(2)},${lon.toFixed(2)}`;
+  const key = `clim2020:${lat.toFixed(2)},${lon.toFixed(2)}`;
   if (!liveCache[key]) {
     cachedLoad(key, 180, async () => {
       const d = await getJSON(`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}` +
-        `&start_date=2019-01-01&end_date=2024-12-31&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,sunshine_duration&timezone=auto`);
+        `&start_date=2020-01-01&end_date=2024-12-31&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,sunshine_duration&timezone=auto`);
       const days = d.daily, sums = Array.from({ length: 12 }, () => ({ n: 0, hi: 0, lo: 0, wet: 0, sun: 0 }));
       days.time.forEach((date, i) => {
         const m = Number(date.slice(5, 7)) - 1, s = sums[m];
@@ -4740,7 +4757,7 @@ function climateAt(lat, lon) {
         if ((days.precipitation_sum[i] || 0) >= 1) s.wet++;
         s.sun += (days.sunshine_duration[i] || 0) / 3600;
       });
-      const years = 6;
+      const years = 5;
       return {
         hi: sums.map(s => Math.round(s.hi / s.n)), lo: sums.map(s => Math.round(s.lo / s.n)),
         wet: sums.map(s => Math.round(s.wet / years)), sun: sums.map(s => Math.round(s.sun / s.n * 10) / 10)
@@ -4868,7 +4885,7 @@ function weatherSection(t) {
         <span class="wx-m">${MONTHS[i][0]}</span>
       </div>`).join("")}
     </div>
-    <p class="fine">Top: average daily high (°F). Bottom row: rainy days (0.04 in+ of rain). Averages of 2019–2024 weather records.</p>
+    <p class="fine">Top: average daily high (°F). Bottom row: rainy days (0.04 in+ of rain). Averages of 2020–2024 weather records.</p>
   </div>`;
 }
 
@@ -5112,7 +5129,7 @@ const profileSelects = (pre) => `<div class="profile-row">
 </div>`;
 function tasteHtml() {
   const n = TASTE.n;
-  const about = `<h3>About you</h3>${profileSelects("pp")}`;
+  const about = `<h3>About you</h3>${profileSelects("pp")}<p class="note">Age and travel style only add small starting nudges based on our assumptions (e.g. 18–21 leans toward nightlife). Your ratings replace them.</p>`;
   if (!TASTE.w) return `${about}<h3 class="taste-h">Your taste</h3><p class="note">Pick some interests, tell us a bit about you, or rate places you've been, and every score starts adapting to you.</p>`;
   const s = tasteSummary();
   const src = [state.interests.size ? "your interests" : "", state.profile.age || state.profile.with ? "your profile" : "", n ? `${n} rating${n > 1 ? "s" : ""}` : ""].filter(Boolean);
@@ -5351,7 +5368,7 @@ function dataSection(t) {
   if (d.osm && DATA.osm) {
     const want = [...state.interests].filter(k => d.osm[k] != null);
     const top = Object.keys(d.osm).filter(k => !want.includes(k)).sort((a, b) => (d.strengths[b] || 0) - (d.strengths[a] || 0)).slice(0, Math.max(0, 5 - want.length));
-    const items = [...want, ...top].slice(0, 6).map(k => `<li><b class="num">${d.osm[k].toLocaleString()}</b> ${DATA.osm[k].label} <small>within ${DATA.osm[k].radiusKm} km · top ${Math.max(1, Math.round((1 - (d.strengths[k] || 0)) * 100))}%</small></li>`);
+    const items = [...want, ...top].slice(0, 6).map(k => `<li><b class="num">${d.osm[k].toLocaleString()}</b> ${DATA.osm[k].label} <small>within ${DATA.osm[k].radiusKm} km${d.osm[k] ? ` · top ${Math.max(1, Math.round((1 - (d.strengths[k] || 0)) * 100))}%` : ""}</small></li>`);
     if (items.length) rows.push(["What's there", `<ul class="osm">${items.join("")}</ul>`, "OpenStreetMap"]);
   }
   if (d.wikipedia) rows.push(["Popularity", `about ${fmtViews(d.wikipedia.monthlyViews)} Wikipedia views a month${d.popularity != null ? ` (more than ${Math.round(d.popularity * 100)}% of places here)` : ""}`, "Wikipedia"]);
