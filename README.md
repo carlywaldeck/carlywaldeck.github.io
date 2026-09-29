@@ -1,6 +1,6 @@
 # Weekender (working name)
 
-A budget trip planner for study-abroad students in Europe, covering 100 places across Europe, North Africa and the Middle East: enter your budget, trip length and free months, and get destinations that fit, the best time to go, and a sample itinerary.
+A budget trip planner for study-abroad students in Europe, covering 120 places across Europe, North Africa and the Middle East: enter your budget, trip length and free months, and get destinations that fit, the best time to go, and a sample itinerary.
 
 GSB 5576 semester project. See [docs/IDEA.md](docs/IDEA.md) for the full idea set.
 
@@ -19,7 +19,7 @@ Everything is in one file, `index.html`, so it works however it's opened (double
 | Section | What it does |
 |---|---|
 | `<style>` | The design: a light, polished globe with frosted-glass panels and a blue accent |
-| City data `<script>` | 100 cities: costs, month-by-month scores, 3-day itineraries, 3–5 day trips each, 2–4 weekend escapes each (548 escapes in all), and tips. 29 interests, from food and beaches to hidden gems, film locations and hot springs |
+| City data `<script>` | 120 cities: costs, month-by-month scores, 3-day itineraries, 3–5 day trips each, 2–4 weekend escapes each (608 escapes in all), and tips. 29 interests, from food and beaches to hidden gems, film locations and hot springs |
 | App `<script>` | Estimates costs, ranks destinations, updates the list and map as you change settings |
 
 **How costs are estimated:** hostel nights, food, local transport and sights, plus round-trip travel. Travel options are estimated from distance:

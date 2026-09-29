@@ -277,7 +277,7 @@ function percentileRanks(values) {
 
 function derive() {
   const keys = Object.keys(OSM_QUERIES);
-  // Interest strength 0–1: where this city ranks among all 100 for that kind of place (none = 0).
+  // Interest strength 0–1: where this city ranks among all cities for that kind of place (none = 0).
   for (const k of keys) {
     const ranks = percentileRanks(cities.map((c) => (c.data.osm ? Math.log1p(c.data.osm[k]) : null)));
     cities.forEach((c, i) => {
@@ -411,7 +411,7 @@ const meta = {
     season: "0.65 × comfort + 0.35 × fewer crowds, ranked across all city-months into 1–5",
     priceMult: "1 + 0.4 × (crowd index − 1), kept between 0.8 and 1.4",
     costs: `EU-average city (${JSON.stringify(BASE_COSTS)} EUR/day) × country price level × (0.83 to 1.17 by Wikipedia popularity)`,
-    interests: "Percentile rank among the 100 cities of the OpenStreetMap count (log scale); tagged when in the top 40%. Festivals, film spots and old towns stay hand-picked.",
+    interests: "Percentile rank among all the cities of the OpenStreetMap count (log scale); tagged when in the top 40%. Festivals, film spots and old towns stay hand-picked.",
     offbeat: "Rank of (sights rank − popularity rank): lots to see, fewer visitors"
   },
   osm: Object.fromEntries(Object.entries(OSM_QUERIES).map(([k, v]) => [k, { label: v.label, radiusKm: v.r / 1000 }])),

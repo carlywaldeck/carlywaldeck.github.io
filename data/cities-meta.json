@@ -5503,6 +5503,1060 @@
      "mountains"
     ]
    }
+  },
+  {
+   "id": "coimbra",
+   "name": "Coimbra",
+   "country": "Portugal",
+   "iso2": "PT",
+   "lat": 40.21,
+   "lon": -8.43,
+   "wiki": "Coimbra",
+   "estimate": {
+    "costs": {
+     "hostel": 20,
+     "food": 20,
+     "transit": 3,
+     "activities": 8
+    },
+    "season": [
+     2,
+     3,
+     3,
+     4,
+     5,
+     5,
+     4,
+     4,
+     5,
+     4,
+     3,
+     2
+    ],
+    "priceMult": [
+     0.85,
+     0.85,
+     0.9,
+     1,
+     1.1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     0.85,
+     0.9
+    ],
+    "interests": [
+     "history",
+     "architecture",
+     "nightlife",
+     "music",
+     "villages",
+     "offbeat"
+    ]
+   }
+  },
+  {
+   "id": "zaragoza",
+   "name": "Zaragoza",
+   "country": "Spain",
+   "iso2": "ES",
+   "lat": 41.65,
+   "lon": -0.88,
+   "wiki": "Zaragoza",
+   "estimate": {
+    "costs": {
+     "hostel": 20,
+     "food": 22,
+     "transit": 3,
+     "activities": 8
+    },
+    "season": [
+     2,
+     3,
+     4,
+     5,
+     5,
+     4,
+     3,
+     3,
+     4,
+     5,
+     3,
+     2
+    ],
+    "priceMult": [
+     0.85,
+     0.85,
+     0.9,
+     1,
+     1,
+     1,
+     1,
+     0.95,
+     1,
+     1.1,
+     0.9,
+     0.9
+    ],
+    "interests": [
+     "food",
+     "history",
+     "architecture",
+     "sacred",
+     "festivals",
+     "offbeat"
+    ]
+   }
+  },
+  {
+   "id": "bergen",
+   "name": "Bergen",
+   "country": "Norway",
+   "iso2": "NO",
+   "lat": 60.39,
+   "lon": 5.32,
+   "wiki": "Bergen",
+   "estimate": {
+    "costs": {
+     "hostel": 42,
+     "food": 38,
+     "transit": 7,
+     "activities": 12
+    },
+    "season": [
+     1,
+     1,
+     2,
+     3,
+     4,
+     5,
+     5,
+     5,
+     4,
+     2,
+     1,
+     2
+    ],
+    "priceMult": [
+     0.9,
+     0.9,
+     0.9,
+     1,
+     1.1,
+     1.3,
+     1.3,
+     1.2,
+     1,
+     0.9,
+     0.9,
+     1
+    ],
+    "interests": [
+     "mountains",
+     "hiking",
+     "views",
+     "villages",
+     "nature",
+     "lakes"
+    ]
+   }
+  },
+  {
+   "id": "aarhus",
+   "name": "Aarhus",
+   "country": "Denmark",
+   "iso2": "DK",
+   "lat": 56.16,
+   "lon": 10.2,
+   "wiki": "Aarhus",
+   "estimate": {
+    "costs": {
+     "hostel": 35,
+     "food": 30,
+     "transit": 5,
+     "activities": 12
+    },
+    "season": [
+     2,
+     2,
+     2,
+     3,
+     4,
+     5,
+     5,
+     5,
+     4,
+     3,
+     2,
+     3
+    ],
+    "priceMult": [
+     0.9,
+     0.9,
+     0.9,
+     1,
+     1,
+     1.1,
+     1.2,
+     1.1,
+     1,
+     0.9,
+     0.9,
+     1
+    ],
+    "interests": [
+     "art",
+     "architecture",
+     "cafes",
+     "beach",
+     "nightlife",
+     "offbeat"
+    ]
+   }
+  },
+  {
+   "id": "heidelberg",
+   "name": "Heidelberg",
+   "country": "Germany",
+   "iso2": "DE",
+   "lat": 49.4,
+   "lon": 8.69,
+   "wiki": "Heidelberg",
+   "estimate": {
+    "costs": {
+     "hostel": 30,
+     "food": 26,
+     "transit": 5,
+     "activities": 10
+    },
+    "season": [
+     2,
+     2,
+     3,
+     4,
+     5,
+     5,
+     5,
+     4,
+     5,
+     4,
+     2,
+     4
+    ],
+    "priceMult": [
+     0.9,
+     0.9,
+     0.9,
+     1,
+     1.1,
+     1.1,
+     1.1,
+     1,
+     1,
+     1,
+     0.9,
+     1.1
+    ],
+    "interests": [
+     "history",
+     "castles",
+     "views",
+     "hiking",
+     "nightlife",
+     "villages"
+    ]
+   }
+  },
+  {
+   "id": "nuremberg",
+   "name": "Nuremberg",
+   "country": "Germany",
+   "iso2": "DE",
+   "lat": 49.45,
+   "lon": 11.08,
+   "wiki": "Nuremberg",
+   "estimate": {
+    "costs": {
+     "hostel": 28,
+     "food": 25,
+     "transit": 5,
+     "activities": 10
+    },
+    "season": [
+     2,
+     2,
+     3,
+     4,
+     5,
+     5,
+     5,
+     5,
+     4,
+     3,
+     2,
+     5
+    ],
+    "priceMult": [
+     0.9,
+     0.9,
+     0.9,
+     1,
+     1,
+     1,
+     1.1,
+     1,
+     1,
+     1,
+     0.9,
+     1.3
+    ],
+    "interests": [
+     "history",
+     "castles",
+     "food",
+     "festivals",
+     "markets"
+    ]
+   }
+  },
+  {
+   "id": "poznan",
+   "name": "Poznań",
+   "country": "Poland",
+   "iso2": "PL",
+   "lat": 52.41,
+   "lon": 16.93,
+   "wiki": "Poznań",
+   "estimate": {
+    "costs": {
+     "hostel": 15,
+     "food": 15,
+     "transit": 2,
+     "activities": 6
+    },
+    "season": [
+     2,
+     2,
+     3,
+     4,
+     5,
+     5,
+     5,
+     5,
+     4,
+     3,
+     2,
+     3
+    ],
+    "priceMult": [
+     0.9,
+     0.9,
+     0.9,
+     1,
+     1,
+     1,
+     1.1,
+     1,
+     1,
+     1,
+     0.9,
+     1
+    ],
+    "interests": [
+     "history",
+     "architecture",
+     "nightlife",
+     "food",
+     "offbeat",
+     "lakes"
+    ]
+   }
+  },
+  {
+   "id": "varna",
+   "name": "Varna",
+   "country": "Bulgaria",
+   "iso2": "BG",
+   "lat": 43.21,
+   "lon": 27.91,
+   "wiki": "Varna, Bulgaria",
+   "estimate": {
+    "costs": {
+     "hostel": 14,
+     "food": 14,
+     "transit": 2,
+     "activities": 5
+    },
+    "season": [
+     1,
+     1,
+     2,
+     3,
+     4,
+     5,
+     5,
+     5,
+     5,
+     3,
+     2,
+     1
+    ],
+    "priceMult": [
+     0.8,
+     0.8,
+     0.8,
+     0.9,
+     1,
+     1.2,
+     1.4,
+     1.4,
+     1.1,
+     0.9,
+     0.8,
+     0.8
+    ],
+    "interests": [
+     "beach",
+     "nightlife",
+     "history",
+     "spas",
+     "offbeat"
+    ]
+   }
+  },
+  {
+   "id": "nicosia",
+   "name": "Nicosia",
+   "country": "Cyprus",
+   "iso2": "CY",
+   "lat": 35.17,
+   "lon": 33.36,
+   "wiki": "Nicosia",
+   "estimate": {
+    "costs": {
+     "hostel": 25,
+     "food": 22,
+     "transit": 3,
+     "activities": 6
+    },
+    "season": [
+     3,
+     3,
+     4,
+     5,
+     5,
+     3,
+     2,
+     2,
+     4,
+     5,
+     4,
+     3
+    ],
+    "priceMult": [
+     0.9,
+     0.9,
+     0.9,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     0.9,
+     0.9
+    ],
+    "interests": [
+     "history",
+     "food",
+     "offbeat",
+     "sacred",
+     "cafes"
+    ]
+   }
+  },
+  {
+   "id": "santorini",
+   "name": "Santorini",
+   "country": "Greece",
+   "iso2": "GR",
+   "lat": 36.42,
+   "lon": 25.43,
+   "wiki": "Santorini",
+   "estimate": {
+    "costs": {
+     "hostel": 35,
+     "food": 28,
+     "transit": 4,
+     "activities": 10
+    },
+    "season": [
+     1,
+     1,
+     2,
+     3,
+     5,
+     4,
+     3,
+     3,
+     5,
+     4,
+     2,
+     1
+    ],
+    "priceMult": [
+     0.7,
+     0.7,
+     0.8,
+     1,
+     1.2,
+     1.5,
+     1.7,
+     1.7,
+     1.3,
+     1,
+     0.8,
+     0.7
+    ],
+    "interests": [
+     "views",
+     "islands",
+     "beach",
+     "desert",
+     "wine"
+    ]
+   }
+  },
+  {
+   "id": "zakynthos",
+   "name": "Zakynthos",
+   "country": "Greece",
+   "iso2": "GR",
+   "lat": 37.78,
+   "lon": 20.9,
+   "wiki": "Zakynthos",
+   "estimate": {
+    "costs": {
+     "hostel": 22,
+     "food": 20,
+     "transit": 4,
+     "activities": 10
+    },
+    "season": [
+     1,
+     1,
+     2,
+     3,
+     5,
+     5,
+     4,
+     4,
+     5,
+     3,
+     1,
+     1
+    ],
+    "priceMult": [
+     0.7,
+     0.7,
+     0.8,
+     0.9,
+     1,
+     1.3,
+     1.5,
+     1.5,
+     1.1,
+     0.9,
+     0.7,
+     0.7
+    ],
+    "interests": [
+     "beach",
+     "islands",
+     "surf",
+     "views",
+     "wildlife",
+     "nightlife"
+    ]
+   }
+  },
+  {
+   "id": "trieste",
+   "name": "Trieste",
+   "country": "Italy",
+   "iso2": "IT",
+   "lat": 45.65,
+   "lon": 13.77,
+   "wiki": "Trieste",
+   "estimate": {
+    "costs": {
+     "hostel": 25,
+     "food": 24,
+     "transit": 3,
+     "activities": 8
+    },
+    "season": [
+     2,
+     2,
+     3,
+     4,
+     5,
+     5,
+     4,
+     4,
+     5,
+     4,
+     2,
+     2
+    ],
+    "priceMult": [
+     0.9,
+     0.9,
+     0.9,
+     1,
+     1,
+     1.1,
+     1.2,
+     1.2,
+     1,
+     1,
+     0.9,
+     0.9
+    ],
+    "interests": [
+     "cafes",
+     "history",
+     "views",
+     "castles",
+     "offbeat",
+     "beach"
+    ]
+   }
+  },
+  {
+   "id": "montpellier",
+   "name": "Montpellier",
+   "country": "France",
+   "iso2": "FR",
+   "lat": 43.61,
+   "lon": 3.88,
+   "wiki": "Montpellier",
+   "estimate": {
+    "costs": {
+     "hostel": 25,
+     "food": 25,
+     "transit": 4,
+     "activities": 8
+    },
+    "season": [
+     2,
+     3,
+     3,
+     4,
+     5,
+     5,
+     4,
+     4,
+     5,
+     4,
+     3,
+     2
+    ],
+    "priceMult": [
+     0.9,
+     0.9,
+     0.9,
+     1,
+     1,
+     1.1,
+     1.2,
+     1.2,
+     1,
+     1,
+     0.9,
+     0.9
+    ],
+    "interests": [
+     "nightlife",
+     "beach",
+     "architecture",
+     "cafes",
+     "streetart",
+     "wine"
+    ]
+   }
+  },
+  {
+   "id": "lille",
+   "name": "Lille",
+   "country": "France",
+   "iso2": "FR",
+   "lat": 50.63,
+   "lon": 3.06,
+   "wiki": "Lille",
+   "estimate": {
+    "costs": {
+     "hostel": 28,
+     "food": 25,
+     "transit": 4,
+     "activities": 8
+    },
+    "season": [
+     2,
+     2,
+     3,
+     3,
+     4,
+     4,
+     4,
+     4,
+     5,
+     3,
+     2,
+     3
+    ],
+    "priceMult": [
+     0.9,
+     0.9,
+     0.9,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1.1,
+     1,
+     0.9,
+     1
+    ],
+    "interests": [
+     "food",
+     "architecture",
+     "markets",
+     "art",
+     "nightlife"
+    ]
+   }
+  },
+  {
+   "id": "glasgow",
+   "name": "Glasgow",
+   "country": "UK",
+   "iso2": "GB",
+   "lat": 55.86,
+   "lon": -4.25,
+   "wiki": "Glasgow",
+   "estimate": {
+    "costs": {
+     "hostel": 28,
+     "food": 26,
+     "transit": 5,
+     "activities": 5
+    },
+    "season": [
+     2,
+     2,
+     2,
+     3,
+     4,
+     4,
+     4,
+     4,
+     4,
+     3,
+     2,
+     3
+    ],
+    "priceMult": [
+     0.9,
+     0.9,
+     0.9,
+     1,
+     1,
+     1.1,
+     1.1,
+     1.1,
+     1,
+     1,
+     0.9,
+     1
+    ],
+    "interests": [
+     "music",
+     "nightlife",
+     "art",
+     "streetart",
+     "architecture",
+     "sports"
+    ]
+   }
+  },
+  {
+   "id": "cork",
+   "name": "Cork",
+   "country": "Ireland",
+   "iso2": "IE",
+   "lat": 51.9,
+   "lon": -8.47,
+   "wiki": "Cork (city)",
+   "estimate": {
+    "costs": {
+     "hostel": 30,
+     "food": 28,
+     "transit": 5,
+     "activities": 8
+    },
+    "season": [
+     2,
+     2,
+     3,
+     3,
+     4,
+     5,
+     5,
+     5,
+     4,
+     3,
+     2,
+     2
+    ],
+    "priceMult": [
+     0.9,
+     0.9,
+     0.9,
+     1,
+     1,
+     1.1,
+     1.2,
+     1.2,
+     1,
+     1,
+     0.9,
+     1
+    ],
+    "interests": [
+     "food",
+     "music",
+     "nightlife",
+     "markets",
+     "villages"
+    ]
+   }
+  },
+  {
+   "id": "rabat",
+   "name": "Rabat",
+   "country": "Morocco",
+   "iso2": "MA",
+   "lat": 34.02,
+   "lon": -6.84,
+   "wiki": "Rabat",
+   "estimate": {
+    "costs": {
+     "hostel": 15,
+     "food": 12,
+     "transit": 2,
+     "activities": 5
+    },
+    "season": [
+     3,
+     3,
+     4,
+     5,
+     5,
+     4,
+     4,
+     4,
+     5,
+     5,
+     4,
+     3
+    ],
+    "priceMult": [
+     0.9,
+     0.9,
+     0.9,
+     1,
+     1,
+     1,
+     1.1,
+     1.1,
+     1,
+     1,
+     0.9,
+     0.9
+    ],
+    "interests": [
+     "history",
+     "beach",
+     "surf",
+     "offbeat",
+     "architecture",
+     "markets"
+    ]
+   }
+  },
+  {
+   "id": "cairo",
+   "name": "Cairo",
+   "country": "Egypt",
+   "iso2": "EG",
+   "lat": 30.04,
+   "lon": 31.24,
+   "wiki": "Cairo",
+   "estimate": {
+    "costs": {
+     "hostel": 12,
+     "food": 10,
+     "transit": 2,
+     "activities": 15
+    },
+    "season": [
+     4,
+     5,
+     5,
+     4,
+     3,
+     2,
+     1,
+     1,
+     2,
+     4,
+     5,
+     4
+    ],
+    "priceMult": [
+     1.1,
+     1.1,
+     1,
+     1,
+     0.9,
+     0.85,
+     0.85,
+     0.85,
+     0.9,
+     1,
+     1.1,
+     1.2
+    ],
+    "interests": [
+     "history",
+     "sacred",
+     "markets",
+     "desert",
+     "food",
+     "film"
+    ]
+   }
+  },
+  {
+   "id": "lanzarote",
+   "name": "Lanzarote",
+   "country": "Spain",
+   "iso2": "ES",
+   "lat": 28.96,
+   "lon": -13.55,
+   "wiki": "Lanzarote",
+   "estimate": {
+    "costs": {
+     "hostel": 28,
+     "food": 24,
+     "transit": 4,
+     "activities": 12
+    },
+    "season": [
+     5,
+     5,
+     5,
+     5,
+     4,
+     4,
+     4,
+     4,
+     4,
+     5,
+     5,
+     5
+    ],
+    "priceMult": [
+     1.1,
+     1.1,
+     1,
+     1,
+     0.9,
+     0.9,
+     1.1,
+     1.1,
+     0.95,
+     1,
+     1,
+     1.2
+    ],
+    "interests": [
+     "desert",
+     "beach",
+     "surf",
+     "art",
+     "views",
+     "islands"
+    ]
+   }
+  },
+  {
+   "id": "menorca",
+   "name": "Menorca",
+   "country": "Spain",
+   "iso2": "ES",
+   "lat": 39.89,
+   "lon": 4.26,
+   "wiki": "Menorca",
+   "estimate": {
+    "costs": {
+     "hostel": 30,
+     "food": 26,
+     "transit": 4,
+     "activities": 6
+    },
+    "season": [
+     1,
+     2,
+     2,
+     3,
+     4,
+     5,
+     4,
+     4,
+     5,
+     3,
+     2,
+     1
+    ],
+    "priceMult": [
+     0.8,
+     0.8,
+     0.8,
+     0.9,
+     1,
+     1.3,
+     1.5,
+     1.5,
+     1.1,
+     0.9,
+     0.8,
+     0.8
+    ],
+    "interests": [
+     "beach",
+     "islands",
+     "hiking",
+     "villages",
+     "offbeat",
+     "history"
+    ]
+   }
   }
  ]
 }
