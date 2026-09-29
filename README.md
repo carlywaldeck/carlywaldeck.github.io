@@ -61,7 +61,7 @@ Because the app has no server, the model only learns from your own ratings. Lear
 - [ ] Week 13: Final presentation
 
 ## The globe
-The app is built around a 3D globe on a soft daylight backdrop: warm white land on a clear blue ocean, lightly shaded for depth (colors live in one `MAP` object, so the palette is easy to swap). Every place in the app is marked with a small dot. Trips are arcs (flights arc high; trains and buses stay low), the selected route turns blue, and destination markers use their value color. Nothing animates on its own: the globe only redraws when you drag, zoom or change a setting. Projection and drawing use [d3-geo](https://d3js.org/d3-geo) on canvas with Natural Earth outlines (public domain).
+The app is built around a 3D globe on a soft daylight backdrop: sage-green land on a soft blue ocean, lightly shaded for depth (colors live in one `MAP` object, so the palette is easy to swap). Every place in the app is marked with a small dot. Trips are arcs (flights arc high; trains and buses stay low), the selected route turns blue, and destination markers use their value color. Nothing animates on its own: the globe only redraws when you drag, zoom or change a setting. Projection and drawing use [d3-geo](https://d3js.org/d3-geo) on canvas with Natural Earth outlines (public domain).
 
 **Landing page:** the app opens on a short form (where you're based, month, currency (€, $ or £), budget, trip lengths, interests, optional age range and travel style, and places you've been). **Show my trips** flies you into the globe, and everything stays editable from the top bar. Click the Weekender logo to go back.
 
