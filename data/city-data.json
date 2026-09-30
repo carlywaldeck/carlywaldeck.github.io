@@ -7158,7 +7158,7 @@
    },
    "popularity": 0.92,
    "season": [
-    1,
+    2,
     2,
     3,
     5,
@@ -9235,7 +9235,7 @@
     3,
     5,
     3,
-    3,
+    4,
     3,
     1,
     1,
@@ -9273,7 +9273,11 @@
     "beach",
     "islands",
     "villages"
-   ]
+   ],
+   "coast": {
+    "onSea": true,
+    "coastlineWays": 23
+   }
   },
   "istanbul": {
    "wikipedia": {
@@ -11707,6 +11711,10 @@
     "food": 10,
     "transit": 3,
     "activities": 5
+   },
+   "coast": {
+    "onSea": true,
+    "coastlineWays": 12
    }
   },
   "amman": {
@@ -13474,7 +13482,7 @@
     2,
     2,
     3,
-    3,
+    4,
     4,
     5,
     4,
@@ -13511,7 +13519,11 @@
     "mountains",
     "views",
     "beach"
-   ]
+   ],
+   "coast": {
+    "onSea": true,
+    "coastlineWays": 23
+   }
   },
   "ibiza": {
    "wikipedia": {
@@ -15112,7 +15124,11 @@
     "markets",
     "mountains",
     "lakes"
-   ]
+   ],
+   "coast": {
+    "onSea": false,
+    "coastlineWays": 0
+   }
   },
   "sarajevo": {
    "wikipedia": {
@@ -16328,7 +16344,11 @@
     "nature",
     "wine",
     "offbeat"
-   ]
+   ],
+   "coast": {
+    "onSea": false,
+    "coastlineWays": 0
+   }
   },
   "hamburg": {
    "wikipedia": {
@@ -16542,7 +16562,11 @@
     "spas",
     "wine",
     "wildlife"
-   ]
+   ],
+   "coast": {
+    "onSea": false,
+    "coastlineWays": 0
+   }
   },
   "cologne": {
    "wikipedia": {
@@ -16823,17 +16847,17 @@
      1.7
     ],
     "comfort": [
-     0.14,
+     0.13,
      0.17,
-     0.26,
+     0.25,
+     0.34,
+     0.42,
+     0.68,
+     0.55,
+     0.59,
      0.4,
-     0.6,
-     0.82,
-     0.73,
-     0.77,
-     0.6,
-     0.21,
-     0.11,
+     0.14,
+     0.1,
      0.06
     ],
     "years": "2020–2024"
@@ -16868,12 +16892,12 @@
     1,
     2,
     3,
-    4,
-    5,
     3,
     4,
-    4,
-    2,
+    3,
+    3,
+    3,
+    1,
     1,
     1
    ],
@@ -16943,9 +16967,9 @@
     "lakes": 0.87,
     "views": 0.95,
     "spas": 0.74,
-    "surf": 0.21,
-    "beach": 0.33,
-    "islands": 0.33,
+    "surf": 0.64,
+    "beach": 1,
+    "islands": 1,
     "wine": 0.2,
     "snow": 1,
     "wildlife": 0.25,
@@ -16967,8 +16991,15 @@
     "lakes",
     "views",
     "spas",
+    "surf",
+    "beach",
+    "islands",
     "snow"
-   ]
+   ],
+   "coast": {
+    "onSea": true,
+    "coastlineWays": 325
+   }
   },
   "helsinki": {
    "wikipedia": {
@@ -18199,7 +18230,11 @@
     "lakes",
     "wine",
     "wildlife"
-   ]
+   ],
+   "coast": {
+    "onSea": false,
+    "coastlineWays": 0
+   }
   },
   "turin": {
    "wikipedia": {
@@ -21035,7 +21070,11 @@
    },
    "interests": [
     "villages"
-   ]
+   ],
+   "coast": {
+    "onSea": false,
+    "coastlineWays": 0
+   }
   },
   "zaragoza": {
    "wikipedia": {
@@ -21143,7 +21182,7 @@
    "popularity": 0.25,
    "season": [
     2,
-    3,
+    4,
     4,
     5,
     5,
@@ -23865,8 +23904,8 @@
     "views": 0.4,
     "spas": 0,
     "surf": 0,
-    "beach": 0.12,
-    "islands": 0.26,
+    "beach": 0.36,
+    "islands": 0.78,
     "wine": 0.18,
     "snow": 0,
     "wildlife": 0.55,
@@ -23881,8 +23920,13 @@
     "sports",
     "nature",
     "mountains",
-    "lakes"
-   ]
+    "lakes",
+    "islands"
+   ],
+   "coast": {
+    "onSea": true,
+    "coastlineWays": 9
+   }
   },
   "cork": {
    "wikipedia": {
@@ -24081,7 +24125,11 @@
     "castles",
     "beach",
     "villages"
-   ]
+   ],
+   "coast": {
+    "onSea": true,
+    "coastlineWays": 135
+   }
   },
   "rabat": {
    "wikipedia": {

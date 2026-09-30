@@ -65,8 +65,8 @@ Agreement = share of cities where the hand-picked tag and the data (top 40% of c
 | lakes | 76% | Porto, Vienna, Lyon, Ljubljana, Belgrade | Paris, London, Berlin, Florence, Edinburgh |
 | views | 72% | Edinburgh, Dubrovnik, Split, Reykjavík, Ohrid | Madrid, London, Amsterdam, Berlin, Vienna |
 | spas | 77% | Sofia, Amman, Tbilisi, Ponta Delgada (Azores), Antalya | Paris, London, Amsterdam, Berlin, Prague |
-| surf | 83% | Porto, Dubrovnik, Split, Palma de Mallorca, Essaouira | Barcelona, Marseille, Gdańsk, Genoa, Montpellier |
-| beach | 80% | Zurich, Ljubljana, Tangier, Agadir, Essaouira | Porto, Edinburgh, Dublin, Stockholm, Venice |
+| surf | 83% | Porto, Dubrovnik, Split, Palma de Mallorca, Essaouira | Barcelona, Marseille, Gdańsk, Oslo, Genoa |
+| beach | 79% | Zurich, Ljubljana, Tangier, Agadir, Essaouira | Porto, Edinburgh, Dublin, Stockholm, Venice |
 | islands | 80% | Istanbul, Valletta, Paphos, Tenerife, Las Palmas | San Sebastián, Edinburgh, Copenhagen, Tallinn, Riga |
 | wine | 69% | Funchal (Madeira), Santorini | Barcelona, Madrid, Lisbon, Paris, London |
 | snow | 94% | Kraków, Granada, Munich, Sofia, Tbilisi | – |
