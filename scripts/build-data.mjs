@@ -10,7 +10,8 @@
 //               (EU27 = 100); World Bank price level ratio elsewhere       data.worldbank.org
 //   Places      OpenStreetMap via the Overpass API: counts of bars,        openstreetmap.org (ODbL)
 //               museums, beaches, peaks... around each city
-//   Popularity  Wikipedia pageviews, monthly 2022–2024                     wikimedia.org
+//   Popularity  Wikipedia pageviews, monthly, the last 24 months           wikimedia.org
+//   Coast       OpenStreetMap: is there sea coastline within 15 km?        openstreetmap.org (ODbL)
 //
 // Options (environment variables):
 //   ONLY=lisbon,madrid   only these cities (others keep their previous values)
@@ -29,7 +30,12 @@ const UA = "WeekenderDataBot/1.0 (student project; +https://github.com/carlywald
 const ONLY = new Set((process.env.ONLY || "").split(",").filter(Boolean));
 const SKIP = new Set((process.env.SKIP || "").split(",").filter(Boolean));
 const CLIMATE_YEARS = [2020, 2024];
-const PAGEVIEW_RANGE = ["2022010100", "2024123100"];
+// Last 24 full months: recent enough that renamed articles (e.g. "Zürich" -> "Zurich") don't split the count.
+const PV_END = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), 0));
+const PV_START = new Date(Date.UTC(PV_END.getUTCFullYear() - 2, PV_END.getUTCMonth() + 1, 1));
+const ymd = (d) => d.toISOString().slice(0, 10).replace(/-/g, "");
+const PAGEVIEW_RANGE = [ymd(PV_START) + "00", ymd(PV_END) + "00"];
+const PV_LABEL = `${PV_START.toISOString().slice(0, 7)} to ${PV_END.toISOString().slice(0, 7)}`;
 const DEADLINE = Date.now() + Number(process.env.TIME_BUDGET_MIN || 110) * 60000;
 const outOfTime = () => Date.now() > DEADLINE;
 
@@ -82,7 +88,7 @@ async function wikipedia() {
       for (const it of pv.items || []) byMonth[Number(it.timestamp.slice(4, 6)) - 1].push(it.views);
       const monthly = byMonth.map(mean);
       const avg = mean(monthly);
-      c.data.wikipedia = { title, monthlyViews: Math.round(avg), seasonal: monthly.map((m) => round(m / avg)), years: "2022–2024" };
+      c.data.wikipedia = { title, monthlyViews: Math.round(avg), seasonal: monthly.map((m) => round(m / avg)), years: PV_LABEL };
       log("wikipedia", c.id, title, Math.round(avg));
     } catch (e) { errors.push(`wikipedia ${c.id}: ${e.message}`); }
     await sleep(300);
@@ -170,7 +176,7 @@ async function crowds() {
   }
   for (const c of todo) {
     if (byCountry[c.iso2]) c.data.crowds = byCountry[c.iso2];
-    else if (c.data.wikipedia) c.data.crowds = { index: c.data.wikipedia.seasonal, source: "wikipedia", detail: "Wikipedia pageviews by month, 2022–2024 (no Eurostat data for this country)" };
+    else if (c.data.wikipedia) c.data.crowds = { index: c.data.wikipedia.seasonal, source: "wikipedia", detail: `Wikipedia pageviews by month, ${PV_LABEL} (no Eurostat data for this country)` };
   }
 }
 
@@ -252,6 +258,11 @@ const OSM_QUERIES = {
   wildlife:    { r: 60000,  label: "zoos, aquariums & national parks", q: ['nwr[tourism~"^(zoo|aquarium)$"]', 'nwr[boundary=national_park]'] },
   desert:      { r: 80000,  label: "volcanoes & named dunes", q: ['node[natural=volcano]', 'nwr[natural=dune][name]'] }
 };
+const PRESENCE_SCALES = {
+  beach: { lo: 5, hi: 150 }, surf: { lo: 2, hi: 40 }, snow: { lo: 5, hi: 40 }, desert: { lo: 1, hi: 40 },
+  islands: { lo: 5, hi: 100 }, mountains: { lo: 50, hi: 1500 }, lakes: { lo: 5, hi: 200 },
+  spas: { lo: 2, hi: 60 }, wildlife: { lo: 3, hi: 60 }
+};
 const OVERPASS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter"];
 function overpassQuery(c) {
   const parts = Object.values(OSM_QUERIES).map(({ r, q }) =>
@@ -281,6 +292,26 @@ async function osm() {
   }
 }
 
+// 5b. Coast: is the city on the sea? One tiny Overpass query per city. Used so lake and river
+// beaches (tagged the same as sea beaches in OpenStreetMap) don't make an inland city a beach place.
+async function coast() {
+  for (const c of order("coast")) {
+    if (timeUp("coast")) break;
+    const body = "data=" + encodeURIComponent(`[out:json][timeout:60];way[natural=coastline](around:15000,${c.lat},${c.lon});out count;`);
+    for (const url of OVERPASS) {
+      try {
+        const d = await get(url, { method: "POST", body, headers: { "Content-Type": "application/x-www-form-urlencoded" }, tries: 2, wait: 10000 });
+        const n = Number(((d.elements || []).find((e) => e.type === "count") || { tags: {} }).tags.total);
+        if (!Number.isFinite(n)) throw new Error("no count");
+        c.data.coast = { onSea: n > 0, coastlineWays: n };
+        log("coast", c.id, n);
+        break;
+      } catch (e) { log("coast", c.id, url, e.message); }
+    }
+    await sleep(2000);
+  }
+}
+
 // ---------------------------------------------------------------------------------------------
 // Derived values: everything the app uses, computed from the raw data above.
 const BASE_COSTS = { hostel: 30, food: 26, transit: 6, activities: 12 }; // EUR/day, an EU-average city, student budget
@@ -301,22 +332,31 @@ function percentileRanks(values) {
 
 function derive() {
   const keys = Object.keys(OSM_QUERIES);
-  // Interest strength 0–1: where this city ranks among all cities for that kind of place (none = 0).
+  // Interest strength 0–1.
+  // "How much" interests (food, nightlife, museums...): the city's rank among all cities.
+  // "Is it there" interests (beach, snow...): a fixed log scale from `lo` (barely) to `hi` (plenty),
+  // so a couple of small ski slopes don't rank a city near the top just because most have none.
   for (const k of keys) {
     const ranks = percentileRanks(cities.map((c) => (c.data.osm ? Math.log1p(c.data.osm[k]) : null)));
     cities.forEach((c, i) => {
       if (ranks[i] == null) return;
       c.data.strengths = c.data.strengths || {};
-      c.data.strengths[k] = c.data.osm[k] === 0 ? 0 : round(ranks[i]);
+      const n = c.data.osm[k], sc = PRESENCE_SCALES[k];
+      let s = n === 0 ? 0 : sc ? clamp((Math.log1p(n) - Math.log1p(sc.lo)) / (Math.log1p(sc.hi) - Math.log1p(sc.lo)), 0, 1) : ranks[i];
+      // Beaches, water sports and islands only fully count on the sea; lake and river ones count a third.
+      if ((k === "beach" || k === "surf" || k === "islands") && c.data.coast && !c.data.coast.onSea) s /= 3;
+      c.data.strengths[k] = round(s);
     });
   }
-  // Popularity and "hidden gems": lots to see (historic sites, museums, viewpoints) but fewer visitors.
+  // Popularity (Wikipedia readers) and "hidden gems": real sights but fewer readers than most places.
   const pop = percentileRanks(cities.map((c) => (c.data.wikipedia ? Math.log(c.data.wikipedia.monthlyViews + 1) : null)));
-  const sights = percentileRanks(cities.map((c) => (c.data.strengths ? mean([c.data.strengths.history, c.data.strengths.art, c.data.strengths.views, c.data.strengths.castles]) : null)));
-  const gem = percentileRanks(cities.map((c, i) => (pop[i] == null || sights[i] == null ? null : sights[i] - pop[i])));
   cities.forEach((c, i) => {
-    if (pop[i] != null) c.data.popularity = round(pop[i]);
-    if (gem[i] != null) { c.data.strengths = c.data.strengths || {}; c.data.strengths.offbeat = round(gem[i]); }
+    if (pop[i] == null) return;
+    c.data.popularity = round(pop[i]);
+    const st = c.data.strengths;
+    if (!st) return;
+    const sights = mean([st.history, st.art, st.views, st.castles]);
+    st.offbeat = round(sights < 0.3 ? 0 : 1 - pop[i]);
   });
 
   // Best months. Each month's raw score is weather comfort minus a penalty for peak crowds (only
@@ -420,7 +460,7 @@ function report(meta) {
 }
 
 // ---------------------------------------------------------------------------------------------
-const steps = { wikipedia, climate, crowds, prices, osm };
+const steps = { wikipedia, climate, crowds, prices, coast, osm };
 for (const [name, fn] of Object.entries(steps)) {
   if (SKIP.has(name)) { log(`skipping ${name}`); continue; }
   log(`== ${name} (${Math.round((DEADLINE - Date.now()) / 60000)} min left)`);
@@ -434,15 +474,15 @@ const meta = {
     crowds: "Eurostat tour_occ_nim, nights spent at tourist accommodation by month: https://ec.europa.eu/eurostat/databrowser/view/tour_occ_nim/",
     prices: "Eurostat prc_ppp_ind, price level indices for restaurants & hotels (EU27 = 100): https://ec.europa.eu/eurostat/databrowser/view/prc_ppp_ind/ ; World Bank PA.NUS.PRVT.PP ÷ PA.NUS.FCRF (price level vs. the EU average) elsewhere: https://data.worldbank.org/indicator/PA.NUS.PRVT.PP",
     places: "OpenStreetMap contributors via the Overpass API, ODbL: https://www.openstreetmap.org/copyright",
-    popularity: "Wikimedia pageviews API, English Wikipedia, 2022–2024: https://wikimedia.org/api/rest_v1/"
+    popularity: `Wikimedia pageviews API, English Wikipedia, ${PV_LABEL}: https://wikimedia.org/api/rest_v1/`
   },
   method: {
     comfort: "0.55 × temperature (best at a 23°C daily high, or 27°C for beach places) + 0.25 × fewer rainy days + 0.2 × sunshine",
     season: "comfort − 0.25 × crowds above the yearly average; 60% rank within the city's own year + 40% rank across all city-months, into 1–5",
     priceMult: "1 + 0.4 × (crowd index − 1), kept between 0.8 and 1.4",
     costs: `EU-average city (${JSON.stringify(BASE_COSTS)} EUR/day) × country price level × (0.83 to 1.17 by Wikipedia popularity)`,
-    interests: "Percentile rank among all the cities of the OpenStreetMap count (log scale); tagged when in the top 40%. Festivals, film spots and old towns stay hand-picked.",
-    offbeat: "Rank of (sights rank − popularity rank): lots to see, fewer visitors"
+    interests: "Food, nightlife, museums and other 'how much' interests: rank among all the cities of the OpenStreetMap count (log scale). Beach, snow, islands and other 'is it there' interests: a fixed log scale per interest. Beaches, water sports and islands count a third away from the sea. Tagged at 0.6 and up. Festivals, film spots and old towns stay hand-picked.",
+    offbeat: "1 − popularity rank (Wikipedia readers), for places with real sights (history, museums, viewpoints, castles)"
   },
   osm: Object.fromEntries(Object.entries(OSM_QUERIES).map(([k, v]) => [k, { label: v.label, radiusKm: v.r / 1000 }])),
   errors
