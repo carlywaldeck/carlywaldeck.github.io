@@ -116,10 +116,11 @@ async function climate() {
     await sleep(1500);
   }
 }
-// Comfort for sightseeing, 0–1: best around a 25°C daily high, fewer rainy days, more sun.
-function comfort(high, rainDays, sunHours) {
+// Comfort, 0–1: best around a 23°C daily high for sightseeing (27°C for beach places), fewer rainy
+// days, more sun.
+function comfort(high, rainDays, sunHours, ideal = 23) {
   if (high == null) return null;
-  const t = Math.exp(-(((high - 25) / 8) ** 2));
+  const t = Math.exp(-(((high - ideal) / 9) ** 2));
   const r = 1 - clamp(rainDays / 15, 0, 1);
   const s = clamp((sunHours ?? 6) / 10, 0, 1);
   return 0.55 * t + 0.25 * r + 0.2 * s;
@@ -194,19 +195,30 @@ async function prices() {
     }
     log("prices eurostat", Object.keys(level).length, "countries");
   } catch (e) { errors.push(`prices eurostat: ${e.message}`); }
-  try {
-    const d = await get(`https://api.worldbank.org/v2/country/${isos.join(";")}/indicator/PA.NUS.PPPC.RF?format=json&mrnev=1&per_page=300`);
-    const rows = (d[1] || []).filter((r) => r.value != null);
-    const wb = Object.fromEntries(rows.map((r) => [r.country.id, { v: r.value, year: r.date }]));
-    // Put World Bank ratios on the Eurostat scale: divide by the average ratio of the EU countries we have.
-    const eu = ["AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE"];
-    const euAvg = mean(eu.map((k) => wb[k] && wb[k].v));
-    for (const iso of isos) {
-      if (level[iso] || !wb[iso] || !euAvg) continue;
-      level[iso] = { level: round(wb[iso].v / euAvg), source: "worldbank", detail: `World Bank price level ratio, ${wb[iso].year}, relative to the EU average`, year: wb[iso].year };
-    }
-    log("prices worldbank", rows.length, "countries");
-  } catch (e) { errors.push(`prices worldbank: ${e.message}`); }
+  // World Bank: price level = PPP conversion factor for private consumption ÷ market exchange rate
+  // (both in local currency per US$), latest year with both. One request per country and indicator,
+  // so one missing country can't blank the rest. Scaled so the EU average = 1, like Eurostat.
+  const wbLatest = async (iso, ind) => {
+    const d = await get(`https://api.worldbank.org/v2/country/${iso}/indicator/${ind}?format=json&date=2015:2025&per_page=20`, { tries: 2 });
+    const rows = Array.isArray(d) && Array.isArray(d[1]) ? d[1].filter((r) => r.value != null) : [];
+    return Object.fromEntries(rows.map((r) => [r.date, r.value]));
+  };
+  const wb = {};
+  const eu = ["AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE"];
+  for (const iso of [...new Set([...isos.filter((i) => !level[i]), ...eu])]) {
+    try {
+      const [ppp, fx] = await Promise.all([wbLatest(iso, "PA.NUS.PRVT.PP"), wbLatest(iso, "PA.NUS.FCRF")]);
+      const year = Object.keys(ppp).filter((y) => fx[y]).sort().pop();
+      if (year) wb[iso] = { v: ppp[year] / fx[year], year };
+    } catch (e) { errors.push(`prices worldbank ${iso}: ${e.message}`); }
+    await sleep(200);
+  }
+  const euAvg = mean(eu.map((k) => wb[k] && wb[k].v));
+  for (const iso of isos) {
+    if (level[iso] || !wb[iso] || !euAvg) continue;
+    level[iso] = { level: round(wb[iso].v / euAvg), source: "worldbank", detail: `World Bank price level (PPP ÷ exchange rate), ${wb[iso].year}, relative to the EU average`, year: wb[iso].year };
+  }
+  log("prices worldbank", Object.keys(wb).length, "countries");
   for (const c of todo) if (level[c.iso2]) c.data.price = level[c.iso2];
 }
 
@@ -307,22 +319,28 @@ function derive() {
     if (gem[i] != null) { c.data.strengths = c.data.strengths || {}; c.data.strengths.offbeat = round(gem[i]); }
   });
 
-  // Best months: 65% weather comfort + 35% fewer crowds, ranked across every city-month into 1–5.
-  const all = [];
+  // Best months. Each month's raw score is weather comfort minus a penalty for peak crowds (only
+  // above the yearly average: an empty month isn't a bonus, since off-season places often close).
+  // The 1–5 score blends how the month ranks within the city's own year (60%) with how it ranks
+  // against every city-month (40%), so a cool city's best month still counts as its best time.
+  const rank = (sorted) => (s) => { let lo = 0, hi = sorted.length; while (lo < hi) { const mid = (lo + hi) >> 1; if (sorted[mid] < s) lo = mid + 1; else hi = mid; } return lo / sorted.length; };
+  const raw = new Map();
   for (const c of cities) {
     const cl = c.data.climate, cr = c.data.crowds;
     if (!cl) continue;
-    c._s = cl.comfort.map((cf, m) => {
-      const crowd = cr ? clamp((cr.index[m] - 0.6) / 1.0, 0, 1) : 0.5;
-      return 0.65 * cf + 0.35 * (1 - crowd);
-    });
-    all.push(...c._s);
+    const beach = c.estimate.interests.includes("beach") || (c.data.strengths && c.data.strengths.beach >= 0.6);
+    cl.comfort = cl.high.map((h, m) => round(comfort(h, cl.rainDays[m], cl.sunHours[m], beach ? 27 : 23)));
+    raw.set(c, cl.comfort.map((cf, m) => cf - 0.25 * (cr ? clamp(cr.index[m] - 1, 0, 1) : 0)));
   }
-  all.sort((a, b) => a - b);
-  const q = (s) => { let lo = 0, hi = all.length; while (lo < hi) { const mid = (lo + hi) >> 1; if (all[mid] < s) lo = mid + 1; else hi = mid; } return lo / all.length; };
+  const absRank = rank([...raw.values()].flat().sort((a, b) => a - b));
+  const blended = new Map();
+  for (const [c, r] of raw) {
+    const lo = Math.min(...r), hi = Math.max(...r);
+    blended.set(c, r.map((v) => 0.6 * (hi > lo ? (v - lo) / (hi - lo) : 0.5) + 0.4 * absRank(v)));
+  }
+  const q = rank([...blended.values()].flat().sort((a, b) => a - b));
   for (const c of cities) {
-    if (c._s) c.data.season = c._s.map((s) => Math.min(5, 1 + Math.floor(q(s) * 5)));
-    delete c._s;
+    if (blended.has(c)) c.data.season = blended.get(c).map((s) => Math.min(5, 1 + Math.floor(q(s) * 5)));
     // Prices rise with crowds: +40% of the crowd index above average, kept within 0.8–1.4.
     if (c.data.crowds) c.data.priceMult = c.data.crowds.index.map((x) => round(clamp(1 + 0.4 * (x - 1), 0.8, 1.4)));
     // Daily costs: an EU-average city scaled by the country's price level, plus up to ±17% for how
@@ -414,13 +432,13 @@ const meta = {
   sources: {
     climate: "Open-Meteo historical weather API (ERA5 reanalysis), daily 2020–2024, CC BY 4.0: https://open-meteo.com/",
     crowds: "Eurostat tour_occ_nim, nights spent at tourist accommodation by month: https://ec.europa.eu/eurostat/databrowser/view/tour_occ_nim/",
-    prices: "Eurostat prc_ppp_ind, price level indices for restaurants & hotels (EU27 = 100): https://ec.europa.eu/eurostat/databrowser/view/prc_ppp_ind/ ; World Bank PA.NUS.PPPC.RF price level ratio: https://data.worldbank.org/indicator/PA.NUS.PPPC.RF",
+    prices: "Eurostat prc_ppp_ind, price level indices for restaurants & hotels (EU27 = 100): https://ec.europa.eu/eurostat/databrowser/view/prc_ppp_ind/ ; World Bank PA.NUS.PRVT.PP ÷ PA.NUS.FCRF (price level vs. the EU average) elsewhere: https://data.worldbank.org/indicator/PA.NUS.PRVT.PP",
     places: "OpenStreetMap contributors via the Overpass API, ODbL: https://www.openstreetmap.org/copyright",
     popularity: "Wikimedia pageviews API, English Wikipedia, 2022–2024: https://wikimedia.org/api/rest_v1/"
   },
   method: {
-    comfort: "0.55 × temperature (best at a 25°C daily high) + 0.25 × fewer rainy days + 0.2 × sunshine",
-    season: "0.65 × comfort + 0.35 × fewer crowds, ranked across all city-months into 1–5",
+    comfort: "0.55 × temperature (best at a 23°C daily high, or 27°C for beach places) + 0.25 × fewer rainy days + 0.2 × sunshine",
+    season: "comfort − 0.25 × crowds above the yearly average; 60% rank within the city's own year + 40% rank across all city-months, into 1–5",
     priceMult: "1 + 0.4 × (crowd index − 1), kept between 0.8 and 1.4",
     costs: `EU-average city (${JSON.stringify(BASE_COSTS)} EUR/day) × country price level × (0.83 to 1.17 by Wikipedia popularity)`,
     interests: "Percentile rank among all the cities of the OpenStreetMap count (log scale); tagged when in the top 40%. Festivals, film spots and old towns stay hand-picked.",

@@ -79,9 +79,9 @@ Best months, seasonal price swings, daily costs and interest tags come from publ
 
 | What | Source | How it's used |
 |---|---|---|
-| Weather by month | Open-Meteo historical weather (ERA5), daily 2020–2024 | Comfort = 0.55 × temperature (best at a 25°C high) + 0.25 × fewer rainy days + 0.2 × sunshine |
-| Crowds by month | Eurostat `tour_occ_nim` (nights in tourist accommodation, by country); Wikipedia pageviews where Eurostat has none | Best months = 0.65 × comfort + 0.35 × fewer crowds, ranked into 1–5; prices rise 40% of the way with the crowd index |
-| Price level | Eurostat `prc_ppp_ind` (restaurants & hotels, EU = 100); World Bank price level ratio elsewhere | Daily costs = an EU-average city × the country's price level × 0.83–1.17 for how touristy the city is |
+| Weather by month | Open-Meteo historical weather (ERA5), daily 2020–2024 | Comfort = 0.55 × temperature (best at a 23°C high, 27°C for beach places) + 0.25 × fewer rainy days + 0.2 × sunshine |
+| Crowds by month | Eurostat `tour_occ_nim` (nights in tourist accommodation, by country); Wikipedia pageviews where Eurostat has none | Best months: comfort minus a penalty for crowds above the yearly average (quiet months aren't rewarded, since off-season places often close). The 1–5 score is 60% how the month ranks within the city's own year and 40% how it ranks against every city-month. Prices rise 40% of the way with the crowd index |
+| Price level | Eurostat `prc_ppp_ind` (restaurants & hotels, EU = 100); World Bank PPP ÷ exchange rate elsewhere | Daily costs = an EU-average student day (€30 hostel, €26 food, €6 transit, €12 activities) × the country's price level × 0.83–1.17 for how touristy the city is. The base amounts are our assumptions; the scaling is data |
 | What's there | OpenStreetMap via Overpass: counts of restaurants, bars, museums, beaches, peaks, viewpoints… within set distances | Each interest's strength (0–1) is the city's rank among all the cities; tagged when in the top 40% |
 | Popularity | Wikipedia pageviews 2022–2024 | Touristy-city price premium; "hidden gems" = many sights but fewer visitors |
 
