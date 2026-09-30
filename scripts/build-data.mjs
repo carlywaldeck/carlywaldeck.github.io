@@ -99,7 +99,8 @@ async function wikipedia() {
 // 2. Climate: Open-Meteo archive, daily max temperature, precipitation and sunshine
 async function climate() {
   const [y0, y1] = CLIMATE_YEARS;
-  for (const c of order("climate")) {
+  // 2020–2024 history never changes: only fetch cities that don't have it yet.
+  for (const c of todo.filter((c) => !c.data.climate || c.data.climate.years !== `${y0}–${y1}`)) {
     if (timeUp("climate")) break;
     try {
       const d = await get(`https://archive-api.open-meteo.com/v1/archive?latitude=${c.lat}&longitude=${c.lon}` +
@@ -270,7 +271,11 @@ function overpassQuery(c) {
   return `[out:json][timeout:180];\n${parts.join("\n")}`;
 }
 async function osm() {
-  const list = order("osm");
+  // OpenStreetMap changes slowly: refetch a city only when it's missing or older than 90 days
+  // (FULL_OSM=1 refetches everything).
+  const age = (c) => (Date.now() - Date.parse(c.data.osmDate || previous.generated || "2000-01-01")) / 864e5;
+  const list = order("osm").filter((c) => process.env.FULL_OSM === "1" || !c.data.osm || age(c) > 90);
+  log(`osm: ${list.length} cities to fetch`);
   for (const [i, c] of list.entries()) {
     if (timeUp("osm")) break;
     const body = "data=" + encodeURIComponent(overpassQuery(c));
@@ -282,6 +287,7 @@ async function osm() {
         const keys = Object.keys(OSM_QUERIES);
         if (counts.length !== keys.length) throw new Error(`expected ${keys.length} counts, got ${counts.length}`);
         c.data.osm = Object.fromEntries(keys.map((k, j) => [k, counts[j]]));
+        c.data.osmDate = new Date().toISOString().slice(0, 10);
         log(`osm ${i + 1}/${list.length}`, c.id, JSON.stringify(c.data.osm));
         done = true;
         break;
