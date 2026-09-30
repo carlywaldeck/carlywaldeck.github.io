@@ -5,21 +5,21 @@ Generated 2026-09-30 by `scripts/build-data.mjs`. This compares the original han
 ## Best months (1–5 scores)
 
 - City-months compared: 1440
-- Correlation between estimates and data: **0.73** (1 = identical ranking, 0 = unrelated)
-- Within one point of each other: **83%**
+- Correlation between estimates and data: **0.74** (1 = identical ranking, 0 = unrelated)
+- Within one point of each other: **84%**
 
 Biggest disagreements (average points off per month):
 
 | City | Off by | Estimate (Jan–Dec) | Data (Jan–Dec) |
 |---|---|---|---|
-| Reykjavík | 1.7 | 3 3 3 3 4 5 5 5 4 3 3 3 | 1 1 2 3 4 3 2 2 2 2 1 1 |
-| Innsbruck | 1.6 | 5 5 4 3 3 4 5 5 5 4 3 5 | 1 1 2 3 4 5 4 4 5 4 2 1 |
-| Rome | 1.5 | 3 3 4 5 4 3 2 2 4 5 4 3 | 1 2 2 3 5 5 3 3 5 4 2 1 |
-| London | 1.4 | 3 3 3 4 5 5 4 4 4 4 3 4 | 1 1 1 3 3 5 3 4 4 2 1 1 |
-| Cologne | 1.4 | 3 4 3 4 5 5 5 5 4 3 3 4 | 1 1 2 2 3 5 4 5 4 2 1 1 |
-| Salzburg | 1.3 | 2 2 3 4 5 5 5 5 5 4 2 5 | 1 1 2 2 3 5 4 4 4 3 1 1 |
+| Reykjavík | 1.7 | 3 3 3 3 4 5 5 5 4 3 3 3 | 1 2 3 3 4 2 1 1 2 2 2 1 |
+| Innsbruck | 1.7 | 5 5 4 3 3 4 5 5 5 4 3 5 | 1 1 2 3 4 5 4 3 5 4 2 1 |
+| Cologne | 1.3 | 3 4 3 4 5 5 5 5 4 3 3 4 | 1 1 2 3 4 5 4 4 5 3 1 1 |
 | Lisbon | 1.3 | 3 3 4 5 5 4 3 3 5 4 3 3 | 1 2 2 3 5 5 5 5 5 4 2 1 |
-| Paris | 1.3 | 3 3 4 5 5 4 3 3 5 4 3 4 | 1 1 2 4 4 5 4 3 5 3 2 1 |
+| London | 1.3 | 3 3 3 4 5 5 4 4 4 4 3 4 | 1 1 1 3 4 5 4 4 5 3 1 1 |
+| Edinburgh | 1.3 | 2 2 3 4 5 5 4 4 4 3 2 4 | 1 1 2 3 3 4 2 2 4 2 2 1 |
+| Copenhagen | 1.3 | 2 2 3 4 5 5 5 5 4 3 2 3 | 1 1 2 3 3 4 3 3 4 2 1 1 |
+| Venice | 1.3 | 3 4 3 4 5 4 3 3 4 4 3 3 | 1 2 2 3 4 5 4 4 5 3 2 1 |
 
 ## Daily costs (hostel + food + transit + activities, EUR)
 
@@ -34,12 +34,12 @@ Biggest disagreements (average points off per month):
 | Kraków | 44 | 71 | 0.92 | eurostat |
 | Marseille | 60 | 87 | 1.1 | eurostat |
 | Palermo | 49 | 76 | 1.07 | eurostat |
-| Cork | 71 | 97 | 1.29 | eurostat |
-| Reykjavík | 106 | 131 | 1.67 | eurostat |
+| Reykjavík | 106 | 132 | 1.67 | eurostat |
 | Cologne | 66 | 91 | 1.12 | eurostat |
 | Brussels | 74 | 98 | 1.24 | eurostat |
+| Thessaloniki | 44 | 68 | 0.86 | eurostat |
+| Sarajevo | 36 | 60 | 0.75 | eurostat |
 | Poznań | 38 | 62 | 0.92 | eurostat |
-| Thessaloniki | 44 | 67 | 0.86 | eurostat |
 
 ## Interest tags: hand-picked vs. OpenStreetMap
 
@@ -61,18 +61,18 @@ Agreement = share of cities where the hand-picked tag and the data (top 40% of c
 | sports | 73% | Amsterdam, Lyon, Marseille, Bilbao, Toulouse | Prague, Vienna, Budapest, Kraków, Brussels |
 | nature | 50% | Málaga, San Sebastián, Nice, Zurich, Salzburg | Barcelona, Madrid, Seville, Lisbon, Paris |
 | hiking | 54% | Málaga, Edinburgh, Dublin, Sofia, Palma de Mallorca | Barcelona, Lisbon, Paris, Amsterdam, Berlin |
-| mountains | 68% | Marrakech, Tbilisi, Funchal (Madeira), Ponta Delgada (Azores), Reykjavík | Barcelona, Prague, Vienna, Budapest, Kraków |
-| lakes | 68% | Porto, Belgrade, Bordeaux, Ohrid | Madrid, Lisbon, Paris, London, Berlin |
+| mountains | 65% | Marrakech, Tbilisi, Funchal (Madeira), Ponta Delgada (Azores), Reykjavík | Barcelona, Berlin, Prague, Vienna, Budapest |
+| lakes | 76% | Porto, Vienna, Lyon, Ljubljana, Belgrade | Paris, London, Berlin, Florence, Edinburgh |
 | views | 72% | Edinburgh, Dubrovnik, Split, Reykjavík, Ohrid | Madrid, London, Amsterdam, Berlin, Vienna |
-| spas | 65% | Amman, Varna | Barcelona, Madrid, Lisbon, Paris, London |
-| surf | 64% | Dubrovnik, Palma de Mallorca, Faro (Algarve), Ibiza, Cagliari (Sardinia) | Barcelona, Paris, Amsterdam, Berlin, Prague |
-| beach | 63% | Valencia, San Sebastián, Ljubljana, Gdańsk, Valletta | Porto, London, Amsterdam, Berlin, Rome |
-| islands | 69% | Valletta, Paphos, Tenerife, Las Palmas, Ponta Delgada (Azores) | Paris, London, Amsterdam, Berlin, Vienna |
+| spas | 77% | Sofia, Amman, Tbilisi, Ponta Delgada (Azores), Antalya | Paris, London, Amsterdam, Berlin, Prague |
+| surf | 81% | Porto, Dubrovnik, Split, Palma de Mallorca, Essaouira | Barcelona, Marseille, Gdańsk, Oslo, Genoa |
+| beach | 76% | Zurich, Ljubljana, Tangier, Agadir, Essaouira | Porto, Edinburgh, Dublin, Stockholm, Venice |
+| islands | 79% | Istanbul, Valletta, Paphos, Tenerife, Las Palmas | San Sebastián, Edinburgh, Copenhagen, Tallinn, Riga |
 | wine | 69% | Funchal (Madeira), Santorini | Barcelona, Madrid, Lisbon, Paris, London |
-| snow | 69% | Tbilisi | Madrid, London, Amsterdam, Prague, Vienna |
-| wildlife | 54% | Valencia, Agadir, Paphos, Tenerife, Funchal (Madeira) | Barcelona, Madrid, Lisbon, Paris, London |
-| desert | 69% | Marrakech, Agadir, Tunis, Amman | Barcelona, Porto, Amsterdam, Berlin, Prague |
-| offbeat | 53% | Bologna, Ljubljana, Zagreb, Riga, Sofia | Lisbon, Porto, Prague, Vienna, Budapest |
+| snow | 94% | Kraków, Granada, Munich, Sofia, Tbilisi | – |
+| wildlife | 69% | Valencia, Edinburgh, Stockholm, Agadir, Paphos | Paris, London, Amsterdam, Berlin, Prague |
+| desert | 88% | Naples, Marrakech, Agadir, Tunis, Amman | Athens, Lyon, Bologna, Fez, Cologne |
+| offbeat | 63% | Bologna, Ljubljana, Gdańsk, Riga, Sofia | Granada, Dubrovnik, Split, Valletta, Palma de Mallorca |
 
 ## Coverage
 
@@ -81,3 +81,7 @@ Agreement = share of cities where the hand-picked tag and the data (top 40% of c
 - Prices: 109 from Eurostat, 11 from the World Bank
 - OpenStreetMap counts: 120/120 cities
 - Wikipedia popularity: 120/120 cities
+
+## Problems on this run
+
+- time budget reached during coast; remaining cities keep their previous values
