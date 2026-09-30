@@ -220,7 +220,7 @@ const OSM_QUERIES = {
   markets:     { r: 10000,  label: "markets", q: ['nwr[amenity=marketplace]'] },
   art:         { r: 10000,  label: "museums & galleries", q: ['nwr[tourism~"^(museum|gallery)$"]'] },
   history:     { r: 10000,  label: "notable historic sites", q: ['nwr[historic][wikipedia]'] },
-  architecture:{ r: 5000,   label: "listed heritage buildings", q: ['nwr[heritage]'] },
+  architecture:{ r: 5000,   label: "notable buildings (with a Wikipedia article)", q: ['nwr[building][wikipedia]'] },
   castles:     { r: 30000,  label: "castles, palaces & forts", q: ['nwr[historic~"^(castle|palace|fort)$"]'] },
   sacred:      { r: 10000,  label: "notable churches, mosques & temples", q: ['nwr[amenity=place_of_worship][wikipedia]'] },
   music:       { r: 10000,  label: "music venues & theatres", q: ['nwr[amenity~"^(music_venue|theatre|arts_centre)$"]'] },
