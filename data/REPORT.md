@@ -6,7 +6,7 @@ Generated 2026-09-30 by `scripts/build-data.mjs`. This compares the original han
 
 - City-months compared: 1440
 - Correlation between estimates and data: **0.74** (1 = identical ranking, 0 = unrelated)
-- Within one point of each other: **84%**
+- Within one point of each other: **85%**
 
 Biggest disagreements (average points off per month):
 
@@ -65,9 +65,9 @@ Agreement = share of cities where the hand-picked tag and the data (top 40% of c
 | lakes | 76% | Porto, Vienna, Lyon, Ljubljana, Belgrade | Paris, London, Berlin, Florence, Edinburgh |
 | views | 72% | Edinburgh, Dubrovnik, Split, Reykjavík, Ohrid | Madrid, London, Amsterdam, Berlin, Vienna |
 | spas | 77% | Sofia, Amman, Tbilisi, Ponta Delgada (Azores), Antalya | Paris, London, Amsterdam, Berlin, Prague |
-| surf | 81% | Porto, Dubrovnik, Split, Palma de Mallorca, Essaouira | Barcelona, Marseille, Gdańsk, Oslo, Genoa |
-| beach | 76% | Zurich, Ljubljana, Tangier, Agadir, Essaouira | Porto, Edinburgh, Dublin, Stockholm, Venice |
-| islands | 79% | Istanbul, Valletta, Paphos, Tenerife, Las Palmas | San Sebastián, Edinburgh, Copenhagen, Tallinn, Riga |
+| surf | 83% | Porto, Dubrovnik, Split, Palma de Mallorca, Essaouira | Barcelona, Marseille, Gdańsk, Genoa, Montpellier |
+| beach | 80% | Zurich, Ljubljana, Tangier, Agadir, Essaouira | Porto, Edinburgh, Dublin, Stockholm, Venice |
+| islands | 80% | Istanbul, Valletta, Paphos, Tenerife, Las Palmas | San Sebastián, Edinburgh, Copenhagen, Tallinn, Riga |
 | wine | 69% | Funchal (Madeira), Santorini | Barcelona, Madrid, Lisbon, Paris, London |
 | snow | 94% | Kraków, Granada, Munich, Sofia, Tbilisi | – |
 | wildlife | 69% | Valencia, Edinburgh, Stockholm, Agadir, Paphos | Paris, London, Amsterdam, Berlin, Prague |
@@ -81,7 +81,3 @@ Agreement = share of cities where the hand-picked tag and the data (top 40% of c
 - Prices: 109 from Eurostat, 11 from the World Bank
 - OpenStreetMap counts: 120/120 cities
 - Wikipedia popularity: 120/120 cities
-
-## Problems on this run
-
-- time budget reached during coast; remaining cities keep their previous values

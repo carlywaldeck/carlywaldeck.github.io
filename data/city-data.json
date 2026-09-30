@@ -117,9 +117,7 @@
    "radiusKm": 80
   }
  },
- "errors": [
-  "time budget reached during coast; remaining cities keep their previous values"
- ],
+ "errors": [],
  "cities": {
   "barcelona": {
    "wikipedia": {
@@ -982,7 +980,7 @@
    ],
    "coast": {
     "onSea": true,
-    "coastlineWays": 395
+    "coastlineWays": 396
    }
   },
   "porto": {
@@ -3769,7 +3767,7 @@
    "popularity": 0.75,
    "season": [
     1,
-    3,
+    2,
     1,
     3,
     5,
@@ -4190,7 +4188,7 @@
    "popularity": 0.52,
    "season": [
     2,
-    3,
+    2,
     2,
     3,
     5,
@@ -4607,7 +4605,7 @@
     1,
     2,
     2,
-    3,
+    2,
     4,
     5,
     4,
@@ -4646,11 +4644,7 @@
     "beach",
     "wine",
     "festivals"
-   ],
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 157
-   }
+   ]
   },
   "lyon": {
    "wikipedia": {
@@ -5664,9 +5658,9 @@
     "lakes": 0.78,
     "views": 0.58,
     "spas": 0.78,
-    "surf": 0.56,
-    "beach": 0.19,
-    "islands": 0.21,
+    "surf": 0.19,
+    "beach": 0.06,
+    "islands": 0.07,
     "wine": 0.93,
     "snow": 0,
     "wildlife": 1,
@@ -5727,7 +5721,11 @@
     "spas",
     "wine",
     "wildlife"
-   ]
+   ],
+   "coast": {
+    "onSea": false,
+    "coastlineWays": 0
+   }
   },
   "copenhagen": {
    "wikipedia": {
@@ -6376,11 +6374,7 @@
     "wine",
     "wildlife",
     "festivals"
-   ],
-   "coast": {
-    "onSea": false,
-    "coastlineWays": 0
-   }
+   ]
   },
   "zurich": {
    "wikipedia": {
@@ -6593,11 +6587,7 @@
     "wine",
     "snow",
     "wildlife"
-   ],
-   "coast": {
-    "onSea": false,
-    "coastlineWays": 0
-   }
+   ]
   },
   "salzburg": {
    "wikipedia": {
@@ -6801,11 +6791,7 @@
     "snow",
     "wildlife",
     "villages"
-   ],
-   "coast": {
-    "onSea": false,
-    "coastlineWays": 0
-   }
+   ]
   },
   "venice": {
    "wikipedia": {
@@ -7010,11 +6996,7 @@
     "wine",
     "festivals",
     "film"
-   ],
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 13
-   }
+   ]
   },
   "milan": {
    "wikipedia": {
@@ -7176,7 +7158,7 @@
    },
    "popularity": 0.92,
    "season": [
-    2,
+    1,
     2,
     3,
     5,
@@ -7226,11 +7208,7 @@
     "hiking",
     "wine",
     "festivals"
-   ],
-   "coast": {
-    "onSea": false,
-    "coastlineWays": 0
-   }
+   ]
   },
   "naples": {
    "wikipedia": {
@@ -7443,11 +7421,7 @@
     "beach",
     "islands",
     "wine"
-   ],
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 21
-   }
+   ]
   },
   "bologna": {
    "wikipedia": {
@@ -7658,11 +7632,7 @@
     "wine",
     "desert",
     "villages"
-   ],
-   "coast": {
-    "onSea": false,
-    "coastlineWays": 0
-   }
+   ]
   },
   "dubrovnik": {
    "wikipedia": {
@@ -7864,11 +7834,7 @@
     "offbeat",
     "villages",
     "film"
-   ],
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 93
-   }
+   ]
   },
   "split": {
    "wikipedia": {
@@ -8069,11 +8035,7 @@
     "islands",
     "offbeat",
     "film"
-   ],
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 117
-   }
+   ]
   },
   "ljubljana": {
    "wikipedia": {
@@ -8273,11 +8235,7 @@
     "hiking",
     "mountains",
     "villages"
-   ],
-   "coast": {
-    "onSea": false,
-    "coastlineWays": 0
-   }
+   ]
   },
   "zagreb": {
    "wikipedia": {
@@ -8486,11 +8444,7 @@
     "wine",
     "offbeat",
     "festivals"
-   ],
-   "coast": {
-    "onSea": false,
-    "coastlineWays": 0
-   }
+   ]
   },
   "warsaw": {
    "wikipedia": {
@@ -8704,11 +8658,7 @@
     "views",
     "spas",
     "wine"
-   ],
-   "coast": {
-    "onSea": false,
-    "coastlineWays": 0
-   }
+   ]
   },
   "gdansk": {
    "wikipedia": {
@@ -8912,11 +8862,7 @@
     "beach",
     "festivals",
     "villages"
-   ],
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 94
-   }
+   ]
   },
   "tallinn": {
    "wikipedia": {
@@ -9081,7 +9027,7 @@
     1,
     1,
     2,
-    3,
+    2,
     3,
     5,
     3,
@@ -9120,11 +9066,7 @@
     "beach",
     "islands",
     "villages"
-   ],
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 113
-   }
+   ]
   },
   "riga": {
    "wikipedia": {
@@ -9293,7 +9235,7 @@
     3,
     5,
     3,
-    4,
+    3,
     3,
     1,
     1,
@@ -9331,11 +9273,7 @@
     "beach",
     "islands",
     "villages"
-   ],
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 23
-   }
+   ]
   },
   "istanbul": {
    "wikipedia": {
@@ -9546,11 +9484,7 @@
     "spas",
     "beach",
     "wildlife"
-   ],
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 121
-   }
+   ]
   },
   "sofia": {
    "wikipedia": {
@@ -9756,11 +9690,7 @@
     "sports",
     "mountains",
     "wine"
-   ],
-   "coast": {
-    "onSea": false,
-    "coastlineWays": 0
-   }
+   ]
   },
   "bucharest": {
    "wikipedia": {
@@ -9968,11 +9898,7 @@
     "sports",
     "nature",
     "lakes"
-   ],
-   "coast": {
-    "onSea": false,
-    "coastlineWays": 0
-   }
+   ]
   },
   "belgrade": {
    "wikipedia": {
@@ -10181,11 +10107,7 @@
     "sports",
     "wine",
     "festivals"
-   ],
-   "coast": {
-    "onSea": false,
-    "coastlineWays": 0
-   }
+   ]
   },
   "valletta": {
    "wikipedia": {
@@ -10391,11 +10313,7 @@
     "festivals",
     "villages",
     "film"
-   ],
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 52
-   }
+   ]
   },
   "palma": {
    "wikipedia": {
@@ -10599,11 +10517,7 @@
     "islands",
     "wine",
     "offbeat"
-   ],
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 52
-   }
+   ]
   },
   "marrakech": {
    "wikipedia": {
@@ -10801,10 +10715,6 @@
     "food": 15,
     "transit": 3,
     "activities": 7
-   },
-   "coast": {
-    "onSea": false,
-    "coastlineWays": 0
    }
   },
   "fez": {
@@ -11006,10 +10916,6 @@
     "food": 13,
     "transit": 3,
     "activities": 6
-   },
-   "coast": {
-    "onSea": false,
-    "coastlineWays": 0
    }
   },
   "tangier": {
@@ -11169,7 +11075,7 @@
     2,
     3,
     3,
-    4,
+    3,
     5,
     5,
     5,
@@ -11205,10 +11111,6 @@
     "food": 14,
     "transit": 3,
     "activities": 7
-   },
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 10
    }
   },
   "agadir": {
@@ -11407,10 +11309,6 @@
     "food": 13,
     "transit": 3,
     "activities": 6
-   },
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 40
    }
   },
   "essaouira": {
@@ -11608,10 +11506,6 @@
     "food": 13,
     "transit": 3,
     "activities": 6
-   },
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 46
    }
   },
   "tunis": {
@@ -11813,10 +11707,6 @@
     "food": 10,
     "transit": 3,
     "activities": 5
-   },
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 12
    }
   },
   "amman": {
@@ -12014,10 +11904,6 @@
     "food": 15,
     "transit": 4,
     "activities": 7
-   },
-   "coast": {
-    "onSea": false,
-    "coastlineWays": 0
    }
   },
   "tbilisi": {
@@ -12226,10 +12112,6 @@
     "food": 15,
     "transit": 3,
     "activities": 7
-   },
-   "coast": {
-    "onSea": false,
-    "coastlineWays": 0
    }
   },
   "paphos": {
@@ -12427,11 +12309,7 @@
    },
    "interests": [
     "beach"
-   ],
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 28
-   }
+   ]
   },
   "tenerife": {
    "wikipedia": {
@@ -12634,11 +12512,7 @@
     "beach",
     "desert",
     "festivals"
-   ],
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 141
-   }
+   ]
   },
   "laspalmas": {
    "wikipedia": {
@@ -12839,11 +12713,7 @@
     "surf",
     "beach",
     "festivals"
-   ],
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 60
-   }
+   ]
   },
   "funchal": {
    "wikipedia": {
@@ -13043,11 +12913,7 @@
     "views",
     "offbeat",
     "festivals"
-   ],
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 63
-   }
+   ]
   },
   "pontadelgada": {
    "wikipedia": {
@@ -13245,11 +13111,7 @@
    "interests": [
     "views",
     "desert"
-   ],
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 97
-   }
+   ]
   },
   "faro": {
    "wikipedia": {
@@ -13446,11 +13308,7 @@
    },
    "interests": [
     "beach"
-   ],
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 82
-   }
+   ]
   },
   "bilbao": {
    "wikipedia": {
@@ -13616,7 +13474,7 @@
     2,
     2,
     3,
-    4,
+    3,
     4,
     5,
     4,
@@ -13653,11 +13511,7 @@
     "mountains",
     "views",
     "beach"
-   ],
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 23
-   }
+   ]
   },
   "ibiza": {
    "wikipedia": {
@@ -13857,11 +13711,7 @@
     "beach",
     "islands",
     "festivals"
-   ],
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 74
-   }
+   ]
   },
   "palermo": {
    "wikipedia": {
@@ -14061,11 +13911,7 @@
     "hiking",
     "beach",
     "film"
-   ],
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 24
-   }
+   ]
   },
   "bari": {
    "wikipedia": {
@@ -14264,11 +14110,7 @@
     "sports",
     "beach",
     "villages"
-   ],
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 9
-   }
+   ]
   },
   "cagliari": {
    "wikipedia": {
@@ -14469,11 +14311,7 @@
     "hiking",
     "mountains",
     "beach"
-   ],
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 38
-   }
+   ]
   },
   "thessaloniki": {
    "wikipedia": {
@@ -14635,7 +14473,7 @@
    },
    "popularity": 0.71,
    "season": [
-    2,
+    1,
     2,
     2,
     3,
@@ -14872,11 +14710,7 @@
     "mountains",
     "beach",
     "villages"
-   ],
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 171
-   }
+   ]
   },
   "corfu": {
    "wikipedia": {
@@ -15048,7 +14882,7 @@
     3,
     4,
     5,
-    3,
+    2,
     1
    ],
    "priceMult": [
@@ -15077,11 +14911,7 @@
     "islands",
     "villages",
     "film"
-   ],
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 133
-   }
+   ]
   },
   "tirana": {
    "wikipedia": {
@@ -15282,11 +15112,7 @@
     "markets",
     "mountains",
     "lakes"
-   ],
-   "coast": {
-    "onSea": false,
-    "coastlineWays": 0
-   }
+   ]
   },
   "sarajevo": {
    "wikipedia": {
@@ -15455,9 +15281,9 @@
     4,
     5,
     4,
+    4,
     5,
-    5,
-    5,
+    4,
     1,
     1
    ],
@@ -15485,11 +15311,7 @@
     "markets",
     "mountains",
     "villages"
-   ],
-   "coast": {
-    "onSea": false,
-    "coastlineWays": 0
-   }
+   ]
   },
   "vilnius": {
    "wikipedia": {
@@ -15692,11 +15514,7 @@
     "lakes",
     "wildlife",
     "villages"
-   ],
-   "coast": {
-    "onSea": false,
-    "coastlineWays": 0
-   }
+   ]
   },
   "wroclaw": {
    "wikipedia": {
@@ -15903,11 +15721,7 @@
     "spas",
     "festivals",
     "villages"
-   ],
-   "coast": {
-    "onSea": false,
-    "coastlineWays": 0
-   }
+   ]
   },
   "cluj": {
    "wikipedia": {
@@ -16514,11 +16328,7 @@
     "nature",
     "wine",
     "offbeat"
-   ],
-   "coast": {
-    "onSea": false,
-    "coastlineWays": 0
-   }
+   ]
   },
   "hamburg": {
    "wikipedia": {
@@ -16732,11 +16542,7 @@
     "spas",
     "wine",
     "wildlife"
-   ],
-   "coast": {
-    "onSea": false,
-    "coastlineWays": 0
-   }
+   ]
   },
   "cologne": {
    "wikipedia": {
@@ -16951,11 +16757,7 @@
     "wildlife",
     "desert",
     "festivals"
-   ],
-   "coast": {
-    "onSea": false,
-    "coastlineWays": 0
-   }
+   ]
   },
   "oslo": {
    "wikipedia": {
@@ -17021,17 +16823,17 @@
      1.7
     ],
     "comfort": [
-     0.13,
-     0.17,
-     0.25,
-     0.34,
-     0.42,
-     0.68,
-     0.55,
-     0.59,
-     0.4,
      0.14,
-     0.1,
+     0.17,
+     0.26,
+     0.4,
+     0.6,
+     0.82,
+     0.73,
+     0.77,
+     0.6,
+     0.21,
+     0.11,
      0.06
     ],
     "years": "2020–2024"
@@ -17066,12 +16868,12 @@
     1,
     2,
     3,
+    4,
+    5,
     3,
     4,
-    3,
-    3,
-    3,
-    1,
+    4,
+    2,
     1,
     1
    ],
@@ -17141,9 +16943,9 @@
     "lakes": 0.87,
     "views": 0.95,
     "spas": 0.74,
-    "surf": 0.64,
-    "beach": 1,
-    "islands": 1,
+    "surf": 0.21,
+    "beach": 0.33,
+    "islands": 0.33,
     "wine": 0.2,
     "snow": 1,
     "wildlife": 0.25,
@@ -17165,15 +16967,8 @@
     "lakes",
     "views",
     "spas",
-    "surf",
-    "beach",
-    "islands",
     "snow"
-   ],
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 325
-   }
+   ]
   },
   "helsinki": {
    "wikipedia": {
@@ -17283,7 +17078,7 @@
     1,
     1,
     2,
-    3,
+    2,
     3,
     4,
     3,
@@ -17387,11 +17182,7 @@
     "beach",
     "islands",
     "wildlife"
-   ],
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 1331
-   }
+   ]
   },
   "gothenburg": {
    "wikipedia": {
@@ -17802,11 +17593,7 @@
     "wine",
     "wildlife",
     "offbeat"
-   ],
-   "coast": {
-    "onSea": false,
-    "coastlineWays": 0
-   }
+   ]
   },
   "kotor": {
    "wikipedia": {
@@ -18009,11 +17796,7 @@
     "islands",
     "offbeat",
     "villages"
-   ],
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 64
-   }
+   ]
   },
   "ohrid": {
    "wikipedia": {
@@ -18211,11 +17994,7 @@
    "interests": [
     "mountains",
     "villages"
-   ],
-   "coast": {
-    "onSea": false,
-    "coastlineWays": 0
-   }
+   ]
   },
   "manchester": {
    "wikipedia": {
@@ -18420,11 +18199,7 @@
     "lakes",
     "wine",
     "wildlife"
-   ],
-   "coast": {
-    "onSea": false,
-    "coastlineWays": 0
-   }
+   ]
   },
   "turin": {
    "wikipedia": {
@@ -18634,11 +18409,7 @@
     "hiking",
     "mountains",
     "wine"
-   ],
-   "coast": {
-    "onSea": false,
-    "coastlineWays": 0
-   }
+   ]
   },
   "genoa": {
    "wikipedia": {
@@ -18849,11 +18620,7 @@
     "beach",
     "wine",
     "villages"
-   ],
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 32
-   }
+   ]
   },
   "catania": {
    "wikipedia": {
@@ -19055,11 +18822,7 @@
     "beach",
     "desert",
     "offbeat"
-   ],
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 46
-   }
+   ]
   },
   "rhodes": {
    "wikipedia": {
@@ -19258,11 +19021,7 @@
     "beach",
     "islands",
     "villages"
-   ],
-   "coast": {
-    "onSea": true,
-    "coastlineWays": 45
-   }
+   ]
   },
   "antalya": {
    "wikipedia": {
@@ -19662,11 +19421,7 @@
     "desert",
     "villages",
     "film"
-   ],
-   "coast": {
-    "onSea": false,
-    "coastlineWays": 0
-   }
+   ]
   },
   "toulouse": {
    "wikipedia": {
@@ -19780,7 +19535,7 @@
     5,
     4,
     3,
-    3,
+    2,
     5,
     5,
     2,
@@ -19853,8 +19608,8 @@
     "views": 0.43,
     "spas": 0.23,
     "surf": 0,
-    "beach": 0.09,
-    "islands": 0.21,
+    "beach": 0.03,
+    "islands": 0.07,
     "wine": 0.73,
     "snow": 0,
     "wildlife": 0.25,
@@ -19940,18 +19695,18 @@
      3.2
     ],
     "comfort": [
-     0.15,
-     0.17,
-     0.26,
-     0.4,
-     0.55,
-     0.76,
-     0.8,
-     0.8,
-     0.71,
-     0.33,
-     0.13,
-     0.07
+     0.16,
+     0.22,
+     0.37,
+     0.58,
+     0.74,
+     0.74,
+     0.74,
+     0.73,
+     0.83,
+     0.52,
+     0.18,
+     0.08
     ],
     "years": "2020–2024"
    },
@@ -19982,15 +19737,15 @@
    "popularity": 0.67,
    "season": [
     1,
-    1,
     2,
+    2,
+    4,
+    5,
+    4,
     3,
-    4,
+    3,
     5,
-    4,
-    4,
-    5,
-    2,
+    3,
     1,
     1
    ],
@@ -20060,8 +19815,8 @@
     "lakes": 0.73,
     "views": 0.11,
     "spas": 0.4,
-    "surf": 0.42,
-    "beach": 0.66,
+    "surf": 0.14,
+    "beach": 0.22,
     "islands": 0,
     "wine": 0.9,
     "snow": 0,
@@ -20076,7 +19831,6 @@
     "hiking",
     "mountains",
     "lakes",
-    "beach",
     "wine",
     "wildlife",
     "villages",
@@ -20268,8 +20022,8 @@
     "views": 0.32,
     "spas": 0,
     "surf": 0,
-    "beach": 0.09,
-    "islands": 1,
+    "beach": 0.03,
+    "islands": 0.33,
     "wine": 0.36,
     "snow": 0,
     "wildlife": 0.15,
@@ -20279,7 +20033,6 @@
    "interests": [
     "architecture",
     "mountains",
-    "islands",
     "villages"
    ]
   },
@@ -20392,7 +20145,7 @@
     2,
     2,
     3,
-    4,
+    5,
     5,
     4,
     3,
@@ -20665,9 +20418,9 @@
     "lakes": 0.65,
     "views": 0.88,
     "spas": 0.33,
-    "surf": 0.78,
-    "beach": 0.37,
-    "islands": 0.35,
+    "surf": 0.26,
+    "beach": 0.12,
+    "islands": 0.12,
     "wine": 0.47,
     "snow": 1,
     "wildlife": 0.57,
@@ -20682,7 +20435,6 @@
     "mountains",
     "lakes",
     "views",
-    "surf",
     "snow",
     "offbeat"
    ]
@@ -21065,7 +20817,7 @@
     "views": 0.36,
     "spas": 0.28,
     "surf": 0,
-    "beach": 0.19,
+    "beach": 0.06,
     "islands": 0,
     "wine": 0.61,
     "snow": 0,
@@ -21272,8 +21024,8 @@
     "lakes": 0.42,
     "views": 0.34,
     "spas": 0.23,
-    "surf": 0.11,
-    "beach": 0.45,
+    "surf": 0.04,
+    "beach": 0.15,
     "islands": 0,
     "wine": 0.23,
     "snow": 0,
@@ -21391,7 +21143,7 @@
    "popularity": 0.25,
    "season": [
     2,
-    4,
+    3,
     4,
     5,
     5,
@@ -21960,18 +21712,18 @@
      2.6
     ],
     "comfort": [
-     0.08,
-     0.12,
-     0.24,
+     0.09,
+     0.16,
      0.33,
-     0.51,
-     0.76,
-     0.79,
+     0.49,
+     0.71,
      0.78,
-     0.65,
-     0.28,
-     0.1,
-     0.05
+     0.77,
+     0.75,
+     0.8,
+     0.46,
+     0.14,
+     0.07
     ],
     "years": "2020–2024"
    },
@@ -22004,13 +21756,13 @@
     1,
     1,
     2,
-    2,
     3,
-    5,
-    5,
+    4,
     5,
     4,
-    2,
+    4,
+    5,
+    3,
     1,
     1
    ],
@@ -22080,9 +21832,9 @@
     "lakes": 0.82,
     "views": 0.96,
     "spas": 0.68,
-    "surf": 0.88,
-    "beach": 0.95,
-    "islands": 0.46,
+    "surf": 0.29,
+    "beach": 0.32,
+    "islands": 0.15,
     "wine": 0.79,
     "snow": 0,
     "wildlife": 1,
@@ -22102,8 +21854,6 @@
     "lakes",
     "views",
     "spas",
-    "surf",
-    "beach",
     "wine",
     "wildlife",
     "offbeat",
@@ -22174,18 +21924,18 @@
      2.7
     ],
     "comfort": [
-     0.09,
-     0.11,
-     0.25,
-     0.33,
-     0.43,
-     0.77,
+     0.1,
+     0.13,
+     0.32,
+     0.46,
+     0.64,
+     0.81,
      0.78,
      0.75,
-     0.6,
-     0.3,
-     0.13,
-     0.07
+     0.77,
+     0.47,
+     0.16,
+     0.08
     ],
     "years": "2020–2024"
    },
@@ -22218,13 +21968,13 @@
     1,
     1,
     2,
-    2,
     3,
-    5,
+    4,
     5,
     4,
     4,
-    2,
+    5,
+    3,
     1,
     1
    ],
@@ -22294,9 +22044,9 @@
     "lakes": 0.39,
     "views": 0.56,
     "spas": 0.66,
-    "surf": 0.32,
-    "beach": 0.69,
-    "islands": 0.1,
+    "surf": 0.11,
+    "beach": 0.23,
+    "islands": 0.03,
     "wine": 0.69,
     "snow": 0,
     "wildlife": 0.82,
@@ -22313,7 +22063,6 @@
     "hiking",
     "mountains",
     "spas",
-    "beach",
     "wine",
     "wildlife",
     "festivals"
@@ -22383,17 +22132,17 @@
      2.4
     ],
     "comfort": [
-     0.07,
-     0.1,
-     0.26,
+     0.08,
+     0.12,
      0.31,
-     0.52,
+     0.43,
+     0.72,
+     0.8,
+     0.78,
      0.75,
-     0.79,
-     0.76,
-     0.67,
-     0.3,
-     0.19,
+     0.84,
+     0.46,
+     0.21,
      0.14
     ],
     "years": "2020–2024"
@@ -22427,13 +22176,13 @@
     1,
     1,
     2,
-    2,
+    3,
     4,
     5,
     4,
     4,
-    4,
-    2,
+    5,
+    3,
     1,
     1
    ],
@@ -22503,9 +22252,9 @@
     "lakes": 0.79,
     "views": 0.19,
     "spas": 0.28,
-    "surf": 0.11,
-    "beach": 0.8,
-    "islands": 0.21,
+    "surf": 0.04,
+    "beach": 0.27,
+    "islands": 0.07,
     "wine": 0.5,
     "snow": 0.27,
     "wildlife": 0.37,
@@ -22520,7 +22269,6 @@
     "sacred",
     "streetart",
     "lakes",
-    "beach",
     "offbeat"
    ]
   },
@@ -23909,8 +23657,8 @@
     "lakes": 0.43,
     "views": 0.13,
     "spas": 0.36,
-    "surf": 0.11,
-    "beach": 0.09,
+    "surf": 0.04,
+    "beach": 0.03,
     "islands": 0,
     "wine": 0.77,
     "snow": 0,
@@ -24117,8 +23865,8 @@
     "views": 0.4,
     "spas": 0,
     "surf": 0,
-    "beach": 0.36,
-    "islands": 0.78,
+    "beach": 0.12,
+    "islands": 0.26,
     "wine": 0.18,
     "snow": 0,
     "wildlife": 0.55,
@@ -24133,8 +23881,7 @@
     "sports",
     "nature",
     "mountains",
-    "lakes",
-    "islands"
+    "lakes"
    ]
   },
   "cork": {
@@ -24721,7 +24468,7 @@
     "spas": 0.63,
     "surf": 0,
     "beach": 0,
-    "islands": 0.27,
+    "islands": 0.09,
     "wine": 0.08,
     "snow": 0,
     "wildlife": 0.15,
