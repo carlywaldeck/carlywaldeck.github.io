@@ -1,5 +1,5 @@
 {
- "note": "Input for scripts/build-data.mjs: every city's location, country and Wikipedia title, plus the original hand-written estimates (used only for comparison in data/REPORT.md).",
+ "note": "Input for scripts/build-data.mjs: every city's location, country and Wikipedia title, plus the original hand-written estimates (used only for comparison in data/REPORT.md). coastKm: distance from the city centre to the sea coastline, measured on Natural Earth 1:50m land outlines (public domain).",
  "cities": [
   {
    "id": "barcelona",
@@ -57,7 +57,8 @@
      "views",
      "sports"
     ]
-   }
+   },
+   "coastKm": 2.3
   },
   {
    "id": "madrid",
@@ -112,7 +113,8 @@
      "cafes",
      "sports"
     ]
-   }
+   },
+   "coastKm": 999
   },
   {
    "id": "seville",
@@ -170,7 +172,8 @@
      "film",
      "sports"
     ]
-   }
+   },
+   "coastKm": 66.3
   },
   {
    "id": "lisbon",
@@ -227,7 +230,8 @@
      "views",
      "sports"
     ]
-   }
+   },
+   "coastKm": 0.3
   },
   {
    "id": "porto",
@@ -284,7 +288,8 @@
      "views",
      "sports"
     ]
-   }
+   },
+   "coastKm": 6.8
   },
   {
    "id": "paris",
@@ -342,7 +347,8 @@
      "film",
      "sports"
     ]
-   }
+   },
+   "coastKm": 150.0
   },
   {
    "id": "london",
@@ -399,7 +405,8 @@
      "film",
      "sports"
     ]
-   }
+   },
+   "coastKm": 49.9
   },
   {
    "id": "amsterdam",
@@ -455,7 +462,8 @@
      "lakes",
      "sports"
     ]
-   }
+   },
+   "coastKm": 26.1
   },
   {
    "id": "berlin",
@@ -509,7 +517,8 @@
      "markets",
      "sports"
     ]
-   }
+   },
+   "coastKm": 145.9
   },
   {
    "id": "prague",
@@ -565,7 +574,8 @@
      "villages",
      "views"
     ]
-   }
+   },
+   "coastKm": 999
   },
   {
    "id": "vienna",
@@ -621,7 +631,8 @@
      "lakes",
      "film"
     ]
-   }
+   },
+   "coastKm": 999
   },
   {
    "id": "budapest",
@@ -678,7 +689,8 @@
      "spas",
      "views"
     ]
-   }
+   },
+   "coastKm": 999
   },
   {
    "id": "krakow",
@@ -733,7 +745,8 @@
      "villages",
      "sacred"
     ]
-   }
+   },
+   "coastKm": 999
   },
   {
    "id": "rome",
@@ -788,7 +801,8 @@
      "film",
      "sports"
     ]
-   }
+   },
+   "coastKm": 23.2
   },
   {
    "id": "florence",
@@ -843,7 +857,8 @@
      "villages",
      "views"
     ]
-   }
+   },
+   "coastKm": 79.0
   },
   {
    "id": "athens",
@@ -899,7 +914,8 @@
      "views",
      "sports"
     ]
-   }
+   },
+   "coastKm": 7.3
   },
   {
    "id": "valencia",
@@ -955,7 +971,8 @@
      "sports",
      "wildlife"
     ]
-   }
+   },
+   "coastKm": 5.4
   },
   {
    "id": "granada",
@@ -1013,7 +1030,8 @@
      "villages",
      "views"
     ]
-   }
+   },
+   "coastKm": 47.7
   },
   {
    "id": "malaga",
@@ -1067,7 +1085,8 @@
      "nature",
      "castles"
     ]
-   }
+   },
+   "coastKm": 2.9
   },
   {
    "id": "sansebastian",
@@ -1120,7 +1139,8 @@
      "festivals",
      "surf"
     ]
-   }
+   },
+   "coastKm": 6.8
   },
   {
    "id": "nice",
@@ -1175,7 +1195,8 @@
      "mountains",
      "views"
     ]
-   }
+   },
+   "coastKm": 2.7
   },
   {
    "id": "lyon",
@@ -1230,7 +1251,8 @@
      "lakes",
      "sports"
     ]
-   }
+   },
+   "coastKm": 300.3
   },
   {
    "id": "marseille",
@@ -1285,7 +1307,8 @@
      "history",
      "sports"
     ]
-   }
+   },
+   "coastKm": 3.9
   },
   {
    "id": "edinburgh",
@@ -1344,7 +1367,8 @@
      "film",
      "wildlife"
     ]
-   }
+   },
+   "coastKm": 3.6
   },
   {
    "id": "dublin",
@@ -1400,7 +1424,8 @@
      "film",
      "sports"
     ]
-   }
+   },
+   "coastKm": 10.5
   },
   {
    "id": "brussels",
@@ -1453,7 +1478,8 @@
      "streetart",
      "markets"
     ]
-   }
+   },
+   "coastKm": 60.4
   },
   {
    "id": "copenhagen",
@@ -1507,7 +1533,8 @@
      "nightlife",
      "castles"
     ]
-   }
+   },
+   "coastKm": 0.0
   },
   {
    "id": "stockholm",
@@ -1562,7 +1589,8 @@
      "lakes",
      "wildlife"
     ]
-   }
+   },
+   "coastKm": 3.6
   },
   {
    "id": "munich",
@@ -1618,7 +1646,8 @@
      "snow",
      "sports"
     ]
-   }
+   },
+   "coastKm": 999
   },
   {
    "id": "zurich",
@@ -1674,7 +1703,8 @@
      "mountains",
      "snow"
     ]
-   }
+   },
+   "coastKm": 999
   },
   {
    "id": "salzburg",
@@ -1732,7 +1762,8 @@
      "villages",
      "views"
     ]
-   }
+   },
+   "coastKm": 999
   },
   {
    "id": "venice",
@@ -1786,7 +1817,8 @@
      "food",
      "film"
     ]
-   }
+   },
+   "coastKm": 1.3
   },
   {
    "id": "milan",
@@ -1840,7 +1872,8 @@
      "festivals",
      "sports"
     ]
-   }
+   },
+   "coastKm": 119.8
   },
   {
    "id": "naples",
@@ -1896,7 +1929,8 @@
      "views",
      "sports"
     ]
-   }
+   },
+   "coastKm": 7.0
   },
   {
    "id": "bologna",
@@ -1950,7 +1984,8 @@
      "villages",
      "offbeat"
     ]
-   }
+   },
+   "coastKm": 76.0
   },
   {
    "id": "dubrovnik",
@@ -2006,7 +2041,8 @@
      "views",
      "film"
     ]
-   }
+   },
+   "coastKm": 0.9
   },
   {
    "id": "split",
@@ -2061,7 +2097,8 @@
      "views",
      "film"
     ]
-   }
+   },
+   "coastKm": 1.6
   },
   {
    "id": "ljubljana",
@@ -2117,7 +2154,8 @@
      "villages",
      "offbeat"
     ]
-   }
+   },
+   "coastKm": 75.2
   },
   {
    "id": "zagreb",
@@ -2171,7 +2209,8 @@
      "nature",
      "offbeat"
     ]
-   }
+   },
+   "coastKm": 118.6
   },
   {
    "id": "warsaw",
@@ -2224,7 +2263,8 @@
      "art",
      "architecture"
     ]
-   }
+   },
+   "coastKm": 999
   },
   {
    "id": "gdansk",
@@ -2278,7 +2318,8 @@
      "villages",
      "offbeat"
     ]
-   }
+   },
+   "coastKm": 8.6
   },
   {
    "id": "tallinn",
@@ -2331,7 +2372,8 @@
      "nature",
      "villages"
     ]
-   }
+   },
+   "coastKm": 5.2
   },
   {
    "id": "riga",
@@ -2386,7 +2428,8 @@
      "villages",
      "offbeat"
     ]
-   }
+   },
+   "coastKm": 12.1
   },
   {
    "id": "istanbul",
@@ -2444,7 +2487,8 @@
      "views",
      "sports"
     ]
-   }
+   },
+   "coastKm": 1.6
   },
   {
    "id": "sofia",
@@ -2502,7 +2546,8 @@
      "sacred",
      "offbeat"
     ]
-   }
+   },
+   "coastKm": 215.5
   },
   {
    "id": "bucharest",
@@ -2555,7 +2600,8 @@
      "cafes",
      "sacred"
     ]
-   }
+   },
+   "coastKm": 197.5
   },
   {
    "id": "belgrade",
@@ -2612,7 +2658,8 @@
      "offbeat",
      "sports"
     ]
-   }
+   },
+   "coastKm": 300.2
   },
   {
    "id": "valletta",
@@ -2667,7 +2714,8 @@
      "villages",
      "film"
     ]
-   }
+   },
+   "coastKm": 7.7
   },
   {
    "id": "palma",
@@ -2721,7 +2769,8 @@
      "food",
      "surf"
     ]
-   }
+   },
+   "coastKm": 2.0
   },
   {
    "id": "marrakech",
@@ -2780,7 +2829,8 @@
      "desert",
      "film"
     ]
-   }
+   },
+   "coastKm": 138.6
   },
   {
    "id": "fez",
@@ -2834,7 +2884,8 @@
      "villages",
      "sacred"
     ]
-   }
+   },
+   "coastKm": 137.0
   },
   {
    "id": "tangier",
@@ -2886,7 +2937,8 @@
      "markets",
      "architecture"
     ]
-   }
+   },
+   "coastKm": 4.4
   },
   {
    "id": "agadir",
@@ -2940,7 +2992,8 @@
      "desert",
      "wildlife"
     ]
-   }
+   },
+   "coastKm": 4.9
   },
   {
    "id": "essaouira",
@@ -2996,7 +3049,8 @@
      "villages",
      "offbeat"
     ]
-   }
+   },
+   "coastKm": 0.0
   },
   {
    "id": "tunis",
@@ -3051,7 +3105,8 @@
      "desert",
      "offbeat"
     ]
-   }
+   },
+   "coastKm": 13.1
   },
   {
    "id": "amman",
@@ -3107,7 +3162,8 @@
      "desert",
      "film"
     ]
-   }
+   },
+   "coastKm": 111.1
   },
   {
    "id": "tbilisi",
@@ -3168,7 +3224,8 @@
      "views",
      "offbeat"
     ]
-   }
+   },
+   "coastKm": 264.9
   },
   {
    "id": "paphos",
@@ -3222,7 +3279,8 @@
      "surf",
      "wildlife"
     ]
-   }
+   },
+   "coastKm": 0.5
   },
   {
    "id": "tenerife",
@@ -3278,7 +3336,8 @@
      "desert",
      "wildlife"
     ]
-   }
+   },
+   "coastKm": 1.6
   },
   {
    "id": "laspalmas",
@@ -3334,7 +3393,8 @@
      "surf",
      "desert"
     ]
-   }
+   },
+   "coastKm": 3.0
   },
   {
    "id": "funchal",
@@ -3390,7 +3450,8 @@
      "views",
      "wildlife"
     ]
-   }
+   },
+   "coastKm": 1.6
   },
   {
    "id": "pontadelgada",
@@ -3446,7 +3507,8 @@
      "offbeat",
      "wildlife"
     ]
-   }
+   },
+   "coastKm": 1.8
   },
   {
    "id": "faro",
@@ -3500,7 +3562,8 @@
      "surf",
      "wildlife"
     ]
-   }
+   },
+   "coastKm": 0.3
   },
   {
    "id": "bilbao",
@@ -3555,7 +3618,8 @@
      "offbeat",
      "sports"
     ]
-   }
+   },
+   "coastKm": 15.1
   },
   {
    "id": "ibiza",
@@ -3609,7 +3673,8 @@
      "festivals",
      "surf"
     ]
-   }
+   },
+   "coastKm": 0.9
   },
   {
    "id": "palermo",
@@ -3663,7 +3728,8 @@
      "streetart",
      "film"
     ]
-   }
+   },
+   "coastKm": 5.0
   },
   {
    "id": "bari",
@@ -3716,7 +3782,8 @@
      "villages",
      "offbeat"
     ]
-   }
+   },
+   "coastKm": 2.0
   },
   {
    "id": "cagliari",
@@ -3772,7 +3839,8 @@
      "offbeat",
      "wildlife"
     ]
-   }
+   },
+   "coastKm": 0.9
   },
   {
    "id": "thessaloniki",
@@ -3825,7 +3893,8 @@
      "cafes",
      "offbeat"
     ]
-   }
+   },
+   "coastKm": 5.8
   },
   {
    "id": "chania",
@@ -3881,7 +3950,8 @@
      "surf",
      "villages"
     ]
-   }
+   },
+   "coastKm": 0.5
   },
   {
    "id": "corfu",
@@ -3937,7 +4007,8 @@
      "villages",
      "film"
     ]
-   }
+   },
+   "coastKm": 0.9
   },
   {
    "id": "tirana",
@@ -3992,7 +4063,8 @@
      "mountains",
      "offbeat"
     ]
-   }
+   },
+   "coastKm": 31.4
   },
   {
    "id": "sarajevo",
@@ -4049,7 +4121,8 @@
      "sacred",
      "offbeat"
     ]
-   }
+   },
+   "coastKm": 120.1
   },
   {
    "id": "vilnius",
@@ -4104,7 +4177,8 @@
      "sacred",
      "offbeat"
     ]
-   }
+   },
+   "coastKm": 999
   },
   {
    "id": "wroclaw",
@@ -4158,7 +4232,8 @@
      "villages",
      "offbeat"
     ]
-   }
+   },
+   "coastKm": 999
   },
   {
    "id": "cluj",
@@ -4213,7 +4288,8 @@
      "mountains",
      "offbeat"
     ]
-   }
+   },
+   "coastKm": 999
   },
   {
    "id": "reykjavik",
@@ -4272,7 +4348,8 @@
      "film",
      "wildlife"
     ]
-   }
+   },
+   "coastKm": 0.9
   },
   {
    "id": "bordeaux",
@@ -4325,7 +4402,8 @@
      "nature",
      "lakes"
     ]
-   }
+   },
+   "coastKm": 50.2
   },
   {
    "id": "hamburg",
@@ -4379,7 +4457,8 @@
      "lakes",
      "sports"
     ]
-   }
+   },
+   "coastKm": 56.5
   },
   {
    "id": "cologne",
@@ -4435,7 +4514,8 @@
      "sacred",
      "sports"
     ]
-   }
+   },
+   "coastKm": 198.5
   },
   {
    "id": "oslo",
@@ -4490,7 +4570,8 @@
      "snow",
      "lakes"
     ]
-   }
+   },
+   "coastKm": 36.8
   },
   {
    "id": "helsinki",
@@ -4543,7 +4624,8 @@
      "nature",
      "markets"
     ]
-   }
+   },
+   "coastKm": 2.1
   },
   {
    "id": "gothenburg",
@@ -4596,7 +4678,8 @@
      "music",
      "offbeat"
     ]
-   }
+   },
+   "coastKm": 6.3
   },
   {
    "id": "luxembourg",
@@ -4649,7 +4732,8 @@
      "offbeat",
      "wine"
     ]
-   }
+   },
+   "coastKm": 240.2
   },
   {
    "id": "kotor",
@@ -4703,7 +4787,8 @@
      "mountains",
      "offbeat"
     ]
-   }
+   },
+   "coastKm": 10.3
   },
   {
    "id": "ohrid",
@@ -4757,7 +4842,8 @@
      "offbeat",
      "views"
     ]
-   }
+   },
+   "coastKm": 113.0
   },
   {
    "id": "manchester",
@@ -4810,7 +4896,8 @@
      "markets",
      "history"
     ]
-   }
+   },
+   "coastKm": 46.7
   },
   {
    "id": "turin",
@@ -4864,7 +4951,8 @@
      "sports",
      "offbeat"
     ]
-   }
+   },
+   "coastKm": 104.4
   },
   {
    "id": "genoa",
@@ -4917,7 +5005,8 @@
      "offbeat",
      "views"
     ]
-   }
+   },
+   "coastKm": 2.4
   },
   {
    "id": "catania",
@@ -4971,7 +5060,8 @@
      "nightlife",
      "hiking"
     ]
-   }
+   },
+   "coastKm": 2.2
   },
   {
    "id": "rhodes",
@@ -5024,7 +5114,8 @@
      "islands",
      "nightlife"
     ]
-   }
+   },
+   "coastKm": 0.3
   },
   {
    "id": "antalya",
@@ -5077,7 +5168,8 @@
      "food",
      "spas"
     ]
-   }
+   },
+   "coastKm": 2.7
   },
   {
    "id": "cappadocia",
@@ -5130,7 +5222,8 @@
      "villages",
      "film"
     ]
-   }
+   },
+   "coastKm": 203.5
   },
   {
    "id": "toulouse",
@@ -5183,7 +5276,8 @@
      "markets",
      "cafes"
     ]
-   }
+   },
+   "coastKm": 150.5
   },
   {
    "id": "strasbourg",
@@ -5236,7 +5330,8 @@
      "festivals",
      "sacred"
     ]
-   }
+   },
+   "coastKm": 999
   },
   {
    "id": "santiago",
@@ -5289,7 +5384,8 @@
      "villages",
      "offbeat"
     ]
-   }
+   },
+   "coastKm": 33.0
   },
   {
    "id": "alicante",
@@ -5342,7 +5438,8 @@
      "festivals",
      "surf"
     ]
-   }
+   },
+   "coastKm": 1.1
   },
   {
    "id": "innsbruck",
@@ -5395,7 +5492,8 @@
      "history",
      "sports"
     ]
-   }
+   },
+   "coastKm": 211.9
   },
   {
    "id": "zadar",
@@ -5448,7 +5546,8 @@
      "nature",
      "offbeat"
     ]
-   }
+   },
+   "coastKm": 2.6
   },
   {
    "id": "yerevan",
@@ -5502,7 +5601,8 @@
      "offbeat",
      "mountains"
     ]
-   }
+   },
+   "coastKm": 292.2
   },
   {
    "id": "coimbra",
@@ -5555,7 +5655,8 @@
      "villages",
      "offbeat"
     ]
-   }
+   },
+   "coastKm": 36.2
   },
   {
    "id": "zaragoza",
@@ -5608,7 +5709,8 @@
      "festivals",
      "offbeat"
     ]
-   }
+   },
+   "coastKm": 161.0
   },
   {
    "id": "bergen",
@@ -5661,7 +5763,8 @@
      "nature",
      "lakes"
     ]
-   }
+   },
+   "coastKm": 6.6
   },
   {
    "id": "aarhus",
@@ -5714,7 +5817,8 @@
      "nightlife",
      "offbeat"
     ]
-   }
+   },
+   "coastKm": 6.0
   },
   {
    "id": "heidelberg",
@@ -5767,7 +5871,8 @@
      "nightlife",
      "villages"
     ]
-   }
+   },
+   "coastKm": 999
   },
   {
    "id": "nuremberg",
@@ -5819,7 +5924,8 @@
      "festivals",
      "markets"
     ]
-   }
+   },
+   "coastKm": 999
   },
   {
    "id": "poznan",
@@ -5872,7 +5978,8 @@
      "offbeat",
      "lakes"
     ]
-   }
+   },
+   "coastKm": 209.7
   },
   {
    "id": "varna",
@@ -5924,7 +6031,8 @@
      "spas",
      "offbeat"
     ]
-   }
+   },
+   "coastKm": 2.6
   },
   {
    "id": "nicosia",
@@ -5976,7 +6084,8 @@
      "sacred",
      "cafes"
     ]
-   }
+   },
+   "coastKm": 19.7
   },
   {
    "id": "santorini",
@@ -6028,7 +6137,8 @@
      "desert",
      "wine"
     ]
-   }
+   },
+   "coastKm": 5.6
   },
   {
    "id": "zakynthos",
@@ -6081,7 +6191,8 @@
      "wildlife",
      "nightlife"
     ]
-   }
+   },
+   "coastKm": 2.0
   },
   {
    "id": "trieste",
@@ -6134,7 +6245,8 @@
      "offbeat",
      "beach"
     ]
-   }
+   },
+   "coastKm": 5.9
   },
   {
    "id": "montpellier",
@@ -6187,7 +6299,8 @@
      "streetart",
      "wine"
     ]
-   }
+   },
+   "coastKm": 9.6
   },
   {
    "id": "lille",
@@ -6239,7 +6352,8 @@
      "art",
      "nightlife"
     ]
-   }
+   },
+   "coastKm": 63.5
   },
   {
    "id": "glasgow",
@@ -6292,7 +6406,8 @@
      "architecture",
      "sports"
     ]
-   }
+   },
+   "coastKm": 38.4
   },
   {
    "id": "cork",
@@ -6344,7 +6459,8 @@
      "markets",
      "villages"
     ]
-   }
+   },
+   "coastKm": 19.3
   },
   {
    "id": "rabat",
@@ -6397,7 +6513,8 @@
      "architecture",
      "markets"
     ]
-   }
+   },
+   "coastKm": 2.1
   },
   {
    "id": "cairo",
@@ -6450,7 +6567,8 @@
      "food",
      "film"
     ]
-   }
+   },
+   "coastKm": 117.1
   },
   {
    "id": "lanzarote",
@@ -6503,7 +6621,8 @@
      "views",
      "islands"
     ]
-   }
+   },
+   "coastKm": 1.9
   },
   {
    "id": "menorca",
@@ -6556,7 +6675,8 @@
      "offbeat",
      "history"
     ]
-   }
+   },
+   "coastKm": 1.0
   }
  ]
 }

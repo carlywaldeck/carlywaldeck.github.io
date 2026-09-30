@@ -301,8 +301,9 @@ async function osm() {
 // 5b. Coast: is the city on the sea? One tiny Overpass query per city. Used so lake and river
 // beaches (tagged the same as sea beaches in OpenStreetMap) don't make an inland city a beach place.
 async function coast() {
-  for (const c of order("coast")) {
-    if (timeUp("coast")) break;
+  const stopAt = Date.now() + 20 * 60000; // at most 20 minutes; Natural Earth covers the rest
+  for (const c of order("coast").filter((c) => !c.data.coast)) {
+    if (timeUp("coast") || Date.now() > stopAt) break;
     const body = "data=" + encodeURIComponent(`[out:json][timeout:60];way[natural=coastline](around:15000,${c.lat},${c.lon});out count;`);
     for (const url of OVERPASS) {
       try {
@@ -350,7 +351,9 @@ function derive() {
       const n = c.data.osm[k], sc = PRESENCE_SCALES[k];
       let s = n === 0 ? 0 : sc ? clamp((Math.log1p(n) - Math.log1p(sc.lo)) / (Math.log1p(sc.hi) - Math.log1p(sc.lo)), 0, 1) : ranks[i];
       // Beaches, water sports and islands only fully count on the sea; lake and river ones count a third.
-      if ((k === "beach" || k === "surf" || k === "islands") && c.data.coast && !c.data.coast.onSea) s /= 3;
+      // On the sea? OpenStreetMap's coastline check if we have it, else Natural Earth distance (≤ 20 km).
+      const onSea = c.data.coast ? c.data.coast.onSea : c.coastKm != null ? c.coastKm <= 20 : true;
+      if ((k === "beach" || k === "surf" || k === "islands") && !onSea) s /= 3;
       c.data.strengths[k] = round(s);
     });
   }
