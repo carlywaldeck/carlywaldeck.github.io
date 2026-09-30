@@ -5,7 +5,7 @@ Generated 2026-09-30 by `scripts/build-data.mjs`. This compares the original han
 ## Best months (1–5 scores)
 
 - City-months compared: 1440
-- Correlation between estimates and data: **0.74** (1 = identical ranking, 0 = unrelated)
+- Correlation between estimates and data: **0.73** (1 = identical ranking, 0 = unrelated)
 - Within one point of each other: **83%**
 
 Biggest disagreements (average points off per month):
@@ -47,31 +47,31 @@ Agreement = share of cities where the hand-picked tag and the data (top 40% of c
 
 | Interest | Agreement | Tagged by hand only | Found by data only |
 |---|---|---|---|
-| food | 62% | Granada, Málaga, San Sebastián, Gdańsk, Palma de Mallorca | Amsterdam, Berlin, Prague, Budapest, Stockholm |
-| nightlife | 64% | Málaga, Split, Zagreb, Riga, Bucharest | Paris, Vienna, Rome, Florence, Granada |
+| food | 61% | Granada, Málaga, San Sebastián, Gdańsk, Palma de Mallorca | Amsterdam, Berlin, Prague, Budapest, Edinburgh |
+| nightlife | 65% | Málaga, Split, Zagreb, Riga, Bucharest | Paris, Vienna, Rome, Florence, Granada |
 | cafes | 68% | Ljubljana, Tallinn, Marrakech, Tangier, Essaouira | Barcelona, London, Berlin, Budapest, Kraków |
-| markets | 66% | Florence, Nice, Marrakech, Tangier, Essaouira | Seville, Lisbon, Porto, Vienna, Budapest |
+| markets | 63% | Florence, Nice, Marrakech, Tangier, Essaouira | Seville, Lisbon, Porto, Prague, Vienna |
 | art | 69% | Málaga, Nice, Essaouira, Bilbao, Aarhus | Lisbon, Porto, Prague, Budapest, Kraków |
-| history | 53% | Granada, Dublin, Salzburg, Venice, Dubrovnik | Barcelona, Lisbon, Porto, Valencia, Málaga |
-| architecture | 62% | Granada, Zurich, Salzburg, Bologna, Ljubljana | Madrid, London, Amsterdam, Berlin, Kraków |
-| castles | 60% | Madrid, Seville, London, Granada, Málaga | Barcelona, Lisbon, Porto, Amsterdam, Berlin |
+| history | 52% | Granada, Dublin, Salzburg, Venice, Dubrovnik | Barcelona, Lisbon, Porto, Valencia, Málaga |
+| architecture | 62% | Granada, Zurich, Salzburg, Ljubljana, Gdańsk | Madrid, London, Amsterdam, Berlin, Kraków |
+| castles | 61% | Madrid, Seville, London, Granada, Málaga | Barcelona, Lisbon, Porto, Amsterdam, Berlin |
 | sacred | 57% | Athens, Sofia, Marrakech, Fez, Amman | Madrid, Lisbon, Porto, London, Amsterdam |
-| music | 61% | Granada, Salzburg, Essaouira, Ibiza, Cluj-Napoca | Barcelona, Madrid, Paris, Amsterdam, Prague |
-| streetart | 64% | Marseille, Palermo, Vilnius, Manchester, Montpellier | Madrid, Porto, Paris, Amsterdam, Prague |
+| music | 60% | Granada, Salzburg, Essaouira, Ibiza, Cluj-Napoca | Barcelona, Madrid, Paris, Amsterdam, Prague |
+| streetart | 62% | Marseille, Palermo, Vilnius, Manchester, Montpellier | Madrid, Porto, Paris, Amsterdam, Prague |
 | sports | 73% | Amsterdam, Lyon, Marseille, Bilbao, Toulouse | Prague, Vienna, Budapest, Kraków, Brussels |
-| nature | 48% | Porto, Málaga, San Sebastián, Nice, Zurich | Barcelona, Madrid, Seville, Lisbon, Paris |
+| nature | 50% | Málaga, San Sebastián, Nice, Zurich, Salzburg | Barcelona, Madrid, Seville, Lisbon, Paris |
 | hiking | 54% | Málaga, Edinburgh, Dublin, Sofia, Palma de Mallorca | Barcelona, Lisbon, Paris, Amsterdam, Berlin |
-| mountains | 69% | Marrakech, Tbilisi, Funchal (Madeira), Ponta Delgada (Azores), Reykjavík | Barcelona, Prague, Vienna, Budapest, Kraków |
-| lakes | 67% | Porto, Vienna, Belgrade, Bordeaux, Ohrid | Madrid, Lisbon, Paris, London, Berlin |
-| views | 73% | Edinburgh, Dubrovnik, Split, Reykjavík, Ohrid | Madrid, London, Amsterdam, Berlin, Vienna |
-| spas | 66% | Amman, Varna | Barcelona, Madrid, Lisbon, Paris, London |
+| mountains | 68% | Marrakech, Tbilisi, Funchal (Madeira), Ponta Delgada (Azores), Reykjavík | Barcelona, Prague, Vienna, Budapest, Kraków |
+| lakes | 68% | Porto, Belgrade, Bordeaux, Ohrid | Madrid, Lisbon, Paris, London, Berlin |
+| views | 72% | Edinburgh, Dubrovnik, Split, Reykjavík, Ohrid | Madrid, London, Amsterdam, Berlin, Vienna |
+| spas | 65% | Amman, Varna | Barcelona, Madrid, Lisbon, Paris, London |
 | surf | 64% | Dubrovnik, Palma de Mallorca, Faro (Algarve), Ibiza, Cagliari (Sardinia) | Barcelona, Paris, Amsterdam, Berlin, Prague |
-| beach | 61% | Barcelona, Valencia, San Sebastián, Ljubljana, Gdańsk | Porto, London, Amsterdam, Berlin, Rome |
-| islands | 68% | Valletta, Paphos, Tenerife, Las Palmas, Ponta Delgada (Azores) | Paris, London, Amsterdam, Berlin, Vienna |
-| wine | 70% | Funchal (Madeira), Santorini | Barcelona, Madrid, Lisbon, Paris, London |
-| snow | 68% | Tbilisi | Madrid, London, Amsterdam, Prague, Vienna |
-| wildlife | 53% | Valencia, Agadir, Paphos, Tenerife, Funchal (Madeira) | Barcelona, Madrid, Lisbon, Paris, London |
-| desert | 70% | Marrakech, Agadir, Tunis, Amman | Barcelona, Porto, Amsterdam, Berlin, Prague |
+| beach | 63% | Valencia, San Sebastián, Ljubljana, Gdańsk, Valletta | Porto, London, Amsterdam, Berlin, Rome |
+| islands | 69% | Valletta, Paphos, Tenerife, Las Palmas, Ponta Delgada (Azores) | Paris, London, Amsterdam, Berlin, Vienna |
+| wine | 69% | Funchal (Madeira), Santorini | Barcelona, Madrid, Lisbon, Paris, London |
+| snow | 69% | Tbilisi | Madrid, London, Amsterdam, Prague, Vienna |
+| wildlife | 54% | Valencia, Agadir, Paphos, Tenerife, Funchal (Madeira) | Barcelona, Madrid, Lisbon, Paris, London |
+| desert | 69% | Marrakech, Agadir, Tunis, Amman | Barcelona, Porto, Amsterdam, Berlin, Prague |
 | offbeat | 53% | Bologna, Ljubljana, Zagreb, Riga, Sofia | Lisbon, Porto, Prague, Vienna, Budapest |
 
 ## Coverage
@@ -79,17 +79,5 @@ Agreement = share of cities where the hand-picked tag and the data (top 40% of c
 - Climate: 120/120 cities
 - Crowds: 108 from Eurostat, 12 from Wikipedia pageviews
 - Prices: 109 from Eurostat, 11 from the World Bank
-- OpenStreetMap counts: 113/120 cities
+- OpenStreetMap counts: 120/120 cities
 - Wikipedia popularity: 120/120 cities
-
-## Problems on this run
-
-- osm nuremberg: all Overpass servers failed
-- osm nicosia: all Overpass servers failed
-- osm lille: all Overpass servers failed
-- osm cork: all Overpass servers failed
-- osm rabat: all Overpass servers failed
-- osm cairo: all Overpass servers failed
-- osm menorca: all Overpass servers failed
-- osm barcelona: all Overpass servers failed
-- time budget reached during osm; remaining cities keep their previous values
