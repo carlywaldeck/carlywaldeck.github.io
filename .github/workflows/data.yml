@@ -32,14 +32,16 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 150
+    timeout-minutes: 170
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20
       - name: Fetch open data
+        continue-on-error: true # keep whatever was fetched, even if some sources failed
         env:
+          TIME_BUDGET_MIN: "120"
           ONLY: ${{ github.event.inputs.only }}
           SKIP: ${{ github.event.inputs.skip }}
         run: node scripts/build-data.mjs

@@ -15,7 +15,9 @@
 // Options (environment variables):
 //   ONLY=lisbon,madrid   only these cities (others keep their previous values)
 //   SKIP=osm,climate     skip sources (previous values are kept)
+//   TIME_BUDGET_MIN=110  stop fetching after this many minutes and save what we have
 // Any request that fails keeps the city's previous value, so one bad day never wipes the data.
+// Cities that are still missing a source are fetched first, so repeated runs fill the gaps.
 
 import fs from "node:fs/promises";
 
@@ -28,6 +30,8 @@ const ONLY = new Set((process.env.ONLY || "").split(",").filter(Boolean));
 const SKIP = new Set((process.env.SKIP || "").split(",").filter(Boolean));
 const CLIMATE_YEARS = [2020, 2024];
 const PAGEVIEW_RANGE = ["2022010100", "2024123100"];
+const DEADLINE = Date.now() + Number(process.env.TIME_BUDGET_MIN || 110) * 60000;
+const outOfTime = () => Date.now() > DEADLINE;
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const round = (x, d = 2) => (x == null || !Number.isFinite(x) ? null : Math.round(x * 10 ** d) / 10 ** d);
@@ -60,11 +64,16 @@ const prev = (id) => previous.cities?.[id] || {};
 
 const cities = META.map((c) => ({ ...c, data: { ...prev(c.id) } }));
 const todo = cities.filter((c) => !ONLY.size || ONLY.has(c.id));
+// The cities to fetch for one source: those missing it first, then the rest (oldest data last).
+const order = (key) => [...todo.filter((c) => !c.data[key]), ...todo.filter((c) => c.data[key])];
+let skippedForTime = 0;
+const timeUp = (step) => { if (!outOfTime()) return false; skippedForTime++; if (skippedForTime === 1) errors.push(`time budget reached during ${step}; remaining cities keep their previous values`); return true; };
 
 // ---------------------------------------------------------------------------------------------
 // 1. Wikipedia: canonical titles and monthly pageviews
 async function wikipedia() {
-  for (const c of todo) {
+  for (const c of order("wikipedia")) {
+    if (timeUp("wikipedia")) break;
     try {
       const s = await get(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(c.wiki.replace(/ /g, "_"))}`);
       const title = (s.titles && s.titles.canonical) || c.wiki.replace(/ /g, "_");
@@ -84,10 +93,11 @@ async function wikipedia() {
 // 2. Climate: Open-Meteo archive, daily max temperature, precipitation and sunshine
 async function climate() {
   const [y0, y1] = CLIMATE_YEARS;
-  for (const c of todo) {
+  for (const c of order("climate")) {
+    if (timeUp("climate")) break;
     try {
       const d = await get(`https://archive-api.open-meteo.com/v1/archive?latitude=${c.lat}&longitude=${c.lon}` +
-        `&start_date=${y0}-01-01&end_date=${y1}-12-31&daily=temperature_2m_max,precipitation_sum,sunshine_duration&timezone=auto`, { wait: 20000 });
+        `&start_date=${y0}-01-01&end_date=${y1}-12-31&daily=temperature_2m_max,precipitation_sum,sunshine_duration&timezone=auto`, { wait: 20000, tries: 3 });
       const t = d.daily.time, hi = d.daily.temperature_2m_max, pr = d.daily.precipitation_sum, sun = d.daily.sunshine_duration;
       const acc = Array.from({ length: 12 }, () => ({ hi: [], rainy: 0, sun: [], days: 0 }));
       t.forEach((day, i) => {
@@ -226,28 +236,30 @@ const OSM_QUERIES = {
   beach:       { r: 30000,  label: "beaches", q: ['nwr[natural=beach]'] },
   islands:     { r: 50000,  label: "islands", q: ['nwr[place~"^(island|islet)$"][name]'] },
   wine:        { r: 30000,  label: "wineries, breweries & wine shops", q: ['nwr[craft~"^(winery|brewery)$"]', 'nwr[shop=wine]'] },
-  snow:        { r: 80000,  label: "ski areas & downhill pistes", q: ['nwr[landuse=winter_sports]', 'way["piste:type"=downhill]'] },
+  snow:        { r: 60000,  label: "ski areas", q: ['nwr[landuse=winter_sports]'] },
   wildlife:    { r: 60000,  label: "zoos, aquariums & national parks", q: ['nwr[tourism~"^(zoo|aquarium)$"]', 'nwr[boundary=national_park]'] },
-  desert:      { r: 100000, label: "volcanoes, dunes & sand areas", q: ['node[natural=volcano]', 'nwr[natural~"^(dune|sand)$"][name]'] }
+  desert:      { r: 80000,  label: "volcanoes & named dunes", q: ['node[natural=volcano]', 'nwr[natural=dune][name]'] }
 };
 const OVERPASS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter"];
 function overpassQuery(c) {
   const parts = Object.values(OSM_QUERIES).map(({ r, q }) =>
     `(${q.map((f) => f.replace(/^(nwr|node|way|relation)/, `$1(around:${r},${c.lat},${c.lon})`)).join(";")};);out count;`);
-  return `[out:json][timeout:300];\n${parts.join("\n")}`;
+  return `[out:json][timeout:180];\n${parts.join("\n")}`;
 }
 async function osm() {
-  for (const [i, c] of todo.entries()) {
+  const list = order("osm");
+  for (const [i, c] of list.entries()) {
+    if (timeUp("osm")) break;
     const body = "data=" + encodeURIComponent(overpassQuery(c));
     let done = false;
     for (const url of OVERPASS) {
       try {
-        const d = await get(url, { method: "POST", body, headers: { "Content-Type": "application/x-www-form-urlencoded" }, tries: 3, wait: 30000 });
+        const d = await get(url, { method: "POST", body, headers: { "Content-Type": "application/x-www-form-urlencoded" }, tries: 2, wait: 20000 });
         const counts = (d.elements || []).filter((e) => e.type === "count").map((e) => Number(e.tags.total));
         const keys = Object.keys(OSM_QUERIES);
         if (counts.length !== keys.length) throw new Error(`expected ${keys.length} counts, got ${counts.length}`);
         c.data.osm = Object.fromEntries(keys.map((k, j) => [k, counts[j]]));
-        log(`osm ${i + 1}/${todo.length}`, c.id, JSON.stringify(c.data.osm));
+        log(`osm ${i + 1}/${list.length}`, c.id, JSON.stringify(c.data.osm));
         done = true;
         break;
       } catch (e) { log("osm", c.id, url, e.message); }
@@ -393,7 +405,7 @@ function report(meta) {
 const steps = { wikipedia, climate, crowds, prices, osm };
 for (const [name, fn] of Object.entries(steps)) {
   if (SKIP.has(name)) { log(`skipping ${name}`); continue; }
-  log(`== ${name}`);
+  log(`== ${name} (${Math.round((DEADLINE - Date.now()) / 60000)} min left)`);
   try { await fn(); } catch (e) { errors.push(`${name}: ${e.message}`); log(`${name} failed:`, e.message); }
 }
 derive();
