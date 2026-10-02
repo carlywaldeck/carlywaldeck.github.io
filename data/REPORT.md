@@ -1,6 +1,6 @@
 # Data report
 
-Generated 2026-09-30 by `scripts/build-data.mjs`. This compares the original hand-written estimates in the app with the values computed from open data.
+Generated 2026-10-02 by `scripts/build-data.mjs`. This compares the original hand-written estimates in the app with the values computed from open data.
 
 ## Best months (1–5 scores)
 
