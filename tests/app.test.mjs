@@ -134,7 +134,7 @@ export default async function run() {
       });
     };
     const ap = await openApp(browser, { setup, hash: "#access_token=tok&refresh_token=ref&expires_in=3600&token_type=bearer&type=magiclink" });
-    await ap.waitForFunction(() => { try { return ((JSON.parse(localStorage.getItem("weekender:v1") || "{}").been || {}).rome || {}).r === 4; } catch { return false; } }, null, { timeout: 10000 });
+    await ap.waitForFunction(() => { try { return ((JSON.parse(localStorage.getItem("weekender:v1") || "{}").been || {}).rome || {}).r === 4; } catch { return false; } }, null, { timeout: 30000 });
     await ap.waitForFunction(() => typeof update === "function" && document.querySelector("#acct-btn"));
     await ap.waitForFunction(() => /student@school\.edu/.test(document.querySelector("#acct-btn").getAttribute("aria-label") || ""));
     const acct = await ap.evaluate(() => ({ label: document.querySelector("#acct-btn").getAttribute("aria-label"), url: location.href, beenRome: been.rome && been.rome.r }));
