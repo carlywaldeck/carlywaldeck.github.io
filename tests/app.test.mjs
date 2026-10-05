@@ -135,13 +135,14 @@ export default async function run() {
     };
     const ap = await openApp(browser, { setup, hash: "#access_token=tok&refresh_token=ref&expires_in=3600&token_type=bearer&type=magiclink" });
     await ap.waitForFunction(() => { try { return ((JSON.parse(localStorage.getItem("weekender:v1") || "{}").been || {}).rome || {}).r === 4; } catch { return false; } }, null, { timeout: 30000 });
-    await ap.waitForFunction(() => typeof update === "function" && document.querySelector("#acct-btn"));
-    await ap.waitForFunction(() => /student@school\.edu/.test(document.querySelector("#acct-btn").getAttribute("aria-label") || ""));
+    await ap.waitForLoadState("load");
+    await ap.waitForFunction(() => typeof update === "function" && document.querySelector("#acct-btn"), null, { timeout: 30000 });
+    await ap.waitForFunction(() => /student@school\.edu/.test(document.querySelector("#acct-btn").getAttribute("aria-label") || ""), null, { timeout: 30000 });
     const acct = await ap.evaluate(() => ({ label: document.querySelector("#acct-btn").getAttribute("aria-label"), url: location.href, beenRome: been.rome && been.rome.r }));
     t.check(acct.beenRome === 4 && !acct.url.includes("access_token"),
       `the login link logs you in and brings in your account's places (${acct.label}, rome=${acct.beenRome})`);
     await ap.evaluate(() => { markBeen("paris", 5); update(); });
-    await ap.waitForTimeout(1800);
+    for (let i = 0; i < 100 && !calls.posts.some((x) => x.data.been.paris); i++) await ap.waitForTimeout(100);
     const last = calls.posts[calls.posts.length - 1];
     t.check(last && last.id === "user-1" && last.data.been.rome.r === 4 && last.data.been.paris.r === 5, `changes are saved to the account, got ${JSON.stringify(last && last.data.been)}`);
     const lp = await openApp(browser, { setup, firstVisit: true });
