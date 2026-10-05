@@ -16,9 +16,9 @@ The worker keeps your API token secret. If the token were in the page, anyone co
 ---
 
 ## Step 1: Put the site on GitHub Pages (5 min)
-1. Merge the working branch into `main` on GitHub.
+1. Make sure the repo is named `carlywaldeck.github.io` (a user site, served at the bare domain).
 2. Go to **Settings → Pages**, choose **Deploy from a branch**, pick `main` and `/ (root)`, and save.
-3. After a minute your site is at `https://carlywaldeck.github.io/gsb-5576-project/`.
+3. After a minute your site is at `https://carlywaldeck.github.io/`.
 
 Affiliate programs usually ask for a live website when you apply, and this is it.
 

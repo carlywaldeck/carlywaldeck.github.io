@@ -24,7 +24,7 @@ npm test        # data checks + app tests in headless Chromium
 The data suite checks every city (fields, coordinates, seasons, tags, itineraries, travel speeds). The app suite drives the real page: the landing flow, a sweep of every city × 1–5 days × 4 months (over 50,000 trips), plan tabs, tailoring, the taste model, save and share links, and the phone layout. GitHub Actions runs both on every push (`.github/workflows/test.yml`).
 
 ## Live site (GitHub Pages)
-The site is published from `main` at **https://carlywaldeck.github.io/gsb-5576-project/**. Every push to `main` (including the monthly data refresh) republishes it within a couple of minutes. Anyone with the link can use it; each visitor's search, visited places and ratings stay in their own browser.
+The site is published from `main` at **https://carlywaldeck.github.io/**. Every push to `main` (including the monthly data refresh) republishes it within a couple of minutes. Anyone with the link can use it; each visitor's search, visited places and ratings stay in their own browser.
 
 ## How it's built
 Everything is in one file, `index.html`, so it works however it's opened (double-clicked, previewed, or hosted). It has four parts:
