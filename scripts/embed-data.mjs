@@ -7,7 +7,7 @@ const ROOT = new URL("..", import.meta.url).pathname;
 const data = JSON.parse(await fs.readFile(ROOT + "data/city-data.json", "utf8"));
 const keep = ["season", "priceMult", "costs", "interests", "strengths", "climate", "crowds", "price", "osm", "wikipedia", "popularity"];
 const compact = {
-  generated: data.generated, sources: data.sources, method: data.method, osm: data.osm,
+  generated: data.generated, sources: data.sources, method: data.method, osm: data.osm, roads: data.roads || {},
   cities: Object.fromEntries(Object.entries(data.cities).map(([id, c]) => {
     const o = {};
     for (const k of keep) if (c[k] != null) o[k] = c[k];

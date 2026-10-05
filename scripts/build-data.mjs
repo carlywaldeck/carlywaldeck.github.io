@@ -257,12 +257,24 @@ const OSM_QUERIES = {
   wine:        { r: 30000,  label: "wineries, breweries & wine shops", q: ['nwr[craft~"^(winery|brewery)$"]', 'nwr[shop=wine]'] },
   snow:        { r: 60000,  label: "ski areas", q: ['nwr[landuse=winter_sports]'] },
   wildlife:    { r: 60000,  label: "zoos, aquariums & national parks", q: ['nwr[tourism~"^(zoo|aquarium)$"]', 'nwr[boundary=national_park]'] },
-  desert:      { r: 80000,  label: "volcanoes & named dunes", q: ['node[natural=volcano]', 'nwr[natural=dune][name]'] }
+  desert:      { r: 80000,  label: "volcanoes & named dunes", q: ['node[natural=volcano]', 'nwr[natural=dune][name]'] },
+  vintage:     { r: 5000,   label: "second-hand & vintage shops", q: ['nwr[shop~"^(second_hand|charity|antiques)$"]'] },
+  books:       { r: 5000,   label: "bookshops & libraries", q: ['nwr[shop=books]', 'nwr[amenity=library]'] },
+  vegan:       { r: 5000,   label: "places with vegan or vegetarian options", q: ['nwr[~"^diet:(vegan|vegetarian)$"~"^(yes|only)$"]'] },
+  cycling:     { r: 15000,  label: "bike rentals & cycle routes", q: ['nwr[amenity=bicycle_rental]', 'relation[route=bicycle]'] },
+  caves:       { r: 60000,  label: "named caves & waterfalls", q: ['node[natural=cave_entrance][name]', 'nwr[waterway=waterfall][name]'] },
+  themeparks:  { r: 40000,  label: "theme & water parks", q: ['nwr[tourism=theme_park]', 'nwr[leisure=water_park]'] },
+  gardens:     { r: 10000,  label: "named gardens", q: ['nwr[leisure=garden][name]'] },
+  climbing:    { r: 40000,  label: "climbing walls & crags", q: ['nwr[sport=climbing]'] },
+  lgbtq:       { r: 10000,  label: "LGBTQ+ venues", q: ['nwr[lgbtq~"^(primary|welcome|friendly|yes)$"]', 'nwr[gay=yes]'] },
+  games:       { r: 10000,  label: "escape rooms & game shops", q: ['nwr[leisure=escape_game]', 'nwr[shop=games]'] },
+  students:    { r: 10000,  label: "universities & colleges", q: ['nwr[amenity~"^(university|college)$"]'] }
 };
 const PRESENCE_SCALES = {
   beach: { lo: 5, hi: 150 }, surf: { lo: 2, hi: 40 }, snow: { lo: 5, hi: 40 }, desert: { lo: 1, hi: 40 },
   islands: { lo: 5, hi: 100 }, mountains: { lo: 50, hi: 1500 }, lakes: { lo: 5, hi: 200 },
-  spas: { lo: 2, hi: 60 }, wildlife: { lo: 3, hi: 60 }
+  spas: { lo: 2, hi: 60 }, wildlife: { lo: 3, hi: 60 },
+  caves: { lo: 2, hi: 40 }, themeparks: { lo: 1, hi: 8 }, climbing: { lo: 2, hi: 40 }
 };
 const OVERPASS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter"];
 function overpassQuery(c) {
@@ -274,7 +286,9 @@ async function osm() {
   // OpenStreetMap changes slowly: refetch a city only when it's missing or older than 90 days
   // (FULL_OSM=1 refetches everything).
   const age = (c) => (Date.now() - Date.parse(c.data.osmDate || previous.generated || "2000-01-01")) / 864e5;
-  const list = order("osm").filter((c) => process.env.FULL_OSM === "1" || !c.data.osm || age(c) > 90);
+  // Also refetch cities missing a count for a newly added interest.
+  const keys = Object.keys(OSM_QUERIES);
+  const list = order("osm").filter((c) => process.env.FULL_OSM === "1" || !c.data.osm || keys.some((k) => c.data.osm[k] == null) || age(c) > 90);
   log(`osm: ${list.length} cities to fetch`);
   for (const [i, c] of list.entries()) {
     if (timeUp("osm")) break;
@@ -319,6 +333,40 @@ async function coast() {
   }
 }
 
+// 5c. Roads: real driving distance and time between every pair of cities, from OpenStreetMap via
+// the OSRM routing service (table API). Used for bus and train times instead of straight lines.
+// Roads barely change, so this reruns only every 180 days or when cities are added.
+let roads = previous.roads || {};
+async function roadTable() {
+  const key = (a, b) => [a.id, b.id].sort().join("|");
+  const stale = !previous.roadsDate || (Date.now() - Date.parse(previous.roadsDate)) / 864e5 > 180;
+  const missing = cities.some((a) => cities.some((b) => a.id < b.id && !(key(a, b) in roads)));
+  if (!stale && !missing) { log("roads: up to date"); return; }
+  const next = {}, CH = 40;
+  for (let i = 0; i < cities.length; i += CH) {
+    for (let j = 0; j < cities.length; j += CH) {
+      if (timeUp("roads")) return;
+      const src = cities.slice(i, i + CH), dst = cities.slice(j, j + CH), pts = [...src, ...dst];
+      const coords = pts.map((c) => `${c.lon},${c.lat}`).join(";");
+      const url = `https://router.project-osrm.org/table/v1/driving/${coords}?sources=${src.map((_, k) => k).join(";")}` +
+        `&destinations=${dst.map((_, k) => src.length + k).join(";")}&annotations=duration,distance`;
+      try {
+        const d = await get(url, { tries: 3, wait: 10000 });
+        if (d.code !== "Ok") throw new Error(d.code);
+        src.forEach((a, x) => dst.forEach((b, y) => {
+          if (a.id >= b.id) return;
+          const km = d.distances[x][y], s = d.durations[x][y];
+          // null = no road connection; keep it (as null) so the app knows there's no overland route.
+          next[key(a, b)] = km == null || s == null ? null : [Math.round(km / 1000), Math.round(s / 360) / 10];
+        }));
+      } catch (e) { errors.push(`roads ${i}-${j}: ${e.message}`); }
+      await sleep(2000); // the public OSRM server is shared: go slowly
+    }
+  }
+  if (Object.keys(next).length) { roads = { ...roads, ...next }; previous.roadsDate = new Date().toISOString().slice(0, 10); }
+  log("roads:", Object.keys(next).length, "city pairs");
+}
+
 // ---------------------------------------------------------------------------------------------
 // Derived values: everything the app uses, computed from the raw data above.
 const BASE_COSTS = { hostel: 30, food: 26, transit: 6, activities: 12 }; // EUR/day, an EU-average city, student budget
@@ -344,7 +392,7 @@ function derive() {
   // "Is it there" interests (beach, snow...): a fixed log scale from `lo` (barely) to `hi` (plenty),
   // so a couple of small ski slopes don't rank a city near the top just because most have none.
   for (const k of keys) {
-    const ranks = percentileRanks(cities.map((c) => (c.data.osm ? Math.log1p(c.data.osm[k]) : null)));
+    const ranks = percentileRanks(cities.map((c) => (c.data.osm && c.data.osm[k] != null ? Math.log1p(c.data.osm[k]) : null)));
     cities.forEach((c, i) => {
       if (ranks[i] == null) return;
       c.data.strengths = c.data.strengths || {};
@@ -469,7 +517,7 @@ function report(meta) {
 }
 
 // ---------------------------------------------------------------------------------------------
-const steps = { wikipedia, climate, crowds, prices, coast, osm };
+const steps = { wikipedia, climate, crowds, prices, roads: roadTable, coast, osm };
 for (const [name, fn] of Object.entries(steps)) {
   if (SKIP.has(name)) { log(`skipping ${name}`); continue; }
   log(`== ${name} (${Math.round((DEADLINE - Date.now()) / 60000)} min left)`);
@@ -483,7 +531,8 @@ const meta = {
     crowds: "Eurostat tour_occ_nim, nights spent at tourist accommodation by month: https://ec.europa.eu/eurostat/databrowser/view/tour_occ_nim/",
     prices: "Eurostat prc_ppp_ind, price level indices for restaurants & hotels (EU27 = 100): https://ec.europa.eu/eurostat/databrowser/view/prc_ppp_ind/ ; World Bank PA.NUS.PRVT.PP ÷ PA.NUS.FCRF (price level vs. the EU average) elsewhere: https://data.worldbank.org/indicator/PA.NUS.PRVT.PP",
     places: "OpenStreetMap contributors via the Overpass API, ODbL: https://www.openstreetmap.org/copyright",
-    popularity: `Wikimedia pageviews API, English Wikipedia, ${PV_LABEL}: https://wikimedia.org/api/rest_v1/`
+    popularity: `Wikimedia pageviews API, English Wikipedia, ${PV_LABEL}: https://wikimedia.org/api/rest_v1/`,
+    roads: "Driving distance and time between cities: OpenStreetMap contributors via OSRM (project-osrm.org), ODbL"
   },
   method: {
     comfort: "0.55 × temperature (best at a 23°C daily high, or 27°C for beach places) + 0.25 × fewer rainy days + 0.2 × sunshine",
@@ -496,7 +545,7 @@ const meta = {
   osm: Object.fromEntries(Object.entries(OSM_QUERIES).map(([k, v]) => [k, { label: v.label, radiusKm: v.r / 1000 }])),
   errors
 };
-const out = { ...meta, cities: Object.fromEntries(cities.map((c) => [c.id, c.data])) };
+const out = { ...meta, roadsDate: previous.roadsDate, roads, cities: Object.fromEntries(cities.map((c) => [c.id, c.data])) };
 await fs.writeFile(OUT, JSON.stringify(out, null, 1));
 await fs.writeFile(REPORT, report(meta));
 log(`wrote ${OUT} (${errors.length} problems)`);

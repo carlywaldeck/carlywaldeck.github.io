@@ -59,6 +59,21 @@ export default async function run() {
     });
     t.check(/✓ Beach/.test(tailored) && /Tailored to Beach/.test(tailored), "the itinerary highlights activities that match your interests");
 
+    // 4a. Road data: with a real driving time, bus and train times come from it; with no road, there's no overland option.
+    const roads = await p.evaluate(() => {
+      DATA.roads = DATA.roads || {};
+      const a = byId("madrid"), b = byId("valencia"), k = ["madrid", "valencia"].sort().join("|");
+      const saved = DATA.roads[k];
+      DATA.roads[k] = [356, 3.6];
+      const withRoad = transportOptions(a, b, 5);
+      DATA.roads[k] = null;
+      const noRoad = transportOptions(a, b, 5);
+      if (saved === undefined) delete DATA.roads[k]; else DATA.roads[k] = saved;
+      return { bus: withRoad.find((o) => o.mode === "bus"), overland: noRoad.some((o) => o.mode === "bus" || o.mode === "train") };
+    });
+    t.check(roads.bus && Math.abs(roads.bus.hours - (3.6 * 1.25 + 0.5)) < 0.01 && roads.bus.road, `bus time uses the road driving time, got ${JSON.stringify(roads.bus)}`);
+    t.check(!roads.overland, "no road connection means no bus or train");
+
     // 4b. Booking links: a flight abroad links to a dated Aviasales search, an eSIM, and the affiliate disclosure.
     const booking = await p.evaluate(() => {
       const tr = current.trips.find((x) => x.cost.transport && x.cost.transport.mode === "flight" && x.dest.country !== current.home.country);

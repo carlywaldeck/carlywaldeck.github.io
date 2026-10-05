@@ -400,6 +400,8 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
 #lp-budget { width: 100%; accent-color: var(--accent); margin: 8px 0 0; }
 #lp-days .pick { width: 48px; padding: 7px 0; }
 #lp-interests .chip { font-size: 13px; }
+#lp-interests:not(.all) .chip.extra:not([aria-pressed="true"]) { display: none; }
+#lp-interests .chip.more { border-style: dashed; color: var(--accent); }
 .lp-go { margin-top: 4px; padding: 14px; font-size: 16px; }
 @media (max-width: 860px) {
   .landing-inner { grid-template-columns: 1fr; gap: 24px; padding: 28px 16px 40px; }
@@ -3819,8 +3821,13 @@ const INTERESTS = {
   mountains: "Mountains", lakes: "Lakes & rivers", villages: "Old towns & villages", views: "Views & photo spots",
   spas: "Spas & hot springs", surf: "Surf & water sports", snow: "Skiing & snow", wildlife: "Wildlife",
   sacred: "Sacred sites", desert: "Deserts & volcanoes", film: "Film & TV spots", sports: "Football & sport",
-  offbeat: "Hidden gems"
+  offbeat: "Hidden gems", vintage: "Thrift & vintage", books: "Books & libraries", vegan: "Vegan & veggie",
+  cycling: "Cycling", caves: "Caves & waterfalls", themeparks: "Theme & water parks", gardens: "Gardens",
+  climbing: "Climbing", lgbtq: "LGBTQ+ friendly", games: "Escape rooms & games", students: "Student life"
 };
+// The landing page shows these first; the rest sit behind "More".
+const POPULAR_INTERESTS = ["food", "nightlife", "beach", "history", "art", "nature", "hiking", "cafes", "views", "wine",
+  "markets", "music", "students", "offbeat"];
 const MODES = {
   bus:    { label: "Bus",    board: "BUS" },
   train:  { label: "Train",  board: "TRAIN" },
@@ -3976,17 +3983,28 @@ function distanceKm(a, b) {
   return 2 * 6371 * Math.asin(Math.sqrt(h));
 }
 
+// Real driving distance (km) and time (hours) between two cities, from OpenStreetMap via OSRM
+// (written by the data pipeline). undefined = not fetched yet; null = no road connection.
+function road(a, b) {
+  const r = DATA && DATA.roads ? DATA.roads[[a.id, b.id].sort().join("|")] : undefined;
+  return r === undefined ? undefined : r && { km: r[0], hours: r[1] };
+}
+
 // Every way to get from home to dest, with a rough round-trip price and hours each way.
+// Overland: from the real road distance and driving time when we have them (buses take ~25%
+// longer than a car, trains average ~115 km/h on the road distance), else from the straight line.
 function transportOptions(home, dest, month) {
   const km = distanceKm(home, dest);
   const mult = dest.priceMult[month];
-  const overWater = landOf(home.id) !== landOf(dest.id);
+  const r = road(home, dest);
+  const overWater = landOf(home.id) !== landOf(dest.id) || r === null;
+  const rkm = r ? r.km : km * 1.25;
   const opts = [];
-  if (!overWater && km <= 1600) {
-    opts.push({ mode: "bus", cost: Math.round(Math.max(18, km * 0.1) * mult), hours: km / 70 + 0.5 });
+  if (!overWater && rkm <= 2000) {
+    opts.push({ mode: "bus", cost: Math.round(Math.max(18, rkm * 0.08) * mult), hours: (r ? r.hours * 1.25 : km / 70) + 0.5, road: !!r });
   }
-  if (!overWater && km <= 1400 && !NO_RAIL.has(home.id) && !NO_RAIL.has(dest.id)) {
-    opts.push({ mode: "train", cost: Math.round(Math.max(25, km * 0.2) * mult), hours: km / 120 + 0.5 });
+  if (!overWater && rkm <= 1750 && !NO_RAIL.has(home.id) && !NO_RAIL.has(dest.id)) {
+    opts.push({ mode: "train", cost: Math.round(Math.max(25, rkm * 0.16) * mult), hours: (r ? r.km / 115 : km / 120) + 0.5, road: !!r });
   }
   const ferry = FERRIES[[home.id, dest.id].sort().join("-")];
   if (ferry) opts.push({ mode: "boat", cost: Math.round(ferry.cost * mult), hours: ferry.hours });
@@ -4051,7 +4069,16 @@ const ACTIVITY_TAGS = [
   ["islands", /island|boat|ferry|cruise|kayak/i],
   ["lakes", /lake|river|canal/i],
   ["sports", /stadium|football|match|arena tour/i],
-  ["mountains", /mountain|peak|cable car|funicular|summit/i]
+  ["mountains", /mountain|peak|cable car|funicular|summit/i],
+  ["vintage", /vintage|thrift|flea|second-hand|antique/i],
+  ["books", /book|librar/i],
+  ["vegan", /vegan|vegetarian|falafel|hummus/i],
+  ["cycling", /\bbikes?\b|cycl/i],
+  ["caves", /cave|grotto|waterfall|gorge/i],
+  ["themeparks", /theme park|water park|tivoli|amusement|prater/i],
+  ["gardens", /garden|botanic/i],
+  ["games", /escape room|board game|arcade/i],
+  ["students", /universit|student|college/i]
 ];
 const activityTags = (what) => ACTIVITY_TAGS.filter(([, rx]) => rx.test(what)).map(([k]) => k);
 const dayFit = (day) => day.reduce((n, [what]) => n + activityTags(what).filter(k => state.interests.has(k)).length, 0);
@@ -4263,6 +4290,7 @@ function transportSection(dest, cost) {
         </button>`).join("")}
     </div>
     ${liveNote(cost)}
+    ${(() => { const r = road(byId(state.home), dest); return r && landOf(state.home) === landOf(dest.id) ? `<p class="fine">By road it's ${r.km.toLocaleString()} km, about ${hrs(r.hours)} by car (OpenStreetMap routing via OSRM); bus and train times are based on that.</p>` : ""; })()}
     ${BUDGET_AIRPORTS[state.home] && allowed.some(o => o.mode === "flight") ? `<p class="fine">Flying from ${byId(state.home).name}? Budget airlines usually use ${BUDGET_AIRPORTS[state.home]}.</p>` : ""}
     <p class="fine">Round-trip price estimates based on distance and season${cost.options.some(o => o.live) ? " (flights marked live are real fares)" : ""}; check live prices below before booking. ${hidden ? `${hidden} more option${hidden > 1 ? "s" : ""} hidden by your travel filter.` : "Pick one to update the total."}</p>
   </div>`;
@@ -6066,7 +6094,7 @@ function makeCitySearch(input, list, { text, pick, exclude = () => false, prefix
       .filter(x => x.n.includes(f) || x.k.includes(f)).sort((a, b) => rank(a, f) - rank(b, f)).map(x => x.c);
     active = Math.max(0, matches.findIndex(c => c.name === text() && !f));
     list.innerHTML = matches.length
-      ? matches.map((c, i) => `<li role="option" id="${prefix}-${c.id}" data-v="${c.id}" aria-selected="${i === active}">${mark(c.name, f)}<small>${esc(c.country)}</small></li>`).join("")
+      ? matches.map((c, i) => `<li role="option" id="${prefix}-${c.id}" data-v="${c.id}" aria-selected="${i === active}"><span class="nm">${mark(c.name, f)}</span><small>${esc(c.country)}</small></li>`).join("")
       : `<li class="empty">No city matches “${esc(q)}”</li>`;
     open(true);
   }
@@ -6140,7 +6168,9 @@ function closeLanding(fly = true) {
 function setupLanding() {
   $("#lp-month").innerHTML = MONTHS_FULL.map((m, i) => `<option value="${i}">${m}</option>`).join("");
   $("#lp-days").innerHTML = [1, 2, 3, 4, 5].map(d => `<button type="button" class="pick" data-v="${d}" aria-label="${d === 5 ? "5 or more days" : dayWord(d)}">${d === 5 ? "5+" : d}</button>`).join("");
-  $("#lp-interests").innerHTML = Object.entries(INTERESTS).map(([k, label]) => `<button type="button" class="chip" data-v="${k}">${label}</button>`).join("");
+  const order = [...POPULAR_INTERESTS, ...Object.keys(INTERESTS).filter(k => !POPULAR_INTERESTS.includes(k))];
+  $("#lp-interests").innerHTML = order.map(k => `<button type="button" class="chip${POPULAR_INTERESTS.includes(k) ? "" : " extra"}" data-v="${k}">${INTERESTS[k]}</button>`).join("")
+    + `<button type="button" class="chip more" id="lp-int-more" aria-expanded="false">+ ${order.length - POPULAR_INTERESTS.length} more</button>`;
   lpHomeSearch = makeCitySearch($("#lp-home-input"), $("#lp-home-list"), { text: () => byId(state.home).name, pick: setHome, prefix: "lh" });
   makeCitySearch($("#lp-been-input"), $("#lp-been-list"), { text: () => "", pick: (id) => { markBeen(id, 0); update(); }, exclude: (c) => !!been[c.id] || c.id === state.home, prefix: "lb" });
   $("#lp-profile").innerHTML = profileSelects("lp");
@@ -6158,7 +6188,17 @@ function setupLanding() {
     if (state.daysSet.has(d) && state.daysSet.size === 1) return;
     toggle(state.daysSet, d); state.days = Math.min(...state.daysSet); changed();
   });
-  $("#lp-interests").addEventListener("click", (e) => { const b = e.target.closest(".chip"); if (b) { toggle(state.interests, b.dataset.v); changed(); } });
+  $("#lp-interests").addEventListener("click", (e) => {
+    const b = e.target.closest(".chip");
+    if (!b) return;
+    if (b.id === "lp-int-more") {
+      const all = $("#lp-interests").classList.toggle("all");
+      b.setAttribute("aria-expanded", String(all));
+      b.textContent = all ? "Fewer" : `+ ${$("#lp-interests").querySelectorAll(".extra").length} more`;
+      return;
+    }
+    toggle(state.interests, b.dataset.v); changed();
+  });
   $("#lp-data").hidden = !DATA;
   $("#landing-form").addEventListener("submit", (e) => { e.preventDefault(); closeLanding(true); });
   $("#brand").addEventListener("click", openLanding);
