@@ -117,6 +117,39 @@ export default async function run() {
     t.check(phone.w <= 360, `no sideways scrolling on phones (page is ${phone.w}px)`);
     t.check(phone.bar < 70, `top bar fits on one line on phones (${Math.round(phone.bar)}px tall)`);
     t.check(!m.errors.length, `phone page errors: ${m.errors}`);
+
+    // 8. Accounts (with a fake Supabase): the emailed link signs you in, data from the account
+    // merges into this browser, and later changes are saved back to the account.
+    const calls = { otp: 0, posts: [] };
+    const remote = { been: { rome: { r: 4, n: "Rome" } }, saved: [] };
+    const setup = async (page) => {
+      await page.addInitScript(() => { window.WEEKENDER_SUPABASE_URL = "https://fake.supabase.co"; window.WEEKENDER_SUPABASE_KEY = "anon"; });
+      await page.route("https://fake.supabase.co/**", async (r) => {
+        const u = new URL(r.request().url()), json = (b, status = 200) => r.fulfill({ status, contentType: "application/json", body: JSON.stringify(b) });
+        if (u.pathname === "/auth/v1/otp") { calls.otp++; return json({}); }
+        if (u.pathname === "/auth/v1/user") return json({ id: "user-1", email: "student@school.edu" });
+        if (u.pathname === "/rest/v1/profiles" && r.request().method() === "GET") return json([{ data: remote }]);
+        if (u.pathname === "/rest/v1/profiles") { calls.posts.push(JSON.parse(r.request().postData())); return r.fulfill({ status: 201, body: "" }); }
+        return json({}, 404);
+      });
+    };
+    const ap = await openApp(browser, { setup, hash: "#access_token=tok&refresh_token=ref&expires_in=3600&token_type=bearer&type=magiclink" });
+    await ap.waitForFunction(() => { try { return ((JSON.parse(localStorage.getItem("weekender:v1") || "{}").been || {}).rome || {}).r === 4; } catch { return false; } }, null, { timeout: 10000 });
+    await ap.waitForFunction(() => typeof update === "function" && document.querySelector("#account"));
+    const acct = await ap.evaluate(() => ({ text: document.querySelector("#account").textContent, url: location.href, beenRome: been.rome && been.rome.r }));
+    t.check(/Signed in as student@school\.edu/.test(acct.text) && acct.beenRome === 4 && !acct.url.includes("access_token"),
+      `the sign-in link logs you in and brings in your account's places (${acct.text.trim().slice(0, 60)}, rome=${acct.beenRome})`);
+    await ap.evaluate(() => { markBeen("paris", 5); update(); });
+    await ap.waitForTimeout(1800);
+    const last = calls.posts[calls.posts.length - 1];
+    t.check(last && last.id === "user-1" && last.data.been.rome.r === 4 && last.data.been.paris.r === 5, `changes are saved to the account, got ${JSON.stringify(last && last.data.been)}`);
+    const lp = await openApp(browser, { setup });
+    await lp.evaluate(() => { closeLanding(false); document.querySelector("#been-btn").click(); });
+    await lp.fill("#login-email", "new@school.edu");
+    await lp.click("#login-form button");
+    await lp.waitForTimeout(300);
+    t.check(calls.otp === 1, "the login form emails a sign-in link");
+    t.check(!ap.errors.length && !lp.errors.length, `account page errors: ${[...ap.errors, ...lp.errors].join("; ")}`);
   } finally {
     await browser.close();
   }

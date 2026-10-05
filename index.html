@@ -450,6 +450,9 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
 .day li.fits .what span:first-child { font-weight: 500; }
 .day .slot .fit { font-style: normal; text-transform: none; letter-spacing: 0; color: var(--accent); margin-left: 6px; }
 .note.aff { font-size: 12px; margin-top: 8px; }
+.account { border-bottom: 1px solid var(--line); padding-bottom: 12px; }
+.login-form { display: flex; gap: 6px; margin-top: 6px; }
+.login-form input { flex: 1; min-width: 0; padding: 7px 10px; border: 1px solid var(--line); border-radius: 9px; font: inherit; font-size: 14px; }
 </style>
 </head>
 <body>
@@ -481,6 +484,7 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
 </header>
 
 <div class="popover been-pop" id="been-pop" hidden>
+  <div class="account" id="account" hidden></div>
   <div>
     <h3>Saved trips</h3>
     <ul class="been-items saved-items" id="saved-items"></ul>
@@ -5108,7 +5112,11 @@ function escapeDetails(home, dest, cost) {
 const STORE_KEY = "weekender:v1";
 const store = {
   get() { try { return JSON.parse(localStorage.getItem(STORE_KEY) || "{}"); } catch { return {}; } },
-  set(patch) { try { localStorage.setItem(STORE_KEY, JSON.stringify({ ...store.get(), ...patch })); } catch { /* private mode or blocked */ } }
+  set(patch, { local = false } = {}) {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify({ ...store.get(), ...patch })); } catch { /* private mode or blocked */ }
+    // Signed in? Copy synced changes to the account too (see "accounts" below).
+    if (!local && typeof schedulePush === "function" && Object.keys(patch).some(k => ["been", "saved", "criteria"].includes(k))) schedulePush();
+  }
 };
 let been = store.get().been || {};
 function saveBeen() { store.set({ been }); trainTaste(); }
@@ -5354,6 +5362,124 @@ function toast(msg) {
   const el = $("#toast");
   el.textContent = msg; el.hidden = false;
   clearTimeout(toastTimer); toastTimer = setTimeout(() => { el.hidden = true; }, 3200);
+}
+
+// ---------------------------------------------------------------- accounts (optional)
+// Log in with an emailed link to keep saved trips, places you've been, ratings and your search
+// across devices. Uses Supabase (free tier): passwordless email login, and one row per person in a
+// "profiles" table protected by row-level security, so people can only read and write their own row.
+// Setup: docs/ACCOUNTS.md. Paste your project's URL and anon key below (both are public by design).
+// Left empty, the app works exactly as before and keeps everything in this browser only.
+const SUPABASE_URL = window.WEEKENDER_SUPABASE_URL || "";
+const SUPABASE_ANON_KEY = window.WEEKENDER_SUPABASE_KEY || "";
+const SYNC_KEYS = ["been", "saved", "criteria"];
+const AUTH_KEY = "weekender:auth";
+const cloudOn = () => !!(SUPABASE_URL && SUPABASE_ANON_KEY);
+const auth = {
+  get() { try { return JSON.parse(localStorage.getItem(AUTH_KEY) || "null"); } catch { return null; } },
+  set(v) { try { v ? localStorage.setItem(AUTH_KEY, JSON.stringify(v)) : localStorage.removeItem(AUTH_KEY); } catch { /* blocked */ } }
+};
+async function sb(path, { method = "GET", body, token, headers = {} } = {}) {
+  const res = await fetch(SUPABASE_URL.replace(/\/$/, "") + path, {
+    method,
+    headers: { apikey: SUPABASE_ANON_KEY, "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}), ...headers },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  if (!res.ok) throw new Error(`Supabase answered ${res.status}`);
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
+// A valid access token, refreshed shortly before it expires. Logs out if the refresh fails.
+async function accessToken() {
+  const a = auth.get();
+  if (!a) return null;
+  if (Date.now() < a.expiresAt - 60000) return a.access;
+  try {
+    const t = await sb("/auth/v1/token?grant_type=refresh_token", { method: "POST", body: { refresh_token: a.refresh } });
+    auth.set({ ...a, access: t.access_token, refresh: t.refresh_token, expiresAt: Date.now() + t.expires_in * 1000 });
+    return t.access_token;
+  } catch {
+    auth.set(null); renderAccount();
+    return null;
+  }
+}
+async function sendLoginLink(email) {
+  const back = location.origin + location.pathname;
+  await sb(`/auth/v1/otp?redirect_to=${encodeURIComponent(back)}`, { method: "POST", body: { email, create_user: true } });
+}
+// Keep everything from both sides: places from either (highest rating wins), saved trips from
+// either (no duplicates), and this browser's current search.
+function mergeData(local, remote) {
+  const been = { ...(remote.been || {}) };
+  const stars = (v) => (v && typeof v === "object" ? v.r : v) || 0;
+  for (const [k, v] of Object.entries(local.been || {})) if (!been[k] || stars(v) >= stars(been[k])) been[k] = v;
+  const seen = new Set(), saved = [];
+  for (const s of [...(local.saved || []), ...(remote.saved || [])]) {
+    const id = refId(s);
+    if (!seen.has(id)) { seen.add(id); saved.push(s); }
+  }
+  return { been, saved, criteria: local.criteria || remote.criteria };
+}
+const syncPart = (o) => Object.fromEntries(SYNC_KEYS.filter(k => o[k] != null).map(k => [k, o[k]]));
+// Fetch the account's data, merge it in, and save the merged copy on both sides.
+// Returns true when this browser's data changed (the page then reloads to show it).
+async function pullCloud() {
+  const token = await accessToken(), a = auth.get();
+  if (!token || !a) return false;
+  const rows = await sb(`/rest/v1/profiles?id=eq.${a.id}&select=data`, { token });
+  const local = syncPart(store.get()), merged = mergeData(local, (rows && rows[0] && rows[0].data) || {});
+  const changed = JSON.stringify(syncPart(merged)) !== JSON.stringify(local);
+  if (changed) store.set(merged, { local: true });
+  await pushCloud(merged);
+  return changed;
+}
+async function pushCloud(data = syncPart(store.get())) {
+  const token = await accessToken(), a = auth.get();
+  if (!token || !a) return;
+  await sb("/rest/v1/profiles", { method: "POST", token, headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+    body: { id: a.id, data, updated_at: new Date().toISOString() } });
+}
+let pushTimer;
+function schedulePush() {
+  if (!cloudOn() || !auth.get()) return;
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(() => pushCloud().catch(() => toast("Couldn't sync to your account. Your changes are saved in this browser.")), 1200);
+}
+// After the emailed link, Supabase sends people back here with tokens in the URL hash.
+async function readLoginLink() {
+  if (!cloudOn() || !/access_token=/.test(location.hash)) return;
+  const q = new URLSearchParams(location.hash.slice(1));
+  history.replaceState(null, "", location.href.split("#")[0]);
+  try {
+    const access = q.get("access_token");
+    const user = await sb("/auth/v1/user", { token: access });
+    auth.set({ access, refresh: q.get("refresh_token"), expiresAt: Date.now() + Number(q.get("expires_in") || 3600) * 1000, id: user.id, email: user.email });
+    if (await pullCloud()) { location.reload(); return; }
+    toast(`Signed in as ${user.email}`);
+    renderAccount();
+  } catch {
+    toast("That sign-in link didn't work. Try sending a new one.");
+  }
+}
+async function logOut() {
+  const token = auth.get() && auth.get().access;
+  auth.set(null); renderAccount();
+  toast("Logged out. Your trips stay in this browser.");
+  if (token) sb("/auth/v1/logout", { method: "POST", token }).catch(() => {});
+}
+function renderAccount() {
+  const box = $("#account");
+  if (!box) return;
+  box.hidden = !cloudOn();
+  if (!cloudOn()) return;
+  const a = auth.get();
+  box.innerHTML = a
+    ? `<h3>Your account</h3><p class="note">Signed in as <b>${String(a.email).replace(/[&<>"]/g, "")}</b>. Saved trips, places and ratings sync across your devices.</p>
+       <button type="button" class="ghost sm" data-act="logout">Log out</button>`
+    : `<h3>Keep your trips on every device</h3>
+       <form id="login-form" class="login-form"><input type="email" id="login-email" required placeholder="you@school.edu" autocomplete="email" aria-label="Email">
+       <button type="submit" class="ghost sm">Email me a link</button></form>
+       <p class="note">No password: we email you a sign-in link. Without an account, everything stays in this browser.</p>`;
 }
 
 function renderBeen() {
@@ -6310,6 +6436,7 @@ function setupControls() {
       update();
     }
     if (act === "rate-skip") { ui.rating = null; renderSpot(); }
+    if (act === "logout") logOut();
     if (act === "save") { const t = tripById(id); if (t) { toggleSave(t); renderDrawer(); renderBeen(); toast(isSaved(t) ? "Saved to My trips" : "Removed from My trips"); } }
     if (act === "share") { const t = tripById(id); if (t) shareTrip(t); }
     if (act === "open-saved") { const s = saved[Number(v)]; if (s) { $("#been-pop").hidden = true; $("#been-btn").setAttribute("aria-expanded", "false"); openRef(s); } }
@@ -6333,6 +6460,21 @@ loadRates();
 const shared = readShareLink();
 update();
 renderLanding();
+renderAccount();
+document.addEventListener("submit", async (e) => {
+  if (e.target.id !== "login-form") return;
+  e.preventDefault();
+  const email = $("#login-email").value.trim();
+  try { await sendLoginLink(email); toast(`Check ${email} for your sign-in link`); }
+  catch { toast("Couldn't send the link. Check the address and try again."); }
+});
+readLoginLink();
+if (cloudOn() && auth.get() && !/access_token=/.test(location.hash)) pullCloud().then((changed) => {
+  // Data from another device arrived: reload once to show it.
+  let once = false;
+  try { once = !!sessionStorage.getItem("weekender:synced"); sessionStorage.setItem("weekender:synced", "1"); } catch { once = true; }
+  if (changed && !once) location.reload();
+}).catch(() => {});
 if (shared) {
   closeLanding(false);
   if (G.ok) { G.fitKey = ""; globeUpdate(); }

@@ -36,12 +36,13 @@ export async function openBrowser() {
   const { chromium } = await import("playwright");
   return chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
 }
-export async function openApp(browser, { width = 1440, height = 900, hash = "", context = {} } = {}) {
+export async function openApp(browser, { width = 1440, height = 900, hash = "", context = {}, setup } = {}) {
   const ctx = await browser.newContext({ viewport: { width, height }, ...context });
   const page = await ctx.newPage();
   const d3 = fs.readFileSync(ROOT + "node_modules/d3/dist/d3.min.js", "utf8");
   await page.route("https://cdn.jsdelivr.net/**", (r) => r.fulfill({ body: d3, contentType: "application/javascript" }));
   await page.route(/^https:\/\/(?!cdn\.jsdelivr).*/, (r) => r.abort()); // no live APIs: test the built-in data
+  if (setup) await setup(page); // extra routes or init scripts, registered after the defaults so they win
   page.errors = [];
   page.on("pageerror", (e) => page.errors.push(e.message));
   await page.goto("file://" + INDEX + hash);
