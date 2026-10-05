@@ -1,0 +1,16 @@
+{
+  "name": "weekender",
+  "private": true,
+  "description": "Budget trip planner for study-abroad students (GSB 5576 project)",
+  "type": "module",
+  "scripts": {
+    "test": "node tests/run.mjs",
+    "test:data": "node tests/data.test.mjs",
+    "test:app": "node tests/app.test.mjs",
+    "data": "node scripts/build-data.mjs && node scripts/embed-data.mjs"
+  },
+  "devDependencies": {
+    "d3": "7.9.0",
+    "playwright": "1.63.0"
+  }
+}

@@ -151,7 +151,7 @@ select option, select optgroup { background: #FFFFFF; color: var(--ink); }
 .hud { position: fixed; z-index: 3; bottom: 16px; left: 50%; transform: translateX(calc(-50% - min(200px, 17vw))); display: flex; gap: 6px; }
 .hud button { border: 1px solid rgba(255,255,255,.7); background: var(--glass); box-shadow: var(--shadow); color: var(--ink); backdrop-filter: blur(12px); border-radius: 10px; min-width: 38px; height: 36px; padding: 0 12px; font-weight: 500; }
 .hud button:hover { border-color: var(--hover-line); }
-.legend { position: fixed; z-index: 3; left: 16px; padding: 10px 12px; border-radius: 12px; background: var(--glass); backdrop-filter: blur(10px); box-shadow: var(--shadow); top: calc(env(safe-area-inset-top, 0px) + 96px); display: grid; gap: 4px; font-size: 12px; color: var(--muted); }
+.legend { position: fixed; z-index: 3; left: 16px; top: auto !important; bottom: 64px; padding: 10px 12px; border-radius: 12px; background: var(--glass); backdrop-filter: blur(10px); box-shadow: var(--shadow); top: calc(env(safe-area-inset-top, 0px) + 96px); display: grid; gap: 4px; font-size: 12px; color: var(--muted); }
 .legend span { display: flex; align-items: center; gap: 8px; }
 .legend i { width: 7px; height: 7px; border-radius: 50%; }
 .legend i.l { width: 18px; height: 0; border-radius: 0; border-top: 1.5px solid var(--muted); }
@@ -291,7 +291,6 @@ select option, select optgroup { background: #FFFFFF; color: var(--ink); }
 .interests-box .chip { background: #fff; padding: 4px 10px; font-size: 12.5px; }
 .interests-box .chip[aria-pressed="true"] { background: var(--accent); }
 .match { color: var(--accent) !important; font-weight: 500; }
-.interests-box:not(.open) .chip:nth-child(n+9):not([aria-pressed="true"]) { display: none; }
 .ib-more { justify-self: start; border: 0; background: none; padding: 0; font-size: 12px; font-weight: 500; color: var(--accent); }
 .spot-meta.value { display: flex; align-items: center; gap: 7px; }
 .spot-meta.value i { width: 9px; height: 9px; border-radius: 50%; background: var(--dot-good); }
@@ -401,6 +400,37 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
 .facts .osm { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
 .facts .osm small { color: var(--muted); font-size: 12px; }
 @media (max-width: 760px) { .facts { grid-template-columns: 1fr; gap: 2px; } .facts dd { margin-bottom: 8px; } }
+/* ---------- Calmer layout ---------- */
+.ph-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.ph-top .sort { margin-top: 0; }
+.interests-box { margin-top: 8px; padding: 9px 12px; gap: 6px; }
+.ib-head { justify-content: flex-start; align-items: center; }
+.ib-head h3 { flex: none; }
+.ib-head #int-count { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink); font-size: 13px; }
+.ib-head .ib-more { flex: none; }
+.interests-box:not(.open) .chips { display: none; }
+.interests-box.open .chips { max-height: 220px; overflow-y: auto; padding: 2px 0; }
+.row { padding: 8px 10px; }
+.row-main small .match { color: var(--accent); }
+.thumb:not(.has-img)::after { content: attr(data-initial); position: absolute; inset: 0; display: grid; place-items: center; font: 600 17px var(--display); color: #5D6B85; }
+.thumb:not(.has-img) { background: #EEF1F5; }
+.linkish { border: 0; background: none; padding: 6px 4px; color: var(--muted); font-size: 13px; text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+.linkish:hover { color: var(--ink); }
+.spot-score { margin-top: 6px; }
+.tabs { position: sticky; top: 0; z-index: 2; display: flex; gap: 4px; margin: 0 -2px 4px; padding: 8px 2px; background: #fff; border-bottom: 1px solid var(--line); }
+.tabs [role=tab] { border: 0; background: none; border-radius: 8px; padding: 7px 12px; font-weight: 500; color: var(--muted); }
+.tabs [role=tab][aria-selected="true"] { background: var(--accent-soft); color: var(--accent); }
+#filters select { width: 100%; }
+@media (max-width: 760px) { .legend { display: none !important; } #key-btn { display: none; } }
+.dr-actions { float: right; display: flex; gap: 6px; margin: 2px 48px 0 0; }
+.ghost.sm { padding: 6px 10px; font-size: 13px; border-radius: 9px; }
+.ghost[aria-pressed="true"] { color: var(--accent); border-color: rgba(47,91,234,.4); background: var(--accent-soft); }
+.drawer .x { z-index: 9; }
+.toast { position: fixed; z-index: 30; left: 50%; bottom: 24px; transform: translateX(-50%); background: #13233F; color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 14px; box-shadow: var(--shadow); }
+.saved-items { margin-top: 6px; }
+@media (max-width: 760px) { .dr-actions { float: none; margin-bottom: 8px; } }
+.day li.fits .what span:first-child { font-weight: 500; }
+.day .slot .fit { font-style: normal; text-transform: none; letter-spacing: 0; color: var(--accent); margin-left: 6px; }
 </style>
 </head>
 <body>
@@ -425,16 +455,17 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
     </label>
     <div class="field"><span id="days-label">Days <b>pick any</b></span><div class="seg" id="days" role="group" aria-labelledby="days-label"></div></div>
     <label class="field"><span>Month</span><select id="month"></select></label>
-    <label class="field"><span>Currency</span><select id="currency">
-      <option value="EUR">€ EUR</option><option value="USD">$ USD</option><option value="GBP">£ GBP</option>
-    </select></label>
   </div>
   <button type="button" class="bar-btn" id="settings-btn" aria-label="Settings" aria-expanded="false"><span class="lbl-long">Settings</span><span class="lbl-short" aria-hidden="true">Edit</span></button>
-  <button type="button" class="bar-btn" id="been-btn" aria-label="Places I have been" aria-expanded="false" aria-controls="been-pop"><span class="lbl-long">Been there</span><span class="lbl-short" aria-hidden="true">Visited</span><i id="been-count"></i></button>
-  <button type="button" class="bar-btn" id="filters-btn" aria-expanded="false" aria-controls="filters">Transport<i id="filters-count"></i></button>
+  <button type="button" class="bar-btn" id="been-btn" aria-label="My trips: saved trips and places I've been" aria-expanded="false" aria-controls="been-pop"><span class="lbl-long">My trips</span><span class="lbl-short" aria-hidden="true">Mine</span><i id="been-count"></i></button>
+  <button type="button" class="bar-btn" id="filters-btn" aria-expanded="false" aria-controls="filters">Filters<i id="filters-count"></i></button>
 </header>
 
 <div class="popover been-pop" id="been-pop" hidden>
+  <div>
+    <h3>Saved trips</h3>
+    <ul class="been-items saved-items" id="saved-items"></ul>
+  </div>
   <div>
     <h3 id="been-label">Places I've been</h3>
     <p class="note">They won't be suggested again. Rate them and your scores start to follow your taste.</p>
@@ -449,9 +480,12 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
 
 <div class="popover" id="filters" hidden>
   <div><h3 id="modes-label">Getting there by</h3><div class="chips" id="modes" role="group" aria-labelledby="modes-label"></div></div>
+  <div><h3><label for="currency">Show prices in</label></h3><select id="currency">
+    <option value="EUR">€ Euros</option><option value="USD">$ US dollars</option><option value="GBP">£ Pounds</option>
+  </select></div>
 </div>
 
-<div class="legend" aria-hidden="true">
+<div class="legend" id="legend" hidden>
   <span><i style="background:var(--dot-good)"></i>Strong pick (score 7.5–10)</span>
   <span><i style="background:var(--dot-mid)"></i>Decent pick (5.5–7.4)</span>
   <span><i style="background:var(--dot-warn)"></i>Weaker pick or over budget</span>
@@ -463,17 +497,18 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
 
 <aside class="panel glass" aria-label="Trips">
   <div class="panel-head">
-    <span class="eyebrow"><span id="city-count">120</span> places · Europe, North Africa &amp; beyond</span>
-    <h2 id="results-title">Trips</h2>
+    <div class="ph-top">
+      <h2 id="results-title">Trips</h2>
+      <div class="sort" role="group" aria-label="Sort trips">
+        <button type="button" class="pick" data-v="best">Best</button>
+        <button type="button" class="pick" data-v="cheap">Cheapest</button>
+      </div>
+    </div>
     <p id="results-sub"></p>
     <div class="interests-box">
-      <div class="ib-head"><h3 id="int-label">I'm into</h3><span id="int-count"></span></div>
+      <div class="ib-head"><h3 id="int-label">Into</h3><span id="int-count"></span>
+        <button type="button" class="ib-more" id="int-more" aria-expanded="false" aria-controls="interests">Edit</button></div>
       <div class="chips" id="interests" role="group" aria-labelledby="int-label"></div>
-      <button type="button" class="ib-more" id="int-more" aria-expanded="false">+ more interests</button>
-    </div>
-    <div class="sort" role="group" aria-label="Sort trips">
-      <button type="button" class="pick" data-v="best">Best match</button>
-      <button type="button" class="pick" data-v="cheap">Cheapest first</button>
     </div>
   </div>
   <div class="panel-list" id="results" aria-live="polite"></div>
@@ -485,9 +520,11 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
   <button type="button" id="zoom-out" aria-label="Zoom out">−</button>
   <button type="button" id="zoom-in" aria-label="Zoom in">+</button>
   <button type="button" id="zoom-fit">Fit trips</button>
-  <button type="button" id="zoom-earth">Whole Earth</button>
+  <button type="button" id="key-btn" aria-expanded="false" aria-controls="legend">Map key</button>
 </div>
 
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
 <section class="landing" id="landing" aria-labelledby="lp-title">
   <div class="landing-inner">
@@ -3957,6 +3994,41 @@ function chosenDayTrip(dest) {
   return pick >= 0 ? dest.dayTrips[pick] : null;
 }
 
+// ---------------------------------------------------------------- tailored itineraries
+// Each activity is tagged with interests from its wording (e.g. "Picasso Museum" → Art & museums).
+// Days with more of your interests come first, so short trips keep the days that suit you, and
+// the budget prices exactly the days shown.
+const ACTIVITY_TAGS = [
+  ["food", /lunch|dinner|breakfast|tapas|pintxo|meze|street food|food|taverna|trattoria|pizza|gelato|pastr|bakery|seafood|grill|kebab|pierogi|dumpling|market lunch|tasting menu|eat|churros|chocolate|crawl|francesinha|bites/i],
+  ["nightlife", /\bbars?\b|\bpubs?\b|club|nightlife|drinks|aperitivo|rooftop|cocktail|late night|crawl|cais do sodr|pink street/i],
+  ["art", /museum|gallery|\bart\b|louvre|prado|uffizi|tate|moma|guggenheim|exhibition|reina sof|guernica|lx factory|tiles|azulejo/i],
+  ["history", /roman|ruins|historic|old town|medieval|ancient|forum|amphitheat|acropolis|fortress|walls|memorial|history|quarter|cemetery|jewish|anne frank|ghetto|latin quarter|cit[eé]/i],
+  ["architecture", /cathedral|basilica|sagrada|palace|architecture|bridge|tower|opera house|town hall|modernis|art nouveau|station|square|plaza|piazza|boulevard/i],
+  ["castles", /castle|palace|fortress|alc[aá]zar|kasbah|citadel|château/i],
+  ["sacred", /church|cathedral|mosque|monastery|basilica|abbey|temple|chapel|synagogue|notre-dame|sacr[eé]|sé\b/i],
+  ["nature", /park|garden|forest|nature|botanic|bike/i],
+  ["hiking", /hike|hiking|trail|climb|walk up|trek/i],
+  ["beach", /beach|swim|cove|bay|seaside|lido/i],
+  ["views", /view|sunset|sunrise|panoram|lookout|mirador|miradouro|skyline/i],
+  ["markets", /market|bazaar|souk|flea|stalls/i],
+  ["cafes", /caf[eé]|coffee|tea house|pastry|cake/i],
+  ["music", /concert|gig|fado|jazz|live music|opera|flamenco|music/i],
+  ["streetart", /street art|mural|graffiti/i],
+  ["wine", /wine|beer|brewery|winery|cellar|vermouth|port lodge|tasting/i],
+  ["spas", /\bbaths?\b|\bspa\b|hammam|thermal|sauna|hot spring/i],
+  ["islands", /island|boat|ferry|cruise|kayak/i],
+  ["lakes", /lake|river|canal/i],
+  ["sports", /stadium|football|match|arena tour/i],
+  ["mountains", /mountain|peak|cable car|funicular|summit/i]
+];
+const activityTags = (what) => ACTIVITY_TAGS.filter(([, rx]) => rx.test(what)).map(([k]) => k);
+const dayFit = (day) => day.reduce((n, [what]) => n + activityTags(what).filter(k => state.interests.has(k)).length, 0);
+// The city's 3 itinerary days, best-matching first (ties keep the original order).
+function orderedItinerary(dest) {
+  if (!state.interests.size) return dest.itinerary;
+  return dest.itinerary.map((day, i) => ({ day, i, fit: dayFit(day) })).sort((a, b) => b.fit - a.fit || a.i - b.i).map(x => x.day);
+}
+
 function estimateTrip(home, dest) {
   const options = transportOptions(home, dest, state.month);
   const transport = pickTransport(dest, options);
@@ -3968,7 +4040,7 @@ function estimateTrip(home, dest) {
   // Sights: the real prices in the itinerary for the city days you'll do (a day trip replaces one),
   // plus the daily activities allowance for any free days beyond the 3-day itinerary.
   const cityDays = Math.min(3, dayTrip ? state.days - 1 : state.days);
-  const sights = dest.itinerary.slice(0, cityDays).reduce((s, day) => s + day.reduce((t, [, c]) => t + c, 0), 0);
+  const sights = orderedItinerary(dest).slice(0, cityDays).reduce((s, day) => s + day.reduce((t, [, c]) => t + c, 0), 0);
   const freeDays = Math.max(0, state.days - cityDays - (dayTrip ? 1 : 0));
   const local = state.days * dest.costs.transit + sights + freeDays * dest.costs.activities;
   const extra = dayTrip ? dayTrip.cost : 0;
@@ -4185,7 +4257,7 @@ function costSection(cost) {
     ["c1", `${MODES[cost.transport.mode].label} round trip`, `~${hrs(cost.transport.hours)} each way`, cost.transport.cost],
     ["c2", "Hostel", `${cost.nights} night${cost.nights > 1 ? "s" : ""}`, cost.lodging],
     ["c3", "Food", dayWord(state.days), cost.food],
-    ["c4", "Local transport & sights", "as in the plan below", cost.local]
+    ["c4", "Local transport & sights", "from the itinerary", cost.local]
   ].filter(p => p[3] > 0);
   if (cost.dayTrip) parts.push(["c5", `Day trip: ${cost.dayTrip.name}`, "travel + entry", cost.extra]);
   return costBlock(parts, cost.total);
@@ -4258,14 +4330,27 @@ function dayTripsSection(dest, cost) {
 
 function itinerarySection(dest, cost) {
   const cityDays = Math.min(3, cost.dayTrip ? state.days - 1 : state.days);
-  const days = dest.itinerary.slice(0, cityDays).map((day, d) => {
-    const total = day.reduce((sum, [, c]) => sum + c, 0);
+  const wanted = [...state.interests];
+  const shown = orderedItinerary(dest).slice(0, cityDays);
+  let hits = 0, total = 0;
+  const covered = new Set();
+  const days = shown.map((day, d) => {
+    const sum = day.reduce((s, [, c]) => s + c, 0);
     return `<div class="day">
-      <div class="day-head"><strong>Day ${d + 1}</strong><span class="num">${total ? euro(total) : "Free"}</span></div>
-      <ol>${day.map(([what, c], s) => `<li><span class="slot">${SLOTS[s]}</span>
-        <span class="what"><span>${what}</span><span>${c ? euro(c) : "free"}</span></span></li>`).join("")}</ol>
+      <div class="day-head"><strong>Day ${d + 1}</strong><span class="num">${sum ? euro(sum) : "Free"}</span></div>
+      <ol>${day.map(([what, c], s) => {
+        const mine = activityTags(what).filter(k => state.interests.has(k));
+        total++; if (mine.length) hits++;
+        mine.forEach(k => covered.add(k));
+        return `<li class="${mine.length ? "fits" : ""}"><span class="slot">${SLOTS[s]}${mine.length ? ` <em class="fit">✓ ${mine.map(k => INTERESTS[k]).join(", ")}</em>` : ""}</span>
+        <span class="what"><span>${what}</span><span>${c ? euro(c) : "free"}</span></span></li>`;
+      }).join("")}</ol>
     </div>`;
   });
+  // Interests the city days don't cover: suggest the best-matching day trip (if one isn't already in the plan).
+  const missing = wanted.filter(k => !covered.has(k));
+  const tip = missing.length && !cost.dayTrip ? dest.dayTrips
+    .map(dt => ({ dt, n: dt.tags.filter(k => missing.includes(k)).length })).filter(x => x.n).sort((a, b) => b.n - a.n)[0] : null;
   if (cost.dayTrip) {
     days.push(`<div class="day trip-day"><div class="day-head"><strong>Day ${cityDays + 1}</strong><span class="num">Day trip</span></div>
       <ol><li><span class="slot">${cost.dayTrip.how}</span><span class="what"><span>${cost.dayTrip.name}: ${cost.dayTrip.note}</span><span>${euro(cost.dayTrip.cost)}</span></span></li></ol></div>`);
@@ -4274,7 +4359,10 @@ function itinerarySection(dest, cost) {
     days.push(`<div class="day"><div class="day-head"><strong>Day ${d}</strong><span class="num">Free day</span></div>
       <ol><li><span class="what solo"><span>${cost.dayTrip ? "Add another day trip from the list below, or slow down and explore." : "Pick a day trip below, or explore at your own pace."}</span></span></li></ol></div>`);
   }
-  return `<div><h4>Your ${state.days}-day plan${state.days >= 5 ? " (priced for 5 days; add more at the same daily cost)" : ""}</h4><div class="days">${days.join("")}</div></div>`;
+  const summary = wanted.length
+    ? `<p class="note">Tailored to ${wanted.map(k => INTERESTS[k]).join(", ")}: ${hits} of ${total} activities match, and the best-matching days come first.${tip ? ` For ${tip.dt.tags.filter(k => missing.includes(k)).map(k => INTERESTS[k].toLowerCase()).join(" and ")}, add the day trip to <b>${tip.dt.name}</b> (${tip.dt.how}, ${euro(tip.dt.cost)}).` : ""}</p>`
+    : `<p class="note">Pick interests and this plan reorders itself around them.</p>`;
+  return `<div><h4>Your ${state.days}-day plan${state.days >= 5 ? " (priced for 5 days; add more at the same daily cost)" : ""}</h4>${summary}<div class="days">${days.join("")}</div></div>`;
 }
 
 // TikTok searches for the place: always fresh videos, no API key needed.
@@ -5142,10 +5230,77 @@ function tasteHtml() {
     ${s.dislikes.length ? ` Less so <b>${s.dislikes.join(", ")}</b>.` : ""}${s.cheap ? " You seem happiest somewhere cheap." : s.pricey ? " You don't mind pricier places." : ""}
     This makes up ${Math.round(tasteWeight() * 100)}% of each score${n < 4 ? "; rating more places raises it to 30% and makes it more personal" : ""}.</p>`;
 }
+
+// ---------------------------------------------------------------- saved trips + share links
+// A trip is identified by the search it came from (home, length, month, budget) plus its key.
+// Saved trips live in this browser (localStorage); share links carry the same info in the URL hash.
+let saved = store.get().saved || [];
+const tripRef = (t) => ({ key: t.key, home: state.home, days: t.days, month: state.month, budget: state.budget });
+const refId = (r) => `${r.home}|${r.key}|${r.month}|${r.budget}`;
+const isSaved = (t) => saved.some(s => refId(s) === refId(tripRef(t)));
+function toggleSave(t) {
+  const r = tripRef(t), id = refId(r);
+  if (saved.some(s => refId(s) === id)) saved = saved.filter(s => refId(s) !== id);
+  else saved.unshift({ ...r, name: t.dest.name, kind: tripKind(t), total: t.cost.total, score: t.score10, savedAt: new Date().toISOString().slice(0, 10) });
+  store.set({ saved });
+}
+function savedHtml() {
+  if (!saved.length) return `<li class="note">No saved trips yet. Use ☆ Save in any plan.</li>`;
+  return saved.map((s, i) => `<li><span class="bi-name">${s.name}<small>From ${(byId(s.home) || {}).name || s.home} · ${dayWord(s.days)} · ${MONTHS[s.month]} · ${euro(s.total)} · ${Number(s.score).toFixed(1)}/10</small></span>
+    <button type="button" class="ghost sm" data-act="open-saved" data-v="${i}">Open</button>
+    <button type="button" class="bi-x" data-act="unsave" data-v="${i}" aria-label="Remove ${s.name} from saved trips">×</button></li>`).join("");
+}
+// Go to a saved or shared trip: set the search it came from, then open its plan.
+function openRef(r) {
+  if (!byId(r.home)) return false;
+  state.home = r.home; $("#home").value = r.home;
+  if (r.days >= 1 && r.days <= 5) { state.daysSet = new Set([Number(r.days)]); state.days = Number(r.days); }
+  if (r.month >= 0 && r.month <= 11) state.month = Number(r.month);
+  if (r.budget >= 50 && r.budget <= 1000) state.budget = Number(r.budget);
+  modeChoice.clear(); ui.rating = null;
+  update();
+  if (!tripById(r.key)) { toast("That trip isn't available with your current settings."); return false; }
+  select(r.key);
+  ui.drawer = r.key; ui.tab = "overview"; renderDrawer();
+  return true;
+}
+function shareLink(t) {
+  const r = tripRef(t);
+  const q = new URLSearchParams({ trip: r.key, from: r.home, days: r.days, month: r.month, budget: r.budget, cur: state.currency });
+  if (state.interests.size) q.set("into", [...state.interests].join(","));
+  return location.href.split("#")[0] + "#" + q.toString();
+}
+async function shareTrip(t) {
+  const url = shareLink(t);
+  const text = `${t.dest.name} from ${current.home.name}: ${dayWord(t.days)} in ${MONTHS_FULL[state.month]} for about ${euro(t.cost.total)} (score ${t.score10}/10)`;
+  try {
+    if (navigator.share && matchMedia("(pointer: coarse)").matches) { await navigator.share({ title: "Weekender trip", text, url }); return; }
+    await navigator.clipboard.writeText(url);
+    toast("Link copied: anyone who opens it sees this trip");
+  } catch {
+    prompt("Copy this link to share the trip:", url);
+  }
+}
+// A shared link (#trip=...&from=...) opens straight onto that trip, skipping the landing page.
+function readShareLink() {
+  const q = new URLSearchParams(location.hash.slice(1));
+  if (!q.get("trip") || !q.get("from")) return null;
+  if (q.get("into")) state.interests = new Set(q.get("into").split(",").filter(k => INTERESTS[k]));
+  if (["EUR", "USD", "GBP"].includes(q.get("cur"))) state.currency = q.get("cur");
+  return { key: q.get("trip"), home: q.get("from"), days: Number(q.get("days")), month: Number(q.get("month")), budget: Number(q.get("budget")) };
+}
+let toastTimer;
+function toast(msg) {
+  const el = $("#toast");
+  el.textContent = msg; el.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { el.hidden = true; }, 3200);
+}
+
 function renderBeen() {
   const n = Object.keys(been).length;
-  $("#been-count").textContent = n ? String(n) : "";
+  $("#been-count").textContent = n + saved.length ? String(n + saved.length) : "";
   $("#been-items").innerHTML = beenListHtml();
+  $("#saved-items").innerHTML = savedHtml();
   $("#taste-box").innerHTML = tasteHtml();
   if ($("#lp-been")) $("#lp-been").innerHTML = beenListHtml();
   document.querySelectorAll("select[data-profile]").forEach(s => { s.value = state.profile[s.dataset.profile] || ""; });
@@ -5222,7 +5377,7 @@ function tripPoints(t) {
 // ---------------------------------------------------------------- panel (trip list)
 
 let current = { home: null, trips: [] };
-const ui = { selected: null, hover: null, drawer: null, rating: null };
+const ui = { selected: null, hover: null, drawer: null, rating: null, tab: "overview" };
 
 function renderPanel(result) {
   const { home, fits } = result;
@@ -5256,10 +5411,9 @@ function renderPanel(result) {
     ${list.map(t => {
       const likes = [...(t.matched || []), ...(t.viaDayTrip || [])].map(m => INTERESTS[m]);
       return `<button type="button" class="row ${tone(t)}${ui.selected === t.key ? " active" : ""}" data-id="${t.key}" title="${TONE_TEXT[tone(t)]}: ${t.score10}/10">
-        <span class="thumb" data-wiki="${t.dest.name.replace(/"/g, "&quot;")}"><i class="dot"></i></span>
+        <span class="thumb" data-wiki="${t.dest.name.replace(/"/g, "&quot;")}" data-initial="${t.dest.name[0]}"><i class="dot"></i></span>
         <span class="row-main"><strong>${t.dest.name}</strong>
-          <small>${multi ? `${dayWord(t.days)} · ` : ""}${tripKind(t)} · ${MODES[t.cost.transport.mode].label} ${hrs(t.cost.transport.hours)}</small>
-          ${state.interests.size && likes.length ? `<small class="match">✓ ${likes.join(" · ")}</small>` : ""}</span>
+          <small>${multi ? `${dayWord(t.days)} · ` : ""}${tripKind(t)} · ${MODES[t.cost.transport.mode].label} ${hrs(t.cost.transport.hours)}${state.interests.size && likes.length ? ` · <span class="match">✓ ${likes.join(", ")}</span>` : ""}</small></span>
         <span class="row-right">${scoreBadge(t)}<span class="row-price num">${euro(t.cost.total)}</span></span>
       </button>`;
     }).join("")}`).join("");
@@ -5289,12 +5443,10 @@ function renderSpot() {
       <span class="${left >= 0 ? "good" : "warn"}">${left >= 0 ? `${euro(left)} under budget` : `${euro(-left)} over`}</span></div>
     <p class="spot-meta">${MODES[t.cost.transport.mode].label} · ~${hrs(t.cost.transport.hours)} each way · ${dayWord(t.days)}
       · <span class="${s.tone}">${s.text.toLowerCase()} in ${MONTHS[state.month]}</span></p>
-    <div class="spot-score">${scoreBadge(t, "big")}<span><b>${TONE_TEXT[tone(t)]}</b> · score out of 10</span></div>
-    ${scoreBars(t, true)}
-    ${wx ? `<p class="spot-meta wx-line">${wx}</p>` : ""}
+    <div class="spot-score">${scoreBadge(t, "big")}<span><b>${TONE_TEXT[tone(t)]}</b> · out of 10</span></div>
     <div class="spot-actions">
       <button type="button" class="cta" data-act="open-plan" data-id="${t.key}">Open the plan</button>
-      <button type="button" class="ghost" data-act="been" data-id="${t.key}">I've been here</button>
+      <button type="button" class="linkish" data-act="been" data-id="${t.key}">Been here?</button>
     </div>`;
 }
 
@@ -5320,25 +5472,24 @@ function drawDrawer(t) {
     ? `<div><h4>About ${w.title || dest.name}</h4><p class="about">${w.extract}</p>
         ${w.page ? `<a class="more" href="${w.page}" target="_blank" rel="noopener">Read more on Wikipedia ↗</a>` : ""}</div>` : "";
   const live = `${weatherSection(t)}${holidaySection(t)}`;
-  const body = isEscape(t)
-    ? `<p class="lede">${dest.escape.note}</p><div class="stack">${scoreSection(t)}${dataSection(t)}${about}${tiktokSection(dest, matched)}${live}${escapeDetails(home, dest, cost)}${sourcesNote()}</div>`
-    : `<div class="stack">
-        ${scoreSection(t)}
-        ${dataSection(t)}
-        ${costSection(cost)}
-        ${transportSection(dest, cost)}
-        ${itinerarySection(dest, cost)}
-        ${state.days > 1 ? dayTripsSection(dest, cost) : ""}
-        ${about}
-        ${live}
-        ${whenSection(dest)}
-        ${tiktokSection(dest, matched)}
-        ${extrasSection(home, dest, cost)}
-        ${sourcesNote()}
-      </div>`;
+  // Three tabs keep the plan short: what it costs and why it scores, the day-by-day plan, and the rest.
+  const panes = isEscape(t)
+    ? [["overview", "Overview", `<p class="lede">${dest.escape.note}</p>${scoreSection(t)}${escapeDetails(home, dest, cost)}`],
+       ["details", "Details", `${about}${dataSection(t)}${live}${tiktokSection(dest, matched)}${sourcesNote()}`]]
+    : [["overview", "Overview", `${scoreSection(t)}${costSection(cost)}${transportSection(dest, cost)}`],
+       ["plan", "Itinerary", `${itinerarySection(dest, cost)}${state.days > 1 ? dayTripsSection(dest, cost) : ""}${tiktokSection(dest, matched)}`],
+       ["details", "Details", `${about}${dataSection(t)}${live}${whenSection(dest)}${extrasSection(home, dest, cost)}${sourcesNote()}`]];
+  if (!panes.some(([id]) => id === ui.tab)) ui.tab = "overview";
+  const body = `<div class="tabs" role="tablist">${panes.map(([id, label]) =>
+      `<button type="button" role="tab" id="tab-${id}" aria-controls="pane-${id}" aria-selected="${id === ui.tab}" data-act="tab" data-v="${id}">${label}</button>`).join("")}</div>
+    ${panes.map(([id, , html]) => `<div class="stack pane" role="tabpanel" id="pane-${id}" aria-labelledby="tab-${id}" ${id === ui.tab ? "" : "hidden"}>${html}</div>`).join("")}`;
   $("#drawer-body").innerHTML = `
     ${hero}
     <div class="dr-head">
+      <div class="dr-actions">
+        <button type="button" class="ghost sm" data-act="save" data-id="${t.key}" aria-pressed="${isSaved(t)}">${isSaved(t) ? "★ Saved" : "☆ Save"}</button>
+        <button type="button" class="ghost sm" data-act="share" data-id="${t.key}">Share</button>
+      </div>
       <span class="eyebrow">${isEscape(t) ? `${tripKind(t)} from ${home.name}` : `${home.code} → ${dest.code} · ${dest.country}`}</span>
       <h2>${dest.name}</h2>
       <div class="spot-price"><strong class="num">${euro(cost.total)}</strong>
@@ -5372,7 +5523,7 @@ function dataSection(t) {
   if (d.osm && DATA.osm) {
     const want = [...state.interests].filter(k => d.osm[k] != null);
     const top = Object.keys(d.osm).filter(k => !want.includes(k)).sort((a, b) => (d.strengths[b] || 0) - (d.strengths[a] || 0)).slice(0, Math.max(0, 5 - want.length));
-    const items = [...want, ...top].slice(0, 6).map(k => `<li><b class="num">${d.osm[k].toLocaleString()}</b> ${DATA.osm[k].label} <small>within ${DATA.osm[k].radiusKm} km${d.osm[k] ? ` · top ${Math.max(1, Math.round((1 - (d.strengths[k] || 0)) * 100))}%` : ""}</small></li>`);
+    const items = [...want, ...top].slice(0, 6).map(k => `<li><b class="num">${d.osm[k].toLocaleString()}</b> ${DATA.osm[k].label} <small>within ${DATA.osm[k].radiusKm} km${d.strengths[k] > 0 ? ` · top ${Math.max(1, Math.round((1 - d.strengths[k]) * 100))}%` : ""}</small></li>`);
     if (items.length) rows.push(["What's there", `<ul class="osm">${items.join("")}</ul>`, "OpenStreetMap"]);
   }
   if (d.wikipedia) rows.push(["Popularity", `about ${fmtViews(d.wikipedia.monthlyViews)} Wikipedia views a month${d.popularity != null ? ` (more than ${Math.round(d.popularity * 100)}% of places here)` : ""}`, "Wikipedia"]);
@@ -5470,7 +5621,7 @@ function globeInit() {
   $("#zoom-in").addEventListener("click", () => zoomBy(1.6));
   $("#zoom-out").addEventListener("click", () => zoomBy(1 / 1.6));
   $("#zoom-fit").addEventListener("click", () => fitGlobe(true));
-  $("#zoom-earth").addEventListener("click", () => flyTo([G.rot[0], -20], globeFullScale()));
+  $("#key-btn").addEventListener("click", () => { const l = $("#legend"); l.hidden = !l.hidden; $("#key-btn").setAttribute("aria-expanded", String(!l.hidden)); });
 
   drawStars();
   requestAnimationFrame(frame);
@@ -5659,7 +5810,6 @@ function drawBase() {
     const L = cityLights(), zoom = Math.min(2, Math.max(1, r / globeFullScale()));
     ctx.fillStyle = "rgba(70,80,100,0.16)";
     ctx.beginPath();
-    for (const p of L.small) if (visible(p)) { const [x, y] = projection(p); ctx.moveTo(x + 0.9 * zoom, y); ctx.arc(x, y, 0.9 * zoom, 0, 7); }
     for (const p of L.big) if (visible(p)) { const [x, y] = projection(p); ctx.moveTo(x + 1.5 * zoom, y); ctx.arc(x, y, 1.5 * zoom, 0, 7); }
     ctx.fill();
   }
@@ -5714,7 +5864,7 @@ function drawFx() {
   // Routes (static): top 10 plus whatever is highlighted.
   trips.forEach((t, i) => {
     const isFocus = isFocusT(t);
-    if (i >= 10 && !isFocus) return;
+    if (i >= 8 && !isFocus) return;
     const pts = tripPoints(t);
     if (!pts.length) return;
     const mode = t.cost.transport.mode;
@@ -5769,7 +5919,7 @@ function drawFx() {
     ctx.restore();
     if (isFocus) { ctx.strokeStyle = "#2F5BEA"; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(x, y, r + 4.5, 0, 7); ctx.stroke(); }
     G.markers.push({ id: t.key, x, y });
-    if (i < 6 || isFocus) labels.push({ t, x, y, isFocus, i });
+    if (i < 4 || isFocus) labels.push({ t, x, y, isFocus, i });
   });
 
   // Home (static ring)
@@ -5848,7 +5998,7 @@ function update() {
   document.querySelectorAll(".sort .pick").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === state.sort));
   const hidden = Object.keys(MODES).length - state.modes.size;
   $("#filters-count").textContent = hidden ? `${state.modes.size}/4` : "";
-  $("#int-count").textContent = state.interests.size ? `${state.interests.size} picked` : "Pick any to rank trips by what you like";
+  $("#int-count").textContent = state.interests.size ? [...state.interests].map(k => INTERESTS[k]).join(", ") : "Nothing yet: pick interests to personalize";
   saveCriteria();
   trainTaste();
   // Keep the city boxes in sync (unless you're typing in one).
@@ -6005,7 +6155,6 @@ function toggle(set, value) { set.has(value) ? set.delete(value) : set.add(value
 function setupControls() {
   $("#days").innerHTML = [1, 2, 3, 4, 5].map(d => `<button type="button" class="pick" data-v="${d}" aria-label="${d === 5 ? "5 or more days" : dayWord(d)}">${d === 5 ? "5+" : d}</button>`).join("");
   $("#month").innerHTML = MONTHS_FULL.map((m, i) => `<option value="${i}">${m}</option>`).join("");
-  $("#int-more").textContent = `+ ${Object.keys(INTERESTS).length - 8} more interests`;
   $("#interests").innerHTML = Object.entries(INTERESTS).map(([k, label]) => `<button type="button" class="chip" data-v="${k}">${label}</button>`).join("");
   $("#modes").innerHTML = Object.entries(MODES).map(([k, m]) => `<button type="button" class="chip" data-v="${k}">${m.label}</button>`).join("");
   $("#home").innerHTML = [...CITIES].sort((a, b) => a.name.localeCompare(b.name)).map(c => `<option value="${c.id}">${c.name}</option>`).join("");
@@ -6030,7 +6179,7 @@ function setupControls() {
   $("#int-more").addEventListener("click", () => {
     const box = document.querySelector(".interests-box"), open = box.classList.toggle("open");
     $("#int-more").setAttribute("aria-expanded", String(open));
-    $("#int-more").textContent = open ? "Show fewer" : `+ ${Object.keys(INTERESTS).length - 8} more interests`;
+    $("#int-more").textContent = open ? "Done" : "Edit";
   });
   $("#interests").addEventListener("click", (e) => { const b = e.target.closest(".chip"); if (b) { toggle(state.interests, b.dataset.v); changed(); } });
   $("#modes").addEventListener("click", (e) => { const b = e.target.closest(".chip"); if (b) { toggle(state.modes, b.dataset.v); changed(); } });
@@ -6066,7 +6215,12 @@ function setupControls() {
     if (!b) return;
     const { act, id, v } = b.dataset;
     if (act === "close-spot") { ui.selected = null; renderSpot(); document.querySelectorAll(".row.active").forEach(r => r.classList.remove("active")); }
-    if (act === "open-plan") { ui.drawer = id; renderDrawer(); $("#drawer").scrollTop = 0; }
+    if (act === "open-plan") { ui.drawer = id; ui.tab = "overview"; renderDrawer(); $("#drawer").scrollTop = 0; }
+    if (act === "tab") {
+      ui.tab = v;
+      document.querySelectorAll("#drawer .tabs [role=tab]").forEach(b => b.setAttribute("aria-selected", String(b.dataset.v === v)));
+      document.querySelectorAll("#drawer .pane").forEach(p => { p.hidden = p.id !== `pane-${v}`; });
+    }
     if (act === "close-drawer") { ui.drawer = null; renderDrawer(); }
     if (act === "mode") { modeChoice.set(id, v); update(); }
     if (act === "daytrip") { dayTripChoice.set(id, Number(v)); update(); }
@@ -6084,6 +6238,10 @@ function setupControls() {
       update();
     }
     if (act === "rate-skip") { ui.rating = null; renderSpot(); }
+    if (act === "save") { const t = tripById(id); if (t) { toggleSave(t); renderDrawer(); renderBeen(); toast(isSaved(t) ? "Saved to My trips" : "Removed from My trips"); } }
+    if (act === "share") { const t = tripById(id); if (t) shareTrip(t); }
+    if (act === "open-saved") { const s = saved[Number(v)]; if (s) { $("#been-pop").hidden = true; $("#been-btn").setAttribute("aria-expanded", "false"); openRef(s); } }
+    if (act === "unsave") { saved.splice(Number(v), 1); store.set({ saved }); renderBeen(); }
     if (act === "unbeen") { delete been[id]; saveBeen(); update(); }
   });
   document.addEventListener("keydown", (e) => {
@@ -6094,15 +6252,21 @@ function setupControls() {
   });
 }
 
-document.getElementById("city-count").textContent = CITIES.length;
 loadCriteria();
 trainTaste();
 document.body.classList.add("landing-open");
 setupControls();
 globeInit();
 loadRates();
+const shared = readShareLink();
 update();
 renderLanding();
+if (shared) {
+  closeLanding(false);
+  if (G.ok) { G.fitKey = ""; globeUpdate(); }
+  openRef(shared);
+  history.replaceState(null, "", location.href.split("#")[0]);
+}
 </script>
 </body>
 </html>
