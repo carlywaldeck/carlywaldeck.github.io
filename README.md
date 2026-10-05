@@ -1,17 +1,33 @@
-# Weekender (working name)
+# Weekender
 
 A budget trip planner for study-abroad students in Europe, covering 120 places across Europe, North Africa and the Middle East: enter your budget, trip length and free months, and get destinations that fit, the best time to go, and a sample itinerary.
 
-GSB 5576 semester project. See [docs/IDEA.md](docs/IDEA.md) for the full idea set.
+GSB 5576 semester project. See [docs/IDEA.md](docs/IDEA.md) for the full idea set and [docs/METHODS.md](docs/METHODS.md) for the data sources, scoring formula, taste model and limitations in one place.
+
+## What you can do
+- **Find trips:** pick where you're based, a month, a budget, trip lengths and interests. Trips are listed by score (or by price), with routes on the globe.
+- **Read a plan:** each plan has three tabs: **Overview** (score breakdown, costs, how to get there), **Itinerary** (day by day, plus day trips) and **Details** (about the place, the data behind it, best months and extras).
+- **Tailored itineraries:** activities that match your interests are marked ✓, and the best-matching days come first. If the city doesn't cover an interest, the plan suggests the day trip that does.
+- **Save and share:** ☆ Save keeps a trip under **My trips**. **Share** copies a link that opens the same trip (same home, length, month, budget and interests) for anyone.
+- **Teach it your taste:** mark places you've been and rate them; the taste model learns from your ratings.
+
+The interface keeps secondary controls tucked away: currency is in **Filters**, the map key is behind **Map key**, and interest chips open with **Edit**.
 
 ## Run it
 No installs needed. Download the repo and double-click `index.html` to open it in your browser.
+
+## Tests
+```
+npm install
+npm test        # data checks + app tests in headless Chromium
+```
+The data suite checks every city (fields, coordinates, seasons, tags, itineraries, travel speeds). The app suite drives the real page: the landing flow, a sweep of every city × 1–5 days × 4 months (over 50,000 trips), plan tabs, tailoring, the taste model, save and share links, and the phone layout. GitHub Actions runs both on every push (`.github/workflows/test.yml`).
 
 ## Live site (GitHub Pages)
 The site is published from `main` at **https://carlywaldeck.github.io/gsb-5576-project/**. Every push to `main` (including the monthly data refresh) republishes it within a couple of minutes. Anyone with the link can use it; each visitor's search, visited places and ratings stay in their own browser.
 
 ## How it's built
-Everything is in one file, `index.html`, so it works however it's opened (double-clicked, previewed, or hosted). It has three sections:
+Everything is in one file, `index.html`, so it works however it's opened (double-clicked, previewed, or hosted). It has four parts:
 
 | Section | What it does |
 |---|---|
@@ -43,13 +59,13 @@ By default the app picks the best mix of price and travel time; you can switch o
 With interests picked, the weights are 35% interests, 25% price, 20% timing and 20% trip length. Without them, they're 35% price, 35% timing and 30% trip length. The taste model then counts for 10% (from your profile alone) up to 30% (once you've rated 4+ places). Colors follow the score: teal is 7.5–10, gold 5.5–7.4, and rose is below 5.5 or over budget.
 
 ## Places you've been and the taste model
-Add places you've been from the landing page, the **Been there** button or **I've been here** on any trip. They stop being suggested, and you can rate each one from 1 to 5 stars. Everything is saved in your browser only (localStorage): your search, your optional age range and travel style, and your ratings. Nothing is sent anywhere.
+Add places you've been from the landing page, the **My trips** button or **I've been here** on any trip. They stop being suggested, and you can rate each one from 1 to 5 stars. Everything is saved in your browser only (localStorage): your search, your optional age range and travel style, and your ratings. Nothing is sent anywhere.
 
 The taste model is a small machine-learning model that runs in the page:
 - **Features:** each place is described by 32 numbers: its 29 interest tags (a city's day-trip tags count 0.35), its cost per day, and its latitude and longitude. Every feature is centered on the average city.
 - **Starting point (prior):** before you rate anything, the model starts from what you told it. Your picked interests get a positive weight. Your age range and who you travel with add small nudges, e.g. 18–21 leans toward nightlife, festivals and cheaper places, and traveling with a partner leans toward views, villages, food and wine. These are assumptions, and ratings override them.
 - **Learning:** ridge regression pulled toward that prior, `w = (XᵀX + λI)⁻¹ (Xᵀy + λ·w₀)` with λ = 1.5, where y is each rating mapped to −1…+1. It's solved exactly (Gaussian elimination) and retrains instantly on every change. With few ratings it stays close to the prior; each rating moves it toward your real taste.
-- **Explanations:** the plan shows why a place scored as it did, e.g. "similar to Barcelona, which you rated 5★" (cosine similarity to your rated places) or "you tend to rate beach places highly" (the biggest positive weight). The Been there panel shows what the model has learned overall.
+- **Explanations:** the plan shows why a place scored as it did, e.g. "similar to Barcelona, which you rated 5★" (cosine similarity to your rated places) or "you tend to rate beach places highly" (the biggest positive weight). The My trips panel shows what the model has learned overall.
 
 Because the app has no server, the model only learns from your own ratings. Learning from other travelers who share your age, travel style and interests (collaborative filtering) would need a shared database of ratings; that would be a natural next step.
 
@@ -61,16 +77,16 @@ Because the app has no server, the model only learns from your own ratings. Lear
 - [ ] Week 13: Final presentation
 
 ## The globe
-The app is built around a 3D globe on a soft daylight backdrop: sage-green land on a soft blue ocean, lightly shaded for depth (colors live in one `MAP` object, so the palette is easy to swap). Every place in the app is marked with a small dot. Trips are arcs (flights arc high; trains and buses stay low), the selected route turns blue, and destination markers use their score color. Nothing animates on its own: the globe only redraws when you drag, zoom or change a setting. Projection and drawing use [d3-geo](https://d3js.org/d3-geo) on canvas with Natural Earth outlines (public domain).
+The app is built around a 3D globe on a soft daylight backdrop: sage-green land on a soft blue ocean, lightly shaded for depth (colors live in one `MAP` object, so the palette is easy to swap). Trips are arcs (flights arc high; trains and buses stay low), the selected route turns blue, and destination markers use their score color. Nothing animates on its own: the globe only redraws when you drag, zoom or change a setting. Projection and drawing use [d3-geo](https://d3js.org/d3-geo) on canvas with Natural Earth outlines (public domain).
 
 **Landing page:** the app opens on a short form (where you're based, month, currency (€, $ or £), budget, trip lengths, interests, optional age range and travel style, and places you've been). **Show my trips** flies you into the globe, and everything stays editable from the top bar. Click the Weekender logo to go back.
 
 **Finding your city:** the From box is a search field. Type any part of a city or country name (accents optional, so "malaga" finds Málaga), then use the arrow keys and Enter, or click a result.
 - After the landing page, the camera flies in from space to your host city.
 - Routes to your top trips lift off the surface as arcs (flights higher, trains and buses low).
-- Markers are colored by score: teal = strong pick (7.5–10), gold = decent (5.5–7.4), rose = weaker or over budget. The top 12 picks get full markers; the rest are small dots.
+- Markers are colored by score: teal = strong pick (7.5–10), gold = decent (5.5–7.4), rose = weaker or over budget. The top 8 picks get markers, and the top 4 are labeled, so the map stays readable.
 - Selecting a trip, from the list or the globe, flies the camera there Earth-zoom style and shows a summary card. **Open the plan** slides in the full plan.
-- Drag to spin, scroll to zoom, **Fit trips** to reframe, **Whole Earth** to pull back to space.
+- Drag to spin, scroll to zoom, **Fit trips** to reframe. **Map key** explains the colors.
 
 **TikTok:** every plan has a "See it on TikTok" row that opens TikTok searches for the place (things to do, on a budget, where to eat, your matching interests, hidden gems). Searches always show current videos and need no API key.
 
