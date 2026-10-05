@@ -36,12 +36,14 @@ export async function openBrowser() {
   const { chromium } = await import("playwright");
   return chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
 }
-export async function openApp(browser, { width = 1440, height = 900, hash = "", context = {}, setup } = {}) {
+export async function openApp(browser, { width = 1440, height = 900, hash = "", context = {}, setup, firstVisit = false } = {}) {
   const ctx = await browser.newContext({ viewport: { width, height }, ...context });
   const page = await ctx.newPage();
   const d3 = fs.readFileSync(ROOT + "node_modules/d3/dist/d3.min.js", "utf8");
   await page.route("https://cdn.jsdelivr.net/**", (r) => r.fulfill({ body: d3, contentType: "application/javascript" }));
   await page.route(/^https:\/\/(?!cdn\.jsdelivr).*/, (r) => r.abort()); // no live APIs: test the built-in data
+  // Unless testing a first visit, act like someone who already dismissed the login window.
+  if (!firstVisit) await page.addInitScript(() => { try { if (!localStorage.getItem("weekender:v1")) localStorage.setItem("weekender:v1", JSON.stringify({ loginAsked: true })); } catch {} });
   if (setup) await setup(page); // extra routes or init scripts, registered after the defaults so they win
   page.errors = [];
   page.on("pageerror", (e) => page.errors.push(e.message));

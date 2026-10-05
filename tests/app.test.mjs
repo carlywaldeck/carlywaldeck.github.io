@@ -135,20 +135,24 @@ export default async function run() {
     };
     const ap = await openApp(browser, { setup, hash: "#access_token=tok&refresh_token=ref&expires_in=3600&token_type=bearer&type=magiclink" });
     await ap.waitForFunction(() => { try { return ((JSON.parse(localStorage.getItem("weekender:v1") || "{}").been || {}).rome || {}).r === 4; } catch { return false; } }, null, { timeout: 10000 });
-    await ap.waitForFunction(() => typeof update === "function" && document.querySelector("#account"));
-    const acct = await ap.evaluate(() => ({ text: document.querySelector("#account").textContent, url: location.href, beenRome: been.rome && been.rome.r }));
-    t.check(/Signed in as student@school\.edu/.test(acct.text) && acct.beenRome === 4 && !acct.url.includes("access_token"),
-      `the sign-in link logs you in and brings in your account's places (${acct.text.trim().slice(0, 60)}, rome=${acct.beenRome})`);
+    await ap.waitForFunction(() => typeof update === "function" && document.querySelector("#acct-btn"));
+    await ap.waitForFunction(() => /student@school\.edu/.test(document.querySelector("#acct-btn").getAttribute("aria-label") || ""));
+    const acct = await ap.evaluate(() => ({ label: document.querySelector("#acct-btn").getAttribute("aria-label"), url: location.href, beenRome: been.rome && been.rome.r }));
+    t.check(acct.beenRome === 4 && !acct.url.includes("access_token"),
+      `the login link logs you in and brings in your account's places (${acct.label}, rome=${acct.beenRome})`);
     await ap.evaluate(() => { markBeen("paris", 5); update(); });
     await ap.waitForTimeout(1800);
     const last = calls.posts[calls.posts.length - 1];
     t.check(last && last.id === "user-1" && last.data.been.rome.r === 4 && last.data.been.paris.r === 5, `changes are saved to the account, got ${JSON.stringify(last && last.data.been)}`);
-    const lp = await openApp(browser, { setup });
-    await lp.evaluate(() => { closeLanding(false); document.querySelector("#been-btn").click(); });
+    const lp = await openApp(browser, { setup, firstVisit: true });
+    await lp.waitForSelector("#login-modal:not([hidden]) #login-email");
+    t.check(await lp.isVisible("#lp-login"), "the landing page has a Log in button in the corner");
     await lp.fill("#login-email", "new@school.edu");
     await lp.click("#login-form button");
-    await lp.waitForTimeout(300);
-    t.check(calls.otp === 1, "the login form emails a sign-in link");
+    await lp.waitForSelector("text=Check your email");
+    t.check(calls.otp === 1, "on a first visit the login window opens by itself and emails a login link");
+    await lp.click("#login-modal .cta");
+    t.check(await lp.evaluate(() => document.querySelector("#login-modal").hidden && JSON.parse(localStorage.getItem("weekender:v1")).loginAsked), "closing it is remembered");
     t.check(!ap.errors.length && !lp.errors.length, `account page errors: ${[...ap.errors, ...lp.errors].join("; ")}`);
   } finally {
     await browser.close();

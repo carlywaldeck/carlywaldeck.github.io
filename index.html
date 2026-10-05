@@ -453,6 +453,22 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
 .account { border-bottom: 1px solid var(--line); padding-bottom: 12px; }
 .login-form { display: flex; gap: 6px; margin-top: 6px; }
 .login-form input { flex: 1; min-width: 0; padding: 7px 10px; border: 1px solid var(--line); border-radius: 9px; font: inherit; font-size: 14px; }
+.acct-btn { display: inline-flex; align-items: center; gap: 6px; color: var(--accent); border-color: rgba(47,91,234,.35); }
+.acct-btn[hidden] { display: none; }
+.avatar { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff; font: 600 12px/1 var(--sans, inherit); }
+.lp-login { position: absolute; top: 18px; right: 22px; z-index: 2; display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: #fff; border-radius: 10px; padding: 8px 16px; font-weight: 600; box-shadow: var(--shadow); }
+.modal { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 16px; background: rgba(19,35,63,.28); backdrop-filter: blur(3px); }
+.modal[hidden] { display: none; }
+.modal-card { position: relative; width: min(420px, 100%); background: #fff; border-radius: 18px; padding: 28px 26px 22px; box-shadow: 0 24px 60px rgba(19,35,63,.25); }
+.modal-card h2 { margin: 0 0 6px; font-size: 22px; }
+.modal-card .lede { margin: 0 0 14px; color: var(--muted); }
+.modal-card .x { position: absolute; top: 10px; right: 12px; }
+.modal-card .login-form { display: flex; flex-direction: column; gap: 10px; }
+.modal-card .login-form input { padding: 12px 14px; font-size: 16px; border-radius: 11px; }
+.modal-card .cta { width: 100%; }
+.modal-card .linkish { display: block; margin: 12px auto 0; }
+.modal-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+@media (max-width: 760px) { .acct-btn .lbl-long { display: none; } }
 </style>
 </head>
 <body>
@@ -481,10 +497,10 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
   <button type="button" class="bar-btn" id="settings-btn" aria-label="Settings" aria-expanded="false"><span class="lbl-long">Settings</span><span class="lbl-short" aria-hidden="true">Edit</span></button>
   <button type="button" class="bar-btn" id="been-btn" aria-label="My trips: saved trips and places I've been" aria-expanded="false" aria-controls="been-pop"><span class="lbl-long">My trips</span><span class="lbl-short" aria-hidden="true">Mine</span><i id="been-count"></i></button>
   <button type="button" class="bar-btn" id="filters-btn" aria-expanded="false" aria-controls="filters">Filters<i id="filters-count"></i></button>
+  <button type="button" class="bar-btn acct-btn" id="acct-btn" aria-haspopup="dialog" hidden>Log in</button>
 </header>
 
 <div class="popover been-pop" id="been-pop" hidden>
-  <div class="account" id="account" hidden></div>
   <div>
     <h3>Saved trips</h3>
     <ul class="been-items saved-items" id="saved-items"></ul>
@@ -549,7 +565,15 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
 
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
+<div class="modal" id="login-modal" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="login-title">
+    <button type="button" class="x" data-act="login-close" aria-label="Close">×</button>
+    <div id="login-body"></div>
+  </div>
+</div>
+
 <section class="landing" id="landing" aria-labelledby="lp-title">
+  <button type="button" class="lp-login" id="lp-login" aria-haspopup="dialog" hidden>Log in</button>
   <div class="landing-inner">
     <div class="landing-copy">
       <div class="brand big">weekender<span>.</span></div>
@@ -5289,7 +5313,7 @@ const profileSelects = (pre) => `<div class="profile-row">
 </div>`;
 function tasteHtml() {
   const n = TASTE.n;
-  const about = `<h3>About you</h3>${profileSelects("pp")}<p class="note">Age and travel style only add small starting nudges based on our assumptions (e.g. 18–21 leans toward nightlife). Your ratings replace them.</p>`;
+  const about = `<h3>About you</h3>${profileSelects("pp")}`;
   if (!TASTE.w) return `${about}<h3 class="taste-h">Your taste</h3><p class="note">Pick some interests, tell us a bit about you, or rate places you've been, and every score starts adapting to you.</p>`;
   const s = tasteSummary();
   const src = [state.interests.size ? "your interests" : "", state.profile.age || state.profile.with ? "your profile" : "", n ? `${n} rating${n > 1 ? "s" : ""}` : ""].filter(Boolean);
@@ -5467,20 +5491,49 @@ async function logOut() {
   toast("Logged out. Your trips stay in this browser.");
   if (token) sb("/auth/v1/logout", { method: "POST", token }).catch(() => {});
 }
+let loginStep = "start", loginEmail = "";
+const escHtml = (s) => String(s).replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]));
+// The "Log in" buttons (top bar and landing page) and the login window.
 function renderAccount() {
-  const box = $("#account");
-  if (!box) return;
-  box.hidden = !cloudOn();
-  if (!cloudOn()) return;
   const a = auth.get();
-  box.innerHTML = a
-    ? `<h3>Your account</h3><p class="note">Signed in as <b>${String(a.email).replace(/[&<>"]/g, "")}</b>. Saved trips, places and ratings sync across your devices.</p>
-       <button type="button" class="ghost sm" data-act="logout">Log out</button>`
-    : `<h3>Keep your trips on every device</h3>
-       <form id="login-form" class="login-form"><input type="email" id="login-email" required placeholder="you@school.edu" autocomplete="email" aria-label="Email">
-       <button type="submit" class="ghost sm">Email me a link</button></form>
-       <p class="note">No password: we email you a sign-in link. Without an account, everything stays in this browser.</p>`;
+  for (const b of [$("#acct-btn"), $("#lp-login")]) {
+    if (!b) continue;
+    b.hidden = !cloudOn();
+    b.innerHTML = a ? `<span class="avatar" aria-hidden="true">${escHtml(a.email[0].toUpperCase())}</span><span class="lbl-long">Account</span>` : "Log in";
+    b.setAttribute("aria-label", a ? `Account: ${a.email}` : "Log in or sign up");
+  }
+  const body = $("#login-body");
+  if (!body) return;
+  if (a) {
+    body.innerHTML = `<h2 id="login-title">You're logged in</h2>
+      <p class="lede">${escHtml(a.email)}</p>
+      <p class="note">Your saved trips, places you've been and ratings are saved to your account, so they're on every device you log in on.</p>
+      <div class="modal-actions"><button type="button" class="cta" data-act="login-close">Done</button><button type="button" class="ghost" data-act="logout">Log out</button></div>`;
+  } else if (loginStep === "sent") {
+    body.innerHTML = `<h2 id="login-title">Check your email</h2>
+      <p class="lede">We sent a login link to <b>${escHtml(loginEmail)}</b>.</p>
+      <p class="note">Open it on this device and you're in. It can take a minute; check your spam folder too.</p>
+      <div class="modal-actions"><button type="button" class="cta" data-act="login-close">Got it</button><button type="button" class="ghost" data-act="login-again">Use a different email</button></div>`;
+  } else {
+    body.innerHTML = `<h2 id="login-title">Log in or sign up</h2>
+      <p class="lede">Save your trips and see them on any device. No password needed.</p>
+      <form id="login-form" class="login-form">
+        <input type="email" id="login-email" required placeholder="you@school.edu" autocomplete="email" aria-label="Email" value="${escHtml(loginEmail)}">
+        <button type="submit" class="cta">Continue</button>
+      </form>
+      <button type="button" class="linkish" data-act="login-close">Not now</button>`;
+  }
 }
+function openLogin() {
+  if (!cloudOn()) return;
+  if (!auth.get()) loginStep = loginStep === "sent" ? "sent" : "start";
+  renderAccount();
+  $("#login-modal").hidden = false;
+  store.set({ loginAsked: true });
+  const f = $("#login-email") || $("#login-modal .cta");
+  if (f) setTimeout(() => f.focus(), 30);
+}
+function closeLogin() { $("#login-modal").hidden = true; }
 
 function renderBeen() {
   const n = Object.keys(been).length;
@@ -6436,7 +6489,9 @@ function setupControls() {
       update();
     }
     if (act === "rate-skip") { ui.rating = null; renderSpot(); }
-    if (act === "logout") logOut();
+    if (act === "logout") { logOut(); closeLogin(); }
+    if (act === "login-close") closeLogin();
+    if (act === "login-again") { loginStep = "start"; renderAccount(); }
     if (act === "save") { const t = tripById(id); if (t) { toggleSave(t); renderDrawer(); renderBeen(); toast(isSaved(t) ? "Saved to My trips" : "Removed from My trips"); } }
     if (act === "share") { const t = tripById(id); if (t) shareTrip(t); }
     if (act === "open-saved") { const s = saved[Number(v)]; if (s) { $("#been-pop").hidden = true; $("#been-btn").setAttribute("aria-expanded", "false"); openRef(s); } }
@@ -6465,10 +6520,18 @@ document.addEventListener("submit", async (e) => {
   if (e.target.id !== "login-form") return;
   e.preventDefault();
   const email = $("#login-email").value.trim();
-  try { await sendLoginLink(email); toast(`Check ${email} for your sign-in link`); }
-  catch { toast("Couldn't send the link. Check the address and try again."); }
+  const btn = e.target.querySelector("button");
+  btn.disabled = true; btn.textContent = "Sending…";
+  try { await sendLoginLink(email); loginEmail = email; loginStep = "sent"; renderAccount(); }
+  catch { btn.disabled = false; btn.textContent = "Continue"; toast("Couldn't send the link. Check the address and try again."); }
 });
 readLoginLink();
+$("#acct-btn").addEventListener("click", openLogin);
+$("#lp-login").addEventListener("click", openLogin);
+$("#login-modal").addEventListener("click", (e) => { if (e.target.id === "login-modal") closeLogin(); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("#login-modal").hidden) closeLogin(); });
+// First visit: offer to log in straight away (once; "Not now" or closing it is remembered).
+if (cloudOn() && !auth.get() && !store.get().loginAsked && !shared && !/access_token=/.test(location.hash)) setTimeout(openLogin, 400);
 if (cloudOn() && auth.get() && !/access_token=/.test(location.hash)) pullCloud().then((changed) => {
   // Data from another device arrived: reload once to show it.
   let once = false;
