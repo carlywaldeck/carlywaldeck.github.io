@@ -5370,8 +5370,8 @@ function toast(msg) {
 // "profiles" table protected by row-level security, so people can only read and write their own row.
 // Setup: docs/ACCOUNTS.md. Paste your project's URL and anon key below (both are public by design).
 // Left empty, the app works exactly as before and keeps everything in this browser only.
-const SUPABASE_URL = window.WEEKENDER_SUPABASE_URL || "";
-const SUPABASE_ANON_KEY = window.WEEKENDER_SUPABASE_KEY || "";
+const SUPABASE_URL = window.WEEKENDER_SUPABASE_URL || "https://jjvahhycqdizyfrosqft.supabase.co";
+const SUPABASE_ANON_KEY = window.WEEKENDER_SUPABASE_KEY || "sb_publishable_LXKmiTP_kHxZhIn_FYFYcQ_TJQJdvpn";
 const SYNC_KEYS = ["been", "saved", "criteria"];
 const AUTH_KEY = "weekender:auth";
 const cloudOn = () => !!(SUPABASE_URL && SUPABASE_ANON_KEY);
