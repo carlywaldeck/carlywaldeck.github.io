@@ -447,6 +447,7 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
 @media (max-width: 760px) { .dr-actions { float: none; margin-bottom: 8px; } }
 .day li.fits .what span:first-child { font-weight: 500; }
 .day .slot .fit { font-style: normal; text-transform: none; letter-spacing: 0; color: var(--accent); margin-left: 6px; }
+.note.aff { font-size: 12px; margin-top: 8px; }
 </style>
 </head>
 <body>
@@ -3902,6 +3903,21 @@ const BUDGET_AIRPORTS = {
 const LIVE_PRICES_URL = window.WEEKENDER_API || "";
 // Your GetYourGuide partner ID, once approved. Links still work without it.
 const GYG_PARTNER_ID = "";
+// Your Travelpayouts marker (partner ID). Optional: Travelpayouts Drive already turns links to
+// partner brands into affiliate links; the marker also tags Aviasales links built here directly.
+const TP_MARKER = "";
+const withMarker = (url) => TP_MARKER ? url + (url.includes("?") ? "&" : "?") + "marker=" + TP_MARKER : url;
+// An Aviasales search for a weekend in the chosen month: the first Friday that's at least 2 days away.
+function aviasalesLink(home, dest, days) {
+  const [y, m] = travelMonth().split("-").map(Number);
+  const d = new Date(Date.UTC(y, m - 1, 1));
+  const soon = Date.now() + 2 * 864e5;
+  while (d.getUTCDay() !== 5 || d.getTime() < soon) d.setUTCDate(d.getUTCDate() + 1);
+  const back = new Date(d.getTime() + Math.max(0, days - 1) * 864e5);
+  const iso = (x) => x.toISOString().slice(0, 10);
+  return withMarker(`https://search.aviasales.com/flights/?origin_iata=${home.code}&destination_iata=${dest.code}&depart_date=${iso(d)}&return_date=${iso(back)}&adults=1&children=0&infants=0&trip_class=0`);
+}
+const AFFILIATE_NOTE = `<p class="note aff">Some of these are affiliate links: booking through them can earn Weekender a small commission, at no extra cost to you. It never affects scores or rankings.</p>`;
 const liveFares = new Map(); // "MAD-LIS-2026-10" -> { status: "loading" | "ok" | "none", price, link, depart, ret }
 
 // The next time the chosen month comes around, as YYYY-MM.
@@ -4259,7 +4275,7 @@ function liveNote(cost) {
   if (flight.live) {
     const dates = flight.live.depart ? ` for ${flight.live.depart.slice(5, 10)}${flight.live.ret ? " to " + flight.live.ret.slice(5, 10) : ""}` : "";
     return `<p class="fine">Live fare: cheapest recent round trip found was ${euro(flight.live.price)}${dates}, plus ~€25 for airport transfers.
-      ${flight.live.link ? `<a href="${flight.live.link}" target="_blank" rel="noopener">See this fare ↗</a>` : ""}</p>`;
+      ${flight.live.link ? `<a href="${withMarker(flight.live.link)}" target="_blank" rel="noopener">See this fare ↗</a>` : ""}</p>`;
   }
   const status = (liveFares.get(fareKey(byId(state.home), cost.dest)) || {}).status;
   return status === "loading" ? `<p class="fine">Checking live flight prices…</p>`
@@ -4398,20 +4414,20 @@ function tiktokSection(dest, matched = []) {
 
 function extrasSection(home, dest, cost) {
   const mode = cost.transport.mode;
-  const q = encodeURIComponent(`Flights from ${home.name} to ${dest.name}`);
   const book = mode === "flight"
-    ? `<a href="https://www.google.com/travel/flights?q=${q}" target="_blank" rel="noopener">Flights ↗</a>`
+    ? `<a href="${aviasalesLink(home, dest, state.days)}" target="_blank" rel="noopener">Flights on Aviasales ↗</a>`
     : mode === "boat"
       ? `<a href="https://www.directferries.com/" target="_blank" rel="noopener">Ferries ↗</a>`
       : `<a href="https://www.omio.com/" target="_blank" rel="noopener">${MODES[mode].label} tickets ↗</a>`;
-  const hostels = encodeURIComponent(`hostels in ${dest.name}`);
+  const abroad = dest.country !== home.country;
   return `<div class="two">
     <div><h4>Save money</h4><ul class="tips">${dest.tips.map(t => `<li>${t}</li>`).join("")}</ul></div>
     <div><h4>Check live prices</h4><div class="links">
       ${book}
-      <a href="https://www.google.com/search?q=${hostels}" target="_blank" rel="noopener">Hostels ↗</a>
+      <a href="https://www.hostelworld.com/" target="_blank" rel="noopener">Hostels on Hostelworld ↗</a>
       <a href="https://www.getyourguide.com/s/?q=${encodeURIComponent(dest.name)}${GYG_PARTNER_ID ? `&partner_id=${GYG_PARTNER_ID}` : ""}" target="_blank" rel="noopener">Tours &amp; tickets ↗</a>
-    </div></div>
+      ${abroad ? `<a href="https://www.airalo.com/" target="_blank" rel="noopener">Mobile data (eSIM) ↗</a>` : ""}
+    </div>${AFFILIATE_NOTE}</div>
   </div>`;
 }
 
@@ -5052,9 +5068,9 @@ function escapeDetails(home, dest, cost) {
     </ul></div>
     <div><h4>Check live prices</h4><div class="links">
       ${book}
-      ${cost.stay ? `<a href="https://www.google.com/search?q=${encodeURIComponent("cheap places to stay " + dest.name)}" target="_blank" rel="noopener">Places to stay ↗</a>` : ""}
+      ${cost.stay ? `<a href="https://www.hostelworld.com/" target="_blank" rel="noopener">Places to stay ↗</a>` : ""}
       <a href="https://www.getyourguide.com/s/?q=${encodeURIComponent(dest.name.split(/ [&(]/)[0])}${GYG_PARTNER_ID ? `&partner_id=${GYG_PARTNER_ID}` : ""}" target="_blank" rel="noopener">Tours &amp; tickets ↗</a>
-    </div></div>`;
+    </div>${AFFILIATE_NOTE}</div>`;
 }
 
 

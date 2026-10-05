@@ -112,5 +112,15 @@ When the site runs somewhere that allows outside requests (e.g. GitHub Pages), i
 
 Everything is cached in the browser, times out after 8 seconds, and is optional: if a service is down or blocked, the app keeps working on its built-in estimates and says so.
 
+## Monetization (Travelpayouts)
+Weekender earns through [Travelpayouts](https://www.travelpayouts.com), a travel affiliate network. Travelpayouts **Drive** (a script in `<head>`) turns links to partner brands into affiliate links automatically, for every program joined in the Travelpayouts dashboard. Each plan's booking links point at partner brands:
+- **Flights:** an Aviasales search for the trip's route, prefilled with a weekend in the chosen month
+- **Hostels:** Hostelworld
+- **Tours & tickets:** GetYourGuide
+- **Mobile data:** Airalo eSIM, for trips to another country
+- **Trains & buses:** Omio
+
+Every booking block says that some links are affiliate links, and commissions never affect scores or rankings. Setting `TP_MARKER` in `index.html` also tags the Aviasales links directly.
+
 ## Live prices
 The app is ready for real flight fares via a small free Cloudflare Worker ([`api/worker.js`](api/worker.js)) and the Travelpayouts API, plus GetYourGuide and Omio affiliate links. Step-by-step setup: [docs/LIVE_PRICES.md](docs/LIVE_PRICES.md). Until it's set up, everything uses estimates.

@@ -59,6 +59,22 @@ export default async function run() {
     });
     t.check(/✓ Beach/.test(tailored) && /Tailored to Beach/.test(tailored), "the itinerary highlights activities that match your interests");
 
+    // 4b. Booking links: a flight abroad links to a dated Aviasales search, an eSIM, and the affiliate disclosure.
+    const booking = await p.evaluate(() => {
+      const tr = current.trips.find((x) => x.cost.transport && x.cost.transport.mode === "flight" && x.dest.country !== current.home.country);
+      if (!tr) return null;
+      ui.drawer = tr.key; ui.tab = "details"; renderDrawer();
+      const pane = document.querySelector("#pane-details");
+      const hrefs = [...pane.querySelectorAll("a")].map((a) => a.href);
+      return { hrefs, text: pane.textContent };
+    });
+    const avia = booking && booking.hrefs.find((h) => h.includes("aviasales.com"));
+    const dates = avia ? new URL(avia).searchParams : null;
+    t.check(avia && /^\d{4}-\d{2}-\d{2}$/.test(dates.get("depart_date")) && dates.get("return_date") >= dates.get("depart_date") && new Date(dates.get("depart_date")).getUTCDay() === 5,
+      `flights link to a dated Aviasales search starting on a Friday, got ${avia}`);
+    t.check(booking && booking.hrefs.some((h) => h.includes("airalo.com")) && booking.hrefs.some((h) => h.includes("hostelworld.com")) && /affiliate links/.test(booking.text),
+      "plans link to hostels and an eSIM and disclose affiliate links");
+
     // 5. Places you've been: hidden from results, and two ratings switch on the taste model.
     const been = await p.evaluate(() => {
       markBeen("lisbon", 5); markBeen("porto", 2); update();
