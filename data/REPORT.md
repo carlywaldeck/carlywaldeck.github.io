@@ -72,17 +72,17 @@ Agreement = share of cities where the hand-picked tag and the data (top 40% of c
 | snow | 94% | Kraków, Granada, Munich, Sofia, Tbilisi | – |
 | wildlife | 69% | Valencia, Edinburgh, Stockholm, Agadir, Paphos | Paris, London, Amsterdam, Berlin, Prague |
 | desert | 88% | Naples, Marrakech, Agadir, Tunis, Amman | Athens, Lyon, Bologna, Fez, Cologne |
-| vintage | 57% | – | Paris, London, Berlin, Vienna, Budapest |
-| books | 57% | – | Barcelona, Madrid, Paris, London, Berlin |
-| vegan | 57% | – | Barcelona, Paris, London, Berlin, Vienna |
-| cycling | 57% | – | Barcelona, Madrid, Lisbon, Paris, London |
-| caves | 14% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
-| themeparks | 10% | – | Barcelona, Madrid, Seville, Lisbon, Porto |
-| gardens | 62% | – | Barcelona, Lisbon, Porto, Paris, London |
-| climbing | 5% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
-| lgbtq | 57% | – | Barcelona, Madrid, Lisbon, Paris, London |
-| games | 57% | – | Madrid, Paris, London, Berlin, Vienna |
-| students | 57% | – | Barcelona, Madrid, Paris, London, Berlin |
+| vintage | 59% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
+| books | 59% | – | Barcelona, Madrid, Lisbon, Paris, London |
+| vegan | 59% | – | Barcelona, Madrid, Lisbon, Paris, London |
+| cycling | 59% | – | Barcelona, Madrid, Seville, Lisbon, Paris |
+| caves | 59% | – | Barcelona, Lisbon, Prague, Vienna, Budapest |
+| themeparks | 61% | – | Porto, Paris, London, Amsterdam, Berlin |
+| gardens | 61% | – | Barcelona, Madrid, Seville, Lisbon, Porto |
+| climbing | 59% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
+| lgbtq | 62% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
+| games | 58% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
+| students | 59% | – | Barcelona, Madrid, Lisbon, Paris, London |
 | offbeat | 63% | Bologna, Ljubljana, Gdańsk, Riga, Sofia | Granada, Dubrovnik, Split, Valletta, Palma de Mallorca |
 
 ## Coverage
@@ -95,11 +95,9 @@ Agreement = share of cities where the hand-picked tag and the data (top 40% of c
 
 ## Problems on this run
 
-- osm amsterdam: all Overpass servers failed
-- osm prague: all Overpass servers failed
-- osm florence: all Overpass servers failed
-- osm valencia: all Overpass servers failed
-- osm sansebastian: all Overpass servers failed
-- osm dublin: all Overpass servers failed
-- osm stockholm: all Overpass servers failed
+- osm vilnius: all Overpass servers failed
+- osm bordeaux: all Overpass servers failed
+- osm hamburg: all Overpass servers failed
+- osm cologne: all Overpass servers failed
+- osm oslo: all Overpass servers failed
 - time budget reached during osm; remaining cities keep their previous values
