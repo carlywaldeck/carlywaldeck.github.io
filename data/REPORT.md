@@ -72,17 +72,17 @@ Agreement = share of cities where the hand-picked tag and the data (top 40% of c
 | snow | 94% | Kraków, Granada, Munich, Sofia, Tbilisi | – |
 | wildlife | 69% | Valencia, Edinburgh, Stockholm, Agadir, Paphos | Paris, London, Amsterdam, Berlin, Prague |
 | desert | 88% | Naples, Marrakech, Agadir, Tunis, Amman | Athens, Lyon, Bologna, Fez, Cologne |
-| vintage | 59% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
-| books | 59% | – | Barcelona, Madrid, Lisbon, Paris, London |
-| vegan | 59% | – | Barcelona, Madrid, Lisbon, Paris, London |
+| vintage | 60% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
+| books | 59% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
+| vegan | 59% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
 | cycling | 59% | – | Barcelona, Madrid, Seville, Lisbon, Paris |
 | caves | 59% | – | Barcelona, Lisbon, Prague, Vienna, Budapest |
-| themeparks | 61% | – | Porto, Paris, London, Amsterdam, Berlin |
-| gardens | 61% | – | Barcelona, Madrid, Seville, Lisbon, Porto |
+| themeparks | 62% | – | Porto, Paris, London, Amsterdam, Berlin |
+| gardens | 59% | – | Barcelona, Madrid, Seville, Lisbon, Porto |
 | climbing | 59% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
-| lgbtq | 62% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
-| games | 58% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
-| students | 59% | – | Barcelona, Madrid, Lisbon, Paris, London |
+| lgbtq | 60% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
+| games | 59% | – | Barcelona, Madrid, Seville, Lisbon, Porto |
+| students | 59% | – | Barcelona, Madrid, Seville, Lisbon, Paris |
 | offbeat | 63% | Bologna, Ljubljana, Gdańsk, Riga, Sofia | Granada, Dubrovnik, Split, Valletta, Palma de Mallorca |
 
 ## Coverage
@@ -96,13 +96,10 @@ Agreement = share of cities where the hand-picked tag and the data (top 40% of c
 ## Flight fares and the flight price model
 
 - Real round-trip fares (Travelpayouts / Aviasales, fetched 2026-10-06): **22964** route-months on **6967** routes between our cities
-- Models: ridge regression on log(fare), trained on 22964 fares. "New route": 11 features (log distance, log distance², demand at destination that month, demand at home that month, destination price level, destination popularity, home popularity, how cheap flights from this airport are, how cheap flights to this airport are, how cheap this month is, short hop (< 500 km)). "Known route" adds: this route in other months, has other months, the reverse route, has reverse route
+- Model: ridge regression on log(fare) with 7 features (log distance, log distance², demand at destination that month, demand at home that month, destination price level, destination popularity, home popularity), trained on 22964 fares
+- Tested on 1394 routes it never saw (4719 fares): average error **€61 (50%)** vs **€65 (40%)** for the old distance formula
 
-| Test | Typical error | Average error |
-|---|---|---|
-| New-route model, 1394 routes it never saw | **24%** | 33% |
-| Old distance formula, same routes | 34% | 40% |
-| Missing month: reverse route's real fare that month (1812 cases) | **16%** | 25% |
-| Missing month: known-route model (2520 cases) | **20%** | 27% |
-| **All flight prices people see** (16% real fares, 6% reverse, 40% known-route model, 37% new-route model) | **17%** | 25% |
+## Problems on this run
 
+- osm santorini: all Overpass servers failed
+- osm cairo: all Overpass servers failed
