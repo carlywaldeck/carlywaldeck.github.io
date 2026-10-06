@@ -9,7 +9,9 @@ GSB 5576 semester project. See [docs/IDEA.md](docs/IDEA.md) for the full idea se
 - **Read a plan:** each plan has three tabs: **Overview** (score breakdown, costs, how to get there), **Itinerary** (day by day, plus day trips) and **Details** (about the place, the data behind it, best months and extras).
 - **Tailored itineraries:** activities that match your interests are marked ✓, and the best-matching days come first. If the city doesn't cover an interest, the plan suggests the day trip that does.
 - **Save and share:** ☆ Save keeps a trip under **My trips**. **Share** copies a link that opens the same trip (same home, length, month, budget and interests) for anyone.
-- **Teach it your taste:** mark places you've been and rate them; the taste model learns from your ratings.
+- **Accounts:** sign up with your name, email and password. You're greeted by name, skip the start-up questions on later visits, and everything below follows you to any device.
+- **Places you've been:** add each place with the month you went and a 1–5★ rating. Ratings teach both taste models.
+- **My travel map:** see every place you've been on the globe, numbered and joined in the order you went, colored by rating, with countries, kilometers and your favorite place.
 
 The interface keeps secondary controls tucked away: currency is in **Filters**, the map key is behind **Map key**, and interest chips open with **Edit**.
 

@@ -349,7 +349,7 @@ select option, select optgroup { background: #FFFFFF; color: var(--ink); }
   .settings-open .topbar { flex-wrap: wrap; }
   .spot-actions .ghost { padding: 10px 9px; font-size: 13px; }
 }
-.been-pop .city-search input { width: 100%; background: var(--soft); border: 1px solid var(--line); border-radius: 9px; padding: 8px 10px; margin-top: 10px; }
+.been-pop .city-search input, .acct-pane .city-search input { width: 100%; background: var(--soft); border: 1px solid var(--line); border-radius: 9px; padding: 8px 10px; margin-top: 10px; }
 .been-pop .city-list { width: 100%; }
 .been-items { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; max-height: 260px; overflow-y: auto; }
 .been-items li { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 9px; background: var(--soft); }
@@ -487,6 +487,25 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
 .acct-more summary { cursor: pointer; color: var(--accent); font-weight: 600; margin-bottom: 8px; }
 .modal-actions.row { flex-direction: row; }
 .modal-actions.row > * { flex: 1; }
+.been-items li.bi { flex-wrap: wrap; }
+.bi-date { border: 1px solid var(--line); border-radius: 8px; padding: 4px 6px; font: inherit; font-size: 12px; color: var(--ink); background: #fff; width: 128px; }
+.modal-card.wide { width: min(560px, 100%); }
+.acct-stats { grid-template-columns: repeat(4, 1fr); }
+.acct-stats button { border: 0; background: var(--soft); border-radius: 12px; padding: 10px 6px; text-align: center; cursor: pointer; color: var(--ink); }
+.acct-stats button:hover { background: var(--accent-soft); }
+.acct-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+.acct-tabs button { border: 0; background: none; padding: 8px 10px; font-weight: 600; font-size: 14px; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.acct-tabs button[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+.acct-pane .been-items { max-height: 320px; margin-top: 10px; }
+.acct-pane .city-search { margin-top: 8px; }
+.map-cta { width: 100%; margin: 0 0 10px; }
+.been-pop .map-cta { margin: 8px 0 0; }
+.travel-banner { position: fixed; z-index: 12; top: 84px; left: 50%; transform: translateX(-50%); width: min(640px, calc(100% - 32px)); display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-radius: 16px; }
+.travel-banner h2 { margin: 0 0 2px; font-size: 18px; }
+.travel-banner p { margin: 0; font-size: 13px; color: var(--muted); }
+.travel-banner > div { flex: 1; min-width: 0; }
+body.travel-mode .panel, body.travel-mode #spot, body.travel-mode .legend, body.travel-mode .drawer { display: none !important; }
+@media (max-width: 760px) { .acct-stats { grid-template-columns: repeat(2, 1fr); } .travel-banner { top: auto; bottom: 16px; flex-direction: column; align-items: stretch; } }
 </style>
 </head>
 <body>
@@ -532,6 +551,7 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
     </div>
   </div>
   <ul class="been-items" id="been-items"></ul>
+  <button type="button" class="ghost map-cta" data-act="travel-map">🌍 See my travel map</button>
   <div class="taste" id="taste-box"></div>
 </div>
 
@@ -581,6 +601,7 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
 </div>
 
 
+<div class="travel-banner glass" id="travel-banner" hidden></div>
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
 <div class="modal" id="login-modal" hidden>
@@ -5401,12 +5422,20 @@ function tasteSummary() {
 const starsHtml = (id, r, label) => `<span class="stars" role="group" aria-label="${label}">${[1, 2, 3, 4, 5].map(n =>
   `<button type="button" data-act="rate" data-id="${id}" data-v="${n}" aria-label="${n} star${n > 1 ? "s" : ""}" aria-pressed="${n <= r}">★</button>`).join("")}</span>`;
 
+// Places you've been, newest trip first (places without a date go last).
+const thisMonth = () => new Date().toISOString().slice(0, 7);
+const monthLabel = (d) => d ? new Date(d + "-15").toLocaleDateString("en-GB", { month: "short", year: "numeric" }) : "";
+function beenIds() {
+  return Object.keys(been).sort((a, b) => (been[b].d || "").localeCompare(been[a].d || "") || been[a].n.localeCompare(been[b].n));
+}
 function beenListHtml() {
-  const ids = Object.keys(been);
+  const ids = beenIds();
   if (!ids.length) return `<li class="note">Nothing yet. Add places above, or use “I've been here” on any trip.</li>`;
   return ids.map(id => {
     const pl = beenPlace(id); if (!pl) return "";
-    return `<li><span class="bi-name">${pl.name}<small>${pl.sub}</small></span>${starsHtml(id, been[id].r, `Rate ${pl.name}`)}
+    return `<li class="bi"><span class="bi-name">${pl.name}<small>${pl.sub}</small></span>
+      <input type="month" class="bi-date" data-id="${id}" value="${been[id].d || ""}" max="${thisMonth()}" aria-label="When you went to ${pl.name}">
+      ${starsHtml(id, been[id].r, `Rate ${pl.name}`)}
       <button type="button" class="bi-x" data-act="unbeen" data-id="${id}" aria-label="Remove ${pl.name}">×</button></li>`;
   }).join("");
 }
@@ -5614,9 +5643,19 @@ function schedulePush() {
   clearTimeout(pushTimer);
   pushTimer = setTimeout(() => pushCloud().catch(() => toast("Couldn't save to your account. Your changes are kept in this browser.")), 1200);
 }
-// After logging in: bring in the account's data. Reloads if it changed, so everything shows it.
+// Show data that just arrived from the account (no page reload: a quick reload can lose what the
+// browser just saved, including the login itself).
+function applyStore() {
+  const s = store.get();
+  been = s.been || {};
+  saved = s.saved || [];
+  loadCriteria();
+  trainTaste();
+  update(); renderBeen(); renderLanding();
+}
+// After logging in: bring in the account's data.
 async function afterLogin() {
-  try { if (await pullCloud()) { location.reload(); return; } } catch { /* keep going with local data */ }
+  try { if (await pullCloud()) applyStore(); } catch { /* keep going with local data */ }
   closeLogin(); renderAccount(); renderLanding();
   toast(firstName() ? `Hello, ${firstName()}!` : "You're logged in");
 }
@@ -5647,28 +5686,47 @@ async function logOut() {
 let acctView = "login", acctEmail = "", acctError = "";
 const escHtml = (s) => String(s).replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]));
 const field = (id, label, type, extra = "") => `<label class="f"><span>${label}</span><input id="${id}" type="${type}" ${extra}></label>`;
+let acctTab = "profile";
+function acctStatsHtml() {
+  const nPlaces = Object.keys(been).length, nRated = Object.values(been).filter(b => b.r > 0).length;
+  const countries = new Set(Object.keys(been).map(id => { const pl = beenPlace(id); return pl && (pl.city ? pl.city.country : pl.home.country); }).filter(Boolean)).size;
+  const stat = (n, label, tab) => `<button type="button" data-act="acct-tab" data-v="${tab}"><b>${n}</b><span>${label}</span></button>`;
+  return `<div class="acct-stats" id="acct-stats">${stat(saved.length, `saved trip${saved.length === 1 ? "" : "s"}`, "trips")}${stat(nPlaces, `place${nPlaces === 1 ? "" : "s"} visited`, "places")}${stat(countries, `countr${countries === 1 ? "y" : "ies"}`, "places")}${stat(nRated, `rated`, "places")}</div>`;
+}
 function accountPage() {
-  const a = auth.get(), nPlaces = Object.keys(been).length;
+  const a = auth.get();
   const homeOpts = [...CITIES].sort((x, y) => x.name.localeCompare(y.name)).map(c => `<option value="${c.id}" ${c.id === state.home ? "selected" : ""}>${escHtml(c.name)}</option>`).join("");
+  const tabs = [["profile", "Profile"], ["trips", "Saved trips"], ["places", "Places I've been"]];
+  const pane = {
+    profile: `<form id="acct-form" class="acct-form">
+        ${field("acct-name", "First name", "text", `value="${escHtml(a.name || "")}" autocomplete="given-name"`)}
+        <label class="f"><span>Where you're based</span><select id="acct-home">${homeOpts}</select></label>
+        <div class="f-row">
+          <label class="f"><span>Age</span><select id="acct-age"><option value="">Rather not say</option>${Object.entries(PROFILE_LABELS.age).map(([k, l]) => `<option value="${k}" ${state.profile.age === k ? "selected" : ""}>${l}</option>`).join("")}</select></label>
+          <label class="f"><span>Usually travel</span><select id="acct-with"><option value="">Rather not say</option>${Object.entries(PROFILE_LABELS.with).map(([k, l]) => `<option value="${k}" ${state.profile.with === k ? "selected" : ""}>${l}</option>`).join("")}</select></label>
+        </div>
+        <button type="submit" class="cta">Save changes</button>
+      </form>
+      <details class="acct-more"><summary>Change password</summary>
+        <form id="pass-form" class="acct-form">${field("acct-pass", "New password", "password", `minlength="8" required autocomplete="new-password"`)}<button type="submit" class="ghost">Update password</button></form>
+      </details>
+      <div class="modal-actions"><button type="button" class="ghost" data-act="logout">Log out</button></div>`,
+    trips: `<p class="note">Trips you saved with ☆ Save. Open one to see its plan again.</p><ul class="been-items saved-items" id="acct-saved">${savedHtml()}</ul>`,
+    places: `<button type="button" class="cta map-cta" data-act="travel-map">🌍 See my travel map</button>
+      <p class="note">Add the places you've been, when you went, and how much you liked them. Your ratings teach Weekender your taste.</p>
+      <div class="city-search"><input id="acct-been-input" type="text" role="combobox" aria-label="Add a place you've been" aria-autocomplete="list" aria-expanded="false" aria-controls="acct-been-list" autocomplete="off" spellcheck="false" placeholder="Add a city you've visited">
+        <ul id="acct-been-list" class="city-list" role="listbox" hidden></ul></div>
+      <ul class="been-items acct-been" id="acct-been">${beenListHtml()}</ul>`
+  }[acctTab];
   return `<h2 id="login-title">Hello${firstName() ? `, ${escHtml(firstName())}` : ""}!</h2>
     <p class="lede">${escHtml(a.email)}</p>
-    <div class="acct-stats"><div><b>${saved.length}</b><span>saved trip${saved.length === 1 ? "" : "s"}</span></div><div><b>${nPlaces}</b><span>place${nPlaces === 1 ? "" : "s"} you've been</span></div><div><b>${TASTE.n || 0}</b><span>rating${TASTE.n === 1 ? "" : "s"}</span></div></div>
-    <form id="acct-form" class="acct-form">
-      ${field("acct-name", "First name", "text", `value="${escHtml(a.name || "")}" autocomplete="given-name"`)}
-      <label class="f"><span>Where you're based</span><select id="acct-home">${homeOpts}</select></label>
-      <div class="f-row">
-        <label class="f"><span>Age</span><select id="acct-age"><option value="">Rather not say</option>${Object.entries(PROFILE_LABELS.age).map(([k, l]) => `<option value="${k}" ${state.profile.age === k ? "selected" : ""}>${l}</option>`).join("")}</select></label>
-        <label class="f"><span>Usually travel</span><select id="acct-with"><option value="">Rather not say</option>${Object.entries(PROFILE_LABELS.with).map(([k, l]) => `<option value="${k}" ${state.profile.with === k ? "selected" : ""}>${l}</option>`).join("")}</select></label>
-      </div>
-      <button type="submit" class="cta">Save changes</button>
-    </form>
-    <details class="acct-more"><summary>Change password</summary>
-      <form id="pass-form" class="acct-form">${field("acct-pass", "New password", "password", `minlength="8" required autocomplete="new-password"`)}<button type="submit" class="ghost">Update password</button></form>
-    </details>
-    <div class="modal-actions row"><button type="button" class="ghost" data-act="acct-trips">My trips</button><button type="button" class="ghost" data-act="logout">Log out</button></div>`;
+    ${acctStatsHtml()}
+    <div class="acct-tabs" role="tablist">${tabs.map(([k, l]) => `<button type="button" role="tab" aria-selected="${k === acctTab}" data-act="acct-tab" data-v="${k}">${l}</button>`).join("")}</div>
+    <div class="acct-pane">${pane}</div>`;
 }
 function renderAccount() {
   const a = auth.get();
+  if ($("#been-btn")) $("#been-btn").hidden = !!a;
   for (const b of [$("#acct-btn"), $("#lp-login")]) {
     if (!b) continue;
     b.hidden = !cloudOn();
@@ -5679,7 +5737,13 @@ function renderAccount() {
   if (!body) return;
   const err = acctError ? `<p class="form-error" role="alert">${escHtml(acctError)}</p>` : "";
   const email = field("auth-email", "Email", "email", `required autocomplete="email" value="${escHtml(acctEmail)}"`);
-  if (a && acctView !== "newpass") { body.innerHTML = accountPage(); return; }
+  if (a && acctView !== "newpass") {
+    body.innerHTML = accountPage();
+    $("#login-modal .modal-card").classList.add("wide");
+    if ($("#acct-been-input")) makeCitySearch($("#acct-been-input"), $("#acct-been-list"), { text: () => "", pick: (id) => { markBeen(id, 0); update(); }, exclude: (c) => !!been[c.id] || c.id === state.home, prefix: "ab" });
+    return;
+  }
+  $("#login-modal .modal-card").classList.remove("wide");
   body.innerHTML = {
     login: `<h2 id="login-title">Welcome back</h2><p class="lede">Log in to see your saved trips on any device.</p>
       <form id="auth-form" data-mode="login" class="acct-form">${email}${field("auth-pass", "Password", "password", `required autocomplete="current-password"`)}${err}
@@ -5767,6 +5831,10 @@ function renderBeen() {
   $("#taste-box").innerHTML = tasteHtml();
   if ($("#lp-been")) $("#lp-been").innerHTML = beenListHtml();
   document.querySelectorAll("select[data-profile]").forEach(s => { s.value = state.profile[s.dataset.profile] || ""; });
+  if ($("#acct-been")) $("#acct-been").innerHTML = beenListHtml();
+  if ($("#acct-saved")) $("#acct-saved").innerHTML = savedHtml();
+  if ($("#acct-stats")) $("#acct-stats").outerHTML = acctStatsHtml();
+  if (G.travel) travelBanner();
 }
 function markBeen(id, rating = 0) {
   const pl = beenPlace(id);
@@ -6193,6 +6261,7 @@ function globeFlyToTrip(t) {
 const globeKey = () => [state.home, [...state.daysSet].join(), state.month, state.budget, [...state.modes].join(), [...state.interests].join(), Object.keys(been).length].join("|");
 function globeUpdate() {
   if (!G.ok) return;
+  if (G.travel) { globeDirty(); return; }
   const key = globeKey();
   if (key !== G.fitKey) {
     const first = !G.fitKey;
@@ -6309,10 +6378,98 @@ function strokeSegments(ctx, pts) {
   ctx.stroke();
 }
 
+// ---- my travel map: every place you've been, joined in the order you went
+function placeCoord(id) {
+  const pl = beenPlace(id);
+  if (!pl) return null;
+  if (pl.city) return [pl.city.lon, pl.city.lat];
+  const p = (PLACES[pl.escape.name] || [])[0];
+  return p ? [p[1], p[0]] : null;
+}
+function travelStops() {
+  // Dated places in the order you went, then undated ones.
+  const ids = Object.keys(been).filter(placeCoord);
+  const dated = ids.filter(id => been[id].d).sort((a, b) => been[a].d.localeCompare(been[b].d));
+  return { dated, undated: ids.filter(id => !been[id].d) };
+}
+function travelBanner() {
+  const { dated, undated } = travelStops(), all = [...dated, ...undated];
+  const countries = new Set(all.map(id => { const pl = beenPlace(id); return pl.city ? pl.city.country : pl.home.country; }));
+  let km = 0;
+  for (let i = 1; i < dated.length; i++) km += d3.geoDistance(placeCoord(dated[i - 1]), placeCoord(dated[i])) * 6371;
+  const rated = all.filter(id => been[id].r > 0), fav = [...rated].sort((a, b) => been[b].r - been[a].r)[0];
+  $("#travel-banner").innerHTML = `<div><h2>${firstName() ? `${escHtml(firstName())}'s travels` : "Your travels"}</h2>
+    <p>${all.length} place${all.length === 1 ? "" : "s"} · ${countries.size} countr${countries.size === 1 ? "y" : "ies"}${dated.length ? ` · since ${monthLabel(been[dated[0]].d)}` : ""}${km > 0 ? ` · ${Math.round(km).toLocaleString()} km between trips` : ""}${fav ? ` · favorite: ${escHtml(been[fav].n)} ${"★".repeat(been[fav].r)}` : ""}</p>
+    ${!all.length ? `<p class="note">No places yet. Add some under Places I've been.</p>` : undated.length ? `<p class="note">Add dates to connect your trips in order.</p>` : ""}</div>
+    <button type="button" class="ghost sm" data-act="travel-exit">Back to trips</button>`;
+}
+function showTravelMap() {
+  if (landingOpen()) closeLanding(false);
+  G.travel = true;
+  document.body.classList.add("travel-mode");
+  $("#travel-banner").hidden = false;
+  travelBanner();
+  const pts = Object.keys(been).map(placeCoord).filter(Boolean);
+  if (G.ok && pts.length) {
+    const lons = pts.map(p => p[0]), lats = pts.map(p => p[1]);
+    const center = [(Math.min(...lons) + Math.max(...lons)) / 2, (Math.min(...lats) + Math.max(...lats)) / 2];
+    const maxAng = Math.max(0.03, ...pts.map(p => d3.geoDistance(center, p)));
+    flyTo([-center[0], -center[1]], (G.availR * 0.8) / Math.sin(Math.min(maxAng, 1.4)));
+  }
+  globeDirty();
+}
+function hideTravelMap() {
+  G.travel = false;
+  document.body.classList.remove("travel-mode");
+  $("#travel-banner").hidden = true;
+  G.fitKey = ""; globeUpdate();
+}
+function drawTravel(ctx) {
+  G.markers = [];
+  const { dated, undated } = travelStops();
+  // Route: dashed arcs between consecutive trips.
+  ctx.save();
+  ctx.strokeStyle = "#2F5BEA"; ctx.lineCap = "round"; ctx.setLineDash([5, 5]); ctx.lineWidth = 1.6; ctx.globalAlpha = 0.75;
+  for (let i = 1; i < dated.length; i++) {
+    const a = placeCoord(dated[i - 1]), b = placeCoord(dated[i]), dist = d3.geoDistance(a, b);
+    strokeSegments(ctx, arcPoints(a, b, Math.min(0.22, 0.06 + dist * 0.5)));
+  }
+  ctx.restore();
+  const labels = [];
+  [...dated, ...undated].forEach((id, i) => {
+    const p = placeCoord(id);
+    if (!visible(p)) return;
+    const [x, y] = projection(p), b = been[id], r = 5 + (b.r || 0) * 0.7;
+    const col = b.r >= 4 ? "#1F9E89" : b.r && b.r <= 2 ? "#C2566B" : "#2F5BEA";
+    ctx.fillStyle = col + "33"; ctx.beginPath(); ctx.arc(x, y, r * 2.2, 0, 7); ctx.fill();
+    ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill();
+    ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.8; ctx.stroke();
+    const order = b.d ? String(dated.indexOf(id) + 1) : "";
+    if (order && r >= 6) { ctx.fillStyle = "#fff"; ctx.font = "700 9px Geist, system-ui, sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(order, x, y + 0.5); ctx.textAlign = "left"; }
+    labels.push({ x, y, r, name: b.n, sub: [b.d ? monthLabel(b.d) : "", b.r ? "★".repeat(b.r) : ""].filter(Boolean).join(" · ") });
+  });
+  const placed = [];
+  ctx.textBaseline = "middle";
+  for (const l of labels) {
+    ctx.font = "600 12px Geist, system-ui, sans-serif";
+    const w1 = ctx.measureText(l.name).width;
+    ctx.font = "500 11px Geist, system-ui, sans-serif";
+    const w2 = l.sub ? ctx.measureText(l.sub).width + 8 : 0;
+    const bx = l.x + l.r + 6, by = l.y - 10, bw = w1 + w2 + 14, bh = 20, box = [bx, by, bx + bw, by + bh];
+    if (placed.some(q => !(box[2] < q[0] || box[0] > q[2] || box[3] < q[1] || box[1] > q[3]))) continue;
+    placed.push(box);
+    ctx.fillStyle = "rgba(255,255,255,0.96)"; ctx.shadowColor = "rgba(20,40,80,0.14)"; ctx.shadowBlur = 6;
+    roundRect(ctx, bx, by, bw, bh, 6); ctx.fill(); ctx.shadowBlur = 0;
+    ctx.fillStyle = "#13233F"; ctx.font = "600 12px Geist, system-ui, sans-serif"; ctx.fillText(l.name, bx + 7, by + bh / 2);
+    if (l.sub) { ctx.fillStyle = "#5A6B85"; ctx.font = "500 11px Geist, system-ui, sans-serif"; ctx.fillText(l.sub, bx + 7 + w1 + 8, by + bh / 2); }
+  }
+}
+
 function drawFx() {
   const ctx = fxCtx, { W, H, dpr } = G;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.clearRect(0, 0, W, H);
+  if (G.travel) { drawTravel(ctx); return; }
   if (!current.home) return;
   const home = current.home, homeP = [home.lon, home.lat];
   const focusKey = ui.hover || ui.selected;
@@ -6720,7 +6877,9 @@ function setupControls() {
     if (act === "logout") { logOut(); closeLogin(); }
     if (act === "login-close") closeLogin();
     if (act === "auth-view") { acctView = v; acctError = ""; renderAccount(); const f = $("#login-body input"); if (f) f.focus(); }
-    if (act === "acct-trips") { closeLogin(); $("#been-btn").click(); }
+    if (act === "acct-tab") { acctTab = v; renderAccount(); }
+    if (act === "travel-map") { closeLogin(); $("#been-pop").hidden = true; showTravelMap(); }
+    if (act === "travel-exit") hideTravelMap();
     if (act === "save") { const t = tripById(id); if (t) { toggleSave(t); renderDrawer(); renderBeen(); toast(isSaved(t) ? "Saved to My trips" : "Removed from My trips"); } }
     if (act === "share") { const t = tripById(id); if (t) shareTrip(t); }
     if (act === "open-saved") { const s = saved[Number(v)]; if (s) { $("#been-pop").hidden = true; $("#been-btn").setAttribute("aria-expanded", "false"); openRef(s); } }
@@ -6745,6 +6904,12 @@ const shared = readShareLink();
 update();
 renderLanding();
 renderAccount();
+document.addEventListener("change", (e) => {
+  const d = e.target.closest && e.target.closest(".bi-date");
+  if (!d || !been[d.dataset.id]) return;
+  been[d.dataset.id].d = d.value || undefined;
+  saveBeen(); renderBeen(); globeDirty();
+});
 document.addEventListener("submit", (e) => {
   const id = e.target.id;
   if (id === "auth-form") { e.preventDefault(); handleAuthForm(e.target); }
@@ -6764,12 +6929,8 @@ if (cloudOn() && auth.get() && store.get().criteria && !shared && !/access_token
   if (G.ok) { G.fitKey = ""; globeUpdate(); }
   if (firstName()) toast(`Welcome back, ${firstName()}!`);
 }
-if (cloudOn() && auth.get() && !/access_token=/.test(location.hash)) pullCloud().then((changed) => {
-  // Data from another device arrived: reload once to show it.
-  let once = false;
-  try { once = !!sessionStorage.getItem("weekender:synced"); sessionStorage.setItem("weekender:synced", "1"); } catch { once = true; }
-  if (changed && !once) location.reload();
-}).catch(() => {});
+// Logged in: bring in anything saved from another device.
+if (cloudOn() && auth.get() && !/access_token=/.test(location.hash)) pullCloud().then((changed) => { if (changed) applyStore(); }).catch(() => {});
 if (shared) {
   closeLanding(false);
   if (G.ok) { G.fitKey = ""; globeUpdate(); }

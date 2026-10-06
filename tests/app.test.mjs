@@ -120,7 +120,7 @@ export default async function run() {
 
     // 8. Accounts (with a fake Supabase): the emailed link signs you in, data from the account
     // merges into this browser, and later changes are saved back to the account.
-    const calls = { posts: [], ratings: [] };
+    const calls = { posts: [], ratings: [], log: [] };
     // Other travelers' ratings: people who love Lisbon also love Porto; Seville splits them.
     const crowdRows = [];
     for (let i = 0; i < 8; i++) {
@@ -131,7 +131,10 @@ export default async function run() {
     const remote = { been: { rome: { r: 4, n: "Rome" } }, saved: [] };
     const setup = async (page) => {
       await page.addInitScript(() => { window.WEEKENDER_SUPABASE_URL = "https://fake.supabase.co"; window.WEEKENDER_SUPABASE_KEY = "anon"; });
+      page.on("framenavigated", (f) => { if (f === page.mainFrame()) calls.log.push("load " + f.url().split("/").pop().slice(0, 30)); });
+      page.on("console", (m) => { if (m.type() === "error" && !/Failed to load resource/.test(m.text())) calls.log.push("console " + m.text().slice(0, 120)); });
       await page.route("https://fake.supabase.co/**", async (r) => {
+        calls.log.push(r.request().method() + " " + new URL(r.request().url()).pathname);
         const u = new URL(r.request().url()), json = (b, status = 200) => r.fulfill({ status, contentType: "application/json", body: JSON.stringify(b) });
         if (u.pathname === "/auth/v1/signup") { calls.signup = JSON.parse(r.request().postData()); return json({ id: "user-2", email: calls.signup.email }); }
         if (u.pathname === "/auth/v1/token" && u.searchParams.get("grant_type") === "password") {
@@ -150,7 +153,12 @@ export default async function run() {
       });
     };
     const ap = await openApp(browser, { setup, hash: "#access_token=tok&refresh_token=ref&expires_in=3600&token_type=bearer&type=magiclink" });
-    await ap.waitForFunction(() => { try { return ((JSON.parse(localStorage.getItem("weekender:v1") || "{}").been || {}).rome || {}).r === 4; } catch { return false; } }, null, { timeout: 30000 });
+    try {
+      await ap.waitForFunction(() => { try { return ((JSON.parse(localStorage.getItem("weekender:v1") || "{}").been || {}).rome || {}).r === 4; } catch { return false; } }, null, { timeout: 30000 });
+    } catch (e) {
+      const state = await ap.evaluate(() => [localStorage.getItem("weekender:auth"), localStorage.getItem("weekender:v1"), location.href]).catch((x) => x.message);
+      throw new Error(`login link never brought in the account's data. Requests: ${calls.log.join(" | ")}. Page errors: ${ap.errors.join("; ")}. State: ${JSON.stringify(state).slice(0, 400)}`);
+    }
     await ap.waitForLoadState("load");
     await ap.waitForFunction(() => typeof update === "function" && document.querySelector("#acct-btn"), null, { timeout: 30000 });
     await ap.waitForFunction(() => /student@school\.edu/.test(document.querySelector("#acct-btn").getAttribute("aria-label") || ""), null, { timeout: 30000 });
@@ -196,7 +204,8 @@ export default async function run() {
     await lp.fill("#auth-email", "carly@school.edu");
     await lp.fill("#auth-pass", "wrong-pass");
     await lp.click("#auth-form button[type=submit]");
-    await lp.waitForSelector(".form-error");
+    try { await lp.waitForSelector(".form-error", { timeout: 15000 }); }
+    catch { throw new Error(`no error shown for a wrong password. Window: ${(await lp.innerHTML("#login-body")).replace(/\s+/g, " ").slice(0, 600)} Requests: ${calls.log.slice(-8).join(" | ")}`); }
     t.check(/don't match/.test(await lp.textContent(".form-error")), "a wrong password shows a clear error");
     // 9. Collaborative filtering: rating Lisbon 5★ makes Porto (loved by the same travelers) a strong pick.
     const cf = await lp.evaluate(() => {
@@ -209,6 +218,24 @@ export default async function run() {
       `travelers who liked Lisbon also liked Porto (porto ${cf.porto && cf.porto.v.toFixed(2)}, prague ${cf.prague && cf.prague.v.toFixed(2)})`);
     t.check(/travelers who liked Lisbon also liked it/.test(cf.why), `the score explains the crowd signal (${cf.why})`);
     t.check(calls.ratings.some(([m, body]) => m === "POST" && Array.isArray(body) && body.some((x) => x.place === "rome" && x.stars === 4)), "your ratings are shared with the model when logged in");
+    // 10. Places you've been: dates, and the travel map on the globe.
+    const tm = await lp.evaluate(() => {
+      for (const id of Object.keys(been)) delete been[id];
+      markBeen("lisbon", 5); markBeen("paris", 3); markBeen("rome", 4); saveBeen(); update();
+      const set = (id, d) => { const el = [...document.querySelectorAll(`.bi-date[data-id="${id}"]`)][0]; el.value = d; el.dispatchEvent(new Event("change", { bubbles: true })); };
+      document.querySelector("#been-btn").click();
+      set("rome", "2026-02"); set("lisbon", "2025-09"); set("paris", "2025-10");
+      const order = beenIds();
+      showTravelMap();
+      const out = { order, travel: G.travel, banner: document.querySelector("#travel-banner").textContent, panelHidden: getComputedStyle(document.querySelector(".panel")).display === "none", stops: travelStops().dated };
+      hideTravelMap();
+      out.back = !G.travel && document.querySelector("#travel-banner").hidden;
+      return out;
+    });
+    t.check(tm.order.join() === "rome,paris,lisbon", `places list newest trip first (${tm.order})`);
+    t.check(tm.travel && tm.panelHidden && /3 places/.test(tm.banner) && /3 countries/.test(tm.banner) && tm.stops.join() === "lisbon,paris,rome",
+      `the travel map shows your places in the order you went (${tm.banner.trim().slice(0, 80)})`);
+    t.check(tm.back, "Back to trips leaves the travel map");
     t.check(!ap.errors.length && !lp.errors.length, `account page errors: ${[...ap.errors, ...lp.errors].join("; ")}`);
   } finally {
     await browser.close();
