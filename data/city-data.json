@@ -6,7 +6,8 @@
   "prices": "Eurostat prc_ppp_ind, price level indices for restaurants & hotels (EU27 = 100): https://ec.europa.eu/eurostat/databrowser/view/prc_ppp_ind/ ; World Bank PA.NUS.PRVT.PP ÷ PA.NUS.FCRF (price level vs. the EU average) elsewhere: https://data.worldbank.org/indicator/PA.NUS.PRVT.PP",
   "places": "OpenStreetMap contributors via the Overpass API, ODbL: https://www.openstreetmap.org/copyright",
   "popularity": "Wikimedia pageviews API, English Wikipedia, 2024-10 to 2026-09: https://wikimedia.org/api/rest_v1/",
-  "roads": "Driving distance and time between cities: OpenStreetMap contributors via OSRM (project-osrm.org), ODbL"
+  "roads": "Driving distance and time between cities: OpenStreetMap contributors via OSRM (project-osrm.org), ODbL",
+  "fares": "Round-trip flight fares: Travelpayouts / Aviasales Data API (cheapest fares found by Aviasales users in the last days)"
  },
  "method": {
   "comfort": "0.55 × temperature (best at a 23°C daily high, or 27°C for beach places) + 0.25 × fewer rainy days + 0.2 × sunshine",
@@ -163,11 +164,13 @@
   }
  },
  "errors": [
-  "osm vilnius: all Overpass servers failed",
-  "osm bordeaux: all Overpass servers failed",
-  "osm hamburg: all Overpass servers failed",
-  "osm cologne: all Overpass servers failed",
-  "osm oslo: all Overpass servers failed",
+  "osm santiago: all Overpass servers failed",
+  "osm yerevan: all Overpass servers failed",
+  "osm poznan: all Overpass servers failed",
+  "osm nicosia: all Overpass servers failed",
+  "osm santorini: all Overpass servers failed",
+  "osm zakynthos: all Overpass servers failed",
+  "osm trieste: all Overpass servers failed",
   "time budget reached during osm; remaining cities keep their previous values"
  ],
  "roadsDate": "2026-10-05",
@@ -28733,6 +28736,8 @@
    18.4
   ]
  },
+ "fares": null,
+ "flightModel": null,
  "cities": {
   "barcelona": {
    "wikipedia": {
@@ -28902,17 +28907,17 @@
     "wildlife": 0.43,
     "desert": 0.13,
     "offbeat": 0.04,
-    "vintage": 0.67,
-    "books": 0.95,
-    "vegan": 0.85,
-    "cycling": 0.97,
-    "caves": 0.99,
+    "vintage": 0.68,
+    "books": 0.96,
+    "vegan": 0.86,
+    "cycling": 0.98,
+    "caves": 0.98,
     "themeparks": 0.58,
-    "gardens": 0.96,
+    "gardens": 0.97,
     "climbing": 0.85,
-    "lgbtq": 0.96,
-    "games": 0.83,
-    "students": 0.91
+    "lgbtq": 0.97,
+    "games": 0.87,
+    "students": 0.92
    },
    "popularity": 0.96,
    "season": [
@@ -29155,17 +29160,17 @@
     "wildlife": 0.4,
     "desert": 0,
     "offbeat": 0.13,
-    "vintage": 0.81,
-    "books": 0.93,
-    "vegan": 0.79,
-    "cycling": 0.93,
+    "vintage": 0.87,
+    "books": 0.95,
+    "vegan": 0.77,
+    "cycling": 0.92,
     "caves": 0.53,
     "themeparks": 0.58,
-    "gardens": 0.89,
-    "climbing": 0.8,
+    "gardens": 0.92,
+    "climbing": 0.79,
     "lgbtq": 0.87,
-    "games": 0.96,
-    "students": 0.88
+    "games": 0.97,
+    "students": 0.9
    },
    "popularity": 0.87,
    "season": [
@@ -29401,17 +29406,17 @@
     "wildlife": 0.3,
     "desert": 0,
     "offbeat": 0.24,
-    "vintage": 0.52,
-    "books": 0.46,
-    "vegan": 0.28,
-    "cycling": 0.76,
-    "caves": 0.01,
-    "themeparks": 0.31,
-    "gardens": 0.61,
-    "climbing": 0.3,
-    "lgbtq": 0.54,
-    "games": 0.55,
-    "students": 0.56
+    "vintage": 0.5,
+    "books": 0.54,
+    "vegan": 0.3,
+    "cycling": 0.74,
+    "caves": 0.02,
+    "themeparks": 0.29,
+    "gardens": 0.66,
+    "climbing": 0.27,
+    "lgbtq": 0.55,
+    "games": 0.59,
+    "students": 0.61
    },
    "popularity": 0.76,
    "season": [
@@ -29460,6 +29465,7 @@
     "nature",
     "cycling",
     "gardens",
+    "students",
     "festivals",
     "villages",
     "film"
@@ -29638,17 +29644,17 @@
     "wildlife": 0.4,
     "desert": 0,
     "offbeat": 0.18,
-    "vintage": 0.79,
-    "books": 0.76,
-    "vegan": 0.73,
-    "cycling": 0.79,
-    "caves": 0.61,
-    "themeparks": 0.49,
-    "gardens": 0.95,
-    "climbing": 0.87,
-    "lgbtq": 0.82,
-    "games": 0.61,
-    "students": 0.69
+    "vintage": 0.85,
+    "books": 0.82,
+    "vegan": 0.71,
+    "cycling": 0.78,
+    "caves": 0.6,
+    "themeparks": 0.5,
+    "gardens": 0.96,
+    "climbing": 0.86,
+    "lgbtq": 0.81,
+    "games": 0.64,
+    "students": 0.73
    },
    "popularity": 0.82,
    "season": [
@@ -29889,17 +29895,17 @@
     "wildlife": 0.25,
     "desert": 0.13,
     "offbeat": 0.53,
-    "vintage": 0.71,
-    "books": 0.55,
+    "vintage": 0.75,
+    "books": 0.62,
     "vegan": 0.57,
-    "cycling": 0.55,
-    "caves": 0.5,
-    "themeparks": 0.71,
-    "gardens": 0.91,
-    "climbing": 0.84,
-    "lgbtq": 0.71,
-    "games": 0.67,
-    "students": 0.53
+    "cycling": 0.53,
+    "caves": 0.49,
+    "themeparks": 0.74,
+    "gardens": 0.93,
+    "climbing": 0.83,
+    "lgbtq": 0.72,
+    "games": 0.69,
+    "students": 0.58
    },
    "popularity": 0.47,
    "season": [
@@ -29952,6 +29958,7 @@
     "beach",
     "wine",
     "vintage",
+    "books",
     "themeparks",
     "gardens",
     "climbing",
@@ -30137,10 +30144,10 @@
     "books": 1,
     "vegan": 0.99,
     "cycling": 0.99,
-    "caves": 0.55,
-    "themeparks": 0.95,
-    "gardens": 0.97,
-    "climbing": 0.92,
+    "caves": 0.54,
+    "themeparks": 0.91,
+    "gardens": 0.98,
+    "climbing": 0.91,
     "lgbtq": 0.99,
     "games": 1,
     "students": 1
@@ -30387,15 +30394,15 @@
     "desert": 0,
     "offbeat": 0,
     "vintage": 0.99,
-    "books": 0.88,
-    "vegan": 0.95,
+    "books": 0.91,
+    "vegan": 0.96,
     "cycling": 1,
-    "caves": 0.3,
-    "themeparks": 0.71,
+    "caves": 0.28,
+    "themeparks": 0.74,
     "gardens": 1,
-    "climbing": 0.79,
-    "lgbtq": 0.97,
-    "games": 0.89,
+    "climbing": 0.76,
+    "lgbtq": 0.98,
+    "games": 0.91,
     "students": 0.99
    },
    "popularity": 1,
@@ -30637,17 +30644,17 @@
     "wildlife": 1,
     "desert": 0,
     "offbeat": 0.07,
-    "vintage": 0.88,
-    "books": 0.68,
-    "vegan": 0.87,
-    "cycling": 0.81,
-    "caves": 0.06,
+    "vintage": 0.91,
+    "books": 0.72,
+    "vegan": 0.89,
+    "cycling": 0.82,
+    "caves": 0.07,
     "themeparks": 0.81,
-    "gardens": 0.84,
-    "climbing": 0.61,
-    "lgbtq": 0.95,
-    "games": 0.67,
-    "students": 0.55
+    "gardens": 0.88,
+    "climbing": 0.59,
+    "lgbtq": 0.96,
+    "games": 0.69,
+    "students": 0.6
    },
    "popularity": 0.93,
    "season": [
@@ -30709,9 +30716,9 @@
     "cycling",
     "themeparks",
     "gardens",
-    "climbing",
     "lgbtq",
     "games",
+    "students",
     "festivals"
    ],
    "coast": {
@@ -30887,17 +30894,17 @@
     "wildlife": 1,
     "desert": 0.23,
     "offbeat": 0.02,
-    "vintage": 0.93,
-    "books": 0.89,
+    "vintage": 0.95,
+    "books": 0.92,
     "vegan": 1,
-    "cycling": 0.87,
+    "cycling": 0.86,
     "caves": 0.11,
     "themeparks": 0.8,
     "gardens": 0.99,
-    "climbing": 0.83,
+    "climbing": 0.81,
     "lgbtq": 1,
-    "games": 0.96,
-    "students": 0.93
+    "games": 0.97,
+    "students": 0.94
    },
    "popularity": 0.98,
    "season": [
@@ -31140,17 +31147,17 @@
     "wildlife": 0.93,
     "desert": 0.13,
     "offbeat": 0.05,
-    "vintage": 0.87,
-    "books": 0.8,
+    "vintage": 0.9,
+    "books": 0.85,
     "vegan": 0.91,
-    "cycling": 0.88,
-    "caves": 0.72,
-    "themeparks": 0.87,
-    "gardens": 0.8,
+    "cycling": 0.87,
+    "caves": 0.71,
+    "themeparks": 0.85,
+    "gardens": 0.85,
     "climbing": 1,
     "lgbtq": 0.79,
-    "games": 0.86,
-    "students": 0.92
+    "games": 0.89,
+    "students": 0.93
    },
    "popularity": 0.95,
    "season": [
@@ -31394,17 +31401,17 @@
     "wildlife": 0.98,
     "desert": 0,
     "offbeat": 0.06,
-    "vintage": 0.97,
-    "books": 0.96,
-    "vegan": 0.96,
-    "cycling": 0.92,
+    "vintage": 0.98,
+    "books": 0.97,
+    "vegan": 0.97,
+    "cycling": 0.91,
     "caves": 1,
-    "themeparks": 0.99,
-    "gardens": 0.93,
+    "themeparks": 0.96,
+    "gardens": 0.95,
     "climbing": 0.93,
-    "lgbtq": 0.93,
-    "games": 0.91,
-    "students": 0.8
+    "lgbtq": 0.95,
+    "games": 0.92,
+    "students": 0.83
    },
    "popularity": 0.94,
    "season": [
@@ -31648,17 +31655,17 @@
     "wildlife": 0.8,
     "desert": 0,
     "offbeat": 0.08,
-    "vintage": 0.96,
-    "books": 0.87,
+    "vintage": 0.97,
+    "books": 0.9,
     "vegan": 0.83,
-    "cycling": 0.75,
-    "caves": 0.92,
-    "themeparks": 0.83,
-    "gardens": 0.73,
-    "climbing": 0.59,
+    "cycling": 0.72,
+    "caves": 0.93,
+    "themeparks": 0.82,
+    "gardens": 0.78,
+    "climbing": 0.54,
     "lgbtq": 0.74,
-    "games": 0.93,
-    "students": 0.71
+    "games": 0.95,
+    "students": 0.76
    },
    "popularity": 0.92,
    "season": [
@@ -31902,17 +31909,17 @@
     "wildlife": 0.59,
     "desert": 0,
     "offbeat": 0.38,
-    "vintage": 0.67,
-    "books": 0.72,
-    "vegan": 0.75,
-    "cycling": 0.51,
-    "caves": 0.81,
-    "themeparks": 0.75,
-    "gardens": 0.43,
-    "climbing": 0.99,
-    "lgbtq": 0.69,
-    "games": 0.75,
-    "students": 0.85
+    "vintage": 0.68,
+    "books": 0.77,
+    "vegan": 0.72,
+    "cycling": 0.5,
+    "caves": 0.82,
+    "themeparks": 0.77,
+    "gardens": 0.48,
+    "climbing": 0.98,
+    "lgbtq": 0.7,
+    "games": 0.77,
+    "students": 0.88
    },
    "popularity": 0.62,
    "season": [
@@ -32153,16 +32160,16 @@
     "desert": 0,
     "offbeat": 0.03,
     "vintage": 0.55,
-    "books": 0.92,
+    "books": 0.94,
     "vegan": 0.69,
-    "cycling": 0.43,
+    "cycling": 0.41,
     "caves": 0.75,
-    "themeparks": 0.91,
-    "gardens": 0.89,
-    "climbing": 0.51,
+    "themeparks": 0.88,
+    "gardens": 0.92,
+    "climbing": 0.47,
     "lgbtq": 0.77,
-    "games": 0.86,
-    "students": 0.87
+    "games": 0.89,
+    "students": 0.89
    },
    "popularity": 0.97,
    "season": [
@@ -32401,17 +32408,17 @@
     "wildlife": 0.37,
     "desert": 0,
     "offbeat": 0.21,
-    "vintage": 0.69,
+    "vintage": 0.73,
     "books": 0.99,
     "vegan": 0.68,
-    "cycling": 0.63,
+    "cycling": 0.61,
     "caves": 0.91,
     "themeparks": 0.58,
-    "gardens": 0.51,
-    "climbing": 0.43,
-    "lgbtq": 0.67,
-    "games": 0.51,
-    "students": 0.64
+    "gardens": 0.57,
+    "climbing": 0.39,
+    "lgbtq": 0.68,
+    "games": 0.54,
+    "students": 0.68
    },
    "popularity": 0.79,
    "season": [
@@ -32681,17 +32688,17 @@
     "wildlife": 0.3,
     "desert": 0.89,
     "offbeat": 0.13,
-    "vintage": 0.77,
-    "books": 0.97,
-    "vegan": 0.76,
-    "cycling": 0.52,
-    "caves": 0.6,
+    "vintage": 0.83,
+    "books": 0.98,
+    "vegan": 0.74,
+    "cycling": 0.5,
+    "caves": 0.59,
     "themeparks": 0.79,
-    "gardens": 0.31,
-    "climbing": 0.81,
+    "gardens": 0.35,
+    "climbing": 0.8,
     "lgbtq": 0.47,
-    "games": 0.89,
-    "students": 0.67
+    "games": 0.91,
+    "students": 0.7
    },
    "interests": [
     "food",
@@ -32714,7 +32721,6 @@
     "vintage",
     "books",
     "vegan",
-    "caves",
     "themeparks",
     "climbing",
     "games",
@@ -32894,17 +32900,17 @@
     "wildlife": 0.08,
     "desert": 0,
     "offbeat": 0.26,
-    "vintage": 0.39,
-    "books": 0.67,
+    "vintage": 0.36,
+    "books": 0.71,
     "vegan": 0.63,
     "cycling": 0.85,
-    "caves": 0.87,
-    "themeparks": 0.31,
-    "gardens": 0.73,
-    "climbing": 0.47,
-    "lgbtq": 0.59,
-    "games": 0.71,
-    "students": 0.48
+    "caves": 0.88,
+    "themeparks": 0.29,
+    "gardens": 0.78,
+    "climbing": 0.42,
+    "lgbtq": 0.61,
+    "games": 0.73,
+    "students": 0.53
    },
    "popularity": 0.74,
    "season": [
@@ -32959,6 +32965,7 @@
     "cycling",
     "caves",
     "gardens",
+    "lgbtq",
     "games",
     "festivals"
    ],
@@ -33135,17 +33142,17 @@
     "wildlife": 0.51,
     "desert": 0,
     "offbeat": 0.66,
-    "vintage": 0.39,
-    "books": 0.51,
-    "vegan": 0.55,
-    "cycling": 0.32,
-    "caves": 0.71,
+    "vintage": 0.36,
+    "books": 0.58,
+    "vegan": 0.56,
+    "cycling": 0.29,
+    "caves": 0.7,
     "themeparks": 0,
-    "gardens": 0.44,
-    "climbing": 0.65,
-    "lgbtq": 0.63,
-    "games": 0.51,
-    "students": 0.37
+    "gardens": 0.5,
+    "climbing": 0.62,
+    "lgbtq": 0.65,
+    "games": 0.54,
+    "students": 0.43
    },
    "popularity": 0.34,
    "season": [
@@ -33369,17 +33376,17 @@
     "wildlife": 0.57,
     "desert": 0,
     "offbeat": 0.48,
-    "vintage": 0.48,
-    "books": 0.43,
+    "vintage": 0.46,
+    "books": 0.51,
     "vegan": 0.42,
-    "cycling": 0.25,
-    "caves": 0.56,
-    "themeparks": 0.92,
-    "gardens": 0.57,
-    "climbing": 0.76,
-    "lgbtq": 0.54,
-    "games": 0.45,
-    "students": 0.39
+    "cycling": 0.23,
+    "caves": 0.55,
+    "themeparks": 0.89,
+    "gardens": 0.61,
+    "climbing": 0.72,
+    "lgbtq": 0.55,
+    "games": 0.48,
+    "students": 0.44
    },
    "popularity": 0.52,
    "season": [
@@ -33424,6 +33431,7 @@
     "views",
     "beach",
     "themeparks",
+    "gardens",
     "climbing"
    ],
    "coast": {
@@ -33600,17 +33608,17 @@
     "wildlife": 0.37,
     "desert": 0,
     "offbeat": 0.52,
-    "vintage": 0.15,
-    "books": 0.41,
+    "vintage": 0.16,
+    "books": 0.45,
     "vegan": 0.31,
-    "cycling": 0.59,
-    "caves": 0.89,
-    "themeparks": 0.49,
-    "gardens": 0.47,
-    "climbing": 0.57,
+    "cycling": 0.57,
+    "caves": 0.9,
+    "themeparks": 0.5,
+    "gardens": 0.51,
+    "climbing": 0.52,
     "lgbtq": 0.37,
     "games": 0,
-    "students": 0.33
+    "students": 0.39
    },
    "popularity": 0.48,
    "season": [
@@ -33832,17 +33840,17 @@
     "wildlife": 0.46,
     "desert": 0,
     "offbeat": 0.44,
-    "vintage": 0.45,
-    "books": 0.33,
+    "vintage": 0.42,
+    "books": 0.38,
     "vegan": 0.59,
-    "cycling": 0.67,
-    "caves": 0.83,
+    "cycling": 0.66,
+    "caves": 0.84,
     "themeparks": 0.53,
-    "gardens": 0.59,
-    "climbing": 0.75,
-    "lgbtq": 0.59,
-    "games": 0.67,
-    "students": 0.52
+    "gardens": 0.63,
+    "climbing": 0.7,
+    "lgbtq": 0.61,
+    "games": 0.69,
+    "students": 0.57
    },
    "popularity": 0.56,
    "season": [
@@ -33889,7 +33897,9 @@
     "wine",
     "cycling",
     "caves",
+    "gardens",
     "climbing",
+    "lgbtq",
     "games",
     "festivals"
    ],
@@ -34067,16 +34077,16 @@
     "wildlife": 0.64,
     "desert": 0.64,
     "offbeat": 0.41,
-    "vintage": 0.84,
-    "books": 0.77,
-    "vegan": 0.92,
+    "vintage": 0.89,
+    "books": 0.83,
+    "vegan": 0.93,
     "cycling": 0.89,
-    "caves": 0.67,
-    "themeparks": 0.83,
-    "gardens": 0.87,
-    "climbing": 0.97,
-    "lgbtq": 0.91,
-    "games": 0.96,
+    "caves": 0.64,
+    "themeparks": 0.82,
+    "gardens": 0.9,
+    "climbing": 0.96,
+    "lgbtq": 0.93,
+    "games": 0.97,
     "students": 0.97
    },
    "popularity": 0.59,
@@ -34354,17 +34364,17 @@
     "wildlife": 0.4,
     "desert": 0,
     "offbeat": 0.3,
-    "vintage": 0.62,
-    "books": 0.57,
-    "vegan": 0.61,
-    "cycling": 0.72,
+    "vintage": 0.63,
+    "books": 0.64,
+    "vegan": 0.62,
+    "cycling": 0.7,
     "caves": 0.95,
     "themeparks": 0.65,
-    "gardens": 0.73,
-    "climbing": 0.96,
+    "gardens": 0.78,
+    "climbing": 0.95,
     "lgbtq": 0.79,
-    "games": 0.57,
-    "students": 0.79
+    "games": 0.61,
+    "students": 0.81
    },
    "interests": [
     "food",
@@ -34382,6 +34392,7 @@
     "islands",
     "wine",
     "vintage",
+    "books",
     "vegan",
     "cycling",
     "caves",
@@ -34389,6 +34400,7 @@
     "gardens",
     "climbing",
     "lgbtq",
+    "games",
     "students"
    ],
    "coast": {
@@ -34565,17 +34577,17 @@
     "wildlife": 0.43,
     "desert": 0,
     "offbeat": 0.1,
-    "vintage": 0.92,
-    "books": 0.53,
-    "vegan": 0.77,
+    "vintage": 0.94,
+    "books": 0.6,
+    "vegan": 0.75,
     "cycling": 0.47,
-    "caves": 0.4,
-    "themeparks": 0.03,
-    "gardens": 0.92,
-    "climbing": 0.4,
+    "caves": 0.39,
+    "themeparks": 0.04,
+    "gardens": 0.94,
+    "climbing": 0.36,
     "lgbtq": 0.77,
-    "games": 0.81,
-    "students": 0.36
+    "games": 0.83,
+    "students": 0.42
    },
    "popularity": 0.9,
    "season": [
@@ -34628,6 +34640,7 @@
     "beach",
     "islands",
     "vintage",
+    "books",
     "vegan",
     "gardens",
     "lgbtq",
@@ -34810,17 +34823,17 @@
     "wildlife": 0.99,
     "desert": 0,
     "offbeat": 0.12,
-    "vintage": 0.91,
-    "books": 0.55,
+    "vintage": 0.93,
+    "books": 0.62,
     "vegan": 0.64,
-    "cycling": 0.96,
-    "caves": 0.23,
-    "themeparks": 0.31,
-    "gardens": 0.76,
-    "climbing": 0.45,
-    "lgbtq": 0.71,
-    "games": 0.47,
-    "students": 0.81
+    "cycling": 0.97,
+    "caves": 0.21,
+    "themeparks": 0.29,
+    "gardens": 0.81,
+    "climbing": 0.4,
+    "lgbtq": 0.72,
+    "games": 0.51,
+    "students": 0.84
    },
    "popularity": 0.88,
    "season": [
@@ -34872,6 +34885,7 @@
     "wine",
     "wildlife",
     "vintage",
+    "books",
     "vegan",
     "cycling",
     "gardens",
@@ -35052,17 +35066,17 @@
     "wildlife": 1,
     "desert": 0,
     "offbeat": 0.29,
-    "vintage": 0.83,
-    "books": 0.84,
-    "vegan": 0.89,
-    "cycling": 0.95,
-    "caves": 0.4,
-    "themeparks": 0.45,
-    "gardens": 0.85,
-    "climbing": 0.63,
-    "lgbtq": 0.88,
-    "games": 0.92,
-    "students": 0.77
+    "vintage": 0.88,
+    "books": 0.89,
+    "vegan": 0.9,
+    "cycling": 0.96,
+    "caves": 0.39,
+    "themeparks": 0.44,
+    "gardens": 0.89,
+    "climbing": 0.6,
+    "lgbtq": 0.9,
+    "games": 0.93,
+    "students": 0.8
    },
    "popularity": 0.71,
    "season": [
@@ -35302,17 +35316,17 @@
     "wildlife": 0.7,
     "desert": 0,
     "offbeat": 0.14,
-    "vintage": 0.95,
-    "books": 0.59,
+    "vintage": 0.96,
+    "books": 0.65,
     "vegan": 0.84,
-    "cycling": 0.57,
+    "cycling": 0.55,
     "caves": 0.11,
-    "themeparks": 0.75,
-    "gardens": 0.79,
-    "climbing": 0.6,
-    "lgbtq": 0.63,
-    "games": 0.71,
-    "students": 0.6
+    "themeparks": 0.77,
+    "gardens": 0.83,
+    "climbing": 0.55,
+    "lgbtq": 0.65,
+    "games": 0.73,
+    "students": 0.64
    },
    "popularity": 0.86,
    "season": [
@@ -35368,10 +35382,10 @@
     "wine",
     "wildlife",
     "vintage",
+    "books",
     "vegan",
     "themeparks",
     "gardens",
-    "climbing",
     "lgbtq",
     "games",
     "students"
@@ -35585,17 +35599,17 @@
     "wildlife": 0.57,
     "desert": 0,
     "offbeat": 0.19,
-    "vintage": 0.89,
-    "books": 0.6,
-    "vegan": 0.93,
-    "cycling": 0.65,
-    "caves": 0.2,
+    "vintage": 0.92,
+    "books": 0.66,
+    "vegan": 0.94,
+    "cycling": 0.64,
+    "caves": 0.17,
     "themeparks": 0.62,
-    "gardens": 0.63,
-    "climbing": 0.63,
+    "gardens": 0.68,
+    "climbing": 0.6,
     "lgbtq": 0.37,
-    "games": 0.71,
-    "students": 0.45
+    "games": 0.73,
+    "students": 0.51
    },
    "interests": [
     "food",
@@ -35796,17 +35810,17 @@
     "wildlife": 0.69,
     "desert": 0,
     "offbeat": 0.15,
-    "vintage": 0.85,
-    "books": 0.75,
-    "vegan": 0.97,
-    "cycling": 0.77,
-    "caves": 0.47,
-    "themeparks": 0.93,
-    "gardens": 0.81,
-    "climbing": 0.69,
-    "lgbtq": 0.92,
-    "games": 0.81,
-    "students": 0.84
+    "vintage": 0.9,
+    "books": 0.81,
+    "vegan": 0.98,
+    "cycling": 0.75,
+    "caves": 0.46,
+    "themeparks": 0.9,
+    "gardens": 0.86,
+    "climbing": 0.65,
+    "lgbtq": 0.94,
+    "games": 0.83,
+    "students": 0.86
    },
    "popularity": 0.85,
    "season": [
@@ -36048,17 +36062,17 @@
     "wildlife": 1,
     "desert": 0.59,
     "offbeat": 0.42,
-    "vintage": 0.73,
-    "books": 0.71,
-    "vegan": 0.88,
-    "cycling": 0.8,
-    "caves": 0.85,
-    "themeparks": 0.96,
-    "gardens": 0.71,
-    "climbing": 0.73,
+    "vintage": 0.8,
+    "books": 0.76,
+    "vegan": 0.9,
+    "cycling": 0.81,
+    "caves": 0.87,
+    "themeparks": 0.92,
+    "gardens": 0.75,
+    "climbing": 0.69,
     "lgbtq": 0.85,
-    "games": 0.61,
-    "students": 0.71
+    "games": 0.64,
+    "students": 0.76
    },
    "popularity": 0.58,
    "season": [
@@ -36298,17 +36312,17 @@
     "wildlife": 0.71,
     "desert": 0,
     "offbeat": 0.51,
-    "vintage": 0.62,
+    "vintage": 0.63,
     "books": 0.25,
-    "vegan": 0.8,
+    "vegan": 0.81,
     "cycling": 0.45,
-    "caves": 0.88,
-    "themeparks": 0.97,
-    "gardens": 0.54,
-    "climbing": 0.95,
-    "lgbtq": 0.54,
-    "games": 0.51,
-    "students": 0.44
+    "caves": 0.89,
+    "themeparks": 0.93,
+    "gardens": 0.59,
+    "climbing": 0.94,
+    "lgbtq": 0.55,
+    "games": 0.54,
+    "students": 0.5
    },
    "popularity": 0.49,
    "season": [
@@ -36533,17 +36547,17 @@
     "wildlife": 0.37,
     "desert": 0,
     "offbeat": 0.08,
-    "vintage": 0.51,
-    "books": 0.33,
+    "vintage": 0.49,
+    "books": 0.38,
     "vegan": 0.38,
-    "cycling": 0.68,
-    "caves": 0.65,
-    "themeparks": 0.77,
-    "gardens": 0.35,
-    "climbing": 0.27,
+    "cycling": 0.67,
+    "caves": 0.63,
+    "themeparks": 0.78,
+    "gardens": 0.38,
+    "climbing": 0.25,
     "lgbtq": 0,
-    "games": 0.39,
-    "students": 0.27
+    "games": 0.4,
+    "students": 0.28
    },
    "popularity": 0.92,
    "season": [
@@ -36767,17 +36781,17 @@
     "wildlife": 0.59,
     "desert": 0,
     "offbeat": 0.09,
-    "vintage": 0.8,
-    "books": 0.83,
-    "vegan": 0.72,
+    "vintage": 0.86,
+    "books": 0.88,
+    "vegan": 0.7,
     "cycling": 0.83,
-    "caves": 0.79,
-    "themeparks": 0.89,
-    "gardens": 0.83,
-    "climbing": 0.67,
-    "lgbtq": 0.89,
-    "games": 0.75,
-    "students": 0.58
+    "caves": 0.8,
+    "themeparks": 0.87,
+    "gardens": 0.87,
+    "climbing": 0.63,
+    "lgbtq": 0.92,
+    "games": 0.77,
+    "students": 0.62
    },
    "popularity": 0.91,
    "season": [
@@ -36840,6 +36854,7 @@
     "climbing",
     "lgbtq",
     "games",
+    "students",
     "festivals"
    ],
    "coast": {
@@ -37015,17 +37030,17 @@
     "wildlife": 0.34,
     "desert": 0.56,
     "offbeat": 0.18,
-    "vintage": 0.32,
-    "books": 0.43,
+    "vintage": 0.3,
+    "books": 0.51,
     "vegan": 0.42,
-    "cycling": 0.06,
+    "cycling": 0.05,
     "caves": 0.77,
-    "themeparks": 0.87,
-    "gardens": 0.77,
-    "climbing": 0.35,
+    "themeparks": 0.85,
+    "gardens": 0.82,
+    "climbing": 0.32,
     "lgbtq": 0,
-    "games": 0.43,
-    "students": 0.47
+    "games": 0.45,
+    "students": 0.52
    },
    "popularity": 0.82,
    "season": [
@@ -37257,17 +37272,17 @@
     "wildlife": 0.37,
     "desert": 0.71,
     "offbeat": 0.39,
-    "vintage": 0.59,
-    "books": 0.73,
-    "vegan": 0.65,
+    "vintage": 0.6,
+    "books": 0.8,
+    "vegan": 0.66,
     "cycling": 0.48,
-    "caves": 0.84,
+    "caves": 0.86,
     "themeparks": 0.53,
-    "gardens": 0.54,
-    "climbing": 0.55,
-    "lgbtq": 0.54,
-    "games": 0.51,
-    "students": 0.69
+    "gardens": 0.59,
+    "climbing": 0.5,
+    "lgbtq": 0.55,
+    "games": 0.54,
+    "students": 0.73
    },
    "popularity": 0.61,
    "season": [
@@ -37319,6 +37334,7 @@
     "mountains",
     "wine",
     "desert",
+    "vintage",
     "books",
     "vegan",
     "caves",
@@ -37499,16 +37515,16 @@
     "desert": 0,
     "offbeat": 0.62,
     "vintage": 0,
-    "books": 0.03,
+    "books": 0.05,
     "vegan": 0.15,
-    "cycling": 0.17,
-    "caves": 0.59,
-    "themeparks": 0.22,
-    "gardens": 0.08,
-    "climbing": 0.07,
+    "cycling": 0.16,
+    "caves": 0.57,
+    "themeparks": 0.21,
+    "gardens": 0.1,
+    "climbing": 0.08,
     "lgbtq": 0.37,
     "games": 0,
-    "students": 0.05
+    "students": 0.07
    },
    "popularity": 0.38,
    "season": [
@@ -37726,17 +37742,17 @@
     "wildlife": 0.21,
     "desert": 0,
     "offbeat": 0.63,
-    "vintage": 0.1,
-    "books": 0.17,
-    "vegan": 0.2,
-    "cycling": 0.55,
-    "caves": 0.73,
-    "themeparks": 0.31,
-    "gardens": 0.13,
-    "climbing": 0.52,
+    "vintage": 0.11,
+    "books": 0.18,
+    "vegan": 0.22,
+    "cycling": 0.53,
+    "caves": 0.72,
+    "themeparks": 0.29,
+    "gardens": 0.14,
+    "climbing": 0.48,
     "lgbtq": 0,
     "games": 0.27,
-    "students": 0.27
+    "students": 0.28
    },
    "popularity": 0.37,
    "season": [
@@ -37954,17 +37970,17 @@
     "wildlife": 0.49,
     "desert": 0,
     "offbeat": 0.43,
-    "vintage": 0.22,
-    "books": 0.39,
+    "vintage": 0.21,
+    "books": 0.42,
     "vegan": 0.47,
-    "cycling": 0.64,
-    "caves": 0.93,
-    "themeparks": 0.31,
-    "gardens": 0.04,
-    "climbing": 0.71,
+    "cycling": 0.62,
+    "caves": 0.94,
+    "themeparks": 0.29,
+    "gardens": 0.07,
+    "climbing": 0.66,
     "lgbtq": 0.47,
     "games": 0.27,
-    "students": 0.49
+    "students": 0.54
    },
    "popularity": 0.57,
    "season": [
@@ -38183,17 +38199,17 @@
     "wildlife": 0,
     "desert": 0,
     "offbeat": 0.61,
-    "vintage": 0.48,
-    "books": 0.65,
+    "vintage": 0.46,
+    "books": 0.69,
     "vegan": 0.38,
-    "cycling": 0.71,
-    "caves": 0.63,
-    "themeparks": 0.45,
-    "gardens": 0.18,
-    "climbing": 0.4,
+    "cycling": 0.69,
+    "caves": 0.61,
+    "themeparks": 0.44,
+    "gardens": 0.19,
+    "climbing": 0.36,
     "lgbtq": 0.37,
-    "games": 0.51,
-    "students": 0.75
+    "games": 0.54,
+    "students": 0.78
    },
    "popularity": 0.39,
    "season": [
@@ -38422,14 +38438,14 @@
     "wildlife": 0.43,
     "desert": 0,
     "offbeat": 0.17,
-    "vintage": 0.75,
-    "books": 0.91,
-    "vegan": 0.81,
+    "vintage": 0.81,
+    "books": 0.93,
+    "vegan": 0.82,
     "cycling": 0.84,
-    "caves": 0.01,
-    "themeparks": 0.87,
-    "gardens": 0.56,
-    "climbing": 0.55,
+    "caves": 0.02,
+    "themeparks": 0.85,
+    "gardens": 0.6,
+    "climbing": 0.5,
     "lgbtq": 0.85,
     "games": 0.99,
     "students": 0.95
@@ -38493,6 +38509,7 @@
     "vegan",
     "cycling",
     "themeparks",
+    "gardens",
     "lgbtq",
     "games",
     "students"
@@ -38670,17 +38687,17 @@
     "wildlife": 0.57,
     "desert": 0.23,
     "offbeat": 0.45,
-    "vintage": 0.29,
-    "books": 0.39,
-    "vegan": 0.49,
-    "cycling": 0.91,
-    "caves": 0.19,
-    "themeparks": 0.71,
-    "gardens": 0.41,
-    "climbing": 0.37,
+    "vintage": 0.27,
+    "books": 0.42,
+    "vegan": 0.5,
+    "cycling": 0.9,
+    "caves": 0.16,
+    "themeparks": 0.74,
+    "gardens": 0.44,
+    "climbing": 0.34,
     "lgbtq": 0,
-    "games": 0.61,
-    "students": 0.33
+    "games": 0.64,
+    "students": 0.39
    },
    "popularity": 0.55,
    "season": [
@@ -38903,17 +38920,17 @@
     "wildlife": 0.3,
     "desert": 0,
     "offbeat": 0.46,
-    "vintage": 0.64,
-    "books": 0.36,
-    "vegan": 0.55,
-    "cycling": 0.33,
-    "caves": 0.26,
-    "themeparks": 0.1,
-    "gardens": 0.69,
-    "climbing": 0.16,
+    "vintage": 0.65,
+    "books": 0.4,
+    "vegan": 0.56,
+    "cycling": 0.3,
+    "caves": 0.24,
+    "themeparks": 0.12,
+    "gardens": 0.73,
+    "climbing": 0.15,
     "lgbtq": 0.37,
-    "games": 0.79,
-    "students": 0.24
+    "games": 0.8,
+    "students": 0.26
    },
    "popularity": 0.54,
    "season": [
@@ -39136,17 +39153,17 @@
     "wildlife": 0.46,
     "desert": 0.23,
     "offbeat": 0.56,
-    "vintage": 0.72,
-    "books": 0.49,
-    "vegan": 0.51,
+    "vintage": 0.76,
+    "books": 0.57,
+    "vegan": 0.5,
     "cycling": 0.44,
-    "caves": 0.33,
+    "caves": 0.32,
     "themeparks": 0.65,
-    "gardens": 0.25,
-    "climbing": 0.4,
-    "lgbtq": 0.59,
-    "games": 0.75,
-    "students": 0.65
+    "gardens": 0.28,
+    "climbing": 0.36,
+    "lgbtq": 0.61,
+    "games": 0.77,
+    "students": 0.7
    },
    "popularity": 0.44,
    "season": [
@@ -39196,6 +39213,7 @@
     "islands",
     "vintage",
     "themeparks",
+    "lgbtq",
     "games",
     "students",
     "villages"
@@ -39373,17 +39391,17 @@
     "wildlife": 0.66,
     "desert": 0,
     "offbeat": 0.03,
-    "vintage": 0.6,
-    "books": 0.85,
+    "vintage": 0.61,
+    "books": 0.9,
     "vegan": 0.6,
-    "cycling": 0.6,
+    "cycling": 0.58,
     "caves": 0.11,
-    "themeparks": 1,
-    "gardens": 0.37,
-    "climbing": 0.25,
+    "themeparks": 0.98,
+    "gardens": 0.41,
+    "climbing": 0.24,
     "lgbtq": 0.37,
-    "games": 0.39,
-    "students": 0.83
+    "games": 0.4,
+    "students": 0.85
    },
    "popularity": 0.97,
    "season": [
@@ -39439,7 +39457,6 @@
     "vintage",
     "books",
     "vegan",
-    "cycling",
     "themeparks",
     "students"
    ],
@@ -39616,17 +39633,17 @@
     "wildlife": 0.51,
     "desert": 0,
     "offbeat": 0.47,
-    "vintage": 0.75,
-    "books": 0.81,
+    "vintage": 0.81,
+    "books": 0.87,
     "vegan": 0.67,
-    "cycling": 0.22,
-    "caves": 0.63,
+    "cycling": 0.2,
+    "caves": 0.61,
     "themeparks": 0.62,
-    "gardens": 0.31,
-    "climbing": 0.27,
+    "gardens": 0.35,
+    "climbing": 0.25,
     "lgbtq": 0,
-    "games": 0.83,
-    "students": 0.51
+    "games": 0.87,
+    "students": 0.55
    },
    "popularity": 0.53,
    "season": [
@@ -39854,17 +39871,17 @@
     "wildlife": 0.21,
     "desert": 0,
     "offbeat": 0.34,
-    "vintage": 0.57,
-    "books": 0.63,
+    "vintage": 0.58,
+    "books": 0.68,
     "vegan": 0.45,
-    "cycling": 0.41,
-    "caves": 0.01,
-    "themeparks": 0.68,
-    "gardens": 0.41,
-    "climbing": 0.16,
+    "cycling": 0.39,
+    "caves": 0.02,
+    "themeparks": 0.69,
+    "gardens": 0.44,
+    "climbing": 0.15,
     "lgbtq": 0.37,
-    "games": 0.55,
-    "students": 0.89
+    "games": 0.59,
+    "students": 0.91
    },
    "popularity": 0.66,
    "season": [
@@ -40092,16 +40109,16 @@
     "desert": 0,
     "offbeat": 0.24,
     "vintage": 0.55,
-    "books": 0.79,
-    "vegan": 0.53,
-    "cycling": 0.29,
-    "caves": 0.15,
+    "books": 0.84,
+    "vegan": 0.52,
+    "cycling": 0.26,
+    "caves": 0.14,
     "themeparks": 0.65,
-    "gardens": 0.59,
-    "climbing": 0.33,
+    "gardens": 0.63,
+    "climbing": 0.3,
     "lgbtq": 0,
-    "games": 0.61,
-    "students": 0.73
+    "games": 0.64,
+    "students": 0.77
    },
    "popularity": 0.76,
    "season": [
@@ -40153,6 +40170,7 @@
     "wine",
     "books",
     "themeparks",
+    "gardens",
     "games",
     "students",
     "festivals"
@@ -40330,17 +40348,17 @@
     "wildlife": 0.37,
     "desert": 0,
     "offbeat": 0.71,
-    "vintage": 0.39,
+    "vintage": 0.36,
     "books": 0.25,
     "vegan": 0.42,
-    "cycling": 0.29,
-    "caves": 0.35,
-    "themeparks": 0.22,
-    "gardens": 0.67,
-    "climbing": 0.55,
+    "cycling": 0.26,
+    "caves": 0.33,
+    "themeparks": 0.21,
+    "gardens": 0.7,
+    "climbing": 0.5,
     "lgbtq": 0.37,
     "games": 0.27,
-    "students": 0.12
+    "students": 0.15
    },
    "popularity": 0.29,
    "season": [
@@ -40563,17 +40581,17 @@
     "wildlife": 0.25,
     "desert": 0,
     "offbeat": 0.79,
-    "vintage": 0.35,
-    "books": 0.3,
+    "vintage": 0.32,
+    "books": 0.36,
     "vegan": 0.33,
-    "cycling": 0.61,
+    "cycling": 0.59,
     "caves": 0.97,
-    "themeparks": 0.16,
-    "gardens": 0.49,
-    "climbing": 0.68,
-    "lgbtq": 0.59,
+    "themeparks": 0.17,
+    "gardens": 0.55,
+    "climbing": 0.64,
+    "lgbtq": 0.61,
     "games": 0.27,
-    "students": 0.15
+    "students": 0.18
    },
    "popularity": 0.21,
    "season": [
@@ -40619,9 +40637,9 @@
     "islands",
     "wine",
     "offbeat",
-    "cycling",
     "caves",
-    "climbing"
+    "climbing",
+    "lgbtq"
    ],
    "coast": {
     "onSea": true,
@@ -40790,17 +40808,17 @@
     "wildlife": 0,
     "desert": 0,
     "offbeat": 0,
-    "vintage": 0.22,
-    "books": 0.15,
-    "vegan": 0.22,
-    "cycling": 0.27,
-    "caves": 0.06,
-    "themeparks": 0.71,
-    "gardens": 0.25,
+    "vintage": 0.21,
+    "books": 0.16,
+    "vegan": 0.24,
+    "cycling": 0.25,
+    "caves": 0.07,
+    "themeparks": 0.74,
+    "gardens": 0.28,
     "climbing": 0,
     "lgbtq": 0,
     "games": 0,
-    "students": 0.18
+    "students": 0.21
    },
    "popularity": 0.45,
    "season": [
@@ -41015,17 +41033,17 @@
     "wildlife": 0,
     "desert": 0.75,
     "offbeat": 0,
-    "vintage": 0.22,
-    "books": 0.61,
-    "vegan": 0.09,
+    "vintage": 0.21,
+    "books": 0.67,
+    "vegan": 0.1,
     "cycling": 0,
-    "caves": 0.06,
-    "themeparks": 0.1,
-    "gardens": 0.27,
+    "caves": 0.07,
+    "themeparks": 0.12,
+    "gardens": 0.3,
     "climbing": 0,
     "lgbtq": 0,
     "games": 0,
-    "students": 0.27
+    "students": 0.28
    },
    "popularity": 0.13,
    "season": [
@@ -41243,17 +41261,17 @@
     "wildlife": 0,
     "desert": 0,
     "offbeat": 0,
-    "vintage": 0.1,
-    "books": 0.06,
+    "vintage": 0.11,
+    "books": 0.07,
     "vegan": 0.02,
     "cycling": 0,
-    "caves": 0.4,
-    "themeparks": 0.16,
-    "gardens": 0.08,
-    "climbing": 0.77,
+    "caves": 0.39,
+    "themeparks": 0.17,
+    "gardens": 0.1,
+    "climbing": 0.74,
     "lgbtq": 0,
     "games": 0,
-    "students": 0.13
+    "students": 0.16
    },
    "popularity": 0.34,
    "season": [
@@ -41467,16 +41485,16 @@
     "desert": 0,
     "offbeat": 0,
     "vintage": 0,
-    "books": 0.06,
+    "books": 0.07,
     "vegan": 0,
     "cycling": 0.09,
-    "caves": 0.23,
-    "themeparks": 0.39,
-    "gardens": 0.21,
-    "climbing": 0.16,
+    "caves": 0.21,
+    "themeparks": 0.36,
+    "gardens": 0.22,
+    "climbing": 0.15,
     "lgbtq": 0,
     "games": 0,
-    "students": 0.29
+    "students": 0.36
    },
    "popularity": 0.05,
    "season": [
@@ -41690,10 +41708,10 @@
     "wildlife": 0,
     "desert": 0,
     "offbeat": 0,
-    "vintage": 0.15,
-    "books": 0.01,
-    "vegan": 0.07,
-    "cycling": 0.17,
+    "vintage": 0.16,
+    "books": 0.03,
+    "vegan": 0.09,
+    "cycling": 0.16,
     "caves": 0.11,
     "themeparks": 0,
     "gardens": 0,
@@ -41917,13 +41935,13 @@
     "books": 0.22,
     "vegan": 0.02,
     "cycling": 0,
-    "caves": 0.06,
-    "themeparks": 0.45,
-    "gardens": 0.65,
+    "caves": 0.07,
+    "themeparks": 0.44,
+    "gardens": 0.69,
     "climbing": 0.11,
     "lgbtq": 0,
     "games": 0.35,
-    "students": 0.76
+    "students": 0.79
    },
    "popularity": 0.19,
    "season": [
@@ -42142,17 +42160,17 @@
     "wildlife": 0,
     "desert": 0,
     "offbeat": 0,
-    "vintage": 0.07,
-    "books": 0.19,
+    "vintage": 0.08,
+    "books": 0.2,
     "vegan": 0.04,
-    "cycling": 0.06,
-    "caves": 0.3,
+    "cycling": 0.05,
+    "caves": 0.28,
     "themeparks": 0.53,
-    "gardens": 0.08,
-    "climbing": 0.16,
+    "gardens": 0.1,
+    "climbing": 0.15,
     "lgbtq": 0,
     "games": 0,
-    "students": 0.31
+    "students": 0.37
    },
    "popularity": 0.35,
    "season": [
@@ -42365,17 +42383,17 @@
     "wildlife": 0.3,
     "desert": 0,
     "offbeat": 0.37,
-    "vintage": 0.67,
-    "books": 0.65,
-    "vegan": 0.53,
-    "cycling": 0.04,
-    "caves": 0.28,
-    "themeparks": 0.49,
-    "gardens": 0.29,
-    "climbing": 0.21,
+    "vintage": 0.68,
+    "books": 0.69,
+    "vegan": 0.52,
+    "cycling": 0.03,
+    "caves": 0.27,
+    "themeparks": 0.5,
+    "gardens": 0.32,
+    "climbing": 0.19,
     "lgbtq": 0.74,
-    "games": 0.75,
-    "students": 0.61
+    "games": 0.77,
+    "students": 0.65
    },
    "popularity": 0.63,
    "season": [
@@ -42610,17 +42628,17 @@
     "wildlife": 0.21,
     "desert": 0,
     "offbeat": 0,
-    "vintage": 0.22,
-    "books": 0.08,
-    "vegan": 0.17,
-    "cycling": 0.13,
-    "caves": 0.26,
-    "themeparks": 0.1,
+    "vintage": 0.21,
+    "books": 0.09,
+    "vegan": 0.19,
+    "cycling": 0.12,
+    "caves": 0.24,
+    "themeparks": 0.12,
     "gardens": 0,
     "climbing": 0.89,
     "lgbtq": 0,
     "games": 0,
-    "students": 0.09
+    "students": 0.12
    },
    "popularity": 0.07,
    "season": [
@@ -42834,17 +42852,17 @@
     "wildlife": 0.08,
     "desert": 1,
     "offbeat": 0.28,
-    "vintage": 0.22,
-    "books": 0.17,
+    "vintage": 0.21,
+    "books": 0.18,
     "vegan": 0.15,
-    "cycling": 0.17,
-    "caves": 0.57,
-    "themeparks": 0.31,
-    "gardens": 0.37,
-    "climbing": 0.49,
+    "cycling": 0.16,
+    "caves": 0.56,
+    "themeparks": 0.29,
+    "gardens": 0.41,
+    "climbing": 0.44,
     "lgbtq": 0,
     "games": 0.35,
-    "students": 0.63
+    "students": 0.66
    },
    "popularity": 0.72,
    "season": [
@@ -43064,17 +43082,17 @@
     "wildlife": 0.25,
     "desert": 0.5,
     "offbeat": 0,
-    "vintage": 0.32,
-    "books": 0.35,
-    "vegan": 0.35,
-    "cycling": 0.53,
-    "caves": 0.68,
-    "themeparks": 0.1,
-    "gardens": 0.33,
-    "climbing": 0.91,
+    "vintage": 0.3,
+    "books": 0.39,
+    "vegan": 0.36,
+    "cycling": 0.51,
+    "caves": 0.65,
+    "themeparks": 0.12,
+    "gardens": 0.37,
+    "climbing": 0.9,
     "lgbtq": 0,
     "games": 0,
-    "students": 0.41
+    "students": 0.48
    },
    "popularity": 0.31,
    "season": [
@@ -43293,17 +43311,17 @@
     "wildlife": 0,
     "desert": 0,
     "offbeat": 0.73,
-    "vintage": 0.27,
+    "vintage": 0.25,
     "books": 0.11,
     "vegan": 0.31,
-    "cycling": 0.25,
-    "caves": 0.45,
-    "themeparks": 0.39,
-    "gardens": 0.47,
-    "climbing": 0.33,
+    "cycling": 0.23,
+    "caves": 0.44,
+    "themeparks": 0.36,
+    "gardens": 0.51,
+    "climbing": 0.3,
     "lgbtq": 0.47,
     "games": 0,
-    "students": 0.09
+    "students": 0.12
    },
    "popularity": 0.27,
    "season": [
@@ -43519,14 +43537,14 @@
     "wildlife": 0,
     "desert": 0.93,
     "offbeat": 0,
-    "vintage": 0.1,
+    "vintage": 0.11,
     "books": 0.11,
     "vegan": 0.31,
-    "cycling": 0.2,
-    "caves": 0.4,
-    "themeparks": 0.03,
-    "gardens": 0.27,
-    "climbing": 0.07,
+    "cycling": 0.18,
+    "caves": 0.39,
+    "themeparks": 0.04,
+    "gardens": 0.3,
+    "climbing": 0.08,
     "lgbtq": 0,
     "games": 0,
     "students": 0.03
@@ -43743,14 +43761,14 @@
     "wildlife": 0.4,
     "desert": 0,
     "offbeat": 0,
-    "vintage": 0.15,
-    "books": 0.09,
-    "vegan": 0.27,
-    "cycling": 0.13,
-    "caves": 0.23,
-    "themeparks": 0.45,
-    "gardens": 0.23,
-    "climbing": 0.16,
+    "vintage": 0.16,
+    "books": 0.1,
+    "vegan": 0.29,
+    "cycling": 0.12,
+    "caves": 0.21,
+    "themeparks": 0.44,
+    "gardens": 0.25,
+    "climbing": 0.15,
     "lgbtq": 0.47,
     "games": 0.27,
     "students": 0.03
@@ -43966,17 +43984,17 @@
     "wildlife": 0,
     "desert": 0,
     "offbeat": 0.49,
-    "vintage": 0.43,
-    "books": 0.49,
+    "vintage": 0.4,
+    "books": 0.57,
     "vegan": 0.42,
-    "cycling": 0.69,
+    "cycling": 0.68,
     "caves": 0.96,
-    "themeparks": 0.16,
-    "gardens": 0.65,
+    "themeparks": 0.17,
+    "gardens": 0.69,
     "climbing": 0.88,
-    "lgbtq": 0.82,
-    "games": 0.43,
-    "students": 0.4
+    "lgbtq": 0.81,
+    "games": 0.45,
+    "students": 0.45
    },
    "popularity": 0.51,
    "season": [
@@ -44201,14 +44219,14 @@
     "desert": 0,
     "offbeat": 0,
     "vintage": 0,
-    "books": 0,
-    "vegan": 0.09,
-    "cycling": 0.22,
-    "caves": 0.32,
-    "themeparks": 0.22,
-    "gardens": 0.08,
+    "books": 0.02,
+    "vegan": 0.1,
+    "cycling": 0.2,
+    "caves": 0.3,
+    "themeparks": 0.21,
+    "gardens": 0.1,
     "climbing": 0.11,
-    "lgbtq": 0.67,
+    "lgbtq": 0.68,
     "games": 0,
     "students": 0.01
    },
@@ -44427,17 +44445,17 @@
     "wildlife": 0.21,
     "desert": 0,
     "offbeat": 0.59,
-    "vintage": 0.43,
-    "books": 0.28,
-    "vegan": 0.35,
-    "cycling": 0.35,
-    "caves": 0.5,
-    "themeparks": 0.05,
-    "gardens": 0.37,
-    "climbing": 0.35,
+    "vintage": 0.4,
+    "books": 0.34,
+    "vegan": 0.36,
+    "cycling": 0.31,
+    "caves": 0.49,
+    "themeparks": 0.08,
+    "gardens": 0.41,
+    "climbing": 0.32,
     "lgbtq": 0,
     "games": 0.27,
-    "students": 0.18
+    "students": 0.21
    },
    "popularity": 0.41,
    "season": [
@@ -44653,17 +44671,17 @@
     "wildlife": 0.34,
     "desert": 0,
     "offbeat": 0,
-    "vintage": 0.15,
-    "books": 0.3,
+    "vintage": 0.16,
+    "books": 0.36,
     "vegan": 0.15,
-    "cycling": 0.39,
+    "cycling": 0.35,
     "caves": 0.76,
-    "themeparks": 0.39,
-    "gardens": 0.68,
-    "climbing": 0.05,
+    "themeparks": 0.36,
+    "gardens": 0.71,
+    "climbing": 0.06,
     "lgbtq": 0,
     "games": 0,
-    "students": 0.18
+    "students": 0.21
    },
    "popularity": 0.24,
    "season": [
@@ -44880,17 +44898,17 @@
     "wildlife": 0,
     "desert": 0,
     "offbeat": 0,
-    "vintage": 0.22,
-    "books": 0.39,
-    "vegan": 0.24,
-    "cycling": 0.31,
-    "caves": 0.69,
-    "themeparks": 0.22,
-    "gardens": 0.51,
-    "climbing": 0.3,
+    "vintage": 0.21,
+    "books": 0.42,
+    "vegan": 0.26,
+    "cycling": 0.28,
+    "caves": 0.67,
+    "themeparks": 0.21,
+    "gardens": 0.57,
+    "climbing": 0.27,
     "lgbtq": 0,
     "games": 0.27,
-    "students": 0.22
+    "students": 0.24
    },
    "popularity": 0.1,
    "season": [
@@ -45108,17 +45126,17 @@
     "wildlife": 0.08,
     "desert": 0,
     "offbeat": 0,
-    "vintage": 0.35,
-    "books": 0.69,
+    "vintage": 0.32,
+    "books": 0.74,
     "vegan": 0.48,
-    "cycling": 0.37,
-    "caves": 0.15,
-    "themeparks": 0.31,
-    "gardens": 0.13,
-    "climbing": 0.21,
+    "cycling": 0.33,
+    "caves": 0.14,
+    "themeparks": 0.29,
+    "gardens": 0.14,
+    "climbing": 0.19,
     "lgbtq": 0.47,
-    "games": 0.43,
-    "students": 0.18
+    "games": 0.45,
+    "students": 0.21
    },
    "popularity": 0.73,
    "season": [
@@ -45335,17 +45353,17 @@
     "wildlife": 0,
     "desert": 0,
     "offbeat": 0,
-    "vintage": 0.29,
-    "books": 0.13,
-    "vegan": 0.19,
-    "cycling": 0.17,
-    "caves": 0.52,
-    "themeparks": 0.22,
+    "vintage": 0.27,
+    "books": 0.15,
+    "vegan": 0.2,
+    "cycling": 0.16,
+    "caves": 0.5,
+    "themeparks": 0.21,
     "gardens": 0,
     "climbing": 0.11,
     "lgbtq": 0,
     "games": 0.27,
-    "students": 0.09
+    "students": 0.12
    },
    "popularity": 0.06,
    "season": [
@@ -45561,16 +45579,16 @@
     "desert": 0,
     "offbeat": 0.58,
     "vintage": 0,
-    "books": 0.04,
-    "vegan": 0.11,
+    "books": 0.06,
+    "vegan": 0.12,
     "cycling": 0.09,
     "caves": 0.48,
-    "themeparks": 0.41,
-    "gardens": 0.08,
-    "climbing": 0.05,
+    "themeparks": 0.4,
+    "gardens": 0.1,
+    "climbing": 0.06,
     "lgbtq": 0,
     "games": 0.27,
-    "students": 0.07
+    "students": 0.09
    },
    "popularity": 0.42,
    "season": [
@@ -45787,17 +45805,17 @@
     "wildlife": 0.21,
     "desert": 0,
     "offbeat": 0,
-    "vintage": 0.39,
-    "books": 0.27,
-    "vegan": 0.25,
+    "vintage": 0.36,
+    "books": 0.32,
+    "vegan": 0.28,
     "cycling": 0.09,
-    "caves": 0.44,
-    "themeparks": 0.22,
-    "gardens": 0.18,
-    "climbing": 0.21,
+    "caves": 0.42,
+    "themeparks": 0.21,
+    "gardens": 0.19,
+    "climbing": 0.19,
     "lgbtq": 0.47,
     "games": 0,
-    "students": 0.43
+    "students": 0.5
    },
    "popularity": 0.32,
    "season": [
@@ -46014,17 +46032,17 @@
     "wildlife": 0,
     "desert": 0,
     "offbeat": 0.32,
-    "vintage": 0.1,
+    "vintage": 0.11,
     "books": 0.22,
-    "vegan": 0.12,
-    "cycling": 0.35,
-    "caves": 0.4,
-    "themeparks": 0.1,
-    "gardens": 0.13,
-    "climbing": 0.73,
+    "vegan": 0.13,
+    "cycling": 0.31,
+    "caves": 0.39,
+    "themeparks": 0.12,
+    "gardens": 0.14,
+    "climbing": 0.69,
     "lgbtq": 0,
     "games": 0,
-    "students": 0.35
+    "students": 0.4
    },
    "popularity": 0.68,
    "season": [
@@ -46200,7 +46218,18 @@
     "wine": 17,
     "snow": 1,
     "wildlife": 41,
-    "desert": 0
+    "desert": 0,
+    "vintage": 13,
+    "books": 52,
+    "vegan": 51,
+    "cycling": 45,
+    "caves": 1,
+    "themeparks": 7,
+    "gardens": 8,
+    "climbing": 6,
+    "lgbtq": 3,
+    "games": 2,
+    "students": 54
    },
    "strengths": {
     "food": 0.5,
@@ -46228,7 +46257,18 @@
     "snow": 0,
     "wildlife": 0.86,
     "desert": 0,
-    "offbeat": 0.57
+    "offbeat": 0.57,
+    "vintage": 0.46,
+    "books": 0.46,
+    "vegan": 0.46,
+    "cycling": 0.45,
+    "caves": 0.02,
+    "themeparks": 0.36,
+    "gardens": 0.28,
+    "climbing": 0.22,
+    "lgbtq": 0.55,
+    "games": 0.35,
+    "students": 0.56
    },
    "popularity": 0.43,
    "season": [
@@ -46482,16 +46522,16 @@
     "wildlife": 0.37,
     "desert": 0,
     "offbeat": 0.45,
-    "vintage": 0.53,
-    "books": 0.53,
-    "vegan": 0.71,
-    "cycling": 0.73,
-    "caves": 0.17,
+    "vintage": 0.52,
+    "books": 0.6,
+    "vegan": 0.7,
+    "cycling": 0.7,
+    "caves": 0.15,
     "themeparks": 0.58,
-    "gardens": 0.47,
-    "climbing": 0.47,
-    "lgbtq": 0.67,
-    "games": 0.61,
+    "gardens": 0.51,
+    "climbing": 0.42,
+    "lgbtq": 0.68,
+    "games": 0.64,
     "students": 0.96
    },
    "interests": [
@@ -46504,6 +46544,7 @@
     "streetart",
     "mountains",
     "spas",
+    "books",
     "vegan",
     "cycling",
     "lgbtq",
@@ -46720,20 +46761,21 @@
     "wildlife": 0,
     "desert": 0,
     "offbeat": 0,
-    "vintage": 0.48,
-    "books": 0.46,
-    "vegan": 0.05,
+    "vintage": 0.46,
+    "books": 0.54,
+    "vegan": 0.08,
     "cycling": 0.49,
-    "caves": 0.36,
-    "themeparks": 0.31,
-    "gardens": 0.21,
-    "climbing": 0.43,
+    "caves": 0.35,
+    "themeparks": 0.29,
+    "gardens": 0.22,
+    "climbing": 0.39,
     "lgbtq": 0,
-    "games": 0.39,
-    "students": 0.58
+    "games": 0.4,
+    "students": 0.62
    },
    "interests": [
     "mountains",
+    "students",
     "festivals"
    ],
    "coast": {
@@ -46944,17 +46986,17 @@
     "wildlife": 0.08,
     "desert": 1,
     "offbeat": 0,
-    "vintage": 0.32,
-    "books": 0.2,
-    "vegan": 0.22,
-    "cycling": 0.4,
-    "caves": 0.8,
-    "themeparks": 0.1,
+    "vintage": 0.3,
+    "books": 0.21,
+    "vegan": 0.24,
+    "cycling": 0.38,
+    "caves": 0.81,
+    "themeparks": 0.12,
     "gardens": 0.16,
-    "climbing": 0.24,
+    "climbing": 0.22,
     "lgbtq": 0.47,
     "games": 0.35,
-    "students": 0.22
+    "students": 0.24
    },
    "interests": [
     "spas",
@@ -47133,7 +47175,18 @@
     "wine": 331,
     "snow": 0,
     "wildlife": 6,
-    "desert": 1
+    "desert": 1,
+    "vintage": 29,
+    "books": 67,
+    "vegan": 292,
+    "cycling": 256,
+    "caves": 42,
+    "themeparks": 10,
+    "gardens": 57,
+    "climbing": 55,
+    "lgbtq": 4,
+    "games": 18,
+    "students": 135
    },
    "strengths": {
     "food": 0.77,
@@ -47161,7 +47214,18 @@
     "snow": 0,
     "wildlife": 0.21,
     "desert": 0,
-    "offbeat": 0.61
+    "offbeat": 0.61,
+    "vintage": 0.65,
+    "books": 0.55,
+    "vegan": 0.78,
+    "cycling": 0.71,
+    "caves": 0.42,
+    "themeparks": 0.5,
+    "gardens": 0.8,
+    "climbing": 0.72,
+    "lgbtq": 0.61,
+    "games": 0.85,
+    "students": 0.87
    },
    "interests": [
     "food",
@@ -47174,7 +47238,15 @@
     "streetart",
     "nature",
     "wine",
-    "offbeat"
+    "offbeat",
+    "vintage",
+    "vegan",
+    "cycling",
+    "gardens",
+    "climbing",
+    "lgbtq",
+    "games",
+    "students"
    ],
    "coast": {
     "onSea": false,
@@ -47344,7 +47416,18 @@
     "wine": 110,
     "snow": 0,
     "wildlife": 33,
-    "desert": 1
+    "desert": 1,
+    "vintage": 48,
+    "books": 159,
+    "vegan": 904,
+    "cycling": 523,
+    "caves": 2,
+    "themeparks": 59,
+    "gardens": 34,
+    "climbing": 21,
+    "lgbtq": 15,
+    "games": 14,
+    "students": 92
    },
    "strengths": {
     "food": 0.87,
@@ -47372,7 +47455,18 @@
     "snow": 0,
     "wildlife": 0.79,
     "desert": 0,
-    "offbeat": 0.22
+    "offbeat": 0.22,
+    "vintage": 0.78,
+    "books": 0.86,
+    "vegan": 0.95,
+    "cycling": 0.9,
+    "caves": 0.07,
+    "themeparks": 0.95,
+    "gardens": 0.65,
+    "climbing": 0.45,
+    "lgbtq": 0.84,
+    "games": 0.8,
+    "students": 0.74
    },
    "interests": [
     "food",
@@ -47392,7 +47486,16 @@
     "views",
     "spas",
     "wine",
-    "wildlife"
+    "wildlife",
+    "vintage",
+    "books",
+    "vegan",
+    "cycling",
+    "themeparks",
+    "gardens",
+    "lgbtq",
+    "games",
+    "students"
    ],
    "coast": {
     "onSea": false,
@@ -47562,7 +47665,18 @@
     "wine": 105,
     "snow": 2,
     "wildlife": 90,
-    "desert": 16
+    "desert": 16,
+    "vintage": 48,
+    "books": 112,
+    "vegan": 506,
+    "cycling": 697,
+    "caves": 56,
+    "themeparks": 104,
+    "gardens": 64,
+    "climbing": 55,
+    "lgbtq": 25,
+    "games": 8,
+    "students": 76
    },
    "strengths": {
     "food": 0.81,
@@ -47590,7 +47704,18 @@
     "snow": 0,
     "wildlife": 1,
     "desert": 0.71,
-    "offbeat": 0.2
+    "offbeat": 0.2,
+    "vintage": 0.78,
+    "books": 0.73,
+    "vegan": 0.92,
+    "cycling": 0.95,
+    "caves": 0.51,
+    "themeparks": 1,
+    "gardens": 0.84,
+    "climbing": 0.72,
+    "lgbtq": 0.9,
+    "games": 0.59,
+    "students": 0.69
    },
    "interests": [
     "food",
@@ -47611,6 +47736,15 @@
     "wine",
     "wildlife",
     "desert",
+    "vintage",
+    "books",
+    "vegan",
+    "cycling",
+    "themeparks",
+    "gardens",
+    "climbing",
+    "lgbtq",
+    "students",
     "festivals"
    ],
    "coast": {
@@ -47781,7 +47915,18 @@
     "wine": 8,
     "snow": 43,
     "wildlife": 7,
-    "desert": 0
+    "desert": 0,
+    "vintage": 36,
+    "books": 61,
+    "vegan": 239,
+    "cycling": 346,
+    "caves": 152,
+    "themeparks": 9,
+    "gardens": 35,
+    "climbing": 69,
+    "lgbtq": 4,
+    "games": 6,
+    "students": 27
    },
    "strengths": {
     "food": 0.65,
@@ -47809,7 +47954,18 @@
     "snow": 1,
     "wildlife": 0.25,
     "desert": 0,
-    "offbeat": 0.31
+    "offbeat": 0.31,
+    "vintage": 0.7,
+    "books": 0.51,
+    "vegan": 0.76,
+    "cycling": 0.8,
+    "caves": 0.78,
+    "themeparks": 0.44,
+    "gardens": 0.66,
+    "climbing": 0.77,
+    "lgbtq": 0.61,
+    "games": 0.51,
+    "students": 0.35
    },
    "interests": [
     "food",
@@ -47829,7 +47985,14 @@
     "surf",
     "beach",
     "islands",
-    "snow"
+    "snow",
+    "vintage",
+    "vegan",
+    "cycling",
+    "caves",
+    "gardens",
+    "climbing",
+    "lgbtq"
    ],
    "coast": {
     "onSea": true,
@@ -47999,7 +48162,18 @@
     "wine": 10,
     "snow": 7,
     "wildlife": 24,
-    "desert": 0
+    "desert": 0,
+    "vintage": 60,
+    "books": 78,
+    "vegan": 327,
+    "cycling": 657,
+    "caves": 25,
+    "themeparks": 9,
+    "gardens": 19,
+    "climbing": 39,
+    "lgbtq": 22,
+    "games": 17,
+    "students": 40
    },
    "strengths": {
     "food": 0.79,
@@ -48027,7 +48201,18 @@
     "snow": 0.15,
     "wildlife": 0.67,
     "desert": 0,
-    "offbeat": 0.36
+    "offbeat": 0.36,
+    "vintage": 0.84,
+    "books": 0.59,
+    "vegan": 0.8,
+    "cycling": 0.93,
+    "caves": 0.3,
+    "themeparks": 0.44,
+    "gardens": 0.44,
+    "climbing": 0.58,
+    "lgbtq": 0.88,
+    "games": 0.83,
+    "students": 0.46
    },
    "interests": [
     "food",
@@ -48047,7 +48232,12 @@
     "spas",
     "beach",
     "islands",
-    "wildlife"
+    "wildlife",
+    "vintage",
+    "vegan",
+    "cycling",
+    "lgbtq",
+    "games"
    ],
    "coast": {
     "onSea": true,
@@ -48217,7 +48407,18 @@
     "wine": 16,
     "snow": 2,
     "wildlife": 12,
-    "desert": 0
+    "desert": 0,
+    "vintage": 49,
+    "books": 52,
+    "vegan": 301,
+    "cycling": 157,
+    "caves": 13,
+    "themeparks": 2,
+    "gardens": 13,
+    "climbing": 27,
+    "lgbtq": 3,
+    "games": 5,
+    "students": 26
    },
    "strengths": {
     "food": 0.76,
@@ -48245,7 +48446,18 @@
     "snow": 0,
     "wildlife": 0.43,
     "desert": 0,
-    "offbeat": 0.5
+    "offbeat": 0.5,
+    "vintage": 0.79,
+    "books": 0.46,
+    "vegan": 0.79,
+    "cycling": 0.63,
+    "caves": 0.21,
+    "themeparks": 0.08,
+    "gardens": 0.37,
+    "climbing": 0.52,
+    "lgbtq": 0.55,
+    "games": 0.48,
+    "students": 0.32
    },
    "interests": [
     "food",
@@ -48256,7 +48468,10 @@
     "views",
     "spas",
     "beach",
-    "islands"
+    "islands",
+    "vintage",
+    "vegan",
+    "cycling"
    ],
    "coast": {
     "onSea": true,
@@ -48426,7 +48641,18 @@
     "wine": 122,
     "snow": 0,
     "wildlife": 35,
-    "desert": 5
+    "desert": 5,
+    "vintage": 10,
+    "books": 21,
+    "vegan": 78,
+    "cycling": 310,
+    "caves": 100,
+    "themeparks": 19,
+    "gardens": 7,
+    "climbing": 36,
+    "lgbtq": 2,
+    "games": 2,
+    "students": 6
    },
    "strengths": {
     "food": 0.5,
@@ -48454,7 +48680,18 @@
     "snow": 0,
     "wildlife": 0.81,
     "desert": 0.36,
-    "offbeat": 0.8
+    "offbeat": 0.8,
+    "vintage": 0.38,
+    "books": 0.2,
+    "vegan": 0.53,
+    "cycling": 0.77,
+    "caves": 0.7,
+    "themeparks": 0.71,
+    "gardens": 0.25,
+    "climbing": 0.57,
+    "lgbtq": 0.47,
+    "games": 0.35,
+    "students": 0.12
    },
    "interests": [
     "architecture",
@@ -48466,8 +48703,15 @@
     "views",
     "wine",
     "wildlife",
-    "offbeat"
-   ]
+    "offbeat",
+    "cycling",
+    "caves",
+    "themeparks"
+   ],
+   "coast": {
+    "onSea": false,
+    "coastlineWays": 0
+   }
   },
   "kotor": {
    "wikipedia": {
@@ -48632,7 +48876,18 @@
     "wine": 15,
     "snow": 0,
     "wildlife": 4,
-    "desert": 0
+    "desert": 0,
+    "vintage": 1,
+    "books": 1,
+    "vegan": 13,
+    "cycling": 9,
+    "caves": 135,
+    "themeparks": 4,
+    "gardens": 0,
+    "climbing": 3,
+    "lgbtq": 0,
+    "games": 0,
+    "students": 2
    },
    "strengths": {
     "food": 0.02,
@@ -48660,7 +48915,18 @@
     "snow": 0,
     "wildlife": 0.08,
     "desert": 0,
-    "offbeat": 0.92
+    "offbeat": 0.92,
+    "vintage": 0.08,
+    "books": 0,
+    "vegan": 0.1,
+    "cycling": 0.23,
+    "caves": 0.74,
+    "themeparks": 0.17,
+    "gardens": 0,
+    "climbing": 0.11,
+    "lgbtq": 0,
+    "games": 0,
+    "students": 0.03
    },
    "interests": [
     "castles",
@@ -48669,6 +48935,7 @@
     "beach",
     "islands",
     "offbeat",
+    "caves",
     "villages"
    ],
    "coast": {
@@ -48839,7 +49106,18 @@
     "wine": 1,
     "snow": 0,
     "wildlife": 8,
-    "desert": 1
+    "desert": 1,
+    "vintage": 0,
+    "books": 3,
+    "vegan": 5,
+    "cycling": 4,
+    "caves": 37,
+    "themeparks": 2,
+    "gardens": 0,
+    "climbing": 0,
+    "lgbtq": 0,
+    "games": 0,
+    "students": 3
    },
    "strengths": {
     "food": 0.01,
@@ -48867,7 +49145,18 @@
     "snow": 0,
     "wildlife": 0.3,
     "desert": 0,
-    "offbeat": 0
+    "offbeat": 0,
+    "vintage": 0,
+    "books": 0.03,
+    "vegan": 0.04,
+    "cycling": 0.12,
+    "caves": 0.36,
+    "themeparks": 0.08,
+    "gardens": 0,
+    "climbing": 0,
+    "lgbtq": 0,
+    "games": 0,
+    "students": 0.05
    },
    "interests": [
     "mountains",
@@ -49041,7 +49330,18 @@
     "wine": 66,
     "snow": 4,
     "wildlife": 35,
-    "desert": 0
+    "desert": 0,
+    "vintage": 38,
+    "books": 53,
+    "vegan": 135,
+    "cycling": 276,
+    "caves": 94,
+    "themeparks": 6,
+    "gardens": 54,
+    "climbing": 302,
+    "lgbtq": 25,
+    "games": 11,
+    "students": 41
    },
    "strengths": {
     "food": 0.52,
@@ -49069,7 +49369,18 @@
     "snow": 0,
     "wildlife": 0.81,
     "desert": 0,
-    "offbeat": 0
+    "offbeat": 0,
+    "vintage": 0.73,
+    "books": 0.48,
+    "vegan": 0.65,
+    "cycling": 0.73,
+    "caves": 0.68,
+    "themeparks": 0.29,
+    "gardens": 0.76,
+    "climbing": 0.92,
+    "lgbtq": 0.9,
+    "games": 0.69,
+    "students": 0.47
    },
    "interests": [
     "nightlife",
@@ -49080,7 +49391,15 @@
     "mountains",
     "lakes",
     "wine",
-    "wildlife"
+    "wildlife",
+    "vintage",
+    "vegan",
+    "cycling",
+    "caves",
+    "gardens",
+    "climbing",
+    "lgbtq",
+    "games"
    ],
    "coast": {
     "onSea": false,
@@ -49250,7 +49569,18 @@
     "wine": 83,
     "snow": 12,
     "wildlife": 10,
-    "desert": 0
+    "desert": 0,
+    "vintage": 37,
+    "books": 118,
+    "vegan": 117,
+    "cycling": 41,
+    "caves": 60,
+    "themeparks": 9,
+    "gardens": 83,
+    "climbing": 186,
+    "lgbtq": 6,
+    "games": 10,
+    "students": 71
    },
    "strengths": {
     "food": 0.8,
@@ -49278,7 +49608,18 @@
     "snow": 0.4,
     "wildlife": 0.37,
     "desert": 0,
-    "offbeat": 0.34
+    "offbeat": 0.34,
+    "vintage": 0.71,
+    "books": 0.76,
+    "vegan": 0.61,
+    "cycling": 0.42,
+    "caves": 0.52,
+    "themeparks": 0.44,
+    "gardens": 0.9,
+    "climbing": 0.87,
+    "lgbtq": 0.68,
+    "games": 0.64,
+    "students": 0.67
    },
    "interests": [
     "food",
@@ -49294,7 +49635,15 @@
     "nature",
     "hiking",
     "mountains",
-    "wine"
+    "wine",
+    "vintage",
+    "books",
+    "vegan",
+    "gardens",
+    "climbing",
+    "lgbtq",
+    "games",
+    "students"
    ],
    "coast": {
     "onSea": false,
@@ -49464,7 +49813,18 @@
     "wine": 37,
     "snow": 3,
     "wildlife": 3,
-    "desert": 0
+    "desert": 0,
+    "vintage": 17,
+    "books": 131,
+    "vegan": 24,
+    "cycling": 34,
+    "caves": 255,
+    "themeparks": 12,
+    "gardens": 42,
+    "climbing": 108,
+    "lgbtq": 0,
+    "games": 1,
+    "students": 83
    },
    "strengths": {
     "food": 0.55,
@@ -49492,7 +49852,18 @@
     "snow": 0,
     "wildlife": 0,
     "desert": 0,
-    "offbeat": 0.35
+    "offbeat": 0.35,
+    "vintage": 0.52,
+    "books": 0.78,
+    "vegan": 0.21,
+    "cycling": 0.4,
+    "caves": 0.85,
+    "themeparks": 0.58,
+    "gardens": 0.73,
+    "climbing": 0.84,
+    "lgbtq": 0,
+    "games": 0.27,
+    "students": 0.71
    },
    "interests": [
     "nightlife",
@@ -49509,6 +49880,11 @@
     "surf",
     "beach",
     "wine",
+    "books",
+    "caves",
+    "gardens",
+    "climbing",
+    "students",
     "villages"
    ],
    "coast": {
@@ -49679,7 +50055,18 @@
     "wine": 28,
     "snow": 0,
     "wildlife": 4,
-    "desert": 46
+    "desert": 46,
+    "vintage": 13,
+    "books": 45,
+    "vegan": 49,
+    "cycling": 41,
+    "caves": 386,
+    "themeparks": 6,
+    "gardens": 5,
+    "climbing": 6,
+    "lgbtq": 1,
+    "games": 0,
+    "students": 24
    },
    "strengths": {
     "food": 0.35,
@@ -49707,7 +50094,18 @@
     "snow": 0,
     "wildlife": 0.08,
     "desert": 1,
-    "offbeat": 0.86
+    "offbeat": 0.86,
+    "vintage": 0.46,
+    "books": 0.42,
+    "vegan": 0.42,
+    "cycling": 0.42,
+    "caves": 0.9,
+    "themeparks": 0.29,
+    "gardens": 0.19,
+    "climbing": 0.22,
+    "lgbtq": 0.37,
+    "games": 0,
+    "students": 0.3
    },
    "interests": [
     "cafes",
@@ -49715,7 +50113,8 @@
     "hiking",
     "beach",
     "desert",
-    "offbeat"
+    "offbeat",
+    "caves"
    ],
    "coast": {
     "onSea": true,
@@ -49885,7 +50284,18 @@
     "wine": 3,
     "snow": 0,
     "wildlife": 9,
-    "desert": 0
+    "desert": 0,
+    "vintage": 0,
+    "books": 10,
+    "vegan": 20,
+    "cycling": 8,
+    "caves": 13,
+    "themeparks": 8,
+    "gardens": 0,
+    "climbing": 52,
+    "lgbtq": 0,
+    "games": 0,
+    "students": 3
    },
    "strengths": {
     "food": 0.29,
@@ -49913,13 +50323,29 @@
     "snow": 0,
     "wildlife": 0.34,
     "desert": 0,
-    "offbeat": 0
+    "offbeat": 0,
+    "vintage": 0,
+    "books": 0.11,
+    "vegan": 0.18,
+    "cycling": 0.2,
+    "caves": 0.21,
+    "themeparks": 0.4,
+    "gardens": 0,
+    "climbing": 0.69,
+    "lgbtq": 0,
+    "games": 0,
+    "students": 0.05
    },
    "interests": [
     "beach",
     "islands",
+    "climbing",
     "villages"
-   ]
+   ],
+   "coast": {
+    "onSea": true,
+    "coastlineWays": 45
+   }
   },
   "antalya": {
    "wikipedia": {
@@ -50084,7 +50510,18 @@
     "wine": 2,
     "snow": 0,
     "wildlife": 10,
-    "desert": 0
+    "desert": 0,
+    "vintage": 2,
+    "books": 12,
+    "vegan": 9,
+    "cycling": 17,
+    "caves": 32,
+    "themeparks": 77,
+    "gardens": 1,
+    "climbing": 256,
+    "lgbtq": 0,
+    "games": 0,
+    "students": 5
    },
    "strengths": {
     "food": 0.24,
@@ -50112,13 +50549,30 @@
     "snow": 0,
     "wildlife": 0.37,
     "desert": 0,
-    "offbeat": 0
+    "offbeat": 0,
+    "vintage": 0.11,
+    "books": 0.15,
+    "vegan": 0.07,
+    "cycling": 0.31,
+    "caves": 0.34,
+    "themeparks": 0.97,
+    "gardens": 0.07,
+    "climbing": 0.9,
+    "lgbtq": 0,
+    "games": 0,
+    "students": 0.09
    },
    "interests": [
     "markets",
     "mountains",
-    "beach"
-   ]
+    "beach",
+    "themeparks",
+    "climbing"
+   ],
+   "coast": {
+    "onSea": true,
+    "coastlineWays": 39
+   }
   },
   "cappadocia": {
    "wikipedia": {
@@ -50283,7 +50737,18 @@
     "wine": 11,
     "snow": 1,
     "wildlife": 4,
-    "desert": 12
+    "desert": 12,
+    "vintage": 3,
+    "books": 1,
+    "vegan": 6,
+    "cycling": 2,
+    "caves": 19,
+    "themeparks": 1,
+    "gardens": 5,
+    "climbing": 1,
+    "lgbtq": 0,
+    "games": 0,
+    "students": 5
    },
    "strengths": {
     "food": 0.07,
@@ -50311,7 +50776,18 @@
     "snow": 0,
     "wildlife": 0.08,
     "desert": 0.62,
-    "offbeat": 0
+    "offbeat": 0,
+    "vintage": 0.16,
+    "books": 0,
+    "vegan": 0.06,
+    "cycling": 0.05,
+    "caves": 0.26,
+    "themeparks": 0.04,
+    "gardens": 0.19,
+    "climbing": 0.06,
+    "lgbtq": 0,
+    "games": 0,
+    "students": 0.09
    },
    "interests": [
     "mountains",
@@ -50319,7 +50795,11 @@
     "desert",
     "villages",
     "film"
-   ]
+   ],
+   "coast": {
+    "onSea": false,
+    "coastlineWays": 0
+   }
   },
   "toulouse": {
    "wikipedia": {
@@ -50484,7 +50964,18 @@
     "wine": 71,
     "snow": 0,
     "wildlife": 7,
-    "desert": 0
+    "desert": 0,
+    "vintage": 26,
+    "books": 101,
+    "vegan": 393,
+    "cycling": 488,
+    "caves": 25,
+    "themeparks": 17,
+    "gardens": 42,
+    "climbing": 31,
+    "lgbtq": 25,
+    "games": 29,
+    "students": 238
    },
    "strengths": {
     "food": 0.73,
@@ -50512,7 +51003,18 @@
     "snow": 0,
     "wildlife": 0.25,
     "desert": 0,
-    "offbeat": 0.64
+    "offbeat": 0.64,
+    "vintage": 0.61,
+    "books": 0.7,
+    "vegan": 0.88,
+    "cycling": 0.88,
+    "caves": 0.3,
+    "themeparks": 0.67,
+    "gardens": 0.73,
+    "climbing": 0.56,
+    "lgbtq": 0.9,
+    "games": 0.94,
+    "students": 0.98
    },
    "interests": [
     "food",
@@ -50526,8 +51028,21 @@
     "hiking",
     "lakes",
     "wine",
-    "offbeat"
-   ]
+    "offbeat",
+    "vintage",
+    "books",
+    "vegan",
+    "cycling",
+    "themeparks",
+    "gardens",
+    "lgbtq",
+    "games",
+    "students"
+   ],
+   "coast": {
+    "onSea": false,
+    "coastlineWays": 0
+   }
   },
   "strasbourg": {
    "wikipedia": {
@@ -50692,7 +51207,18 @@
     "wine": 141,
     "snow": 4,
     "wildlife": 33,
-    "desert": 1
+    "desert": 1,
+    "vintage": 24,
+    "books": 54,
+    "vegan": 360,
+    "cycling": 337,
+    "caves": 94,
+    "themeparks": 18,
+    "gardens": 22,
+    "climbing": 60,
+    "lgbtq": 13,
+    "games": 12,
+    "students": 145
    },
    "strengths": {
     "food": 0.69,
@@ -50720,7 +51246,18 @@
     "snow": 0,
     "wildlife": 0.79,
     "desert": 0,
-    "offbeat": 0.33
+    "offbeat": 0.33,
+    "vintage": 0.6,
+    "books": 0.49,
+    "vegan": 0.85,
+    "cycling": 0.79,
+    "caves": 0.68,
+    "themeparks": 0.69,
+    "gardens": 0.48,
+    "climbing": 0.75,
+    "lgbtq": 0.81,
+    "games": 0.73,
+    "students": 0.9
    },
    "interests": [
     "food",
@@ -50731,9 +51268,22 @@
     "lakes",
     "wine",
     "wildlife",
+    "vintage",
+    "vegan",
+    "cycling",
+    "caves",
+    "themeparks",
+    "climbing",
+    "lgbtq",
+    "games",
+    "students",
     "villages",
     "festivals"
-   ]
+   ],
+   "coast": {
+    "onSea": false,
+    "coastlineWays": 0
+   }
   },
   "santiago": {
    "wikipedia": {
@@ -50932,7 +51482,11 @@
     "architecture",
     "mountains",
     "villages"
-   ]
+   ],
+   "coast": {
+    "onSea": false,
+    "coastlineWays": 0
+   }
   },
   "alicante": {
    "wikipedia": {
@@ -51097,7 +51651,18 @@
     "wine": 26,
     "snow": 0,
     "wildlife": 5,
-    "desert": 0
+    "desert": 0,
+    "vintage": 8,
+    "books": 26,
+    "vegan": 38,
+    "cycling": 25,
+    "caves": 228,
+    "themeparks": 13,
+    "gardens": 22,
+    "climbing": 50,
+    "lgbtq": 13,
+    "games": 3,
+    "students": 61
    },
    "strengths": {
     "food": 0.39,
@@ -51125,12 +51690,32 @@
     "snow": 0,
     "wildlife": 0.15,
     "desert": 0,
-    "offbeat": 0
+    "offbeat": 0,
+    "vintage": 0.32,
+    "books": 0.25,
+    "vegan": 0.34,
+    "cycling": 0.35,
+    "caves": 0.83,
+    "themeparks": 0.62,
+    "gardens": 0.48,
+    "climbing": 0.67,
+    "lgbtq": 0.81,
+    "games": 0.4,
+    "students": 0.6
    },
    "interests": [
     "beach",
+    "caves",
+    "themeparks",
+    "climbing",
+    "lgbtq",
+    "students",
     "festivals"
-   ]
+   ],
+   "coast": {
+    "onSea": true,
+    "coastlineWays": 23
+   }
   },
   "innsbruck": {
    "wikipedia": {
@@ -51295,7 +51880,18 @@
     "wine": 21,
     "snow": 79,
     "wildlife": 18,
-    "desert": 0
+    "desert": 0,
+    "vintage": 12,
+    "books": 38,
+    "vegan": 98,
+    "cycling": 85,
+    "caves": 158,
+    "themeparks": 42,
+    "gardens": 11,
+    "climbing": 899,
+    "lgbtq": 1,
+    "games": 5,
+    "students": 42
    },
    "strengths": {
     "food": 0.3,
@@ -51323,7 +51919,18 @@
     "snow": 1,
     "wildlife": 0.57,
     "desert": 0,
-    "offbeat": 0.83
+    "offbeat": 0.83,
+    "vintage": 0.42,
+    "books": 0.33,
+    "vegan": 0.59,
+    "cycling": 0.54,
+    "caves": 0.79,
+    "themeparks": 0.89,
+    "gardens": 0.32,
+    "climbing": 0.97,
+    "lgbtq": 0.37,
+    "games": 0.48,
+    "students": 0.48
    },
    "interests": [
     "architecture",
@@ -51334,8 +51941,15 @@
     "lakes",
     "views",
     "snow",
-    "offbeat"
-   ]
+    "offbeat",
+    "caves",
+    "themeparks",
+    "climbing"
+   ],
+   "coast": {
+    "onSea": false,
+    "coastlineWays": 0
+   }
   },
   "zadar": {
    "wikipedia": {
@@ -51500,7 +52114,18 @@
     "wine": 12,
     "snow": 0,
     "wildlife": 2,
-    "desert": 0
+    "desert": 0,
+    "vintage": 0,
+    "books": 11,
+    "vegan": 2,
+    "cycling": 26,
+    "caves": 115,
+    "themeparks": 12,
+    "gardens": 1,
+    "climbing": 21,
+    "lgbtq": 0,
+    "games": 0,
+    "students": 6
    },
    "strengths": {
     "food": 0.04,
@@ -51528,13 +52153,29 @@
     "snow": 0,
     "wildlife": 0,
     "desert": 0,
-    "offbeat": 0
+    "offbeat": 0,
+    "vintage": 0,
+    "books": 0.13,
+    "vegan": 0.01,
+    "cycling": 0.36,
+    "caves": 0.73,
+    "themeparks": 0.58,
+    "gardens": 0.07,
+    "climbing": 0.45,
+    "lgbtq": 0,
+    "games": 0,
+    "students": 0.12
    },
    "interests": [
     "mountains",
     "beach",
-    "islands"
-   ]
+    "islands",
+    "caves"
+   ],
+   "coast": {
+    "onSea": true,
+    "coastlineWays": 103
+   }
   },
   "yerevan": {
    "wikipedia": {
@@ -51736,7 +52377,11 @@
     "sports",
     "wine",
     "offbeat"
-   ]
+   ],
+   "coast": {
+    "onSea": false,
+    "coastlineWays": 0
+   }
   },
   "coimbra": {
    "wikipedia": {
@@ -51901,7 +52546,18 @@
     "wine": 9,
     "snow": 0,
     "wildlife": 4,
-    "desert": 0
+    "desert": 0,
+    "vintage": 12,
+    "books": 28,
+    "vegan": 25,
+    "cycling": 3,
+    "caves": 77,
+    "themeparks": 7,
+    "gardens": 7,
+    "climbing": 10,
+    "lgbtq": 0,
+    "games": 2,
+    "students": 23
    },
    "strengths": {
     "food": 0.29,
@@ -51929,7 +52585,18 @@
     "snow": 0,
     "wildlife": 0.08,
     "desert": 0,
-    "offbeat": 0
+    "offbeat": 0,
+    "vintage": 0.42,
+    "books": 0.28,
+    "vegan": 0.22,
+    "cycling": 0.09,
+    "caves": 0.59,
+    "themeparks": 0.36,
+    "gardens": 0.25,
+    "climbing": 0.3,
+    "lgbtq": 0,
+    "games": 0.35,
+    "students": 0.3
    },
    "interests": [
     "villages"
@@ -52102,7 +52769,18 @@
     "wine": 20,
     "snow": 0,
     "wildlife": 1,
-    "desert": 0
+    "desert": 0,
+    "vintage": 19,
+    "books": 138,
+    "vegan": 27,
+    "cycling": 299,
+    "caves": 45,
+    "themeparks": 1,
+    "gardens": 17,
+    "climbing": 16,
+    "lgbtq": 2,
+    "games": 13,
+    "students": 33
    },
    "strengths": {
     "food": 0.72,
@@ -52130,7 +52808,18 @@
     "snow": 0,
     "wildlife": 0,
     "desert": 0,
-    "offbeat": 0.76
+    "offbeat": 0.76,
+    "vintage": 0.55,
+    "books": 0.79,
+    "vegan": 0.26,
+    "cycling": 0.76,
+    "caves": 0.47,
+    "themeparks": 0.04,
+    "gardens": 0.39,
+    "climbing": 0.4,
+    "lgbtq": 0.47,
+    "games": 0.77,
+    "students": 0.4
    },
    "interests": [
     "food",
@@ -52141,8 +52830,15 @@
     "streetart",
     "nature",
     "offbeat",
+    "books",
+    "cycling",
+    "games",
     "festivals"
-   ]
+   ],
+   "coast": {
+    "onSea": false,
+    "coastlineWays": 0
+   }
   },
   "bergen": {
    "wikipedia": {
@@ -52307,7 +53003,18 @@
     "wine": 3,
     "snow": 8,
     "wildlife": 4,
-    "desert": 0
+    "desert": 0,
+    "vintage": 18,
+    "books": 33,
+    "vegan": 59,
+    "cycling": 130,
+    "caves": 90,
+    "themeparks": 0,
+    "gardens": 11,
+    "climbing": 28,
+    "lgbtq": 1,
+    "games": 3,
+    "students": 17
    },
    "strengths": {
     "food": 0.13,
@@ -52335,7 +53042,18 @@
     "snow": 0.21,
     "wildlife": 0.08,
     "desert": 0,
-    "offbeat": 0.7
+    "offbeat": 0.7,
+    "vintage": 0.53,
+    "books": 0.3,
+    "vegan": 0.48,
+    "cycling": 0.6,
+    "caves": 0.66,
+    "themeparks": 0,
+    "gardens": 0.32,
+    "climbing": 0.53,
+    "lgbtq": 0.37,
+    "games": 0.4,
+    "students": 0.19
    },
    "interests": [
     "art",
@@ -52346,8 +53064,14 @@
     "beach",
     "islands",
     "offbeat",
+    "cycling",
+    "caves",
     "villages"
-   ]
+   ],
+   "coast": {
+    "onSea": true,
+    "coastlineWays": 1621
+   }
   },
   "aarhus": {
    "wikipedia": {
@@ -52512,7 +53236,18 @@
     "wine": 30,
     "snow": 0,
     "wildlife": 15,
-    "desert": 1
+    "desert": 1,
+    "vintage": 38,
+    "books": 32,
+    "vegan": 46,
+    "cycling": 27,
+    "caves": 0,
+    "themeparks": 18,
+    "gardens": 33,
+    "climbing": 12,
+    "lgbtq": 3,
+    "games": 5,
+    "students": 27
    },
    "strengths": {
     "food": 0.13,
@@ -52540,15 +53275,33 @@
     "snow": 0,
     "wildlife": 0.51,
     "desert": 0,
-    "offbeat": 0.89
+    "offbeat": 0.89,
+    "vintage": 0.73,
+    "books": 0.29,
+    "vegan": 0.39,
+    "cycling": 0.37,
+    "caves": 0,
+    "themeparks": 0.69,
+    "gardens": 0.63,
+    "climbing": 0.34,
+    "lgbtq": 0.55,
+    "games": 0.48,
+    "students": 0.35
    },
    "interests": [
     "sacred",
     "streetart",
     "beach",
     "islands",
-    "offbeat"
-   ]
+    "offbeat",
+    "vintage",
+    "themeparks",
+    "gardens"
+   ],
+   "coast": {
+    "onSea": true,
+    "coastlineWays": 31
+   }
   },
   "heidelberg": {
    "wikipedia": {
@@ -52713,7 +53466,18 @@
     "wine": 92,
     "snow": 0,
     "wildlife": 102,
-    "desert": 3
+    "desert": 3,
+    "vintage": 20,
+    "books": 36,
+    "vegan": 224,
+    "cycling": 676,
+    "caves": 43,
+    "themeparks": 85,
+    "gardens": 27,
+    "climbing": 74,
+    "lgbtq": 2,
+    "games": 3,
+    "students": 26
    },
    "strengths": {
     "food": 0.26,
@@ -52741,7 +53505,18 @@
     "snow": 0,
     "wildlife": 1,
     "desert": 0.23,
-    "offbeat": 0.72
+    "offbeat": 0.72,
+    "vintage": 0.58,
+    "books": 0.31,
+    "vegan": 0.73,
+    "cycling": 0.94,
+    "caves": 0.44,
+    "themeparks": 0.99,
+    "gardens": 0.55,
+    "climbing": 0.79,
+    "lgbtq": 0.47,
+    "games": 0.4,
+    "students": 0.32
    },
    "interests": [
     "art",
@@ -52759,8 +53534,16 @@
     "wine",
     "wildlife",
     "offbeat",
+    "vegan",
+    "cycling",
+    "themeparks",
+    "climbing",
     "villages"
-   ]
+   ],
+   "coast": {
+    "onSea": false,
+    "coastlineWays": 0
+   }
   },
   "nuremberg": {
    "wikipedia": {
@@ -52925,7 +53708,18 @@
     "wine": 62,
     "snow": 5,
     "wildlife": 36,
-    "desert": 4
+    "desert": 4,
+    "vintage": 34,
+    "books": 35,
+    "vegan": 376,
+    "cycling": 172,
+    "caves": 425,
+    "themeparks": 59,
+    "gardens": 20,
+    "climbing": 1780,
+    "lgbtq": 10,
+    "games": 8,
+    "students": 26
    },
    "strengths": {
     "food": 0.63,
@@ -52953,7 +53747,18 @@
     "snow": 0,
     "wildlife": 0.82,
     "desert": 0.3,
-    "offbeat": 0.25
+    "offbeat": 0.25,
+    "vintage": 0.7,
+    "books": 0.3,
+    "vegan": 0.87,
+    "cycling": 0.65,
+    "caves": 0.92,
+    "themeparks": 0.95,
+    "gardens": 0.46,
+    "climbing": 0.99,
+    "lgbtq": 0.75,
+    "games": 0.59,
+    "students": 0.32
    },
    "interests": [
     "food",
@@ -52967,8 +53772,19 @@
     "spas",
     "wine",
     "wildlife",
+    "vintage",
+    "vegan",
+    "cycling",
+    "caves",
+    "themeparks",
+    "climbing",
+    "lgbtq",
     "festivals"
-   ]
+   ],
+   "coast": {
+    "onSea": false,
+    "coastlineWays": 0
+   }
   },
   "poznan": {
    "wikipedia": {
@@ -53172,7 +53988,11 @@
     "streetart",
     "lakes",
     "offbeat"
-   ]
+   ],
+   "coast": {
+    "onSea": false,
+    "coastlineWays": 0
+   }
   },
   "varna": {
    "wikipedia": {
@@ -53337,7 +54157,18 @@
     "wine": 19,
     "snow": 0,
     "wildlife": 10,
-    "desert": 0
+    "desert": 0,
+    "vintage": 5,
+    "books": 26,
+    "vegan": 18,
+    "cycling": 3,
+    "caves": 10,
+    "themeparks": 10,
+    "gardens": 5,
+    "climbing": 0,
+    "lgbtq": 0,
+    "games": 0,
+    "students": 13
    },
    "strengths": {
     "food": 0.18,
@@ -53365,12 +54196,27 @@
     "snow": 0,
     "wildlife": 0.37,
     "desert": 0,
-    "offbeat": 0
+    "offbeat": 0,
+    "vintage": 0.25,
+    "books": 0.25,
+    "vegan": 0.17,
+    "cycling": 0.09,
+    "caves": 0.18,
+    "themeparks": 0.5,
+    "gardens": 0.19,
+    "climbing": 0,
+    "lgbtq": 0,
+    "games": 0,
+    "students": 0.17
    },
    "interests": [
     "streetart",
     "beach"
-   ]
+   ],
+   "coast": {
+    "onSea": true,
+    "coastlineWays": 29
+   }
   },
   "nicosia": {
    "wikipedia": {
@@ -53556,8 +54402,8 @@
     "lakes": 0.41,
     "views": 0.2,
     "spas": 0.1,
-    "surf": 0.38,
-    "beach": 0.48,
+    "surf": 0.13,
+    "beach": 0.16,
     "islands": 0,
     "wine": 0.26,
     "snow": 0,
@@ -53568,7 +54414,11 @@
    "interests": [
     "markets",
     "streetart"
-   ]
+   ],
+   "coast": {
+    "onSea": false,
+    "coastlineWays": 0
+   }
   },
   "santorini": {
    "wikipedia": {
@@ -53766,7 +54616,11 @@
    "interests": [
     "beach",
     "islands"
-   ]
+   ],
+   "coast": {
+    "onSea": true,
+    "coastlineWays": 94
+   }
   },
   "zakynthos": {
    "wikipedia": {
@@ -53963,7 +54817,11 @@
    },
    "interests": [
     "beach"
-   ]
+   ],
+   "coast": {
+    "onSea": true,
+    "coastlineWays": 164
+   }
   },
   "trieste": {
    "wikipedia": {
@@ -54165,7 +55023,11 @@
     "beach",
     "islands",
     "wine"
-   ]
+   ],
+   "coast": {
+    "onSea": true,
+    "coastlineWays": 38
+   }
   },
   "montpellier": {
    "wikipedia": {
@@ -54330,7 +55192,18 @@
     "wine": 178,
     "snow": 0,
     "wildlife": 12,
-    "desert": 27
+    "desert": 27,
+    "vintage": 15,
+    "books": 60,
+    "vegan": 91,
+    "cycling": 92,
+    "caves": 998,
+    "themeparks": 19,
+    "gardens": 26,
+    "climbing": 90,
+    "lgbtq": 1,
+    "games": 19,
+    "students": 123
    },
    "strengths": {
     "food": 0.66,
@@ -54358,7 +55231,18 @@
     "snow": 0,
     "wildlife": 0.43,
     "desert": 0.87,
-    "offbeat": 0.85
+    "offbeat": 0.85,
+    "vintage": 0.5,
+    "books": 0.5,
+    "vegan": 0.54,
+    "cycling": 0.56,
+    "caves": 0.99,
+    "themeparks": 0.71,
+    "gardens": 0.53,
+    "climbing": 0.82,
+    "lgbtq": 0.37,
+    "games": 0.86,
+    "students": 0.82
    },
    "interests": [
     "food",
@@ -54372,8 +55256,17 @@
     "beach",
     "wine",
     "desert",
-    "offbeat"
-   ]
+    "offbeat",
+    "caves",
+    "themeparks",
+    "climbing",
+    "games",
+    "students"
+   ],
+   "coast": {
+    "onSea": true,
+    "coastlineWays": 63
+   }
   },
   "lille": {
    "wikipedia": {
