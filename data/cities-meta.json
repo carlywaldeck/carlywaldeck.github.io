@@ -58,7 +58,8 @@
      "sports"
     ]
    },
-   "coastKm": 2.3
+   "coastKm": 2.3,
+   "code": "BCN"
   },
   {
    "id": "madrid",
@@ -114,7 +115,8 @@
      "sports"
     ]
    },
-   "coastKm": 999
+   "coastKm": 999,
+   "code": "MAD"
   },
   {
    "id": "seville",
@@ -173,7 +175,8 @@
      "sports"
     ]
    },
-   "coastKm": 66.3
+   "coastKm": 66.3,
+   "code": "SVQ"
   },
   {
    "id": "lisbon",
@@ -231,7 +234,8 @@
      "sports"
     ]
    },
-   "coastKm": 0.3
+   "coastKm": 0.3,
+   "code": "LIS"
   },
   {
    "id": "porto",
@@ -289,7 +293,8 @@
      "sports"
     ]
    },
-   "coastKm": 6.8
+   "coastKm": 6.8,
+   "code": "OPO"
   },
   {
    "id": "paris",
@@ -348,7 +353,8 @@
      "sports"
     ]
    },
-   "coastKm": 150.0
+   "coastKm": 150,
+   "code": "PAR"
   },
   {
    "id": "london",
@@ -406,7 +412,8 @@
      "sports"
     ]
    },
-   "coastKm": 49.9
+   "coastKm": 49.9,
+   "code": "LON"
   },
   {
    "id": "amsterdam",
@@ -463,7 +470,8 @@
      "sports"
     ]
    },
-   "coastKm": 26.1
+   "coastKm": 26.1,
+   "code": "AMS"
   },
   {
    "id": "berlin",
@@ -518,7 +526,8 @@
      "sports"
     ]
    },
-   "coastKm": 145.9
+   "coastKm": 145.9,
+   "code": "BER"
   },
   {
    "id": "prague",
@@ -575,7 +584,8 @@
      "views"
     ]
    },
-   "coastKm": 999
+   "coastKm": 999,
+   "code": "PRG"
   },
   {
    "id": "vienna",
@@ -632,7 +642,8 @@
      "film"
     ]
    },
-   "coastKm": 999
+   "coastKm": 999,
+   "code": "VIE"
   },
   {
    "id": "budapest",
@@ -690,7 +701,8 @@
      "views"
     ]
    },
-   "coastKm": 999
+   "coastKm": 999,
+   "code": "BUD"
   },
   {
    "id": "krakow",
@@ -746,7 +758,8 @@
      "sacred"
     ]
    },
-   "coastKm": 999
+   "coastKm": 999,
+   "code": "KRK"
   },
   {
    "id": "rome",
@@ -802,7 +815,8 @@
      "sports"
     ]
    },
-   "coastKm": 23.2
+   "coastKm": 23.2,
+   "code": "ROM"
   },
   {
    "id": "florence",
@@ -858,7 +872,8 @@
      "views"
     ]
    },
-   "coastKm": 79.0
+   "coastKm": 79,
+   "code": "FLR"
   },
   {
    "id": "athens",
@@ -915,7 +930,8 @@
      "sports"
     ]
    },
-   "coastKm": 7.3
+   "coastKm": 7.3,
+   "code": "ATH"
   },
   {
    "id": "valencia",
@@ -972,7 +988,8 @@
      "wildlife"
     ]
    },
-   "coastKm": 5.4
+   "coastKm": 5.4,
+   "code": "VLC"
   },
   {
    "id": "granada",
@@ -1031,7 +1048,8 @@
      "views"
     ]
    },
-   "coastKm": 47.7
+   "coastKm": 47.7,
+   "code": "GRX"
   },
   {
    "id": "malaga",
@@ -1086,7 +1104,8 @@
      "castles"
     ]
    },
-   "coastKm": 2.9
+   "coastKm": 2.9,
+   "code": "AGP"
   },
   {
    "id": "sansebastian",
@@ -1140,7 +1159,8 @@
      "surf"
     ]
    },
-   "coastKm": 6.8
+   "coastKm": 6.8,
+   "code": "EAS"
   },
   {
    "id": "nice",
@@ -1196,7 +1216,8 @@
      "views"
     ]
    },
-   "coastKm": 2.7
+   "coastKm": 2.7,
+   "code": "NCE"
   },
   {
    "id": "lyon",
@@ -1252,7 +1273,8 @@
      "sports"
     ]
    },
-   "coastKm": 300.3
+   "coastKm": 300.3,
+   "code": "LYS"
   },
   {
    "id": "marseille",
@@ -1308,7 +1330,8 @@
      "sports"
     ]
    },
-   "coastKm": 3.9
+   "coastKm": 3.9,
+   "code": "MRS"
   },
   {
    "id": "edinburgh",
@@ -1368,7 +1391,8 @@
      "wildlife"
     ]
    },
-   "coastKm": 3.6
+   "coastKm": 3.6,
+   "code": "EDI"
   },
   {
    "id": "dublin",
@@ -1425,7 +1449,8 @@
      "sports"
     ]
    },
-   "coastKm": 10.5
+   "coastKm": 10.5,
+   "code": "DUB"
   },
   {
    "id": "brussels",
@@ -1479,7 +1504,8 @@
      "markets"
     ]
    },
-   "coastKm": 60.4
+   "coastKm": 60.4,
+   "code": "BRU"
   },
   {
    "id": "copenhagen",
@@ -1534,7 +1560,8 @@
      "castles"
     ]
    },
-   "coastKm": 0.0
+   "coastKm": 0,
+   "code": "CPH"
   },
   {
    "id": "stockholm",
@@ -1590,7 +1617,8 @@
      "wildlife"
     ]
    },
-   "coastKm": 3.6
+   "coastKm": 3.6,
+   "code": "STO"
   },
   {
    "id": "munich",
@@ -1647,7 +1675,8 @@
      "sports"
     ]
    },
-   "coastKm": 999
+   "coastKm": 999,
+   "code": "MUC"
   },
   {
    "id": "zurich",
@@ -1704,7 +1733,8 @@
      "snow"
     ]
    },
-   "coastKm": 999
+   "coastKm": 999,
+   "code": "ZRH"
   },
   {
    "id": "salzburg",
@@ -1763,7 +1793,8 @@
      "views"
     ]
    },
-   "coastKm": 999
+   "coastKm": 999,
+   "code": "SZG"
   },
   {
    "id": "venice",
@@ -1818,7 +1849,8 @@
      "film"
     ]
    },
-   "coastKm": 1.3
+   "coastKm": 1.3,
+   "code": "VCE"
   },
   {
    "id": "milan",
@@ -1873,7 +1905,8 @@
      "sports"
     ]
    },
-   "coastKm": 119.8
+   "coastKm": 119.8,
+   "code": "MIL"
   },
   {
    "id": "naples",
@@ -1930,7 +1963,8 @@
      "sports"
     ]
    },
-   "coastKm": 7.0
+   "coastKm": 7,
+   "code": "NAP"
   },
   {
    "id": "bologna",
@@ -1985,7 +2019,8 @@
      "offbeat"
     ]
    },
-   "coastKm": 76.0
+   "coastKm": 76,
+   "code": "BLQ"
   },
   {
    "id": "dubrovnik",
@@ -2042,7 +2077,8 @@
      "film"
     ]
    },
-   "coastKm": 0.9
+   "coastKm": 0.9,
+   "code": "DBV"
   },
   {
    "id": "split",
@@ -2098,7 +2134,8 @@
      "film"
     ]
    },
-   "coastKm": 1.6
+   "coastKm": 1.6,
+   "code": "SPU"
   },
   {
    "id": "ljubljana",
@@ -2155,7 +2192,8 @@
      "offbeat"
     ]
    },
-   "coastKm": 75.2
+   "coastKm": 75.2,
+   "code": "LJU"
   },
   {
    "id": "zagreb",
@@ -2210,7 +2248,8 @@
      "offbeat"
     ]
    },
-   "coastKm": 118.6
+   "coastKm": 118.6,
+   "code": "ZAG"
   },
   {
    "id": "warsaw",
@@ -2264,7 +2303,8 @@
      "architecture"
     ]
    },
-   "coastKm": 999
+   "coastKm": 999,
+   "code": "WAW"
   },
   {
    "id": "gdansk",
@@ -2319,7 +2359,8 @@
      "offbeat"
     ]
    },
-   "coastKm": 8.6
+   "coastKm": 8.6,
+   "code": "GDN"
   },
   {
    "id": "tallinn",
@@ -2373,7 +2414,8 @@
      "villages"
     ]
    },
-   "coastKm": 5.2
+   "coastKm": 5.2,
+   "code": "TLL"
   },
   {
    "id": "riga",
@@ -2429,7 +2471,8 @@
      "offbeat"
     ]
    },
-   "coastKm": 12.1
+   "coastKm": 12.1,
+   "code": "RIX"
   },
   {
    "id": "istanbul",
@@ -2488,7 +2531,8 @@
      "sports"
     ]
    },
-   "coastKm": 1.6
+   "coastKm": 1.6,
+   "code": "IST"
   },
   {
    "id": "sofia",
@@ -2547,7 +2591,8 @@
      "offbeat"
     ]
    },
-   "coastKm": 215.5
+   "coastKm": 215.5,
+   "code": "SOF"
   },
   {
    "id": "bucharest",
@@ -2601,7 +2646,8 @@
      "sacred"
     ]
    },
-   "coastKm": 197.5
+   "coastKm": 197.5,
+   "code": "BUH"
   },
   {
    "id": "belgrade",
@@ -2659,7 +2705,8 @@
      "sports"
     ]
    },
-   "coastKm": 300.2
+   "coastKm": 300.2,
+   "code": "BEG"
   },
   {
    "id": "valletta",
@@ -2715,7 +2762,8 @@
      "film"
     ]
    },
-   "coastKm": 7.7
+   "coastKm": 7.7,
+   "code": "MLA"
   },
   {
    "id": "palma",
@@ -2770,7 +2818,8 @@
      "surf"
     ]
    },
-   "coastKm": 2.0
+   "coastKm": 2,
+   "code": "PMI"
   },
   {
    "id": "marrakech",
@@ -2830,7 +2879,8 @@
      "film"
     ]
    },
-   "coastKm": 138.6
+   "coastKm": 138.6,
+   "code": "RAK"
   },
   {
    "id": "fez",
@@ -2885,7 +2935,8 @@
      "sacred"
     ]
    },
-   "coastKm": 137.0
+   "coastKm": 137,
+   "code": "FEZ"
   },
   {
    "id": "tangier",
@@ -2938,7 +2989,8 @@
      "architecture"
     ]
    },
-   "coastKm": 4.4
+   "coastKm": 4.4,
+   "code": "TNG"
   },
   {
    "id": "agadir",
@@ -2993,7 +3045,8 @@
      "wildlife"
     ]
    },
-   "coastKm": 4.9
+   "coastKm": 4.9,
+   "code": "AGA"
   },
   {
    "id": "essaouira",
@@ -3050,7 +3103,8 @@
      "offbeat"
     ]
    },
-   "coastKm": 0.0
+   "coastKm": 0,
+   "code": "ESU"
   },
   {
    "id": "tunis",
@@ -3106,7 +3160,8 @@
      "offbeat"
     ]
    },
-   "coastKm": 13.1
+   "coastKm": 13.1,
+   "code": "TUN"
   },
   {
    "id": "amman",
@@ -3163,7 +3218,8 @@
      "film"
     ]
    },
-   "coastKm": 111.1
+   "coastKm": 111.1,
+   "code": "AMM"
   },
   {
    "id": "tbilisi",
@@ -3225,7 +3281,8 @@
      "offbeat"
     ]
    },
-   "coastKm": 264.9
+   "coastKm": 264.9,
+   "code": "TBS"
   },
   {
    "id": "paphos",
@@ -3280,7 +3337,8 @@
      "wildlife"
     ]
    },
-   "coastKm": 0.5
+   "coastKm": 0.5,
+   "code": "PFO"
   },
   {
    "id": "tenerife",
@@ -3337,7 +3395,8 @@
      "wildlife"
     ]
    },
-   "coastKm": 1.6
+   "coastKm": 1.6,
+   "code": "TFS"
   },
   {
    "id": "laspalmas",
@@ -3394,7 +3453,8 @@
      "desert"
     ]
    },
-   "coastKm": 3.0
+   "coastKm": 3,
+   "code": "LPA"
   },
   {
    "id": "funchal",
@@ -3451,7 +3511,8 @@
      "wildlife"
     ]
    },
-   "coastKm": 1.6
+   "coastKm": 1.6,
+   "code": "FNC"
   },
   {
    "id": "pontadelgada",
@@ -3508,7 +3569,8 @@
      "wildlife"
     ]
    },
-   "coastKm": 1.8
+   "coastKm": 1.8,
+   "code": "PDL"
   },
   {
    "id": "faro",
@@ -3563,7 +3625,8 @@
      "wildlife"
     ]
    },
-   "coastKm": 0.3
+   "coastKm": 0.3,
+   "code": "FAO"
   },
   {
    "id": "bilbao",
@@ -3619,7 +3682,8 @@
      "sports"
     ]
    },
-   "coastKm": 15.1
+   "coastKm": 15.1,
+   "code": "BIO"
   },
   {
    "id": "ibiza",
@@ -3674,7 +3738,8 @@
      "surf"
     ]
    },
-   "coastKm": 0.9
+   "coastKm": 0.9,
+   "code": "IBZ"
   },
   {
    "id": "palermo",
@@ -3729,7 +3794,8 @@
      "film"
     ]
    },
-   "coastKm": 5.0
+   "coastKm": 5,
+   "code": "PMO"
   },
   {
    "id": "bari",
@@ -3783,7 +3849,8 @@
      "offbeat"
     ]
    },
-   "coastKm": 2.0
+   "coastKm": 2,
+   "code": "BRI"
   },
   {
    "id": "cagliari",
@@ -3840,7 +3907,8 @@
      "wildlife"
     ]
    },
-   "coastKm": 0.9
+   "coastKm": 0.9,
+   "code": "CAG"
   },
   {
    "id": "thessaloniki",
@@ -3894,7 +3962,8 @@
      "offbeat"
     ]
    },
-   "coastKm": 5.8
+   "coastKm": 5.8,
+   "code": "SKG"
   },
   {
    "id": "chania",
@@ -3951,7 +4020,8 @@
      "villages"
     ]
    },
-   "coastKm": 0.5
+   "coastKm": 0.5,
+   "code": "CHQ"
   },
   {
    "id": "corfu",
@@ -4008,7 +4078,8 @@
      "film"
     ]
    },
-   "coastKm": 0.9
+   "coastKm": 0.9,
+   "code": "CFU"
   },
   {
    "id": "tirana",
@@ -4064,7 +4135,8 @@
      "offbeat"
     ]
    },
-   "coastKm": 31.4
+   "coastKm": 31.4,
+   "code": "TIA"
   },
   {
    "id": "sarajevo",
@@ -4122,7 +4194,8 @@
      "offbeat"
     ]
    },
-   "coastKm": 120.1
+   "coastKm": 120.1,
+   "code": "SJJ"
   },
   {
    "id": "vilnius",
@@ -4178,7 +4251,8 @@
      "offbeat"
     ]
    },
-   "coastKm": 999
+   "coastKm": 999,
+   "code": "VNO"
   },
   {
    "id": "wroclaw",
@@ -4233,7 +4307,8 @@
      "offbeat"
     ]
    },
-   "coastKm": 999
+   "coastKm": 999,
+   "code": "WRO"
   },
   {
    "id": "cluj",
@@ -4289,7 +4364,8 @@
      "offbeat"
     ]
    },
-   "coastKm": 999
+   "coastKm": 999,
+   "code": "CLJ"
   },
   {
    "id": "reykjavik",
@@ -4349,7 +4425,8 @@
      "wildlife"
     ]
    },
-   "coastKm": 0.9
+   "coastKm": 0.9,
+   "code": "KEF"
   },
   {
    "id": "bordeaux",
@@ -4403,7 +4480,8 @@
      "lakes"
     ]
    },
-   "coastKm": 50.2
+   "coastKm": 50.2,
+   "code": "BOD"
   },
   {
    "id": "hamburg",
@@ -4458,7 +4536,8 @@
      "sports"
     ]
    },
-   "coastKm": 56.5
+   "coastKm": 56.5,
+   "code": "HAM"
   },
   {
    "id": "cologne",
@@ -4515,7 +4594,8 @@
      "sports"
     ]
    },
-   "coastKm": 198.5
+   "coastKm": 198.5,
+   "code": "CGN"
   },
   {
    "id": "oslo",
@@ -4571,7 +4651,8 @@
      "lakes"
     ]
    },
-   "coastKm": 36.8
+   "coastKm": 36.8,
+   "code": "OSL"
   },
   {
    "id": "helsinki",
@@ -4625,7 +4706,8 @@
      "markets"
     ]
    },
-   "coastKm": 2.1
+   "coastKm": 2.1,
+   "code": "HEL"
   },
   {
    "id": "gothenburg",
@@ -4679,7 +4761,8 @@
      "offbeat"
     ]
    },
-   "coastKm": 6.3
+   "coastKm": 6.3,
+   "code": "GOT"
   },
   {
    "id": "luxembourg",
@@ -4733,7 +4816,8 @@
      "wine"
     ]
    },
-   "coastKm": 240.2
+   "coastKm": 240.2,
+   "code": "LUX"
   },
   {
    "id": "kotor",
@@ -4788,7 +4872,8 @@
      "offbeat"
     ]
    },
-   "coastKm": 10.3
+   "coastKm": 10.3,
+   "code": "TIV"
   },
   {
    "id": "ohrid",
@@ -4843,7 +4928,8 @@
      "views"
     ]
    },
-   "coastKm": 113.0
+   "coastKm": 113,
+   "code": "OHD"
   },
   {
    "id": "manchester",
@@ -4897,7 +4983,8 @@
      "history"
     ]
    },
-   "coastKm": 46.7
+   "coastKm": 46.7,
+   "code": "MAN"
   },
   {
    "id": "turin",
@@ -4952,7 +5039,8 @@
      "offbeat"
     ]
    },
-   "coastKm": 104.4
+   "coastKm": 104.4,
+   "code": "TRN"
   },
   {
    "id": "genoa",
@@ -5006,7 +5094,8 @@
      "views"
     ]
    },
-   "coastKm": 2.4
+   "coastKm": 2.4,
+   "code": "GOA"
   },
   {
    "id": "catania",
@@ -5061,7 +5150,8 @@
      "hiking"
     ]
    },
-   "coastKm": 2.2
+   "coastKm": 2.2,
+   "code": "CTA"
   },
   {
    "id": "rhodes",
@@ -5115,7 +5205,8 @@
      "nightlife"
     ]
    },
-   "coastKm": 0.3
+   "coastKm": 0.3,
+   "code": "RHO"
   },
   {
    "id": "antalya",
@@ -5169,7 +5260,8 @@
      "spas"
     ]
    },
-   "coastKm": 2.7
+   "coastKm": 2.7,
+   "code": "AYT"
   },
   {
    "id": "cappadocia",
@@ -5223,7 +5315,8 @@
      "film"
     ]
    },
-   "coastKm": 203.5
+   "coastKm": 203.5,
+   "code": "NAV"
   },
   {
    "id": "toulouse",
@@ -5277,7 +5370,8 @@
      "cafes"
     ]
    },
-   "coastKm": 150.5
+   "coastKm": 150.5,
+   "code": "TLS"
   },
   {
    "id": "strasbourg",
@@ -5331,7 +5425,8 @@
      "sacred"
     ]
    },
-   "coastKm": 999
+   "coastKm": 999,
+   "code": "SXB"
   },
   {
    "id": "santiago",
@@ -5385,7 +5480,8 @@
      "offbeat"
     ]
    },
-   "coastKm": 33.0
+   "coastKm": 33,
+   "code": "SCQ"
   },
   {
    "id": "alicante",
@@ -5439,7 +5535,8 @@
      "surf"
     ]
    },
-   "coastKm": 1.1
+   "coastKm": 1.1,
+   "code": "ALC"
   },
   {
    "id": "innsbruck",
@@ -5493,7 +5590,8 @@
      "sports"
     ]
    },
-   "coastKm": 211.9
+   "coastKm": 211.9,
+   "code": "INN"
   },
   {
    "id": "zadar",
@@ -5547,7 +5645,8 @@
      "offbeat"
     ]
    },
-   "coastKm": 2.6
+   "coastKm": 2.6,
+   "code": "ZAD"
   },
   {
    "id": "yerevan",
@@ -5602,7 +5701,8 @@
      "mountains"
     ]
    },
-   "coastKm": 292.2
+   "coastKm": 292.2,
+   "code": "EVN"
   },
   {
    "id": "coimbra",
@@ -5656,7 +5756,8 @@
      "offbeat"
     ]
    },
-   "coastKm": 36.2
+   "coastKm": 36.2,
+   "code": "OPO"
   },
   {
    "id": "zaragoza",
@@ -5710,7 +5811,8 @@
      "offbeat"
     ]
    },
-   "coastKm": 161.0
+   "coastKm": 161,
+   "code": "ZAZ"
   },
   {
    "id": "bergen",
@@ -5764,7 +5866,8 @@
      "lakes"
     ]
    },
-   "coastKm": 6.6
+   "coastKm": 6.6,
+   "code": "BGO"
   },
   {
    "id": "aarhus",
@@ -5818,7 +5921,8 @@
      "offbeat"
     ]
    },
-   "coastKm": 6.0
+   "coastKm": 6,
+   "code": "AAR"
   },
   {
    "id": "heidelberg",
@@ -5872,7 +5976,8 @@
      "villages"
     ]
    },
-   "coastKm": 999
+   "coastKm": 999,
+   "code": "FRA"
   },
   {
    "id": "nuremberg",
@@ -5925,7 +6030,8 @@
      "markets"
     ]
    },
-   "coastKm": 999
+   "coastKm": 999,
+   "code": "NUE"
   },
   {
    "id": "poznan",
@@ -5979,7 +6085,8 @@
      "lakes"
     ]
    },
-   "coastKm": 209.7
+   "coastKm": 209.7,
+   "code": "POZ"
   },
   {
    "id": "varna",
@@ -6032,7 +6139,8 @@
      "offbeat"
     ]
    },
-   "coastKm": 2.6
+   "coastKm": 2.6,
+   "code": "VAR"
   },
   {
    "id": "nicosia",
@@ -6085,7 +6193,8 @@
      "cafes"
     ]
    },
-   "coastKm": 19.7
+   "coastKm": 19.7,
+   "code": "LCA"
   },
   {
    "id": "santorini",
@@ -6138,7 +6247,8 @@
      "wine"
     ]
    },
-   "coastKm": 5.6
+   "coastKm": 5.6,
+   "code": "JTR"
   },
   {
    "id": "zakynthos",
@@ -6192,7 +6302,8 @@
      "nightlife"
     ]
    },
-   "coastKm": 2.0
+   "coastKm": 2,
+   "code": "ZTH"
   },
   {
    "id": "trieste",
@@ -6246,7 +6357,8 @@
      "beach"
     ]
    },
-   "coastKm": 5.9
+   "coastKm": 5.9,
+   "code": "TRS"
   },
   {
    "id": "montpellier",
@@ -6300,7 +6412,8 @@
      "wine"
     ]
    },
-   "coastKm": 9.6
+   "coastKm": 9.6,
+   "code": "MPL"
   },
   {
    "id": "lille",
@@ -6353,7 +6466,8 @@
      "nightlife"
     ]
    },
-   "coastKm": 63.5
+   "coastKm": 63.5,
+   "code": "LIL"
   },
   {
    "id": "glasgow",
@@ -6407,7 +6521,8 @@
      "sports"
     ]
    },
-   "coastKm": 38.4
+   "coastKm": 38.4,
+   "code": "GLA"
   },
   {
    "id": "cork",
@@ -6460,7 +6575,8 @@
      "villages"
     ]
    },
-   "coastKm": 19.3
+   "coastKm": 19.3,
+   "code": "ORK"
   },
   {
    "id": "rabat",
@@ -6514,7 +6630,8 @@
      "markets"
     ]
    },
-   "coastKm": 2.1
+   "coastKm": 2.1,
+   "code": "RBA"
   },
   {
    "id": "cairo",
@@ -6568,7 +6685,8 @@
      "film"
     ]
    },
-   "coastKm": 117.1
+   "coastKm": 117.1,
+   "code": "CAI"
   },
   {
    "id": "lanzarote",
@@ -6622,7 +6740,8 @@
      "islands"
     ]
    },
-   "coastKm": 1.9
+   "coastKm": 1.9,
+   "code": "ACE"
   },
   {
    "id": "menorca",
@@ -6676,7 +6795,8 @@
      "history"
     ]
    },
-   "coastKm": 1.0
+   "coastKm": 1,
+   "code": "MAH"
   }
  ]
 }

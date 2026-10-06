@@ -8,6 +8,9 @@ const data = JSON.parse(await fs.readFile(ROOT + "data/city-data.json", "utf8"))
 const keep = ["season", "priceMult", "costs", "interests", "strengths", "climate", "crowds", "price", "osm", "wikipedia", "popularity"];
 const compact = {
   generated: data.generated, sources: data.sources, method: data.method, osm: data.osm, roads: data.roads || {},
+  fares: data.fares || null,
+  flightModel: data.flightModel ? { mean: data.flightModel.mean, std: data.flightModel.std, w: data.flightModel.w, b: data.flightModel.b,
+    smear: data.flightModel.smear, n: data.flightModel.n, trained: data.flightModel.trained, test: data.flightModel.test } : null,
   cities: Object.fromEntries(Object.entries(data.cities).map(([id, c]) => {
     const o = {};
     for (const k of keep) if (c[k] != null) o[k] = c[k];

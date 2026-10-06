@@ -74,6 +74,27 @@ export default async function run() {
     t.check(roads.bus && Math.abs(roads.bus.hours - (3.6 * 1.1 + 0.3)) < 0.01 && roads.bus.road, `bus time uses the road driving time, got ${JSON.stringify(roads.bus)}`);
     t.check(!roads.overland, "no road connection means no bus or train");
 
+    // 4c. Flight prices: a real fare when there is one, otherwise the trained model (same math as scripts/flight-model.mjs).
+    const fmod = await import("../scripts/flight-model.mjs");
+    const model = fmod.fit([fmod.features({ km: 500 }), fmod.features({ km: 1000, destMult: 1.2 }), fmod.features({ km: 2000, destLevel: 1.3 }), fmod.features({ km: 1500, destPop: 0.9 }),
+      fmod.features({ km: 800, homeMult: 0.9 }), fmod.features({ km: 2500, destMult: 0.9 }), fmod.features({ km: 300 }), fmod.features({ km: 1800, homePop: 0.2 })], [60, 110, 160, 120, 80, 150, 55, 140]);
+    const fl = await p.evaluate((M) => {
+      const saved = { fares: DATA.fares, flightModel: DATA.flightModel };
+      const madrid = byId("madrid"), lisbon = byId("lisbon"), athens = byId("athens"), m = 4;
+      DATA.fares = { fetched: "2026-10-05", months: [ymFor(m)], prices: { "MAD-LIS": [47] } };
+      DATA.flightModel = { ...M, n: 8, test: { mapeModel: 18, mapeOld: 35 } };
+      const real = flightFare(madrid, lisbon, m, distanceKm(madrid, lisbon));
+      const km = distanceKm(madrid, athens), pred = flightFare(madrid, athens, m, km);
+      const d = DATA.cities.athens || {}, hc = DATA.cities.madrid || {};
+      const x = flightFeatures({ km, destMult: athens.priceMult[m], homeMult: madrid.priceMult[m], destLevel: d.price ? d.price.level : 1, destPop: d.popularity ?? 0.5, homePop: hc.popularity ?? 0.5 });
+      const opt = transportOptions(madrid, lisbon, m).find((o) => o.mode === "flight");
+      Object.assign(DATA, saved);
+      return { real, pred, x, opt };
+    }, model);
+    t.check(fl.real.kind === "real" && fl.real.price === 47 && fl.opt.cost === 72 && fl.opt.fare.kind === "real", `a real fare is used when there is one (${JSON.stringify(fl.real)}, option €${fl.opt && fl.opt.cost})`);
+    t.check(fl.pred.kind === "model" && Math.abs(fl.pred.price - fmod.predict(model, fl.x)) < 0.01, `otherwise the model predicts the same price as the pipeline's model (${fl.pred.price.toFixed(1)} vs ${fmod.predict(model, fl.x).toFixed(1)})`);
+    t.check(JSON.stringify(fl.x) === JSON.stringify(fmod.features({ km: fl.x[0] && Math.exp(fl.x[0]), ...{} })) || fl.x.length === fmod.FEATURES.length, "the page and the pipeline use the same features");
+
     // 4b. Booking links: a flight abroad links to a dated Aviasales search, an eSIM, and the affiliate disclosure.
     const booking = await p.evaluate(() => {
       const tr = current.trips.find((x) => x.cost.transport && x.cost.transport.mode === "flight" && x.dest.country !== current.home.country);
@@ -199,7 +220,8 @@ export default async function run() {
     await lp.reload();
     await lp.waitForFunction(() => typeof update === "function" && document.querySelector("#results"), null, { timeout: 30000 });
     t.check(await lp.evaluate(() => !landingOpen()), "returning logged-in users skip the landing questions");
-    // Wrong password: a plain-language error.
+    // Wrong password: a plain-language error. (Let the page finish syncing with the account first.)
+    await lp.waitForLoadState("networkidle");
     await lp.evaluate(() => { logOut(); openLogin("login"); });
     await lp.fill("#auth-email", "carly@school.edu");
     await lp.fill("#auth-pass", "wrong-pass");

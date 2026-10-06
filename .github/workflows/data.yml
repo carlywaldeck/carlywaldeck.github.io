@@ -10,10 +10,11 @@ on:
         description: "Only these city ids, comma-separated (blank = all)"
         required: false
       skip:
-        description: "Skip sources: wikipedia,climate,crowds,prices,osm (blank = none)"
+        description: "Skip sources: wikipedia,climate,crowds,prices,fares,roads,coast,osm (blank = none)"
         required: false
   schedule:
-    - cron: "17 4 2 * *" # 04:17 UTC on the 2nd of each month
+    - cron: "17 4 2 * *" # 04:17 UTC on the 2nd of each month: everything
+    - cron: "23 5 * * 1" # 05:23 UTC every Monday: flight fares only (they change weekly)
   push:
     branches: [main]
     paths:
@@ -43,7 +44,8 @@ jobs:
         env:
           TIME_BUDGET_MIN: "145"
           ONLY: ${{ github.event.inputs.only }}
-          SKIP: ${{ github.event.inputs.skip }}
+          SKIP: ${{ github.event.schedule == '23 5 * * 1' && 'wikipedia,climate,crowds,prices,roads,coast,osm' || github.event.inputs.skip }}
+          TRAVELPAYOUTS_TOKEN: ${{ secrets.TRAVELPAYOUTS_TOKEN }}
         run: node scripts/build-data.mjs
       - name: Save and commit the new data on top of the latest main
         run: |

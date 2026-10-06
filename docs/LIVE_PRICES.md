@@ -1,19 +1,33 @@
-# Adding live prices
+# Adding real flight prices
 
-Weekender works on estimates. This guide adds **real flight fares**, plus proper **activity** and **train/bus** booking links, without paying for anything.
-
-It works like this:
+Weekender can price flights with **real fares** from Travelpayouts (the cheapest round trips Aviasales
+travelers found in the last few days), and trains a **flight price model** on those fares to predict
+prices for routes and months that have none. Both run inside the existing GitHub data workflow, so
+there's no server to set up:
 
 ```
-Weekender page  ──asks──▶  your price worker (Cloudflare, free)  ──asks──▶  Travelpayouts flight API
- (GitHub Pages)  ◀─fare──                                        ◀─fare──
+GitHub data workflow (weekly) ──token──▶ Travelpayouts Data API ──fares──▶ data/city-data.json ──▶ the page
+                               └─ trains the flight price model on those fares ─┘
 ```
 
-The worker keeps your API token secret. If the token were in the page, anyone could copy it.
+## Quick setup (10 minutes)
+1. **Get your token:** in the Travelpayouts dashboard, join the **Aviasales** program, then copy your
+   **API token** (Profile → API token, or Tools → API). Keep it private.
+2. **Store it as a GitHub secret:** in the repo, go to **Settings → Secrets and variables → Actions →
+   New repository secret**. Name: `TRAVELPAYOUTS_TOKEN`. Value: your token. Save.
+3. **Run it once:** **Actions → Refresh city data → Run workflow**. In the "Skip sources" box enter
+   `wikipedia,climate,crowds,prices,roads,coast,osm` so only fares run (about 15 minutes).
+4. When it finishes, `data/REPORT.md` shows how many real fares came in and how accurate the model is
+   on routes it never saw. After that, fares refresh automatically every Monday.
 
-> The Claude-hosted preview link can't call outside services, so live prices only show on the GitHub Pages version.
+In each plan, flights then show **real fare** (with the month it was found) or "predicted by a model
+trained on N real fares". Without the token, everything keeps working on the old estimates.
 
 ---
+
+## Optional: instant live fares with a Cloudflare Worker
+The weekly fares above are enough for most uses. If you also want each plan to look up a fare the
+moment it opens, set up the small worker below.
 
 ## Step 1: Put the site on GitHub Pages (5 min)
 1. Make sure the repo is named `carlywaldeck.github.io` (a user site, served at the bare domain).

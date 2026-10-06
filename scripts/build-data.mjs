@@ -21,6 +21,7 @@
 // Cities that are still missing a source are fetched first, so repeated runs fill the gaps.
 
 import fs from "node:fs/promises";
+import * as flightModel from "./flight-model.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const META = JSON.parse(await fs.readFile(ROOT + "data/cities-meta.json", "utf8")).cities;
@@ -368,6 +369,83 @@ async function roadTable() {
   log("roads:", Object.keys(next).length, "city pairs");
 }
 
+// 5d. Flight fares: real round-trip prices from the Travelpayouts / Aviasales Data API (the cheapest
+// fares Aviasales users found in the last few days; cached by Aviasales for about a week). Needs a
+// free Travelpayouts token in the TRAVELPAYOUTS_TOKEN secret; without it this step is skipped.
+// One request per departure city and month returns the cheapest fare to every destination.
+let fares = previous.fares || null;
+const nextMonths = (n) => Array.from({ length: n }, (_, i) => { const d = new Date(); d.setUTCDate(1); d.setUTCMonth(d.getUTCMonth() + i); return d.toISOString().slice(0, 7); });
+async function fetchFares() {
+  const token = process.env.TRAVELPAYOUTS_TOKEN;
+  if (!token) { log("fares: no TRAVELPAYOUTS_TOKEN, skipping"); return; }
+  const months = nextMonths(12);
+  const codes = [...new Set(cities.map((c) => c.code))];
+  const wanted = new Set(codes);
+  const prices = {};
+  let rows = 0, failed = 0;
+  for (const origin of codes) {
+    for (const [mi, month] of months.entries()) {
+      if (timeUp("fares")) break;
+      const url = `https://api.travelpayouts.com/aviasales/v3/prices_for_dates?origin=${origin}&departure_at=${month}` +
+        `&one_way=false&unique=true&sorting=price&direct=false&currency=eur&limit=1000&token=${token}`;
+      try {
+        const d = await get(url, { tries: 2, wait: 5000 });
+        if (d.success === false) throw new Error(d.error || "API error");
+        for (const r of d.data || []) {
+          if (!wanted.has(r.destination) || r.destination === origin || !(r.price > 0)) continue;
+          const k = `${origin}-${r.destination}`;
+          prices[k] = prices[k] || Array(12).fill(0);
+          if (!prices[k][mi] || r.price < prices[k][mi]) prices[k][mi] = Math.round(r.price);
+          rows++;
+        }
+      } catch (e) {
+        if (++failed <= 5) errors.push(`fares ${origin} ${month}: ${e.message.replace(token, "***")}`);
+      }
+      await sleep(400); // stay well under the API's rate limit
+    }
+  }
+  log(`fares: ${rows} fares for ${Object.keys(prices).length} routes (${failed} failed requests)`);
+  if (rows) fares = { fetched: new Date().toISOString().slice(0, 10), source: "Travelpayouts / Aviasales Data API", months, prices };
+  else errors.push("fares: the API returned no fares for our cities (check the token and that the Aviasales program is joined)");
+}
+
+// Flight price model (see scripts/flight-model.mjs): trained on the real fares above, so routes and
+// months with no recent fare get a data-driven estimate instead of the old distance formula.
+// Evaluated on routes held out of training (every 5th route), against the old formula.
+let flightFit = previous.flightModel || null;
+function trainFlightModel() {
+  if (!fares) return;
+  const byCode = new Map();
+  for (const c of cities) if (!byCode.has(c.code)) byCode.set(c.code, c);
+  const monthOf = (ym) => Number(ym.slice(5, 7)) - 1;
+  const rows = [];
+  for (const [k, arr] of Object.entries(fares.prices)) {
+    const [o, dcode] = k.split("-"), h = byCode.get(o), d = byCode.get(dcode);
+    if (!h || !d) continue;
+    const km = flightModel.haversineKm(h, d);
+    arr.forEach((p, i) => {
+      if (!(p > 0)) return;
+      const m = monthOf(fares.months[i]);
+      const x = flightModel.features({ km, destMult: (d.data.priceMult || [])[m] || 1, homeMult: (h.data.priceMult || [])[m] || 1,
+        destLevel: d.data.price ? d.data.price.level : 1, destPop: d.data.popularity ?? 0.5, homePop: h.data.popularity ?? 0.5 });
+      rows.push({ k, x, p, km, mult: (d.data.priceMult || [])[m] || 1 });
+    });
+  }
+  if (rows.length < 50) { log(`flight model: only ${rows.length} fares, not training`); return; }
+  const routes = [...new Set(rows.map((r) => r.k))].sort();
+  const test = new Set(routes.filter((_, i) => i % 5 === 0));
+  const tr = rows.filter((r) => !test.has(r.k)), te = rows.filter((r) => test.has(r.k));
+  const held = flightModel.fit(tr.map((r) => r.x), tr.map((r) => r.p));
+  const mae = (f) => te.reduce((s, r) => s + Math.abs(f(r) - r.p), 0) / te.length;
+  const mape = (f) => te.reduce((s, r) => s + Math.abs(f(r) - r.p) / r.p, 0) / te.length;
+  const modelF = (r) => flightModel.predict(held, r.x), oldF = (r) => flightModel.oldFormula(r.km, r.mult);
+  const full = flightModel.fit(rows.map((r) => r.x), rows.map((r) => r.p)); // final model uses every fare
+  flightFit = { ...full, features: flightModel.FEATURES, trained: fares.fetched, n: rows.length, routes: routes.length,
+    test: { fares: te.length, routes: test.size, maeModel: Math.round(mae(modelF)), maeOld: Math.round(mae(oldF)),
+      mapeModel: Math.round(mape(modelF) * 100), mapeOld: Math.round(mape(oldF) * 100) } };
+  log("flight model", JSON.stringify(flightFit.test));
+}
+
 // ---------------------------------------------------------------------------------------------
 // Derived values: everything the app uses, computed from the raw data above.
 const BASE_COSTS = { hostel: 30, food: 26, transit: 6, activities: 12 }; // EUR/day, an EU-average city, student budget
@@ -513,18 +591,30 @@ function report(meta) {
     `- Prices: ${cities.filter((c) => c.data.price?.source === "eurostat").length} from Eurostat, ${cities.filter((c) => c.data.price?.source === "worldbank").length} from the World Bank`,
     `- OpenStreetMap counts: ${cities.filter((c) => c.data.osm).length}/${cities.length} cities`,
     `- Wikipedia popularity: ${cities.filter((c) => c.data.wikipedia).length}/${cities.length} cities`, "");
+  if (fares) {
+    const n = Object.values(fares.prices).reduce((s, a) => s + a.filter((p) => p > 0).length, 0);
+    L.push("## Flight fares and the flight price model", "",
+      `- Real round-trip fares (Travelpayouts / Aviasales, fetched ${fares.fetched}): **${n}** route-months on **${Object.keys(fares.prices).length}** routes between our cities`);
+    if (flightFit && flightFit.test) {
+      const t = flightFit.test;
+      L.push(`- Model: ridge regression on log(fare) with ${flightFit.features.length} features (${flightFit.features.join(", ")}), trained on ${flightFit.n} fares`,
+        `- Tested on ${t.routes} routes it never saw (${t.fares} fares): average error **€${t.maeModel} (${t.mapeModel}%)** vs **€${t.maeOld} (${t.mapeOld}%)** for the old distance formula`);
+    }
+    L.push("");
+  }
   if (errors.length) L.push("## Problems on this run", "", ...errors.slice(0, 50).map((e) => `- ${e}`), "");
   return L.join("\n");
 }
 
 // ---------------------------------------------------------------------------------------------
-const steps = { wikipedia, climate, crowds, prices, roads: roadTable, coast, osm };
+const steps = { wikipedia, climate, crowds, prices, fares: fetchFares, roads: roadTable, coast, osm };
 for (const [name, fn] of Object.entries(steps)) {
   if (SKIP.has(name)) { log(`skipping ${name}`); continue; }
   log(`== ${name} (${Math.round((DEADLINE - Date.now()) / 60000)} min left)`);
   try { await fn(); } catch (e) { errors.push(`${name}: ${e.message}`); log(`${name} failed:`, e.message); }
 }
 derive();
+trainFlightModel();
 const meta = {
   generated: new Date().toISOString().slice(0, 10),
   sources: {
@@ -533,7 +623,8 @@ const meta = {
     prices: "Eurostat prc_ppp_ind, price level indices for restaurants & hotels (EU27 = 100): https://ec.europa.eu/eurostat/databrowser/view/prc_ppp_ind/ ; World Bank PA.NUS.PRVT.PP ÷ PA.NUS.FCRF (price level vs. the EU average) elsewhere: https://data.worldbank.org/indicator/PA.NUS.PRVT.PP",
     places: "OpenStreetMap contributors via the Overpass API, ODbL: https://www.openstreetmap.org/copyright",
     popularity: `Wikimedia pageviews API, English Wikipedia, ${PV_LABEL}: https://wikimedia.org/api/rest_v1/`,
-    roads: "Driving distance and time between cities: OpenStreetMap contributors via OSRM (project-osrm.org), ODbL"
+    roads: "Driving distance and time between cities: OpenStreetMap contributors via OSRM (project-osrm.org), ODbL",
+    fares: "Round-trip flight fares: Travelpayouts / Aviasales Data API (cheapest fares found by Aviasales users in the last days)"
   },
   method: {
     comfort: "0.55 × temperature (best at a 23°C daily high, or 27°C for beach places) + 0.25 × fewer rainy days + 0.2 × sunshine",
@@ -546,7 +637,7 @@ const meta = {
   osm: Object.fromEntries(Object.entries(OSM_QUERIES).map(([k, v]) => [k, { label: v.label, radiusKm: v.r / 1000 }])),
   errors
 };
-const out = { ...meta, roadsDate: previous.roadsDate, roads, cities: Object.fromEntries(cities.map((c) => [c.id, c.data])) };
+const out = { ...meta, roadsDate: previous.roadsDate, roads, fares, flightModel: flightFit, cities: Object.fromEntries(cities.map((c) => [c.id, c.data])) };
 await fs.writeFile(OUT, JSON.stringify(out, null, 1));
 await fs.writeFile(REPORT, report(meta));
 log(`wrote ${OUT} (${errors.length} problems)`);

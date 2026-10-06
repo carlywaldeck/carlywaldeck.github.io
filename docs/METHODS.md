@@ -77,6 +77,23 @@ Limitation: like all collaborative filtering it needs data. With fewer than 3 ra
 and the personal model (section 4) works alone; places nobody has rated get no crowd signal (the
 "cold start" problem), which is why the personal content-based model stays in the mix.
 
+## 4c. Flight prices: real fares and a trained model
+- **Real fares:** each week the data workflow asks the Travelpayouts / Aviasales Data API for the
+  cheapest round trip from each of our airports to every destination, for each of the next 12 months.
+  These are real prices Aviasales travelers found in the last few days (cached by Aviasales), not quotes.
+- **Flight price model:** for routes and months with no recent fare, a **ridge regression on log(fare)**
+  predicts the price from 7 features: log distance and its square (prices grow slower than distance),
+  demand at the destination and at home that month (the Eurostat/Wikipedia crowd index), the
+  destination's price level, and both cities' popularity. Features are standardized, λ = 1, solved
+  exactly; a smearing factor corrects the bias of converting a log prediction back to euros.
+- **Evaluation:** every 5th route is held out, the model is trained on the rest, and its error on the
+  held-out routes is compared with the old distance formula `(70 + 0.04·km) × demand`. Both numbers are
+  printed in `data/REPORT.md` and shown in each plan ("typically within X%"). The final model is then
+  retrained on all fares.
+- **In the app:** real fare if there is one → model prediction → old formula; each plan says which.
+  The same model code is shared with the tests (`scripts/flight-model.mjs`, `tests/model.test.mjs`),
+  which check that it recovers a known price pattern and that the page computes identical predictions.
+
 ## 5. Tailored itineraries
 
 Each of the 1,080 itinerary activities (120 cities × 3 days × 3 slots) is tagged with interests by keyword rules ("Picasso Museum" → Art & museums). About 85% get at least one tag. Days are reordered so the days that best match your interests come first, so a 2-day trip keeps the two days that suit you. The budget prices exactly the days shown. Matching activities are marked ✓. If an interest isn't covered by the city days, the plan suggests the day trip that covers it.
