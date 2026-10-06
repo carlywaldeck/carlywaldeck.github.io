@@ -190,10 +190,15 @@ export default async function run() {
     for (let i = 0; i < 100 && !calls.posts.some((x) => x.data.been.paris); i++) await ap.waitForTimeout(100);
     const last = calls.posts[calls.posts.length - 1];
     t.check(last && last.id === "user-1" && last.data.been.rome.r === 4 && last.data.been.paris.r === 5, `changes are saved to the account, got ${JSON.stringify(last && last.data.been)}`);
-    // First visit: the account window opens on "Create your account"; signing up asks you to confirm by email.
+    // No pop-up on arrival; saving a first trip offers a free account ("Create your account"),
+    // and signing up asks you to confirm by email.
     const lp = await openApp(browser, { setup, firstVisit: true });
-    await lp.waitForSelector("#login-modal:not([hidden]) #auth-name");
     t.check(await lp.isVisible("#lp-login"), "the landing page has a Log in button in the corner");
+    await lp.waitForTimeout(800);
+    t.check(await lp.evaluate(() => document.querySelector("#login-modal").hidden), "no sign-up pop-up when you first arrive");
+    await lp.evaluate(() => { closeLanding(false); const t = current.trips[0]; ui.drawer = t.key; renderDrawer(); document.querySelector('[data-act="save"]').click(); });
+    await lp.waitForSelector("#login-modal:not([hidden]) #auth-name");
+    t.check(/Trip saved!/.test(await lp.textContent("#login-body")), "saving your first trip offers a free account");
     await lp.fill("#auth-name", "Carly");
     await lp.fill("#auth-email", "carly@school.edu");
     await lp.fill("#auth-pass", "travel1234");

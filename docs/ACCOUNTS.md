@@ -51,6 +51,35 @@ grant select on public.ratings_anon to anon, authenticated;
 Supabase may warn that the view is "security definer": that's intended here, since it's how the view
 can show everyone's ratings (without account ids) while the table itself stays private.
 
+### 1c. Feedback messages
+The **Feedback** button saves messages to a `feedback` table. Anyone can send one; only you can read
+them (in Supabase: **Table Editor → feedback**).
+
+```sql
+create table public.feedback (
+  id bigint generated always as identity primary key,
+  created_at timestamptz not null default now(),
+  message text not null check (char_length(message) between 1 and 2000),
+  email text,
+  page text,
+  home text,
+  user_agent text
+);
+alter table public.feedback enable row level security;
+create policy "anyone can send feedback" on public.feedback for insert to anon, authenticated with check (true);
+```
+
+### 1d. Let people delete their data
+Lets the **Delete my account** button remove the person's login too (not just their saved data):
+
+```sql
+create or replace function public.delete_my_account() returns void
+language sql security definer set search_path = public as $$
+  delete from auth.users where id = auth.uid();
+$$;
+grant execute on function public.delete_my_account() to authenticated;
+```
+
 ## 2. Allow sign-in links back to the site
 **Authentication → URL Configuration**:
 - **Site URL:** `https://carlywaldeck.github.io`

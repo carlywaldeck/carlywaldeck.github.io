@@ -9,7 +9,12 @@
 <meta property="og:title" content="Weekender: cheap weekend trips for students abroad">
 <meta property="og:description" content="Pick your home city, budget and interests; get scored trips with costs, transport and a tailored itinerary.">
 <meta property="og:url" content="https://carlywaldeck.github.io/">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://carlywaldeck.github.io/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Weekender: cheap weekend trips from wherever you're studying, shown on a map of Europe">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://carlywaldeck.github.io/og.png">
 <meta name="theme-color" content="#2F5BEA">
   <script nowprocket data-noptimize="1" data-cfasync="false" data-wpfc-render="false" seraph-accel-crit="1" data-no-defer="1" data-cmp-ab="2">
   (function () {
@@ -507,6 +512,23 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
 body.travel-mode .panel, body.travel-mode #spot, body.travel-mode .legend, body.travel-mode .drawer { display: none !important; }
 @media (max-width: 760px) { .acct-stats { grid-template-columns: repeat(2, 1fr); } .travel-banner { top: auto; bottom: 16px; flex-direction: column; align-items: stretch; } }
 .acct-pane .city-list, .been-pop .city-list { position: static; width: 100%; margin-top: 6px; max-height: 240px; }
+.acct-form textarea { padding: 11px 12px; font: inherit; font-size: 15px; font-weight: 400; border: 1px solid var(--line); border-radius: 10px; resize: vertical; }
+.lp-foot { max-width: 1180px; margin: -24px auto 0; padding: 0 32px 28px; font-size: 13px; color: var(--muted); }
+.lp-foot a { color: var(--muted); }
+.lp-foot .linkish { font-size: 13px; padding: 0 2px; }
+.acct-legal { margin-top: 14px; text-align: center; }
+.acct-legal a { color: var(--muted); }
+.tb-actions { display: flex; flex-direction: column; gap: 6px; }
+.cta.sm { margin: 0; padding: 7px 12px; font-size: 13px; border-radius: 9px; box-shadow: none; }
+@media (max-width: 760px) { .tb-actions { flex-direction: row; } .tb-actions > * { flex: 1; } }
+@media (max-width: 760px) {
+  .been-items li.bi { row-gap: 6px; }
+  .been-items li.bi .bi-name { flex-basis: 100%; }
+  .been-items li.bi .bi-date { flex: 1; }
+  .acct-tabs { overflow-x: auto; }
+  .acct-tabs button { white-space: nowrap; font-size: 13px; padding: 8px 8px; }
+  .modal-card { padding: 24px 18px 18px; }
+}
 </style>
 </head>
 <body>
@@ -599,6 +621,7 @@ body.travel-mode .panel, body.travel-mode #spot, body.travel-mode .legend, body.
   <button type="button" id="zoom-in" aria-label="Zoom in">+</button>
   <button type="button" id="zoom-fit">Fit trips</button>
   <button type="button" id="key-btn" aria-expanded="false" aria-controls="legend">Map key</button>
+  <button type="button" data-act="feedback">Feedback</button>
 </div>
 
 
@@ -653,6 +676,7 @@ body.travel-mode .panel, body.travel-mode #spot, body.travel-mode .legend, body.
       <button type="submit" class="cta lp-go">Show my trips →</button>
     </form>
   </div>
+  <footer class="lp-foot"><a href="privacy.html">Privacy &amp; terms</a> · <button type="button" class="linkish" data-act="feedback">Send feedback</button> · Some links are affiliate links</footer>
 </section>
 
 <aside class="drawer" id="drawer" hidden aria-label="Trip plan">
@@ -5725,6 +5749,23 @@ async function readAuthLink() {
     toast("That link didn't work or has expired. Please try again.");
   }
 }
+// Delete the account: its login (via the delete_my_account function, see docs/ACCOUNTS.md), which
+// also removes the saved data and ratings; if that function isn't set up, remove the data directly.
+async function deleteAccount() {
+  if (!confirm("Delete your Weekender account? Your saved trips, places and ratings will be removed from our servers. (They stay in this browser until you clear it.)")) return;
+  const token = await accessToken(), a = auth.get();
+  if (!token || !a) return;
+  try {
+    await sb("/rest/v1/rpc/delete_my_account", { method: "POST", token, body: {} });
+  } catch {
+    try {
+      await sb(`/rest/v1/ratings?user_id=eq.${a.id}`, { method: "DELETE", token });
+      await sb(`/rest/v1/profiles?id=eq.${a.id}`, { method: "DELETE", token });
+    } catch { toast("Couldn't delete your account right now. Please try again, or send us feedback."); return; }
+  }
+  auth.set(null); acctView = "login"; closeLogin(); renderAccount(); renderLanding();
+  toast("Your account was deleted.");
+}
 async function logOut() {
   const token = auth.get() && auth.get().access;
   auth.set(null); acctView = "login";
@@ -5761,7 +5802,8 @@ function accountPage() {
       <details class="acct-more"><summary>Change password</summary>
         <form id="pass-form" class="acct-form">${field("acct-pass", "New password", "password", `minlength="8" required autocomplete="new-password"`)}<button type="submit" class="ghost">Update password</button></form>
       </details>
-      <div class="modal-actions"><button type="button" class="ghost" data-act="logout">Log out</button></div>`,
+      <div class="modal-actions"><button type="button" class="ghost" data-act="logout">Log out</button></div>
+      <p class="note acct-legal"><a href="privacy.html">Privacy &amp; terms</a> · <button type="button" class="linkish" data-act="delete-account">Delete my account</button></p>`,
     trips: `<p class="note">Trips you saved with ☆ Save. Open one to see its plan again.</p><ul class="been-items saved-items" id="acct-saved">${savedHtml()}</ul>`,
     places: `<button type="button" class="cta map-cta" data-act="travel-map">🌍 See my travel map</button>
       <p class="note">Add the places you've been, when you went, and how much you liked them. Your ratings teach Weekender your taste.</p>
@@ -5801,7 +5843,7 @@ function renderAccount() {
         <button type="submit" class="cta">Log in</button></form>
       <div class="auth-links"><button type="button" class="linkish" data-act="auth-view" data-v="forgot">Forgot password?</button>
         <span>New here? <button type="button" class="linkish strong" data-act="auth-view" data-v="signup">Create an account</button></span></div>`,
-    signup: `<h2 id="login-title">Create your account</h2><p class="lede">Save trips, rate places you've been and get picks that match your taste, on every device.</p>
+    signup: `<h2 id="login-title">Create your account</h2><p class="lede">${acctPitch || "Save trips, rate places you've been and get picks that match your taste, on every device."}</p>
       <form id="auth-form" data-mode="signup" class="acct-form">${field("auth-name", "First name", "text", `required autocomplete="given-name"`)}${email}
         ${field("auth-pass", "Password", "password", `required minlength="8" autocomplete="new-password" placeholder="At least 8 characters"`)}${err}
         <button type="submit" class="cta">Create account</button></form>
@@ -5829,6 +5871,42 @@ function openLogin(view) {
   store.set({ loginAsked: true });
   const f = $("#login-body input:not([type=hidden])") || $("#login-modal .cta");
   if (f && !auth.get()) setTimeout(() => f.focus(), 30);
+}
+// The first time someone saves a trip or rates a place (without an account), offer one: that's
+// when keeping things across devices actually matters. Asked once; "Not now" is remembered.
+function offerAccount(why) {
+  if (!cloudOn() || auth.get() || store.get().loginAsked) return;
+  acctPitch = why === "save" ? "Trip saved! Create a free account to keep your trips on every device." : "Nice! Create a free account to keep your ratings and travel map on every device.";
+  setTimeout(() => openLogin("signup"), 600);
+}
+let acctPitch = "";
+// ---- feedback: a short message (and optional email) saved to the "feedback" table in Supabase.
+function openFeedback() {
+  if (!cloudOn()) return;
+  $("#login-modal .modal-card").classList.remove("wide");
+  $("#login-body").innerHTML = `<h2 id="login-title">Send feedback</h2>
+    <p class="lede">What's working, what's broken, what's missing? Every message gets read.</p>
+    <form id="feedback-form" class="acct-form">
+      <label class="f"><span>Your message</span><textarea id="fb-text" rows="5" required maxlength="2000" placeholder="e.g. I wish it had trips from Valencia…"></textarea></label>
+      ${field("fb-email", "Email (optional, if you'd like a reply)", "email", `autocomplete="email" value="${escHtml(auth.get() ? auth.get().email : "")}"`)}
+      <button type="submit" class="cta">Send</button>
+    </form>`;
+  $("#login-modal").hidden = false;
+  setTimeout(() => $("#fb-text").focus(), 30);
+}
+async function sendFeedback(form) {
+  const btn = form.querySelector("button[type=submit]");
+  btn.disabled = true; btn.textContent = "Sending…";
+  try {
+    const token = auth.get() ? await accessToken() : null;
+    await sb("/rest/v1/feedback", { method: "POST", token, headers: { Prefer: "return=minimal" }, body: {
+      message: $("#fb-text").value.trim().slice(0, 2000), email: $("#fb-email").value.trim() || null,
+      page: location.pathname, home: state.home, user_agent: navigator.userAgent.slice(0, 200) } });
+    $("#login-body").innerHTML = `<h2 id="login-title">Thank you!</h2><p class="lede">Your feedback was sent.</p><div class="modal-actions"><button type="button" class="cta" data-act="login-close">Close</button></div>`;
+  } catch {
+    btn.disabled = false; btn.textContent = "Send";
+    toast("Couldn't send your feedback. Please try again in a moment.");
+  }
 }
 function closeLogin() { $("#login-modal").hidden = true; if (acctView === "newpass") acctView = "login"; }
 async function handleAuthForm(form) {
@@ -6445,16 +6523,79 @@ function travelStops() {
   const dated = ids.filter(id => been[id].d).sort((a, b) => been[a].d.localeCompare(been[b].d));
   return { dated, undated: ids.filter(id => !been[id].d) };
 }
-function travelBanner() {
+function travelStats() {
   const { dated, undated } = travelStops(), all = [...dated, ...undated];
   const countries = new Set(all.map(id => beenPlace(id).country).filter(Boolean));
   let km = 0;
   for (let i = 1; i < dated.length; i++) km += d3.geoDistance(placeCoord(dated[i - 1]), placeCoord(dated[i])) * 6371;
   const rated = all.filter(id => been[id].r > 0), fav = [...rated].sort((a, b) => been[b].r - been[a].r)[0];
+  return { dated, undated, all, countries, km, fav };
+}
+function travelBanner() {
+  const { dated, undated, all, countries, km, fav } = travelStats();
   $("#travel-banner").innerHTML = `<div><h2>${firstName() ? `${escHtml(firstName())}'s travels` : "Your travels"}</h2>
     <p>${all.length} place${all.length === 1 ? "" : "s"} · ${countries.size} countr${countries.size === 1 ? "y" : "ies"}${dated.length ? ` · since ${monthLabel(been[dated[0]].d)}` : ""}${km > 0 ? ` · ${Math.round(km).toLocaleString()} km between trips` : ""}${fav ? ` · favorite: ${escHtml(been[fav].n)} ${"★".repeat(been[fav].r)}` : ""}</p>
     ${!all.length ? `<p class="note">No places yet. Add some under Places I've been.</p>` : undated.length ? `<p class="note">Add dates to connect your trips in order.</p>` : ""}</div>
-    <button type="button" class="ghost sm" data-act="travel-exit">Back to trips</button>`;
+    <div class="tb-actions">${all.length ? `<button type="button" class="cta sm" data-act="travel-image">Share image</button>` : ""}<button type="button" class="ghost sm" data-act="travel-exit">Back to trips</button></div>`;
+}
+// A story-sized image (1080×1920) of your travel map, to download or share.
+async function travelImage() {
+  for (let i = 0; i < 60 && G.anim; i++) await new Promise(r => setTimeout(r, 50)); // let the globe finish flying
+  globeDirty();
+  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+  const { dated, all, countries, km, fav } = travelStats();
+  const W = 1080, H = 1920, c = document.createElement("canvas");
+  c.width = W; c.height = H;
+  const x = c.getContext("2d");
+  const bg = x.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, "#EAF1FA"); bg.addColorStop(1, "#F7F8FA");
+  x.fillStyle = bg; x.fillRect(0, 0, W, H);
+  const font = (w, s) => `${w} ${s}px Geist, system-ui, -apple-system, sans-serif`;
+  x.fillStyle = "#13233F"; x.font = font(700, 44); x.fillText("weekender", 80, 130);
+  const bw = x.measureText("weekender").width; x.fillStyle = "#2F5BEA"; x.fillText(".", 80 + bw, 130);
+  x.fillStyle = "#13233F"; x.font = font(700, 84);
+  x.fillText(firstName() ? `${firstName()}'s travels` : "My travels", 80, 270);
+  x.font = font(500, 40); x.fillStyle = "#5A6B85";
+  x.fillText(`${all.length} place${all.length === 1 ? "" : "s"} · ${countries.size} countr${countries.size === 1 ? "y" : "ies"}${km > 0 ? ` · ${Math.round(km).toLocaleString()} km` : ""}`, 80, 340);
+  // The globe, cropped square around its center from the on-screen map.
+  const base = $("#globe-base"), fx = $("#globe-fx"), dpr = G.dpr || 1;
+  const side = Math.min(base.width, base.height), sx = Math.max(0, Math.min(base.width - side, G.cx * dpr - side / 2)), sy = Math.max(0, Math.min(base.height - side, G.cy * dpr - side / 2));
+  const gx = 40, gy = 420, gs = 1000;
+  x.save(); x.beginPath(); x.roundRect(gx, gy, gs, gs, 48); x.clip();
+  x.fillStyle = "#DCE8F4"; x.fillRect(gx, gy, gs, gs);
+  x.drawImage(base, sx, sy, side, side, gx, gy, gs, gs);
+  x.drawImage(fx, sx, sy, side, side, gx, gy, gs, gs);
+  x.restore();
+  // The trips in order.
+  let y = 1530;
+  x.font = font(600, 36); x.fillStyle = "#13233F";
+  const list = (dated.length ? dated : all).slice(-4);
+  for (const id of list) {
+    const b = been[id];
+    x.fillStyle = "#13233F"; x.font = font(600, 36); x.fillText(b.n, 80, y);
+    const w = x.measureText(b.n).width;
+    x.fillStyle = "#5A6B85"; x.font = font(500, 32);
+    x.fillText([b.d ? monthLabel(b.d) : "", b.r ? "★".repeat(b.r) : ""].filter(Boolean).join("  ·  "), 80 + w + 20, y);
+    y += 56;
+  }
+  if (fav) { x.fillStyle = "#1F9E89"; x.font = font(600, 34); x.fillText(`Favorite: ${been[fav].n}`, 80, Math.min(y + 10, 1790)); }
+  const cta = `Plan your next cheap weekend at ${location.hostname || "carlywaldeck.github.io"}`;
+  let fs = 36; x.font = font(600, fs);
+  while (x.measureText(cta).width > W - 160 && fs > 22) x.font = font(600, --fs);
+  x.fillStyle = "#2F5BEA"; x.fillText(cta, 80, 1860);
+  const blob = await new Promise(r => c.toBlob(r, "image/png"));
+  const file = new File([blob], "my-travel-map.png", { type: "image/png" });
+  try {
+    if (matchMedia("(pointer: coarse)").matches && navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: "My travels" });
+      return blob;
+    }
+  } catch { /* share sheet closed: fall back to a download */ }
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "my-travel-map.png";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  toast("Image saved: share it on your story!");
+  return blob;
 }
 function showTravelMap() {
   if (landingOpen()) closeLanding(false);
@@ -6508,7 +6649,8 @@ function drawTravel(ctx) {
     const w1 = ctx.measureText(l.name).width;
     ctx.font = "500 11px Geist, system-ui, sans-serif";
     const w2 = l.sub ? ctx.measureText(l.sub).width + 8 : 0;
-    const bx = l.x + l.r + 6, by = l.y - 10, bw = w1 + w2 + 14, bh = 20, box = [bx, by, bx + bw, by + bh];
+    const bw = w1 + w2 + 14, bh = 20, right = l.x + l.r + 6 + bw > G.W - 8;
+    const bx = right ? l.x - l.r - 6 - bw : l.x + l.r + 6, by = l.y - 10, box = [bx, by, bx + bw, by + bh];
     if (placed.some(q => !(box[2] < q[0] || box[0] > q[2] || box[3] < q[1] || box[1] > q[3]))) continue;
     placed.push(box);
     ctx.fillStyle = "rgba(255,255,255,0.96)"; ctx.shadowColor = "rgba(20,40,80,0.14)"; ctx.shadowBlur = 6;
@@ -6853,7 +6995,8 @@ function closeLanding(fly = true) {
   $("#landing").hidden = true;
   store.set({ started: true });
   if (fly) globeIntro();
-  if (current.trips[0] && !ui.selected) select(current.trips[0].key, { fly: false });
+  // On phones the trip card would cover the map, so start with just the map and the list.
+  if (current.trips[0] && !ui.selected && !matchMedia("(max-width: 760px)").matches) select(current.trips[0].key, { fly: false });
 }
 function setupLanding() {
   $("#lp-month").innerHTML = MONTHS_FULL.map((m, i) => `<option value="${i}">${m}</option>`).join("");
@@ -6995,6 +7138,7 @@ function setupControls() {
       update();
     }
     if (act === "rate") {
+      offerAccount("rate");
       if (been[id]) { been[id].r = Number(v); saveBeen(); }
       if (ui.rating === id) ui.rating = null;
       update();
@@ -7002,11 +7146,14 @@ function setupControls() {
     if (act === "rate-skip") { ui.rating = null; renderSpot(); }
     if (act === "logout") { logOut(); closeLogin(); }
     if (act === "login-close") closeLogin();
+    if (act === "feedback") openFeedback();
+    if (act === "delete-account") deleteAccount();
     if (act === "auth-view") { acctView = v; acctError = ""; renderAccount(); const f = $("#login-body input"); if (f) f.focus(); }
     if (act === "acct-tab") { acctTab = v; renderAccount(); }
     if (act === "travel-map") { closeLogin(); $("#been-pop").hidden = true; showTravelMap(); }
     if (act === "travel-exit") hideTravelMap();
-    if (act === "save") { const t = tripById(id); if (t) { toggleSave(t); renderDrawer(); renderBeen(); toast(isSaved(t) ? "Saved to My trips" : "Removed from My trips"); } }
+    if (act === "travel-image") travelImage();
+    if (act === "save") { const t = tripById(id); if (t) { toggleSave(t); renderDrawer(); renderBeen(); toast(isSaved(t) ? "Saved to My trips" : "Removed from My trips"); if (isSaved(t)) offerAccount("save"); } }
     if (act === "share") { const t = tripById(id); if (t) shareTrip(t); }
     if (act === "open-saved") { const s = saved[Number(v)]; if (s) { $("#been-pop").hidden = true; $("#been-btn").setAttribute("aria-expanded", "false"); openRef(s); } }
     if (act === "unsave") { saved.splice(Number(v), 1); store.set({ saved }); renderBeen(); }
@@ -7040,6 +7187,7 @@ document.addEventListener("submit", (e) => {
   const id = e.target.id;
   if (id === "auth-form") { e.preventDefault(); handleAuthForm(e.target); }
   if (id === "acct-form" || id === "pass-form") { e.preventDefault(); handleAccountForm(e.target); }
+  if (id === "feedback-form") { e.preventDefault(); sendFeedback(e.target); }
 });
 readAuthLink();
 loadCrowd();
@@ -7047,8 +7195,7 @@ $("#acct-btn").addEventListener("click", () => openLogin(auth.get() ? undefined 
 $("#lp-login").addEventListener("click", () => openLogin(auth.get() ? undefined : "login"));
 $("#login-modal").addEventListener("click", (e) => { if (e.target.id === "login-modal") closeLogin(); });
 document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("#login-modal").hidden) closeLogin(); });
-// First visit: offer to log in straight away (once; "Not now" or closing it is remembered).
-if (cloudOn() && !auth.get() && !store.get().loginAsked && !shared && !/access_token=/.test(location.hash)) setTimeout(() => openLogin("signup"), 400);
+
 // Logged in with a saved search: skip the questions and go straight to your trips.
 if (cloudOn() && auth.get() && store.get().criteria && !shared && !/access_token=/.test(location.hash)) {
   closeLanding(false);
