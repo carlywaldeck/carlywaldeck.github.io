@@ -98,6 +98,27 @@ export default async function run() {
     t.check(fl.pred.kind === "model" && Math.abs(fl.pred.price - fmod.predict(model, fl.x)) < 0.01, `otherwise the model predicts the same price as the pipeline's model (${fl.pred.price.toFixed(1)} vs ${fmod.predict(model, fl.x).toFixed(1)})`);
     t.check(JSON.stringify(fl.x) === JSON.stringify(fmod.features({ km: fl.x[0] && Math.exp(fl.x[0]), ...{} })) || fl.x.length === fmod.FEATURES.length, "the page and the pipeline use the same features");
 
+    // 4d. Nearby airports and the pricing order: real fare (incl. via a nearby airport) → reverse
+    //     route blended with the model → known-route model → new-route model.
+    const tiers = await p.evaluate((M) => {
+      const saved = { fares: DATA.fares, flightModel: DATA.flightModel, nearby: DATA.nearby };
+      const m = 4, ym = ymFor(m), month = (arr) => { const a = Array(12).fill(0); arr.forEach(([i, v]) => { a[i] = v; }); return a; };
+      DATA.nearby = { florence: [["PSA", "Pisa", 9, 1.2, "train"]] };
+      DATA.fares = { fetched: "2026-10-06", months: [ym, ...Array(11).fill("x")], prices: {
+        "FLR-LIS": month([[0, 140]]), "PSA-LIS": month([[0, 60]]),           // Pisa + €18 train beats Florence
+        "ATH-MAD": month([[0, 90]]), "MAD-ATH": month([[3, 110]]),           // reverse route this month
+        "MAD-OSL": month([[2, 100], [5, 120]]) } };                            // known route, other months only
+      DATA.flightModel = { ...M, n: 8, known: { mean: [...M.mean, 0, 0, 0, 0], std: [...M.std, 1, 1, 1, 1], w: [...M.w, 0.2, 0, 0, 0], b: M.b, smear: 1 }, test: {} };
+      const f = (h, d) => flightFare(byId(h), byId(d), m, distanceKm(byId(h), byId(d)));
+      const out = { pisa: f("florence", "lisbon"), rev: f("madrid", "athens"), known: f("madrid", "oslo"), fresh: f("madrid", "riga") };
+      Object.assign(DATA, saved);
+      return out;
+    }, model);
+    t.check(tiers.pisa.kind === "real" && tiers.pisa.price === 78 && tiers.pisa.via[0].name === "Pisa" && tiers.pisa.extraHours === 1.2,
+      `flying from a nearby airport counts, train included (${JSON.stringify(tiers.pisa)})`);
+    t.check(tiers.rev.kind === "reverse" && tiers.rev.rev === 90, `the reverse route's fare that month is used (${tiers.rev.kind})`);
+    t.check(tiers.known.kind === "model" && tiers.known.known === true && tiers.fresh.kind === "model" && !tiers.fresh.known, `known and new routes use their own models (${tiers.known.kind}/${tiers.known.known}, ${tiers.fresh.kind}/${tiers.fresh.known})`);
+
     // 4b. Booking links: a flight abroad links to a dated Aviasales search, an eSIM, and the affiliate disclosure.
     const booking = await p.evaluate(() => {
       const tr = current.trips.find((x) => x.cost.transport && x.cost.transport.mode === "flight" && x.dest.country !== current.home.country);

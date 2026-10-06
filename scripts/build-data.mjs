@@ -31,6 +31,7 @@ process.on("unhandledRejection", (e) => { annotate("error", `crashed: ${(e && e.
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const META = JSON.parse(await fs.readFile(ROOT + "data/cities-meta.json", "utf8")).cities;
+const NEARBY = JSON.parse(await fs.readFile(ROOT + "data/nearby-airports.json", "utf8")).cities;
 const OUT = ROOT + "data/city-data.json";
 const REPORT = ROOT + "data/REPORT.md";
 const UA = "WeekenderDataBot/1.0 (student project; +https://github.com/carlywaldeck/gsb-5576-project)";
@@ -385,7 +386,8 @@ async function fetchFares() {
   const token = process.env.TRAVELPAYOUTS_TOKEN;
   if (!token) { log("fares: no TRAVELPAYOUTS_TOKEN, skipping"); annotate("warning", "fares skipped: no TRAVELPAYOUTS_TOKEN secret found (Settings → Secrets and variables → Actions)"); return; }
   const months = nextMonths(12);
-  const codes = [...new Set(cities.map((c) => c.code))];
+  // Our cities' airports plus the nearby ones students use (data/nearby-airports.json).
+  const codes = [...new Set([...cities.map((c) => c.code), ...Object.values(NEARBY).flat().map((a) => a[0])])];
   const wanted = new Set(codes);
   const prices = {};
   let rows = 0, failed = 0;
@@ -412,8 +414,36 @@ async function fetchFares() {
   }
   log(`fares: ${rows} fares for ${Object.keys(prices).length} routes (${failed} failed requests)`);
   annotate(rows ? "notice" : "warning", `fares: ${rows} fares on ${Object.keys(prices).length} routes, ${failed} of ${codes.length * months.length} requests failed${errors.find((e) => e.startsWith("fares")) ? `; first error: ${errors.find((e) => e.startsWith("fares"))}` : ""}`);
-  if (rows) fares = { fetched: new Date().toISOString().slice(0, 10), source: "Travelpayouts / Aviasales Data API", months, prices };
+  if (rows) fares = smoothFares(prices, months, previous.fares);
   else errors.push("fares: the API returned no fares for our cities (check the token and that the Aviasales program is joined)");
+}
+
+// Each run is one snapshot of "the cheapest fare people found lately", which is noisy. Keep every fare
+// seen in the last 5 weeks per route and month, and publish their median: steadier prices, and a route
+// that wasn't searched this week still has last week's fare.
+function smoothFares(prices, months, prev) {
+  const today = new Date().toISOString().slice(0, 10), cutoff = new Date(Date.now() - 35 * 864e5).toISOString().slice(0, 10);
+  const history = {};
+  // Older data without history: treat its published prices as one earlier snapshot.
+  const prevHistory = prev && (prev.history || (prev.prices && Object.fromEntries(Object.entries(prev.prices).map(([route, arr]) =>
+    [route, Object.fromEntries(arr.map((p, i) => [prev.months[i], p > 0 ? [[p, prev.fetched]] : []]).filter(([, e]) => e.length))]))));
+  for (const [route, byMonth] of Object.entries(prevHistory || {})) {
+    for (const [ym, entries] of Object.entries(byMonth)) {
+      if (!months.includes(ym)) continue;
+      const keep = entries.filter(([, day]) => day >= cutoff && day !== today);
+      if (keep.length) (history[route] = history[route] || {})[ym] = keep;
+    }
+  }
+  for (const [route, arr] of Object.entries(prices)) arr.forEach((p, i) => {
+    if (!(p > 0)) return;
+    const h = (history[route] = history[route] || {});
+    h[months[i]] = [...(h[months[i]] || []), [p, today]].slice(-5);
+  });
+  const median = (v) => { const s = v.map(([p]) => p).sort((a, b) => a - b); return s.length % 2 ? s[s.length >> 1] : Math.round((s[s.length / 2 - 1] + s[s.length / 2]) / 2); };
+  const out = {};
+  for (const [route, byMonth] of Object.entries(history)) out[route] = months.map((ym) => (byMonth[ym] ? median(byMonth[ym]) : 0));
+  const snapshots = new Set(Object.values(history).flatMap((m) => Object.values(m).flat().map(([, d]) => d)));
+  return { fetched: today, source: "Travelpayouts / Aviasales Data API", months, prices: out, history, snapshots: snapshots.size };
 }
 
 // Flight price model (see scripts/flight-model.mjs): trained on the real fares above, so routes and
@@ -424,38 +454,92 @@ function trainFlightModel() {
   if (!fares) return;
   const byCode = new Map();
   for (const c of cities) if (!byCode.has(c.code)) byCode.set(c.code, c);
+  const inputOf = (h, d, m) => {
+    const km = flightModel.haversineKm(h, d);
+    return { km, destMult: (d.data.priceMult || [])[m] || 1, homeMult: (h.data.priceMult || [])[m] || 1, destLevel: d.data.price ? d.data.price.level : 1,
+      destPop: d.data.popularity ?? 0.5, homePop: h.data.popularity ?? 0.5, origin: h.code, dest: d.code, month: m };
+  };
   const rows = [];
   for (const [k, arr] of Object.entries(fares.prices)) {
     const [o, dcode] = k.split("-"), h = byCode.get(o), d = byCode.get(dcode);
-    if (!h || !d) continue;
-    const km = flightModel.haversineKm(h, d);
+    if (!h || !d) continue; // nearby-airport fares are used as real fares, not for training
     arr.forEach((p, i) => {
       if (!(p > 0)) return;
       const m = Number(fares.months[i].slice(5, 7)) - 1;
-      rows.push({ k, price: p, km, origin: o, dest: dcode, month: m, mult: (d.data.priceMult || [])[m] || 1,
-        input: { km, destMult: (d.data.priceMult || [])[m] || 1, homeMult: (h.data.priceMult || [])[m] || 1,
-          destLevel: d.data.price ? d.data.price.level : 1, destPop: d.data.popularity ?? 0.5, homePop: h.data.popularity ?? 0.5, origin: o, dest: dcode, month: m } });
+      rows.push({ k, i, price: p, origin: o, dest: dcode, month: m, input: inputOf(h, d, m) });
     });
   }
   if (rows.length < 50) { log(`flight model: only ${rows.length} fares, not training`); return; }
-  // Hold out every 5th route: the model (including the airport and month effects) learns only from
-  // the other routes, then predicts the held-out ones, which is exactly the job it does in the app.
-  const routes = [...new Set(rows.map((r) => r.k))].sort();
-  const test = new Set(routes.filter((_, i) => i % 5 === 0));
-  const tr = rows.filter((r) => !test.has(r.k)), te = rows.filter((r) => test.has(r.k));
-  const encT = flightModel.encode(tr);
-  const held = flightModel.fit(tr.map((r) => flightModel.features(r.input, encT)), tr.map((r) => r.price), 1, { smear: false });
-  const err = (f) => {
-    const ae = te.map((r) => Math.abs(f(r) - r.price)), ape = te.map((r, i) => ae[i] / r.price).sort((a, b) => a - b);
-    return { mae: Math.round(ae.reduce((s, v) => s + v, 0) / te.length), mape: Math.round((ape.reduce((s, v) => s + v, 0) / te.length) * 100), median: Math.round(ape[Math.floor(ape.length / 2)] * 100) };
+  const g0 = (enc) => enc.g;
+  // Two models: "new route" (no fares on this route at all) and "known route" (fares in other months,
+  // or on the reverse route), which adds that route's history.
+  const xNew = (r, enc) => flightModel.features(r.input, enc);
+  const xKnown = (r, enc, P) => [...flightModel.features(r.input, enc), ...flightModel.routeFeatures(P, r.origin, r.dest, r.i, g0(enc))];
+  const train = (tr, P) => {
+    const enc = flightModel.encode(tr);
+    return { enc, mNew: flightModel.fit(tr.map((r) => xNew(r, enc)), tr.map((r) => r.price), 1, { smear: false }),
+      mKnown: flightModel.fit(tr.map((r) => xKnown(r, enc, P)), tr.map((r) => r.price), 1, { smear: false }) };
   };
-  const m1 = err((r) => flightModel.predict(held, flightModel.features(r.input, encT))), m0 = err((r) => flightModel.oldFormula(r.km, r.mult));
-  const enc = flightModel.encode(rows); // final model learns from every fare
-  const full = flightModel.fit(rows.map((r) => flightModel.features(r.input, enc)), rows.map((r) => r.price), 1, { smear: false });
-  flightFit = { ...full, enc, features: flightModel.FEATURES, trained: fares.fetched, n: rows.length, routes: routes.length,
-    test: { fares: te.length, routes: test.size, maeModel: m1.mae, maeOld: m0.mae, mapeModel: m1.mape, mapeOld: m0.mape, medianModel: m1.median, medianOld: m0.median } };
-  log("flight model", JSON.stringify(flightFit.test));
-  annotate("notice", `flight model: trained on ${rows.length} fares; on ${flightFit.test.routes} unseen routes it is off by ${m1.mape}% on average (typically ${m1.median}%) vs ${m0.mape}% (${m0.median}%) for the old formula`);
+  const pricesOf = (rs) => { const P = {}; for (const r of rs) (P[r.k] = P[r.k] || Array(12).fill(0))[r.i] = r.price; return P; };
+  const stats = (errs) => {
+    const a = [...errs].sort((x, y) => x - y);
+    return a.length ? { n: a.length, median: Math.round(a[a.length >> 1] * 100), mean: Math.round((a.reduce((s, v) => s + v, 0) / a.length) * 100) } : { n: 0 };
+  };
+  // Test A: routes the model never saw (every 5th route held out).
+  const routes = [...new Set(rows.map((r) => r.k))].sort(), heldRoutes = new Set(routes.filter((_, i) => i % 5 === 0));
+  const trA = rows.filter((r) => !heldRoutes.has(r.k)), teA = rows.filter((r) => heldRoutes.has(r.k));
+  const A = train(trA, pricesOf(trA));
+  const errA = teA.map((r) => Math.abs(flightModel.predict(A.mNew, xNew(r, A.enc)) - r.price) / r.price);
+  const errOld = teA.map((r) => Math.abs(flightModel.oldFormula(r.input.km, r.input.destMult) - r.price) / r.price);
+  // Test B: missing months (every 5th route-month held out), answered the way the app does it:
+  // the reverse route's fare that month if there is one, else the known-route model, else the new-route model.
+  const heldCell = (r) => ((r.k.charCodeAt(0) * 31 + r.k.charCodeAt(4) * 7 + r.i * 17) % 5) === 0;
+  const trB = rows.filter((r) => !heldCell(r)), teB = rows.filter(heldCell), PB = pricesOf(trB);
+  const B = train(trB, PB);
+  const tiers = { reverse: [], known: [], new: [] };
+  for (const r of teB) {
+    const [o, d] = r.k.split("-"), rev = (PB[`${d}-${o}`] || [])[r.i];
+    if (rev > 0) {
+      tiers.reverse.push(Math.abs(rev - r.price) / r.price);
+      const k = flightModel.predict(B.mKnown, xKnown(r, B.enc, PB));
+      (tiers.blend = tiers.blend || []).push(Math.abs(Math.sqrt(rev * k) - r.price) / r.price);
+    }
+    else if (PB[r.k] || PB[`${d}-${o}`]) tiers.known.push(Math.abs(flightModel.predict(B.mKnown, xKnown(r, B.enc, PB)) - r.price) / r.price);
+    else tiers.new.push(Math.abs(flightModel.predict(B.mNew, xNew(r, B.enc)) - r.price) / r.price);
+  }
+  // What people actually see: every pair of our cities at least 250 km apart, every month. How many
+  // flight prices are real fares (direct or via a nearby airport), and how big is the typical error of
+  // all the flight prices shown (real fares count as exact; the rest use the test errors above)?
+  const P = fares.prices, alts = (c) => [c.code, ...(NEARBY[c.id] || []).map((a) => a[0])];
+  const seen = { real: 0, reverse: 0, known: 0, new: 0 };
+  for (const h of cities) for (const d of cities) {
+    if (h === d || h.code === d.code || flightModel.haversineKm(h, d) < 250) continue;
+    for (let i = 0; i < 12; i++) {
+      const real = alts(h).some((o) => alts(d).some((x) => (P[`${o}-${x}`] || [])[i] > 0));
+      if (real) seen.real++;
+      else if ((P[`${d.code}-${h.code}`] || [])[i] > 0) seen.reverse++;
+      else if (P[`${h.code}-${d.code}`] || P[`${d.code}-${h.code}`]) seen.known++;
+      else seen.new++;
+    }
+  }
+  const total = Object.values(seen).reduce((s, v) => s + v, 0);
+  const sampled = [];
+  const take = (errs, n) => { if (!errs.length) return; for (let j = 0; j < n; j++) sampled.push(errs[Math.floor((j * errs.length) / n)]); };
+  for (let j = 0; j < Math.round((seen.real / total) * 2000); j++) sampled.push(0);
+  take(tiers.blend || tiers.reverse, Math.round((seen.reverse / total) * 2000));
+  take(tiers.known, Math.round((seen.known / total) * 2000));
+  take(errA, Math.round((seen.new / total) * 2000));
+  const final = train(rows, pricesOf(rows));
+  flightFit = { ...final.mNew, enc: final.enc, known: { mean: final.mKnown.mean, std: final.mKnown.std, w: final.mKnown.w, b: final.mKnown.b, smear: 1 },
+    features: flightModel.FEATURES, routeFeatures: flightModel.ROUTE_FEATURES, trained: fares.fetched, n: rows.length, routes: routes.length,
+    test: { fares: teA.length, routes: heldRoutes.size, newRoute: stats(errA), oldFormula: stats(errOld),
+      reverse: stats(tiers.reverse), blend: stats(tiers.blend || []), knownRoute: stats(tiers.known), newRouteB: stats(tiers.new),
+      shown: { share: Object.fromEntries(Object.entries(seen).map(([k, v]) => [k, Math.round((v / total) * 100)])), ...stats(sampled) },
+      // kept for the page's short note
+      medianModel: stats(errA).median, medianOld: stats(errOld).median, mapeModel: stats(errA).mean, mapeOld: stats(errOld).mean } };
+  const t = flightFit.test;
+  log("flight model", JSON.stringify(t));
+  annotate("notice", `flight prices: ${t.shown.share.real}% are real fares; typical error of all flight prices shown ${t.shown.median}% (mean ${t.shown.mean}%). Model on unseen routes ${t.newRoute.median}% vs ${t.oldFormula.median}% old formula; known routes ${t.knownRoute.median}%; reverse fares ${t.reverse.median}%`);
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -606,11 +690,16 @@ function report(meta) {
   if (fares) {
     const n = Object.values(fares.prices).reduce((s, a) => s + a.filter((p) => p > 0).length, 0);
     L.push("## Flight fares and the flight price model", "",
-      `- Real round-trip fares (Travelpayouts / Aviasales, fetched ${fares.fetched}): **${n}** route-months on **${Object.keys(fares.prices).length}** routes between our cities`);
-    if (flightFit && flightFit.test) {
-      const t = flightFit.test;
-      L.push(`- Model: ridge regression on log(fare) with ${flightFit.features.length} features (${flightFit.features.join(", ")}), trained on ${flightFit.n} fares`,
-        `- Tested on ${t.routes} routes it never saw (${t.fares} fares): average error **€${t.maeModel} (${t.mapeModel}%)**, typically ${t.medianModel ?? "?"}%, vs **€${t.maeOld} (${t.mapeOld}%)**, typically ${t.medianOld ?? "?"}%, for the old distance formula`);
+      `- Real round-trip fares (Travelpayouts / Aviasales, fetched ${fares.fetched}): **${n}** route-months on **${Object.keys(fares.prices).length}** routes, each the median of up to 5 weekly snapshots (${fares.snapshots || 1} so far)`);
+    if (flightFit && flightFit.test && flightFit.test.shown) {
+      const t = flightFit.test, s = t.shown.share;
+      L.push(`- Models: ridge regression on log(fare), trained on ${flightFit.n} fares. "New route": ${flightFit.features.length} features (${flightFit.features.join(", ")}). "Known route" adds: ${flightFit.routeFeatures.join(", ")}`, "",
+        "| Test | Typical error | Average error |", "|---|---|---|",
+        `| New-route model, ${t.routes} routes it never saw | **${t.newRoute.median}%** | ${t.newRoute.mean}% |`,
+        `| Old distance formula, same routes | ${t.oldFormula.median}% | ${t.oldFormula.mean}% |`,
+        `| Missing month: reverse route's real fare that month (${t.reverse.n} cases) | **${t.reverse.median}%** | ${t.reverse.mean}% |`,
+        `| Missing month: known-route model (${t.knownRoute.n} cases) | **${t.knownRoute.median}%** | ${t.knownRoute.mean}% |`,
+        `| **All flight prices people see** (${s.real}% real fares, ${s.reverse}% reverse, ${s.known}% known-route model, ${s.new}% new-route model) | **${t.shown.median}%** | ${t.shown.mean}% |`, "");
     }
     L.push("");
   }

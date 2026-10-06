@@ -26,5 +26,10 @@ export default function run() {
   const peak = fm.predict(m, fm.features({ km: 1200, destMult: 1.35 })), quiet = fm.predict(m, fm.features({ km: 1200, destMult: 0.85 }));
   t.check(peak > quiet, `peak months cost more (${quiet.toFixed(0)} → ${peak.toFixed(0)})`);
   t.check(Number.isFinite(m.smear) && m.smear > 0.9 && m.smear < 1.2, `smearing factor is sensible (${m.smear})`);
+  const P = { "MAD-LIS": [50, 0, 70, 60, 0, 0, 0, 0, 0, 0, 0, 0], "LIS-MAD": [80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] };
+  const rf = fm.routeFeatures(P, "MAD", "LIS", 0, 4);
+  t.check(Math.abs(rf[0] - Math.log(70)) < 1e-9 && rf[1] === 1 && Math.abs(rf[2] - Math.log(80)) < 1e-9 && rf[3] === 1, `route features skip the month being predicted (${rf})`);
+  const none = fm.routeFeatures(P, "MAD", "OSL", 0, 4);
+  t.check(none.join() === "4,0,4,0", "routes without fares fall back to the average");
   return t.done();
 }

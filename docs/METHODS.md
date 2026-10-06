@@ -102,6 +102,26 @@ and the personal model (section 4) works alone; places nobody has rated get no c
   The same model code is shared with the tests (`scripts/flight-model.mjs`, `tests/model.test.mjs`),
   which check that it recovers a known price pattern and that the page computes identical predictions.
 
+### Pricing order and how accurate the flight prices are
+Each flight price comes from the most direct evidence available:
+1. **A real fare** for that route and month, from the city's airport or a **nearby one students use**
+   (e.g. Florence via Pisa or Bologna, Barcelona via Girona, Vienna via Bratislava; train or bus cost
+   included, from `data/nearby-airports.json`).
+2. **The reverse route's real fare that month**, blended (geometric mean) with the known-route model.
+3. **The known-route model**: the model above plus this route's fares in other months and the reverse
+   route's fares (median log fare, with flags).
+4. **The new-route model** for routes with no fares at all.
+
+**How low can the error go?** The data is "the cheapest fare Aviasales travelers found lately", which
+swings a lot from search to search. Even with the real fares for every other month on the same route,
+guessing a missing month from them is typically 22% off; the reverse route's fare the same month is
+typically 16% off. That's a floor for any model trained on this data, so the targets are measured per
+step (see `data/REPORT.md`): on 6 Oct 2026, the new-route model was typically 24% off (vs 34% for the old
+formula), the known-route model 20%, the reverse blend 16%, and **across all flight prices people see,
+17%** (16% of route-months had a real fare). To push below 15%, each weekly run now keeps up to 5 weekly
+snapshots per route and month and publishes their median (steadier than one snapshot, and fills weeks
+when a route wasn't searched), and nearby airports add real fares where the city's own airport has few.
+
 ## 5. Tailored itineraries
 
 Each of the 1,080 itinerary activities (120 cities × 3 days × 3 slots) is tagged with interests by keyword rules ("Picasso Museum" → Art & museums). About 85% get at least one tag. Days are reordered so the days that best match your interests come first, so a 2-day trip keeps the two days that suit you. The budget prices exactly the days shown. Matching activities are marked ✓. If an interest isn't covered by the city days, the plan suggests the day trip that covers it.

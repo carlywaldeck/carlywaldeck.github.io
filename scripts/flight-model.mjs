@@ -67,6 +67,19 @@ export function fit(X, prices, lambda = 1, { smear = true } = {}) {
 function logPredict(m, x) { return m.b + x.reduce((s, v, j) => s + ((v - m.mean[j]) / m.std[j]) * m.w[j], 0); }
 export function predict(m, x) { return Math.exp(logPredict(m, x)) * m.smear; }
 
+// Route history for the "known route" model: the median log fare on this route in the other months,
+// and on the reverse route in any month (round trips cost about the same both ways), plus flags for
+// whether each exists. prices: { "MAD-LIS": [12 monthly fares, 0 = none] }; skip = month index to ignore.
+export const ROUTE_FEATURES = ["this route in other months", "has other months", "the reverse route", "has reverse route"];
+export function routeFeatures(prices, origin, dest, skip, g) {
+  const logMedian = (arr, skipI) => {
+    const v = (arr || []).map((p, i) => (i !== skipI && p > 0 ? Math.log(p) : null)).filter((x) => x != null).sort((a, b) => a - b);
+    return v.length ? v[v.length >> 1] : null;
+  };
+  const same = logMedian(prices[`${origin}-${dest}`], skip), rev = logMedian(prices[`${dest}-${origin}`], -1);
+  return [same ?? g, same != null ? 1 : 0, rev ?? g, rev != null ? 1 : 0];
+}
+
 // The hand-written formula the app used before real fares (round trip, EUR, before airport transfers).
 export function oldFormula(km, destMult = 1) { return (70 + km * 0.04) * destMult; }
 

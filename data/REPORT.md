@@ -96,5 +96,13 @@ Agreement = share of cities where the hand-picked tag and the data (top 40% of c
 ## Flight fares and the flight price model
 
 - Real round-trip fares (Travelpayouts / Aviasales, fetched 2026-10-06): **22964** route-months on **6967** routes between our cities
-- Model: ridge regression on log(fare) with 11 features (log distance, log distance², demand at destination that month, demand at home that month, destination price level, destination popularity, home popularity, how cheap flights from this airport are, how cheap flights to this airport are, how cheap this month is, short hop (< 500 km)), trained on 22964 fares
-- Tested on 1394 routes it never saw (4719 fares): average error **€48 (33%)**, typically 24%, vs **€65 (40%)**, typically 34%, for the old distance formula
+- Models: ridge regression on log(fare), trained on 22964 fares. "New route": 11 features (log distance, log distance², demand at destination that month, demand at home that month, destination price level, destination popularity, home popularity, how cheap flights from this airport are, how cheap flights to this airport are, how cheap this month is, short hop (< 500 km)). "Known route" adds: this route in other months, has other months, the reverse route, has reverse route
+
+| Test | Typical error | Average error |
+|---|---|---|
+| New-route model, 1394 routes it never saw | **24%** | 33% |
+| Old distance formula, same routes | 34% | 40% |
+| Missing month: reverse route's real fare that month (1812 cases) | **16%** | 25% |
+| Missing month: known-route model (2520 cases) | **20%** | 27% |
+| **All flight prices people see** (16% real fares, 6% reverse, 40% known-route model, 37% new-route model) | **17%** | 25% |
+
