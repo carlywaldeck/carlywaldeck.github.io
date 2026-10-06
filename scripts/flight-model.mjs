@@ -7,12 +7,28 @@
 
 export const FEATURES = [
   "log distance", "log distance²", "demand at destination that month", "demand at home that month",
-  "destination price level", "destination popularity", "home popularity"
+  "destination price level", "destination popularity", "home popularity",
+  "how cheap flights from this airport are", "how cheap flights to this airport are", "how cheap this month is", "short hop (< 500 km)"
 ];
 
-export function features({ km, destMult = 1, homeMult = 1, destLevel = 1, destPop = 0.5, homePop = 0.5 }) {
-  const l = Math.log(Math.max(50, km));
-  return [l, l * l, destMult, homeMult, destLevel, destPop, homePop];
+// Airport and month effects ("target encoding"): the average log fare from each departure airport,
+// to each destination airport, and in each calendar month, shrunk toward the overall average when
+// there are few fares (5 imaginary fares at the average). Budget-airline hubs like London or Barcelona
+// come out cheap; airports with few routes come out expensive.
+export function encode(rows) {
+  const g = rows.reduce((s, r) => s + Math.log(r.price), 0) / rows.length;
+  const table = (key) => {
+    const acc = {};
+    for (const r of rows) { const a = (acc[r[key]] = acc[r[key]] || [0, 0]); a[0] += Math.log(r.price); a[1]++; }
+    return Object.fromEntries(Object.entries(acc).map(([k, [s, n]]) => [k, Math.round(((s + 5 * g) / (n + 5)) * 1000) / 1000]));
+  };
+  return { g: Math.round(g * 1000) / 1000, origin: table("origin"), dest: table("dest"), month: table("month") };
+}
+
+export function features({ km, destMult = 1, homeMult = 1, destLevel = 1, destPop = 0.5, homePop = 0.5, origin, dest, month }, enc) {
+  const l = Math.log(Math.max(50, km)), e = enc || { g: 0, origin: {}, dest: {}, month: {} };
+  return [l, l * l, destMult, homeMult, destLevel, destPop, homePop,
+    e.origin[origin] ?? e.g, e.dest[dest] ?? e.g, e.month[month] ?? e.g, km < 500 ? 1 : 0];
 }
 
 // Solve A x = b (Gaussian elimination with partial pivoting).
@@ -32,7 +48,7 @@ function solve(A, b) {
 }
 
 // X: rows of features, prices: fares in EUR. Returns the model (plain JSON).
-export function fit(X, prices, lambda = 1) {
+export function fit(X, prices, lambda = 1, { smear = true } = {}) {
   const n = X.length, d = X[0].length, y = prices.map(Math.log);
   const mean = Array.from({ length: d }, (_, j) => X.reduce((s, r) => s + r[j], 0) / n);
   const std = mean.map((m, j) => Math.sqrt(X.reduce((s, r) => s + (r[j] - m) ** 2, 0) / n) || 1);
@@ -43,7 +59,9 @@ export function fit(X, prices, lambda = 1) {
   const w = solve(A, bvec);
   const model = { mean, std, w, b: yMean, smear: 1 };
   // Smearing: exp(mean log) underestimates the mean price; correct by the average residual factor.
-  model.smear = X.reduce((s, r, k) => s + Math.exp(y[k] - logPredict(model, r)), 0) / n;
+  // (Off when predicting a typical, i.e. median, fare: the pipeline does that, since a few very
+  // expensive outliers shouldn't raise every estimate.)
+  if (smear) model.smear = X.reduce((s, r, k) => s + Math.exp(y[k] - logPredict(model, r)), 0) / n;
   return model;
 }
 function logPredict(m, x) { return m.b + x.reduce((s, v, j) => s + ((v - m.mean[j]) / m.std[j]) * m.w[j], 0); }

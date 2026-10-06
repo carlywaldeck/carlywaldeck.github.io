@@ -78,6 +78,7 @@ export default async function run() {
     const fmod = await import("../scripts/flight-model.mjs");
     const model = fmod.fit([fmod.features({ km: 500 }), fmod.features({ km: 1000, destMult: 1.2 }), fmod.features({ km: 2000, destLevel: 1.3 }), fmod.features({ km: 1500, destPop: 0.9 }),
       fmod.features({ km: 800, homeMult: 0.9 }), fmod.features({ km: 2500, destMult: 0.9 }), fmod.features({ km: 300 }), fmod.features({ km: 1800, homePop: 0.2 })], [60, 110, 160, 120, 80, 150, 55, 140]);
+    model.enc = { g: 4.4, origin: { MAD: 4.1 }, dest: { ATH: 4.9 }, month: { 4: 4.5 } };
     const fl = await p.evaluate((M) => {
       const saved = { fares: DATA.fares, flightModel: DATA.flightModel };
       const madrid = byId("madrid"), lisbon = byId("lisbon"), athens = byId("athens"), m = 4;
@@ -86,12 +87,14 @@ export default async function run() {
       const real = flightFare(madrid, lisbon, m, distanceKm(madrid, lisbon));
       const km = distanceKm(madrid, athens), pred = flightFare(madrid, athens, m, km);
       const d = DATA.cities.athens || {}, hc = DATA.cities.madrid || {};
-      const x = flightFeatures({ km, destMult: athens.priceMult[m], homeMult: madrid.priceMult[m], destLevel: d.price ? d.price.level : 1, destPop: d.popularity ?? 0.5, homePop: hc.popularity ?? 0.5 });
+      const x = flightFeatures({ km, destMult: athens.priceMult[m], homeMult: madrid.priceMult[m], destLevel: d.price ? d.price.level : 1, destPop: d.popularity ?? 0.5, homePop: hc.popularity ?? 0.5, origin: "MAD", dest: "ATH", month: m }, M.enc);
       const opt = transportOptions(madrid, lisbon, m).find((o) => o.mode === "flight");
       Object.assign(DATA, saved);
       return { real, pred, x, opt };
     }, model);
     t.check(fl.real.kind === "real" && fl.real.price === 47 && fl.opt.cost === 72 && fl.opt.fare.kind === "real", `a real fare is used when there is one (${JSON.stringify(fl.real)}, option €${fl.opt && fl.opt.cost})`);
+    const xn = fmod.features({ km: Math.exp(fl.x[0]), destMult: fl.x[2], homeMult: fl.x[3], destLevel: fl.x[4], destPop: fl.x[5], homePop: fl.x[6], origin: "MAD", dest: "ATH", month: 4 }, model.enc);
+    t.check(fl.x.slice(7).join() === xn.slice(7).join() && fl.x[7] === 4.1 && fl.x[8] === 4.9, `the page looks up airport and month effects like the pipeline (${fl.x.slice(7)} vs ${xn.slice(7)})`);
     t.check(fl.pred.kind === "model" && Math.abs(fl.pred.price - fmod.predict(model, fl.x)) < 0.01, `otherwise the model predicts the same price as the pipeline's model (${fl.pred.price.toFixed(1)} vs ${fmod.predict(model, fl.x).toFixed(1)})`);
     t.check(JSON.stringify(fl.x) === JSON.stringify(fmod.features({ km: fl.x[0] && Math.exp(fl.x[0]), ...{} })) || fl.x.length === fmod.FEATURES.length, "the page and the pipeline use the same features");
 

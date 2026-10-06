@@ -424,7 +424,6 @@ function trainFlightModel() {
   if (!fares) return;
   const byCode = new Map();
   for (const c of cities) if (!byCode.has(c.code)) byCode.set(c.code, c);
-  const monthOf = (ym) => Number(ym.slice(5, 7)) - 1;
   const rows = [];
   for (const [k, arr] of Object.entries(fares.prices)) {
     const [o, dcode] = k.split("-"), h = byCode.get(o), d = byCode.get(dcode);
@@ -432,26 +431,31 @@ function trainFlightModel() {
     const km = flightModel.haversineKm(h, d);
     arr.forEach((p, i) => {
       if (!(p > 0)) return;
-      const m = monthOf(fares.months[i]);
-      const x = flightModel.features({ km, destMult: (d.data.priceMult || [])[m] || 1, homeMult: (h.data.priceMult || [])[m] || 1,
-        destLevel: d.data.price ? d.data.price.level : 1, destPop: d.data.popularity ?? 0.5, homePop: h.data.popularity ?? 0.5 });
-      rows.push({ k, x, p, km, mult: (d.data.priceMult || [])[m] || 1 });
+      const m = Number(fares.months[i].slice(5, 7)) - 1;
+      rows.push({ k, price: p, km, origin: o, dest: dcode, month: m, mult: (d.data.priceMult || [])[m] || 1,
+        input: { km, destMult: (d.data.priceMult || [])[m] || 1, homeMult: (h.data.priceMult || [])[m] || 1,
+          destLevel: d.data.price ? d.data.price.level : 1, destPop: d.data.popularity ?? 0.5, homePop: h.data.popularity ?? 0.5, origin: o, dest: dcode, month: m } });
     });
   }
   if (rows.length < 50) { log(`flight model: only ${rows.length} fares, not training`); return; }
+  // Hold out every 5th route: the model (including the airport and month effects) learns only from
+  // the other routes, then predicts the held-out ones, which is exactly the job it does in the app.
   const routes = [...new Set(rows.map((r) => r.k))].sort();
   const test = new Set(routes.filter((_, i) => i % 5 === 0));
   const tr = rows.filter((r) => !test.has(r.k)), te = rows.filter((r) => test.has(r.k));
-  const held = flightModel.fit(tr.map((r) => r.x), tr.map((r) => r.p));
-  const mae = (f) => te.reduce((s, r) => s + Math.abs(f(r) - r.p), 0) / te.length;
-  const mape = (f) => te.reduce((s, r) => s + Math.abs(f(r) - r.p) / r.p, 0) / te.length;
-  const modelF = (r) => flightModel.predict(held, r.x), oldF = (r) => flightModel.oldFormula(r.km, r.mult);
-  const full = flightModel.fit(rows.map((r) => r.x), rows.map((r) => r.p)); // final model uses every fare
-  flightFit = { ...full, features: flightModel.FEATURES, trained: fares.fetched, n: rows.length, routes: routes.length,
-    test: { fares: te.length, routes: test.size, maeModel: Math.round(mae(modelF)), maeOld: Math.round(mae(oldF)),
-      mapeModel: Math.round(mape(modelF) * 100), mapeOld: Math.round(mape(oldF) * 100) } };
+  const encT = flightModel.encode(tr);
+  const held = flightModel.fit(tr.map((r) => flightModel.features(r.input, encT)), tr.map((r) => r.price), 1, { smear: false });
+  const err = (f) => {
+    const ae = te.map((r) => Math.abs(f(r) - r.price)), ape = te.map((r, i) => ae[i] / r.price).sort((a, b) => a - b);
+    return { mae: Math.round(ae.reduce((s, v) => s + v, 0) / te.length), mape: Math.round((ape.reduce((s, v) => s + v, 0) / te.length) * 100), median: Math.round(ape[Math.floor(ape.length / 2)] * 100) };
+  };
+  const m1 = err((r) => flightModel.predict(held, flightModel.features(r.input, encT))), m0 = err((r) => flightModel.oldFormula(r.km, r.mult));
+  const enc = flightModel.encode(rows); // final model learns from every fare
+  const full = flightModel.fit(rows.map((r) => flightModel.features(r.input, enc)), rows.map((r) => r.price), 1, { smear: false });
+  flightFit = { ...full, enc, features: flightModel.FEATURES, trained: fares.fetched, n: rows.length, routes: routes.length,
+    test: { fares: te.length, routes: test.size, maeModel: m1.mae, maeOld: m0.mae, mapeModel: m1.mape, mapeOld: m0.mape, medianModel: m1.median, medianOld: m0.median } };
   log("flight model", JSON.stringify(flightFit.test));
-  annotate("notice", `flight model: trained on ${rows.length} fares; on ${flightFit.test.routes} unseen routes it is off by ${flightFit.test.mapeModel}% on average vs ${flightFit.test.mapeOld}% for the old formula`);
+  annotate("notice", `flight model: trained on ${rows.length} fares; on ${flightFit.test.routes} unseen routes it is off by ${m1.mape}% on average (typically ${m1.median}%) vs ${m0.mape}% (${m0.median}%) for the old formula`);
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -606,7 +610,7 @@ function report(meta) {
     if (flightFit && flightFit.test) {
       const t = flightFit.test;
       L.push(`- Model: ridge regression on log(fare) with ${flightFit.features.length} features (${flightFit.features.join(", ")}), trained on ${flightFit.n} fares`,
-        `- Tested on ${t.routes} routes it never saw (${t.fares} fares): average error **€${t.maeModel} (${t.mapeModel}%)** vs **€${t.maeOld} (${t.mapeOld}%)** for the old distance formula`);
+        `- Tested on ${t.routes} routes it never saw (${t.fares} fares): average error **€${t.maeModel} (${t.mapeModel}%)**, typically ${t.medianModel ?? "?"}%, vs **€${t.maeOld} (${t.mapeOld}%)**, typically ${t.medianOld ?? "?"}%, for the old distance formula`);
     }
     L.push("");
   }

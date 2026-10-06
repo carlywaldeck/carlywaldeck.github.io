@@ -4083,9 +4083,10 @@ function distanceKm(a, b) {
 //      fares (scripts/flight-model.mjs; this copy must match it, see tests/model.test.mjs);
 //   3. otherwise the original distance formula.
 const ymFor = (month) => { const now = new Date(); return `${month >= now.getMonth() ? now.getFullYear() : now.getFullYear() + 1}-${String(month + 1).padStart(2, "0")}`; };
-function flightFeatures({ km, destMult = 1, homeMult = 1, destLevel = 1, destPop = 0.5, homePop = 0.5 }) {
-  const l = Math.log(Math.max(50, km));
-  return [l, l * l, destMult, homeMult, destLevel, destPop, homePop];
+function flightFeatures({ km, destMult = 1, homeMult = 1, destLevel = 1, destPop = 0.5, homePop = 0.5, origin, dest, month }, enc) {
+  const l = Math.log(Math.max(50, km)), e = enc || { g: 0, origin: {}, dest: {}, month: {} };
+  return [l, l * l, destMult, homeMult, destLevel, destPop, homePop,
+    e.origin[origin] ?? e.g, e.dest[dest] ?? e.g, e.month[month] ?? e.g, km < 500 ? 1 : 0];
 }
 function flightPredict(m, x) { return Math.exp(m.b + x.reduce((s, v, j) => s + ((v - m.mean[j]) / m.std[j]) * m.w[j], 0)) * m.smear; }
 function flightFare(home, dest, month, km) {
@@ -4097,7 +4098,8 @@ function flightFare(home, dest, month, km) {
   const mult = dest.priceMult[month];
   if (M && M.w) {
     const d = DATA.cities[dest.id] || {}, hc = DATA.cities[home.id] || {};
-    const x = flightFeatures({ km, destMult: mult, homeMult: home.priceMult[month], destLevel: d.price ? d.price.level : 1, destPop: d.popularity ?? 0.5, homePop: hc.popularity ?? 0.5 });
+    const x = flightFeatures({ km, destMult: mult, homeMult: home.priceMult[month], destLevel: d.price ? d.price.level : 1, destPop: d.popularity ?? 0.5, homePop: hc.popularity ?? 0.5,
+      origin: home.code, dest: dest.code, month }, M.enc);
     return { kind: "model", price: flightPredict(M, x), model: M };
   }
   return { kind: "formula", price: (70 + km * 0.04) * mult };
@@ -4430,7 +4432,7 @@ function fareNote(cost) {
   if (!f || f.kind === "formula") return "";
   if (f.kind === "real") return `<p class="fine">Flight: ${euro(f.price)} is a real round-trip fare Aviasales travelers found for ${MONTHS_FULL[state.month]} (checked ${monthLabel(f.fetched.slice(0, 7))}), plus ~€25 for airport transfers. Prices change; check the link before booking.</p>`;
   const t = f.model.test;
-  return `<p class="fine">Flight: no recent fare for this route, so ${euro(f.price)} is predicted by a model trained on ${f.model.n.toLocaleString()} real fares${t ? ` (typically within ${t.mapeModel}%, vs ${t.mapeOld}% for a distance-only guess)` : ""}.</p>`;
+  return `<p class="fine">Flight: no recent fare for this route, so ${euro(f.price)} is predicted by a model trained on ${f.model.n.toLocaleString()} real fares${t ? ` (typically within ${t.medianModel ?? t.mapeModel}% of the real price, vs ${t.medianOld ?? t.mapeOld}% for a distance-only guess)` : ""}.</p>`;
 }
 function liveNote(cost) {
   if (!LIVE_PRICES_URL) return "";
