@@ -72,17 +72,17 @@ Agreement = share of cities where the hand-picked tag and the data (top 40% of c
 | snow | 94% | Kraków, Granada, Munich, Sofia, Tbilisi | – |
 | wildlife | 69% | Valencia, Edinburgh, Stockholm, Agadir, Paphos | Paris, London, Amsterdam, Berlin, Prague |
 | desert | 88% | Naples, Marrakech, Agadir, Tunis, Amman | Athens, Lyon, Bologna, Fez, Cologne |
-| vintage | 58% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
-| books | 59% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
+| vintage | 59% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
+| books | 59% | – | Barcelona, Madrid, Lisbon, Paris, London |
 | vegan | 59% | – | Barcelona, Madrid, Lisbon, Paris, London |
 | cycling | 59% | – | Barcelona, Madrid, Seville, Lisbon, Paris |
 | caves | 59% | – | Barcelona, Lisbon, Prague, Vienna, Budapest |
-| themeparks | 60% | – | Porto, Paris, London, Amsterdam, Berlin |
-| gardens | 59% | – | Barcelona, Madrid, Seville, Lisbon, Porto |
+| themeparks | 61% | – | Porto, Paris, London, Amsterdam, Berlin |
+| gardens | 61% | – | Barcelona, Madrid, Seville, Lisbon, Porto |
 | climbing | 59% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
-| lgbtq | 58% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
-| games | 60% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
-| students | 58% | – | Barcelona, Madrid, Seville, Lisbon, Paris |
+| lgbtq | 62% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
+| games | 58% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
+| students | 59% | – | Barcelona, Madrid, Lisbon, Paris, London |
 | offbeat | 63% | Bologna, Ljubljana, Gdańsk, Riga, Sofia | Granada, Dubrovnik, Split, Valletta, Palma de Mallorca |
 
 ## Coverage
@@ -93,13 +93,8 @@ Agreement = share of cities where the hand-picked tag and the data (top 40% of c
 - OpenStreetMap counts: 120/120 cities
 - Wikipedia popularity: 120/120 cities
 
-## Problems on this run
+## Flight fares and the flight price model
 
-- osm santiago: all Overpass servers failed
-- osm yerevan: all Overpass servers failed
-- osm poznan: all Overpass servers failed
-- osm nicosia: all Overpass servers failed
-- osm santorini: all Overpass servers failed
-- osm zakynthos: all Overpass servers failed
-- osm trieste: all Overpass servers failed
-- time budget reached during osm; remaining cities keep their previous values
+- Real round-trip fares (Travelpayouts / Aviasales, fetched 2026-10-06): **22964** route-months on **6967** routes between our cities
+- Model: ridge regression on log(fare) with 7 features (log distance, log distance², demand at destination that month, demand at home that month, destination price level, destination popularity, home popularity), trained on 22964 fares
+- Tested on 1394 routes it never saw (4719 fares): average error **€61 (50%)** vs **€65 (40%)** for the old distance formula
