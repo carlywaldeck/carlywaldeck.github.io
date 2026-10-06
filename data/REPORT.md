@@ -1,6 +1,6 @@
 # Data report
 
-Generated 2026-10-02 by `scripts/build-data.mjs`. This compares the original hand-written estimates in the app with the values computed from open data.
+Generated 2026-10-06 by `scripts/build-data.mjs`. This compares the original hand-written estimates in the app with the values computed from open data.
 
 ## Best months (1–5 scores)
 
@@ -72,6 +72,17 @@ Agreement = share of cities where the hand-picked tag and the data (top 40% of c
 | snow | 94% | Kraków, Granada, Munich, Sofia, Tbilisi | – |
 | wildlife | 69% | Valencia, Edinburgh, Stockholm, Agadir, Paphos | Paris, London, Amsterdam, Berlin, Prague |
 | desert | 88% | Naples, Marrakech, Agadir, Tunis, Amman | Athens, Lyon, Bologna, Fez, Cologne |
+| vintage | 57% | – | Paris, London, Berlin, Vienna, Budapest |
+| books | 57% | – | Barcelona, Madrid, Paris, London, Berlin |
+| vegan | 57% | – | Barcelona, Paris, London, Berlin, Vienna |
+| cycling | 57% | – | Barcelona, Madrid, Lisbon, Paris, London |
+| caves | 14% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
+| themeparks | 10% | – | Barcelona, Madrid, Seville, Lisbon, Porto |
+| gardens | 62% | – | Barcelona, Lisbon, Porto, Paris, London |
+| climbing | 5% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
+| lgbtq | 57% | – | Barcelona, Madrid, Lisbon, Paris, London |
+| games | 57% | – | Madrid, Paris, London, Berlin, Vienna |
+| students | 57% | – | Barcelona, Madrid, Paris, London, Berlin |
 | offbeat | 63% | Bologna, Ljubljana, Gdańsk, Riga, Sofia | Granada, Dubrovnik, Split, Valletta, Palma de Mallorca |
 
 ## Coverage
@@ -81,3 +92,14 @@ Agreement = share of cities where the hand-picked tag and the data (top 40% of c
 - Prices: 109 from Eurostat, 11 from the World Bank
 - OpenStreetMap counts: 120/120 cities
 - Wikipedia popularity: 120/120 cities
+
+## Problems on this run
+
+- osm amsterdam: all Overpass servers failed
+- osm prague: all Overpass servers failed
+- osm florence: all Overpass servers failed
+- osm valencia: all Overpass servers failed
+- osm sansebastian: all Overpass servers failed
+- osm dublin: all Overpass servers failed
+- osm stockholm: all Overpass servers failed
+- time budget reached during osm; remaining cities keep their previous values
