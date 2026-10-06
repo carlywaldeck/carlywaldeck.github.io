@@ -23,6 +23,12 @@
 import fs from "node:fs/promises";
 import * as flightModel from "./flight-model.mjs";
 
+// On GitHub Actions, "::notice::" / "::warning::" / "::error::" lines become annotations on the run,
+// readable in the Actions tab (and through the API) without opening the logs.
+const annotate = (level, msg) => { if (process.env.GITHUB_ACTIONS) console.log(`::${level} title=Data run::${String(msg).replace(/\r?\n/g, " ")}`); };
+process.on("uncaughtException", (e) => { annotate("error", `crashed: ${e.stack || e.message}`); process.exit(1); });
+process.on("unhandledRejection", (e) => { annotate("error", `crashed: ${(e && e.stack) || e}`); process.exit(1); });
+
 const ROOT = new URL("..", import.meta.url).pathname;
 const META = JSON.parse(await fs.readFile(ROOT + "data/cities-meta.json", "utf8")).cities;
 const OUT = ROOT + "data/city-data.json";
@@ -377,7 +383,7 @@ let fares = previous.fares || null;
 const nextMonths = (n) => Array.from({ length: n }, (_, i) => { const d = new Date(); d.setUTCDate(1); d.setUTCMonth(d.getUTCMonth() + i); return d.toISOString().slice(0, 7); });
 async function fetchFares() {
   const token = process.env.TRAVELPAYOUTS_TOKEN;
-  if (!token) { log("fares: no TRAVELPAYOUTS_TOKEN, skipping"); return; }
+  if (!token) { log("fares: no TRAVELPAYOUTS_TOKEN, skipping"); annotate("warning", "fares skipped: no TRAVELPAYOUTS_TOKEN secret found (Settings → Secrets and variables → Actions)"); return; }
   const months = nextMonths(12);
   const codes = [...new Set(cities.map((c) => c.code))];
   const wanted = new Set(codes);
@@ -405,6 +411,7 @@ async function fetchFares() {
     }
   }
   log(`fares: ${rows} fares for ${Object.keys(prices).length} routes (${failed} failed requests)`);
+  annotate(rows ? "notice" : "warning", `fares: ${rows} fares on ${Object.keys(prices).length} routes, ${failed} of ${codes.length * months.length} requests failed${errors.find((e) => e.startsWith("fares")) ? `; first error: ${errors.find((e) => e.startsWith("fares"))}` : ""}`);
   if (rows) fares = { fetched: new Date().toISOString().slice(0, 10), source: "Travelpayouts / Aviasales Data API", months, prices };
   else errors.push("fares: the API returned no fares for our cities (check the token and that the Aviasales program is joined)");
 }
@@ -444,6 +451,7 @@ function trainFlightModel() {
     test: { fares: te.length, routes: test.size, maeModel: Math.round(mae(modelF)), maeOld: Math.round(mae(oldF)),
       mapeModel: Math.round(mape(modelF) * 100), mapeOld: Math.round(mape(oldF) * 100) } };
   log("flight model", JSON.stringify(flightFit.test));
+  annotate("notice", `flight model: trained on ${rows.length} fares; on ${flightFit.test.routes} unseen routes it is off by ${flightFit.test.mapeModel}% on average vs ${flightFit.test.mapeOld}% for the old formula`);
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -641,6 +649,7 @@ const out = { ...meta, roadsDate: previous.roadsDate, roads, fares, flightModel:
 await fs.writeFile(OUT, JSON.stringify(out, null, 1));
 await fs.writeFile(REPORT, report(meta));
 log(`wrote ${OUT} (${errors.length} problems)`);
+annotate("notice", `wrote data: ${cities.length} cities, ${errors.length} problems; steps skipped: ${[...SKIP].join(",") || "none"}`);
 // Fail the job only if almost nothing worked (so a broken source shows up as a red run).
 const got = cities.filter((c) => c.data.climate && c.data.osm).length;
 if (got < cities.length * 0.5) { console.error(`only ${got}/${cities.length} cities have climate and OSM data`); process.exit(1); }
