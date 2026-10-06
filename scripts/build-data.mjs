@@ -273,12 +273,11 @@ const OSM_QUERIES = {
 const PRESENCE_SCALES = {
   beach: { lo: 5, hi: 150 }, surf: { lo: 2, hi: 40 }, snow: { lo: 5, hi: 40 }, desert: { lo: 1, hi: 40 },
   islands: { lo: 5, hi: 100 }, mountains: { lo: 50, hi: 1500 }, lakes: { lo: 5, hi: 200 },
-  spas: { lo: 2, hi: 60 }, wildlife: { lo: 3, hi: 60 },
-  caves: { lo: 2, hi: 40 }, themeparks: { lo: 1, hi: 8 }, climbing: { lo: 2, hi: 40 }
+  spas: { lo: 2, hi: 60 }, wildlife: { lo: 3, hi: 60 }
 };
 const OVERPASS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter"];
-function overpassQuery(c) {
-  const parts = Object.values(OSM_QUERIES).map(({ r, q }) =>
+function overpassQuery(c, keys = Object.keys(OSM_QUERIES)) {
+  const parts = keys.map((k) => OSM_QUERIES[k]).map(({ r, q }) =>
     `(${q.map((f) => f.replace(/^(nwr|node|way|relation)/, `$1(around:${r},${c.lat},${c.lon})`)).join(";")};);out count;`);
   return `[out:json][timeout:180];\n${parts.join("\n")}`;
 }
@@ -292,16 +291,18 @@ async function osm() {
   log(`osm: ${list.length} cities to fetch`);
   for (const [i, c] of list.entries()) {
     if (timeUp("osm")) break;
-    const body = "data=" + encodeURIComponent(overpassQuery(c));
+    // Only new interests missing? Ask for just those counts (much faster than the full query).
+    const full = process.env.FULL_OSM === "1" || !c.data.osm || age(c) > 90;
+    const want = full ? keys : keys.filter((k) => c.data.osm[k] == null);
+    const body = "data=" + encodeURIComponent(overpassQuery(c, want));
     let done = false;
     for (const url of OVERPASS) {
       try {
         const d = await get(url, { method: "POST", body, headers: { "Content-Type": "application/x-www-form-urlencoded" }, tries: 2, wait: 20000 });
         const counts = (d.elements || []).filter((e) => e.type === "count").map((e) => Number(e.tags.total));
-        const keys = Object.keys(OSM_QUERIES);
-        if (counts.length !== keys.length) throw new Error(`expected ${keys.length} counts, got ${counts.length}`);
-        c.data.osm = Object.fromEntries(keys.map((k, j) => [k, counts[j]]));
-        c.data.osmDate = new Date().toISOString().slice(0, 10);
+        if (counts.length !== want.length) throw new Error(`expected ${want.length} counts, got ${counts.length}`);
+        c.data.osm = { ...(full ? {} : c.data.osm), ...Object.fromEntries(want.map((k, j) => [k, counts[j]])) };
+        if (full) c.data.osmDate = new Date().toISOString().slice(0, 10);
         log(`osm ${i + 1}/${list.length}`, c.id, JSON.stringify(c.data.osm));
         done = true;
         break;

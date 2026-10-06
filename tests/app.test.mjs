@@ -71,7 +71,7 @@ export default async function run() {
       if (saved === undefined) delete DATA.roads[k]; else DATA.roads[k] = saved;
       return { bus: withRoad.find((o) => o.mode === "bus"), overland: noRoad.some((o) => o.mode === "bus" || o.mode === "train") };
     });
-    t.check(roads.bus && Math.abs(roads.bus.hours - (3.6 * 1.25 + 0.5)) < 0.01 && roads.bus.road, `bus time uses the road driving time, got ${JSON.stringify(roads.bus)}`);
+    t.check(roads.bus && Math.abs(roads.bus.hours - (3.6 * 1.1 + 0.3)) < 0.01 && roads.bus.road, `bus time uses the road driving time, got ${JSON.stringify(roads.bus)}`);
     t.check(!roads.overland, "no road connection means no bus or train");
 
     // 4b. Booking links: a flight abroad links to a dated Aviasales search, an eSIM, and the affiliate disclosure.

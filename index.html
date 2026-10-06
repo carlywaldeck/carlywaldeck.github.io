@@ -4037,8 +4037,8 @@ function road(a, b) {
 }
 
 // Every way to get from home to dest, with a rough round-trip price and hours each way.
-// Overland: from the real road distance and driving time when we have them (buses take ~25%
-// longer than a car, trains average ~115 km/h on the road distance), else from the straight line.
+// Overland: from the real road distance and driving time when we have them (coaches take ~10%
+// longer than a car, plus boarding; trains average ~115 km/h on the road distance), else from the straight line.
 function transportOptions(home, dest, month) {
   const km = distanceKm(home, dest);
   const mult = dest.priceMult[month];
@@ -4047,7 +4047,7 @@ function transportOptions(home, dest, month) {
   const rkm = r ? r.km : km * 1.25;
   const opts = [];
   if (!overWater && rkm <= 2000) {
-    opts.push({ mode: "bus", cost: Math.round(Math.max(18, rkm * 0.08) * mult), hours: (r ? r.hours * 1.25 : km / 70) + 0.5, road: !!r });
+    opts.push({ mode: "bus", cost: Math.round(Math.max(18, rkm * 0.08) * mult), hours: r ? r.hours * 1.1 + 0.3 : km / 70 + 0.5, road: !!r });
   }
   if (!overWater && rkm <= 1750 && !NO_RAIL.has(home.id) && !NO_RAIL.has(dest.id)) {
     opts.push({ mode: "train", cost: Math.round(Math.max(25, rkm * 0.16) * mult), hours: (r ? r.km / 115 : km / 120) + 0.5, road: !!r });
