@@ -469,6 +469,24 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
 .modal-card .linkish { display: block; margin: 12px auto 0; }
 .modal-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
 @media (max-width: 760px) { .acct-btn .lbl-long { display: none; } }
+.modal-card { max-height: calc(100vh - 32px); overflow-y: auto; }
+.acct-form { display: flex; flex-direction: column; gap: 10px; }
+.acct-form .f { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 600; color: var(--ink); }
+.acct-form .f input, .acct-form .f select { padding: 11px 12px; font: inherit; font-size: 15px; font-weight: 400; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+.acct-form .f input:focus, .acct-form .f select:focus { outline: 2px solid rgba(47,91,234,.35); border-color: var(--accent); }
+.f-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.form-error { margin: 0; color: #B4233C; font-size: 13px; }
+.auth-links { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 6px; margin-top: 10px; font-size: 13px; color: var(--muted); }
+.linkish.strong { color: var(--accent); font-weight: 600; }
+.auth-links span { display: inline-flex; align-items: center; gap: 2px; white-space: nowrap; }
+.acct-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 4px 0 16px; }
+.acct-stats div { background: var(--soft); border-radius: 12px; padding: 10px; text-align: center; }
+.acct-stats b { display: block; font-size: 20px; }
+.acct-stats span { font-size: 12px; color: var(--muted); }
+.acct-more { margin-top: 12px; font-size: 14px; }
+.acct-more summary { cursor: pointer; color: var(--accent); font-weight: 600; margin-bottom: 8px; }
+.modal-actions.row { flex-direction: row; }
+.modal-actions.row > * { flex: 1; }
 </style>
 </head>
 <body>
@@ -602,8 +620,8 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
       </div>
       <div class="lp-field"><span id="lp-days-label">How many days? <small>pick any</small></span><div class="seg" id="lp-days" role="group" aria-labelledby="lp-days-label"></div></div>
       <div class="lp-field"><span id="lp-int-label">What are you into? <small>pick a few</small></span><div class="chips" id="lp-interests" role="group" aria-labelledby="lp-int-label"></div></div>
-      <div class="lp-field"><span>A bit about you <small>optional: helps us suggest trips</small></span><div id="lp-profile"></div></div>
-      <div class="lp-field"><span id="lp-been-label">Places you've already been <small>optional</small></span>
+      <div class="lp-field lp-guest"><span>A bit about you <small>optional: helps us suggest trips</small></span><div id="lp-profile"></div></div>
+      <div class="lp-field lp-guest"><span id="lp-been-label">Places you've already been <small>optional</small></span>
         <div class="city-search">
           <input id="lp-been-input" type="text" role="combobox" aria-labelledby="lp-been-label" aria-autocomplete="list" aria-expanded="false" aria-controls="lp-been-list" autocomplete="off" spellcheck="false" placeholder="Add a city you've visited">
           <ul id="lp-been-list" class="city-list" role="listbox" aria-labelledby="lp-been-label" hidden></ul>
@@ -5388,12 +5406,12 @@ function toast(msg) {
   clearTimeout(toastTimer); toastTimer = setTimeout(() => { el.hidden = true; }, 3200);
 }
 
-// ---------------------------------------------------------------- accounts (optional)
-// Log in with an emailed link to keep saved trips, places you've been, ratings and your search
-// across devices. Uses Supabase (free tier): passwordless email login, and one row per person in a
+// ---------------------------------------------------------------- accounts
+// Accounts let people keep saved trips, places they've been, ratings and their preferences across
+// devices. Uses Supabase (free tier): email + password accounts, and one row per person in a
 // "profiles" table protected by row-level security, so people can only read and write their own row.
-// Setup: docs/ACCOUNTS.md. Paste your project's URL and anon key below (both are public by design).
-// Left empty, the app works exactly as before and keeps everything in this browser only.
+// Setup: docs/ACCOUNTS.md. The project URL and publishable key below are public by design.
+// Left empty, the app works without accounts and keeps everything in this browser only.
 const SUPABASE_URL = window.WEEKENDER_SUPABASE_URL || "https://jjvahhycqdizyfrosqft.supabase.co";
 const SUPABASE_ANON_KEY = window.WEEKENDER_SUPABASE_KEY || "sb_publishable_LXKmiTP_kHxZhIn_FYFYcQ_TJQJdvpn";
 const SYNC_KEYS = ["been", "saved", "criteria"];
@@ -5403,15 +5421,39 @@ const auth = {
   get() { try { return JSON.parse(localStorage.getItem(AUTH_KEY) || "null"); } catch { return null; } },
   set(v) { try { v ? localStorage.setItem(AUTH_KEY, JSON.stringify(v)) : localStorage.removeItem(AUTH_KEY); } catch { /* blocked */ } }
 };
+const firstName = () => { const a = auth.get(); return a ? (a.name || "").trim().split(/\s+/)[0] : ""; };
 async function sb(path, { method = "GET", body, token, headers = {} } = {}) {
   const res = await fetch(SUPABASE_URL.replace(/\/$/, "") + path, {
     method,
     headers: { apikey: SUPABASE_ANON_KEY, "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}), ...headers },
     body: body ? JSON.stringify(body) : undefined
   });
-  if (!res.ok) throw new Error(`Supabase answered ${res.status}`);
   const text = await res.text();
-  return text ? JSON.parse(text) : null;
+  let data = null;
+  try { data = text ? JSON.parse(text) : null; } catch { /* not JSON */ }
+  if (!res.ok) {
+    const err = new Error((data && (data.msg || data.error_description || data.message)) || `Supabase answered ${res.status}`);
+    err.code = data && (data.error_code || data.code);
+    throw err;
+  }
+  return data;
+}
+// Turn Supabase's answers into plain words.
+function authMessage(e) {
+  const m = String(e.message || "");
+  if (/invalid login credentials/i.test(m)) return "That email and password don't match. Try again or reset your password.";
+  if (/not confirmed/i.test(m)) return "Please confirm your email first: open the link we sent you.";
+  if (/already registered|already exists/i.test(m)) return "There's already an account with that email. Log in instead.";
+  if (/password/i.test(m) && /least|short|weak/i.test(m)) return "Please use a password with at least 8 characters.";
+  if (/rate limit|too many/i.test(m)) return "Too many tries in a short time. Please wait a minute and try again.";
+  if (/failed to fetch|network/i.test(m)) return "Couldn't reach the server. Check your connection and try again.";
+  return m || "Something went wrong. Please try again.";
+}
+function saveSession(t, user) {
+  const u = user || t.user || {};
+  const meta = u.user_metadata || {};
+  auth.set({ access: t.access_token, refresh: t.refresh_token, expiresAt: Date.now() + Number(t.expires_in || 3600) * 1000,
+    id: u.id, email: u.email, name: meta.name || meta.full_name || "" });
 }
 // A valid access token, refreshed shortly before it expires. Logs out if the refresh fails.
 async function accessToken() {
@@ -5427,9 +5469,25 @@ async function accessToken() {
     return null;
   }
 }
-async function sendLoginLink(email) {
-  const back = location.origin + location.pathname;
-  await sb(`/auth/v1/otp?redirect_to=${encodeURIComponent(back)}`, { method: "POST", body: { email, create_user: true } });
+const backUrl = () => encodeURIComponent(location.origin + location.pathname);
+async function signUp(name, email, password) {
+  const t = await sb(`/auth/v1/signup?redirect_to=${backUrl()}`, { method: "POST", body: { email, password, data: { name } } });
+  // With "Confirm email" on (Supabase's default) there's no session yet: people confirm by email first.
+  if (t && t.access_token) { saveSession(t); return "in"; }
+  return "confirm";
+}
+async function logIn(email, password) {
+  const t = await sb("/auth/v1/token?grant_type=password", { method: "POST", body: { email, password } });
+  saveSession(t);
+}
+async function sendReset(email) {
+  await sb(`/auth/v1/recover?redirect_to=${backUrl()}`, { method: "POST", body: { email } });
+}
+async function updateUser(patch) {
+  const token = await accessToken();
+  const u = await sb("/auth/v1/user", { method: "PUT", token, body: patch });
+  const a = auth.get();
+  if (a && u) auth.set({ ...a, name: (u.user_metadata && u.user_metadata.name) || a.name });
 }
 // Keep everything from both sides: places from either (highest rating wins), saved trips from
 // either (no duplicates), and this browser's current search.
@@ -5467,73 +5525,152 @@ let pushTimer;
 function schedulePush() {
   if (!cloudOn() || !auth.get()) return;
   clearTimeout(pushTimer);
-  pushTimer = setTimeout(() => pushCloud().catch(() => toast("Couldn't sync to your account. Your changes are saved in this browser.")), 1200);
+  pushTimer = setTimeout(() => pushCloud().catch(() => toast("Couldn't save to your account. Your changes are kept in this browser.")), 1200);
 }
-// After the emailed link, Supabase sends people back here with tokens in the URL hash.
-async function readLoginLink() {
+// After logging in: bring in the account's data. Reloads if it changed, so everything shows it.
+async function afterLogin() {
+  try { if (await pullCloud()) { location.reload(); return; } } catch { /* keep going with local data */ }
+  closeLogin(); renderAccount(); renderLanding();
+  toast(firstName() ? `Hello, ${firstName()}!` : "You're logged in");
+}
+// Links from Supabase emails (confirming an account, resetting a password) come back here with
+// tokens in the URL hash.
+async function readAuthLink() {
   if (!cloudOn() || !/access_token=/.test(location.hash)) return;
   const q = new URLSearchParams(location.hash.slice(1));
   history.replaceState(null, "", location.href.split("#")[0]);
   try {
-    const access = q.get("access_token");
-    const user = await sb("/auth/v1/user", { token: access });
-    auth.set({ access, refresh: q.get("refresh_token"), expiresAt: Date.now() + Number(q.get("expires_in") || 3600) * 1000, id: user.id, email: user.email });
-    if (await pullCloud()) { location.reload(); return; }
-    toast(`Signed in as ${user.email}`);
-    renderAccount();
+    const t = { access_token: q.get("access_token"), refresh_token: q.get("refresh_token"), expires_in: q.get("expires_in") };
+    saveSession(t, await sb("/auth/v1/user", { token: t.access_token }));
+    if (q.get("type") === "recovery") { acctView = "newpass"; openLogin(); return; }
+    await afterLogin();
   } catch {
-    toast("That sign-in link didn't work. Try sending a new one.");
+    toast("That link didn't work or has expired. Please try again.");
   }
 }
 async function logOut() {
   const token = auth.get() && auth.get().access;
-  auth.set(null); renderAccount();
+  auth.set(null); acctView = "login";
+  closeLogin(); renderAccount(); renderLanding();
   toast("Logged out. Your trips stay in this browser.");
   if (token) sb("/auth/v1/logout", { method: "POST", token }).catch(() => {});
 }
-let loginStep = "start", loginEmail = "";
+
+// ---- the account window: log in, sign up, reset password, and the account page
+let acctView = "login", acctEmail = "", acctError = "";
 const escHtml = (s) => String(s).replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]));
-// The "Log in" buttons (top bar and landing page) and the login window.
+const field = (id, label, type, extra = "") => `<label class="f"><span>${label}</span><input id="${id}" type="${type}" ${extra}></label>`;
+function accountPage() {
+  const a = auth.get(), nPlaces = Object.keys(been).length;
+  const homeOpts = [...CITIES].sort((x, y) => x.name.localeCompare(y.name)).map(c => `<option value="${c.id}" ${c.id === state.home ? "selected" : ""}>${escHtml(c.name)}</option>`).join("");
+  return `<h2 id="login-title">Hello${firstName() ? `, ${escHtml(firstName())}` : ""}!</h2>
+    <p class="lede">${escHtml(a.email)}</p>
+    <div class="acct-stats"><div><b>${saved.length}</b><span>saved trip${saved.length === 1 ? "" : "s"}</span></div><div><b>${nPlaces}</b><span>place${nPlaces === 1 ? "" : "s"} you've been</span></div><div><b>${TASTE.n || 0}</b><span>rating${TASTE.n === 1 ? "" : "s"}</span></div></div>
+    <form id="acct-form" class="acct-form">
+      ${field("acct-name", "First name", "text", `value="${escHtml(a.name || "")}" autocomplete="given-name"`)}
+      <label class="f"><span>Where you're based</span><select id="acct-home">${homeOpts}</select></label>
+      <div class="f-row">
+        <label class="f"><span>Age</span><select id="acct-age"><option value="">Rather not say</option>${Object.entries(PROFILE_LABELS.age).map(([k, l]) => `<option value="${k}" ${state.profile.age === k ? "selected" : ""}>${l}</option>`).join("")}</select></label>
+        <label class="f"><span>Usually travel</span><select id="acct-with"><option value="">Rather not say</option>${Object.entries(PROFILE_LABELS.with).map(([k, l]) => `<option value="${k}" ${state.profile.with === k ? "selected" : ""}>${l}</option>`).join("")}</select></label>
+      </div>
+      <button type="submit" class="cta">Save changes</button>
+    </form>
+    <details class="acct-more"><summary>Change password</summary>
+      <form id="pass-form" class="acct-form">${field("acct-pass", "New password", "password", `minlength="8" required autocomplete="new-password"`)}<button type="submit" class="ghost">Update password</button></form>
+    </details>
+    <div class="modal-actions row"><button type="button" class="ghost" data-act="acct-trips">My trips</button><button type="button" class="ghost" data-act="logout">Log out</button></div>`;
+}
 function renderAccount() {
   const a = auth.get();
   for (const b of [$("#acct-btn"), $("#lp-login")]) {
     if (!b) continue;
     b.hidden = !cloudOn();
-    b.innerHTML = a ? `<span class="avatar" aria-hidden="true">${escHtml(a.email[0].toUpperCase())}</span><span class="lbl-long">Account</span>` : "Log in";
-    b.setAttribute("aria-label", a ? `Account: ${a.email}` : "Log in or sign up");
+    b.innerHTML = a ? `<span class="avatar" aria-hidden="true">${escHtml((a.name || a.email)[0].toUpperCase())}</span><span class="lbl-long">${firstName() ? `Hi, ${escHtml(firstName())}` : "Account"}</span>` : "Log in";
+    b.setAttribute("aria-label", a ? `Your account (${a.email})` : "Log in or create an account");
   }
   const body = $("#login-body");
   if (!body) return;
-  if (a) {
-    body.innerHTML = `<h2 id="login-title">You're logged in</h2>
-      <p class="lede">${escHtml(a.email)}</p>
-      <p class="note">Your saved trips, places you've been and ratings are saved to your account, so they're on every device you log in on.</p>
-      <div class="modal-actions"><button type="button" class="cta" data-act="login-close">Done</button><button type="button" class="ghost" data-act="logout">Log out</button></div>`;
-  } else if (loginStep === "sent") {
-    body.innerHTML = `<h2 id="login-title">Check your email</h2>
-      <p class="lede">We sent a login link to <b>${escHtml(loginEmail)}</b>.</p>
-      <p class="note">Open it on this device and you're in. It can take a minute; check your spam folder too.</p>
-      <div class="modal-actions"><button type="button" class="cta" data-act="login-close">Got it</button><button type="button" class="ghost" data-act="login-again">Use a different email</button></div>`;
-  } else {
-    body.innerHTML = `<h2 id="login-title">Log in or sign up</h2>
-      <p class="lede">Save your trips and see them on any device. No password needed.</p>
-      <form id="login-form" class="login-form">
-        <input type="email" id="login-email" required placeholder="you@school.edu" autocomplete="email" aria-label="Email" value="${escHtml(loginEmail)}">
-        <button type="submit" class="cta">Continue</button>
-      </form>
-      <button type="button" class="linkish" data-act="login-close">Not now</button>`;
-  }
+  const err = acctError ? `<p class="form-error" role="alert">${escHtml(acctError)}</p>` : "";
+  const email = field("auth-email", "Email", "email", `required autocomplete="email" value="${escHtml(acctEmail)}"`);
+  if (a && acctView !== "newpass") { body.innerHTML = accountPage(); return; }
+  body.innerHTML = {
+    login: `<h2 id="login-title">Welcome back</h2><p class="lede">Log in to see your saved trips on any device.</p>
+      <form id="auth-form" data-mode="login" class="acct-form">${email}${field("auth-pass", "Password", "password", `required autocomplete="current-password"`)}${err}
+        <button type="submit" class="cta">Log in</button></form>
+      <div class="auth-links"><button type="button" class="linkish" data-act="auth-view" data-v="forgot">Forgot password?</button>
+        <span>New here? <button type="button" class="linkish strong" data-act="auth-view" data-v="signup">Create an account</button></span></div>`,
+    signup: `<h2 id="login-title">Create your account</h2><p class="lede">Save trips, rate places you've been and get picks that match your taste, on every device.</p>
+      <form id="auth-form" data-mode="signup" class="acct-form">${field("auth-name", "First name", "text", `required autocomplete="given-name"`)}${email}
+        ${field("auth-pass", "Password", "password", `required minlength="8" autocomplete="new-password" placeholder="At least 8 characters"`)}${err}
+        <button type="submit" class="cta">Create account</button></form>
+      <div class="auth-links"><span>Already have an account? <button type="button" class="linkish strong" data-act="auth-view" data-v="login">Log in</button></span>
+        <button type="button" class="linkish" data-act="login-close">Not now</button></div>`,
+    confirm: `<h2 id="login-title">Check your email</h2><p class="lede">We sent a link to <b>${escHtml(acctEmail)}</b>. Click it to confirm your account and you'll be logged in.</p>
+      <p class="note">It can take a minute; check your spam folder too.</p>
+      <div class="modal-actions"><button type="button" class="cta" data-act="login-close">Got it</button><button type="button" class="ghost" data-act="auth-view" data-v="login">Back to log in</button></div>`,
+    forgot: `<h2 id="login-title">Reset your password</h2><p class="lede">Enter your email and we'll send you a link to set a new password.</p>
+      <form id="auth-form" data-mode="forgot" class="acct-form">${email}${err}<button type="submit" class="cta">Send reset link</button></form>
+      <div class="auth-links"><button type="button" class="linkish" data-act="auth-view" data-v="login">Back to log in</button></div>`,
+    sent: `<h2 id="login-title">Check your email</h2><p class="lede">If there's an account for <b>${escHtml(acctEmail)}</b>, we've sent a link to reset the password.</p>
+      <div class="modal-actions"><button type="button" class="cta" data-act="auth-view" data-v="login">Back to log in</button></div>`,
+    newpass: `<h2 id="login-title">Choose a new password</h2>
+      <form id="auth-form" data-mode="newpass" class="acct-form">${field("auth-pass", "New password", "password", `required minlength="8" autocomplete="new-password" placeholder="At least 8 characters"`)}${err}
+        <button type="submit" class="cta">Save password</button></form>`
+  }[acctView] || "";
 }
-function openLogin() {
+function openLogin(view) {
   if (!cloudOn()) return;
-  if (!auth.get()) loginStep = loginStep === "sent" ? "sent" : "start";
+  if (typeof view === "string") acctView = view;
+  acctError = "";
   renderAccount();
   $("#login-modal").hidden = false;
   store.set({ loginAsked: true });
-  const f = $("#login-email") || $("#login-modal .cta");
-  if (f) setTimeout(() => f.focus(), 30);
+  const f = $("#login-body input:not([type=hidden])") || $("#login-modal .cta");
+  if (f && !auth.get()) setTimeout(() => f.focus(), 30);
 }
-function closeLogin() { $("#login-modal").hidden = true; }
+function closeLogin() { $("#login-modal").hidden = true; if (acctView === "newpass") acctView = "login"; }
+async function handleAuthForm(form) {
+  const mode = form.dataset.mode, btn = form.querySelector("button[type=submit]");
+  const val = (id) => (form.querySelector("#" + id) || {}).value || "";
+  acctEmail = val("auth-email").trim() || acctEmail;
+  acctError = "";
+  const label = btn.textContent;
+  btn.disabled = true; btn.textContent = "One moment…";
+  try {
+    if (mode === "login") { await logIn(acctEmail, val("auth-pass")); await afterLogin(); return; }
+    if (mode === "signup") {
+      const r = await signUp(val("auth-name").trim(), acctEmail, val("auth-pass"));
+      if (r === "in") { await afterLogin(); return; }
+      acctView = "confirm";
+    }
+    if (mode === "forgot") { await sendReset(acctEmail); acctView = "sent"; }
+    if (mode === "newpass") { await updateUser({ password: val("auth-pass") }); acctView = "login"; closeLogin(); renderAccount(); toast("Password updated"); return; }
+  } catch (e) {
+    acctError = authMessage(e);
+  }
+  renderAccount();
+  if (acctError) { const b = $("#login-body button[type=submit]"); if (b) b.textContent = label; }
+}
+async function handleAccountForm(form) {
+  const btn = form.querySelector("button[type=submit]");
+  btn.disabled = true;
+  try {
+    if (form.id === "pass-form") {
+      await updateUser({ password: $("#acct-pass").value });
+      toast("Password updated");
+    } else {
+      const name = $("#acct-name").value.trim();
+      if (name !== (auth.get().name || "")) await updateUser({ data: { name } });
+      state.profile = { age: $("#acct-age").value, with: $("#acct-with").value };
+      const home = $("#acct-home").value;
+      if (home !== state.home) setHome(home); else update();
+      toast("Saved");
+    }
+  } catch (e) {
+    toast(authMessage(e));
+  }
+  renderAccount();
+}
 
 function renderBeen() {
   const n = Object.keys(been).length;
@@ -6330,6 +6467,10 @@ function renderLanding() {
   document.querySelectorAll("#lp-days .pick").forEach(b => b.setAttribute("aria-pressed", state.daysSet.has(Number(b.dataset.v))));
   document.querySelectorAll("#lp-interests .chip").forEach(b => b.setAttribute("aria-pressed", state.interests.has(b.dataset.v)));
   if (lpHomeSearch) lpHomeSearch.refresh();
+  // Logged in: greet by name, and skip the questions the account already answers.
+  const name = typeof firstName === "function" && auth.get() ? firstName() : "";
+  $("#lp-title").textContent = auth.get() ? `Hello${name ? `, ${name}` : ""}. Where to next?` : "Cheap trips from wherever you're studying.";
+  document.querySelectorAll(".lp-guest").forEach(el => { el.hidden = !!auth.get(); });
 }
 function openLanding() {
   document.body.classList.add("landing-open");
@@ -6491,7 +6632,8 @@ function setupControls() {
     if (act === "rate-skip") { ui.rating = null; renderSpot(); }
     if (act === "logout") { logOut(); closeLogin(); }
     if (act === "login-close") closeLogin();
-    if (act === "login-again") { loginStep = "start"; renderAccount(); }
+    if (act === "auth-view") { acctView = v; acctError = ""; renderAccount(); const f = $("#login-body input"); if (f) f.focus(); }
+    if (act === "acct-trips") { closeLogin(); $("#been-btn").click(); }
     if (act === "save") { const t = tripById(id); if (t) { toggleSave(t); renderDrawer(); renderBeen(); toast(isSaved(t) ? "Saved to My trips" : "Removed from My trips"); } }
     if (act === "share") { const t = tripById(id); if (t) shareTrip(t); }
     if (act === "open-saved") { const s = saved[Number(v)]; if (s) { $("#been-pop").hidden = true; $("#been-btn").setAttribute("aria-expanded", "false"); openRef(s); } }
@@ -6516,22 +6658,24 @@ const shared = readShareLink();
 update();
 renderLanding();
 renderAccount();
-document.addEventListener("submit", async (e) => {
-  if (e.target.id !== "login-form") return;
-  e.preventDefault();
-  const email = $("#login-email").value.trim();
-  const btn = e.target.querySelector("button");
-  btn.disabled = true; btn.textContent = "Sending…";
-  try { await sendLoginLink(email); loginEmail = email; loginStep = "sent"; renderAccount(); }
-  catch { btn.disabled = false; btn.textContent = "Continue"; toast("Couldn't send the link. Check the address and try again."); }
+document.addEventListener("submit", (e) => {
+  const id = e.target.id;
+  if (id === "auth-form") { e.preventDefault(); handleAuthForm(e.target); }
+  if (id === "acct-form" || id === "pass-form") { e.preventDefault(); handleAccountForm(e.target); }
 });
-readLoginLink();
-$("#acct-btn").addEventListener("click", openLogin);
-$("#lp-login").addEventListener("click", openLogin);
+readAuthLink();
+$("#acct-btn").addEventListener("click", () => openLogin(auth.get() ? undefined : "login"));
+$("#lp-login").addEventListener("click", () => openLogin(auth.get() ? undefined : "login"));
 $("#login-modal").addEventListener("click", (e) => { if (e.target.id === "login-modal") closeLogin(); });
 document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("#login-modal").hidden) closeLogin(); });
 // First visit: offer to log in straight away (once; "Not now" or closing it is remembered).
-if (cloudOn() && !auth.get() && !store.get().loginAsked && !shared && !/access_token=/.test(location.hash)) setTimeout(openLogin, 400);
+if (cloudOn() && !auth.get() && !store.get().loginAsked && !shared && !/access_token=/.test(location.hash)) setTimeout(() => openLogin("signup"), 400);
+// Logged in with a saved search: skip the questions and go straight to your trips.
+if (cloudOn() && auth.get() && store.get().criteria && !shared && !/access_token=/.test(location.hash)) {
+  closeLanding(false);
+  if (G.ok) { G.fitKey = ""; globeUpdate(); }
+  if (firstName()) toast(`Welcome back, ${firstName()}!`);
+}
 if (cloudOn() && auth.get() && !/access_token=/.test(location.hash)) pullCloud().then((changed) => {
   // Data from another device arrived: reload once to show it.
   let once = false;

@@ -3,8 +3,14 @@ name: Tests
 
 on:
   push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
+
+# A newer push cancels the older run instead of emailing about both.
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:

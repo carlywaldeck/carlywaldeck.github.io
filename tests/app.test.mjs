@@ -120,13 +120,20 @@ export default async function run() {
 
     // 8. Accounts (with a fake Supabase): the emailed link signs you in, data from the account
     // merges into this browser, and later changes are saved back to the account.
-    const calls = { otp: 0, posts: [] };
+    const calls = { posts: [] };
     const remote = { been: { rome: { r: 4, n: "Rome" } }, saved: [] };
     const setup = async (page) => {
       await page.addInitScript(() => { window.WEEKENDER_SUPABASE_URL = "https://fake.supabase.co"; window.WEEKENDER_SUPABASE_KEY = "anon"; });
       await page.route("https://fake.supabase.co/**", async (r) => {
         const u = new URL(r.request().url()), json = (b, status = 200) => r.fulfill({ status, contentType: "application/json", body: JSON.stringify(b) });
-        if (u.pathname === "/auth/v1/otp") { calls.otp++; return json({}); }
+        if (u.pathname === "/auth/v1/signup") { calls.signup = JSON.parse(r.request().postData()); return json({ id: "user-2", email: calls.signup.email }); }
+        if (u.pathname === "/auth/v1/token" && u.searchParams.get("grant_type") === "password") {
+          const body = JSON.parse(r.request().postData());
+          if (body.password !== "travel1234") return json({ error_code: "invalid_credentials", msg: "Invalid login credentials" }, 400);
+          return json({ access_token: "t2", refresh_token: "r2", expires_in: 3600, user: { id: "user-2", email: body.email, user_metadata: { name: "Carly" } } });
+        }
+        if (u.pathname === "/auth/v1/user" && r.request().method() === "PUT") { calls.userUpdate = JSON.parse(r.request().postData()); return json({ id: "user-2", user_metadata: calls.userUpdate.data || { name: "Carly" } }); }
+        if (u.pathname === "/auth/v1/logout") return r.fulfill({ status: 204, body: "" });
         if (u.pathname === "/auth/v1/user") return json({ id: "user-1", email: "student@school.edu" });
         if (u.pathname === "/rest/v1/profiles" && r.request().method() === "GET") return json([{ data: remote }]);
         if (u.pathname === "/rest/v1/profiles") { calls.posts.push(JSON.parse(r.request().postData())); return r.fulfill({ status: 201, body: "" }); }
@@ -145,15 +152,43 @@ export default async function run() {
     for (let i = 0; i < 100 && !calls.posts.some((x) => x.data.been.paris); i++) await ap.waitForTimeout(100);
     const last = calls.posts[calls.posts.length - 1];
     t.check(last && last.id === "user-1" && last.data.been.rome.r === 4 && last.data.been.paris.r === 5, `changes are saved to the account, got ${JSON.stringify(last && last.data.been)}`);
+    // First visit: the account window opens on "Create your account"; signing up asks you to confirm by email.
     const lp = await openApp(browser, { setup, firstVisit: true });
-    await lp.waitForSelector("#login-modal:not([hidden]) #login-email");
+    await lp.waitForSelector("#login-modal:not([hidden]) #auth-name");
     t.check(await lp.isVisible("#lp-login"), "the landing page has a Log in button in the corner");
-    await lp.fill("#login-email", "new@school.edu");
-    await lp.click("#login-form button");
+    await lp.fill("#auth-name", "Carly");
+    await lp.fill("#auth-email", "carly@school.edu");
+    await lp.fill("#auth-pass", "travel1234");
+    await lp.click("#auth-form button[type=submit]");
     await lp.waitForSelector("text=Check your email");
-    t.check(calls.otp === 1, "on a first visit the login window opens by itself and emails a login link");
-    await lp.click("#login-modal .cta");
-    t.check(await lp.evaluate(() => document.querySelector("#login-modal").hidden && JSON.parse(localStorage.getItem("weekender:v1")).loginAsked), "closing it is remembered");
+    t.check(calls.signup && calls.signup.data.name === "Carly" && calls.signup.password === "travel1234", "signing up sends name, email and password");
+    // Logging in with a password greets you by name and hides the questions the account answers.
+    await lp.evaluate(() => openLogin("login"));
+    await lp.fill("#auth-email", "carly@school.edu");
+    await lp.fill("#auth-pass", "travel1234");
+    await lp.click("#auth-form button[type=submit]");
+    await lp.waitForFunction(() => /Hi, Carly/.test(document.querySelector("#acct-btn").textContent), null, { timeout: 30000 });
+    await lp.waitForLoadState("load");
+    await lp.waitForFunction(() => typeof openLanding === "function", null, { timeout: 30000 });
+    const greet = await lp.evaluate(() => { openLanding(); return { title: document.querySelector("#lp-title").textContent, guest: [...document.querySelectorAll(".lp-guest")].every(el => el.hidden) }; });
+    t.check(/Hello, Carly/.test(greet.title) && greet.guest, `logged in: the landing says hello and skips age and places (${greet.title})`);
+    // The account page shows your details and saves changes.
+    await lp.evaluate(() => { closeLanding(false); openLogin(); });
+    await lp.fill("#acct-name", "Carly W");
+    await lp.click("#acct-form button[type=submit]");
+    for (let i = 0; i < 50 && !calls.userUpdate; i++) await lp.waitForTimeout(100);
+    t.check(calls.userUpdate && calls.userUpdate.data.name === "Carly W", "the account page updates your name");
+    // Next visit: logged in with a saved search, you go straight to your trips.
+    await lp.reload();
+    await lp.waitForFunction(() => typeof update === "function" && document.querySelector("#results"), null, { timeout: 30000 });
+    t.check(await lp.evaluate(() => !landingOpen()), "returning logged-in users skip the landing questions");
+    // Wrong password: a plain-language error.
+    await lp.evaluate(() => { logOut(); openLogin("login"); });
+    await lp.fill("#auth-email", "carly@school.edu");
+    await lp.fill("#auth-pass", "wrong-pass");
+    await lp.click("#auth-form button[type=submit]");
+    await lp.waitForSelector(".form-error");
+    t.check(/don't match/.test(await lp.textContent(".form-error")), "a wrong password shows a clear error");
     t.check(!ap.errors.length && !lp.errors.length, `account page errors: ${[...ap.errors, ...lp.errors].join("; ")}`);
   } finally {
     await browser.close();

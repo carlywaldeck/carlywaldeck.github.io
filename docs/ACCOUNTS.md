@@ -1,8 +1,11 @@
 # Turning on accounts (Supabase, free)
 
 Weekender works without accounts: everything stays in the visitor's browser. With Supabase set up, a
-**My trips → Keep your trips on every device** box appears. People type their email, click the link
-they're sent, and their saved trips, visited places, ratings and search sync across devices.
+**Log in** button appears in the top-right corner. People create an account with their first name,
+email and a password; their saved trips, visited places, ratings, home city, age range and travel style
+then follow them to every device. Logged-in visitors are greeted by name ("Hi, Carly") and skip the
+start-up questions. The account page lets them change their details and password; "Forgot password?"
+emails a reset link.
 
 ## 1. Create the project (5 min)
 1. Sign up at **supabase.com** (free) and click **New project**. Pick any name and a region near Europe.
@@ -29,8 +32,11 @@ in the page is public.
 - **Site URL:** `https://carlywaldeck.github.io`
 - **Redirect URLs:** add `https://carlywaldeck.github.io/`
 
-Email sign-in is on by default. Supabase's built-in email sender allows only a few emails per hour,
-which is fine for a class demo; for more, connect your own email service under **Authentication → SMTP**.
+Email + password sign-in is on by default (**Authentication → Sign In / Providers → Email**). By default
+Supabase asks new users to confirm their email before the first login; turn off **Confirm email** there
+if you'd rather people get in straight away. Set the **minimum password length** to 8 to match the form.
+Supabase's built-in email sender allows only a few emails per hour, which is fine for a class demo; for
+more, connect your own email service under **Authentication → SMTP**.
 
 ## 3. Connect the site
 **Project Settings → API**: copy the **Project URL** and the **anon public** key. Both are meant to
