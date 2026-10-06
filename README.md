@@ -52,13 +52,13 @@ By default the app picks the best mix of price and travel time; you can switch o
 **Sights in the budget** come from the itinerary itself: the prices of the plan's activities for the days you'll spend in the city, plus a daily allowance for free days beyond the 3-day plan.
 
 **How trips are scored (1–10):** every trip gets one score that mixes
-- **Price:** how much of your budget it leaves (over budget scores 0 here).
-- **Timing:** how good your month is for that place.
+- **Price:** anything within budget is fine and cheaper is better (60% of budget scores 0.82, the full budget 0.5, over budget 0).
+- **Timing:** how good your month is for that place (an average month counts as decent, 0.7).
 - **Your interests:** how many of the interests you picked it matches (a city's day trips count a bit less). Left out if you pick none.
 - **Trip length:** whether your number of days suits the distance. Under 1½ hours away is best as 1–2 days, a 2–3½ hour trip as 2–3 days, a 3½–6 hour trip as 3–4 days, and farther trips as 4–5+ days. Day trips suit 1 day and weekend escapes 2.
 - **Your taste:** what the taste model predicts you'll think of it (below).
 
-With interests picked, the weights are 35% interests, 25% price, 20% timing and 20% trip length. Without them, they're 35% price, 35% timing and 30% trip length. The taste model then counts for 10% (from your profile alone) up to 30% (once you've rated 4+ places). Colors follow the score: teal is 7.5–10, gold 5.5–7.4, and rose is below 5.5 or over budget.
+With interests picked, the weights are 35% interests, 25% price, 20% timing and 20% trip length. Without them, they're 35% price, 35% timing and 30% trip length. Your taste then nudges the score up or down around neutral: by up to ±0.45 points from your profile alone, rising to ±1.35 once you've rated 4+ places. Colors follow the score: teal is 7.5–10, gold 5.5–7.4, and rose is below 5.5 or over budget.
 
 ## Places you've been and the taste model
 Add places you've been from the landing page, the **My trips** button or **I've been here** on any trip. They stop being suggested, and you can rate each one from 1 to 5 stars. Everything is saved in your browser only (localStorage): your search, your optional age range and travel style, and your ratings. Nothing is sent anywhere.

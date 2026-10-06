@@ -38,13 +38,16 @@ How Weekender turns open data and a few stated assumptions into a scored, priced
 
 Each trip gets components in 0…1:
 
-- **Price** = `1.15 − total / budget`, clamped to 0…1, and 0 if over budget.
-- **Timing** = `(month score − 1) / 4`.
+- **Price** = `1 − 0.5·(total / budget)²` within budget (60% of budget → 0.82, 80% → 0.68, 100% → 0.5), and 0 if over budget.
+- **Timing**: month score 1–5 → 0.15, 0.4, 0.7, 0.88, 1 (an average month is decent, not half marks).
 - **Interests** = the average over your picked interests of the city's tag strength. A day trip that covers the interest counts 0.6.
 - **Trip length**: the ideal length is set by hours each way (≤1.5 h → 1–2 days, ≤3.5 h → 2–3, ≤6 h → 3–4, farther → 4–5). The score drops by 0.4 per day beyond half a day off. A whole city in 1 day is ×0.85.
 
 `base = 0.35·interests + 0.25·price + 0.20·timing + 0.20·length`. With no interests picked, it is `0.35·price + 0.35·timing + 0.30·length`.
-`score = (1 − w)·base + w·taste`, where w grows from 0.10 to 0.30 as you rate places. Shown as `1 + 9·score`. Colors: 7.5+ teal, 5.5–7.4 gold, otherwise rose.
+`score = base + w·(taste − 0.5)`, clamped to 0…1, where w grows from 0.10 to 0.30 as you rate places: taste nudges the score around neutral instead of pulling every trip toward 0.5. Shown as `1 + 9·score`. Colors: 7.5+ teal, 5.5–7.4 gold, otherwise rose.
+
+### Calibration
+The first version scored too harshly: across 7,955 trips (8 home cities × 3 months × 2 trip lengths × 3 interest sets), the median was 5.6/10, top-5 picks had a median of 7.2, and 44% of trips showed red. Price and timing were linear (a trip using 60% of the budget got 0.55; an average month got 0.5), and neutral taste dragged good trips down. After recalibrating those three parts the median is 6.7, top-5 picks have a median of 8.2, and 11% show red.
 
 ## 4. Taste model
 

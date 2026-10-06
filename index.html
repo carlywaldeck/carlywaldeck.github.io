@@ -4232,7 +4232,12 @@ function estimateEscape(home, esc) {
 const SCORE_WEIGHTS = { interest: 0.35, price: 0.25, season: 0.2, length: 0.2 };
 const SCORE_WEIGHTS_NO_INTERESTS = { price: 0.35, season: 0.35, length: 0.3 };
 
-function priceScore(total) { return total > state.budget ? 0 : Math.max(0, Math.min(1, 1.15 - total / state.budget)); }
+// Price: anything within budget is fine, cheaper is better, and it only gets steep near the limit
+// (60% of budget → 0.82, 80% → 0.68, 100% → 0.5; over budget → 0).
+function priceScore(total) { const f = total / state.budget; return f > 1 ? 0 : Math.max(0, 1 - 0.5 * f * f); }
+// Timing: the 1–5 month rating, with an average month counting as decent rather than half marks.
+const SEASON_SCORE = [0.15, 0.4, 0.7, 0.88, 1];
+function seasonScore(s) { const i = Math.max(1, Math.min(5, s)) - 1, lo = Math.floor(i); return SEASON_SCORE[lo] + (SEASON_SCORE[Math.min(4, lo + 1)] - SEASON_SCORE[lo]) * (i - lo); }
 
 // Best trip length for a trip, from how long it takes to get there (hours each way).
 function idealDays(hours, escape) {
@@ -4249,7 +4254,9 @@ function scoreTrip(parts) {
   const wts = parts.interest == null ? SCORE_WEIGHTS_NO_INTERESTS : SCORE_WEIGHTS;
   const base = Object.entries(wts).reduce((s, [k, w]) => s + w * parts[k], 0);
   const wT = tasteWeight();
-  const s = parts.taste == null || !wT ? base : (1 - wT) * base + wT * parts.taste;
+  // Taste nudges the score up or down around neutral (0.5 = no opinion), by up to ±wT/2:
+  // a place you'll probably love gains up to 1.35 points, one you probably won't loses as much.
+  const s = parts.taste == null || !wT ? base : Math.max(0, Math.min(1, base + wT * (parts.taste - 0.5)));
   return { score: s, score10: Math.round((1 + 9 * s) * 10) / 10 };
 }
 
@@ -4289,7 +4296,7 @@ function findTripsFor() {
     const viaDayTrip = wanted.filter(i => !dest.interests.includes(i) && tripTags.has(i));
     const parts = {
       price: priceScore(cost.total),
-      season: (dest.season[state.month] - 1) / 4,
+      season: seasonScore(dest.season[state.month]),
       interest: wanted.length ? wanted.reduce((s, i) => s + Math.max(strength(dest, i), tripTags.has(i) ? 0.6 : 0), 0) / wanted.length : null,
       length: lengthScore(state.days, cost.transport.hours, null),
       taste: tasteFor(dest.id)
@@ -4304,7 +4311,7 @@ function findTripsFor() {
     const matched = wanted.filter(i => esc.tags.includes(i));
     const parts = {
       price: priceScore(cost.total),
-      season: (home.season[state.month] - 1) / 4,
+      season: seasonScore(home.season[state.month]),
       interest: wanted.length ? matched.length / wanted.length : null,
       length: lengthScore(state.days, cost.transport.hours, esc),
       taste: tasteFor(esc.id)
