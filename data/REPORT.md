@@ -72,17 +72,17 @@ Agreement = share of cities where the hand-picked tag and the data (top 40% of c
 | snow | 94% | Kraków, Granada, Munich, Sofia, Tbilisi | – |
 | wildlife | 69% | Valencia, Edinburgh, Stockholm, Agadir, Paphos | Paris, London, Amsterdam, Berlin, Prague |
 | desert | 88% | Naples, Marrakech, Agadir, Tunis, Amman | Athens, Lyon, Bologna, Fez, Cologne |
-| vintage | 59% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
-| books | 59% | – | Barcelona, Madrid, Lisbon, Paris, London |
+| vintage | 58% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
+| books | 59% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
 | vegan | 59% | – | Barcelona, Madrid, Lisbon, Paris, London |
 | cycling | 59% | – | Barcelona, Madrid, Seville, Lisbon, Paris |
 | caves | 59% | – | Barcelona, Lisbon, Prague, Vienna, Budapest |
-| themeparks | 61% | – | Porto, Paris, London, Amsterdam, Berlin |
-| gardens | 61% | – | Barcelona, Madrid, Seville, Lisbon, Porto |
+| themeparks | 60% | – | Porto, Paris, London, Amsterdam, Berlin |
+| gardens | 59% | – | Barcelona, Madrid, Seville, Lisbon, Porto |
 | climbing | 59% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
-| lgbtq | 62% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
-| games | 58% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
-| students | 59% | – | Barcelona, Madrid, Lisbon, Paris, London |
+| lgbtq | 58% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
+| games | 60% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
+| students | 58% | – | Barcelona, Madrid, Seville, Lisbon, Paris |
 | offbeat | 63% | Bologna, Ljubljana, Gdańsk, Riga, Sofia | Granada, Dubrovnik, Split, Valletta, Palma de Mallorca |
 
 ## Coverage
@@ -95,9 +95,11 @@ Agreement = share of cities where the hand-picked tag and the data (top 40% of c
 
 ## Problems on this run
 
-- osm vilnius: all Overpass servers failed
-- osm bordeaux: all Overpass servers failed
-- osm hamburg: all Overpass servers failed
-- osm cologne: all Overpass servers failed
-- osm oslo: all Overpass servers failed
+- osm santiago: all Overpass servers failed
+- osm yerevan: all Overpass servers failed
+- osm poznan: all Overpass servers failed
+- osm nicosia: all Overpass servers failed
+- osm santorini: all Overpass servers failed
+- osm zakynthos: all Overpass servers failed
+- osm trieste: all Overpass servers failed
 - time budget reached during osm; remaining cities keep their previous values
