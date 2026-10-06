@@ -120,7 +120,14 @@ export default async function run() {
 
     // 8. Accounts (with a fake Supabase): the emailed link signs you in, data from the account
     // merges into this browser, and later changes are saved back to the account.
-    const calls = { posts: [] };
+    const calls = { posts: [], ratings: [] };
+    // Other travelers' ratings: people who love Lisbon also love Porto; Seville splits them.
+    const crowdRows = [];
+    for (let i = 0; i < 8; i++) {
+      const fan = i < 6;
+      crowdRows.push({ rater: "r" + i, place: "lisbon", stars: fan ? 5 : 2 }, { rater: "r" + i, place: "porto", stars: fan ? 5 : 2 },
+        { rater: "r" + i, place: "seville", stars: fan ? 2 : 5 }, { rater: "r" + i, place: "prague", stars: 3 });
+    }
     const remote = { been: { rome: { r: 4, n: "Rome" } }, saved: [] };
     const setup = async (page) => {
       await page.addInitScript(() => { window.WEEKENDER_SUPABASE_URL = "https://fake.supabase.co"; window.WEEKENDER_SUPABASE_KEY = "anon"; });
@@ -134,6 +141,8 @@ export default async function run() {
         }
         if (u.pathname === "/auth/v1/user" && r.request().method() === "PUT") { calls.userUpdate = JSON.parse(r.request().postData()); return json({ id: "user-2", user_metadata: calls.userUpdate.data || { name: "Carly" } }); }
         if (u.pathname === "/auth/v1/logout") return r.fulfill({ status: 204, body: "" });
+        if (u.pathname === "/rest/v1/ratings_anon") return json(crowdRows);
+        if (u.pathname === "/rest/v1/ratings") { calls.ratings.push([r.request().method(), r.request().postData() && JSON.parse(r.request().postData())]); return r.fulfill({ status: 204, body: "" }); }
         if (u.pathname === "/auth/v1/user") return json({ id: "user-1", email: "student@school.edu" });
         if (u.pathname === "/rest/v1/profiles" && r.request().method() === "GET") return json([{ data: remote }]);
         if (u.pathname === "/rest/v1/profiles") { calls.posts.push(JSON.parse(r.request().postData())); return r.fulfill({ status: 201, body: "" }); }
@@ -189,6 +198,17 @@ export default async function run() {
     await lp.click("#auth-form button[type=submit]");
     await lp.waitForSelector(".form-error");
     t.check(/don't match/.test(await lp.textContent(".form-error")), "a wrong password shows a clear error");
+    // 9. Collaborative filtering: rating Lisbon 5★ makes Porto (loved by the same travelers) a strong pick.
+    const cf = await lp.evaluate(() => {
+      markBeen("lisbon", 5); markBeen("seville", 1); update();
+      const p = crowdPredict("porto"), s = crowdPredict("prague");
+      const tr = current.trips.find((x) => x.dest.id === "porto");
+      return { raters: CROWD.raters, porto: p, prague: s, why: tr ? tasteReason(tr) : "" };
+    });
+    t.check(cf.raters === 8 && cf.porto && cf.porto.because === "lisbon" && cf.porto.v > 0.8 && (!cf.prague || cf.porto.v > cf.prague.v),
+      `travelers who liked Lisbon also liked Porto (porto ${cf.porto && cf.porto.v.toFixed(2)}, prague ${cf.prague && cf.prague.v.toFixed(2)})`);
+    t.check(/travelers who liked Lisbon also liked it/.test(cf.why), `the score explains the crowd signal (${cf.why})`);
+    t.check(calls.ratings.some(([m, body]) => m === "POST" && Array.isArray(body) && body.some((x) => x.place === "rome" && x.stars === 4)), "your ratings are shared with the model when logged in");
     t.check(!ap.errors.length && !lp.errors.length, `account page errors: ${[...ap.errors, ...lp.errors].join("; ")}`);
   } finally {
     await browser.close();

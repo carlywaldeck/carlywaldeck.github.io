@@ -67,7 +67,7 @@ The taste model is a small machine-learning model that runs in the page:
 - **Learning:** ridge regression pulled toward that prior, `w = (XᵀX + λI)⁻¹ (Xᵀy + λ·w₀)` with λ = 1.5, where y is each rating mapped to −1…+1. It's solved exactly (Gaussian elimination) and retrains instantly on every change. With few ratings it stays close to the prior; each rating moves it toward your real taste.
 - **Explanations:** the plan shows why a place scored as it did, e.g. "similar to Barcelona, which you rated 5★" (cosine similarity to your rated places) or "you tend to rate beach places highly" (the biggest positive weight). The My trips panel shows what the model has learned overall.
 
-Because the app has no server, the model only learns from your own ratings. Learning from other travelers who share your age, travel style and interests (collaborative filtering) would need a shared database of ratings; that would be a natural next step.
+**Travelers like you (collaborative filtering):** with accounts on, star ratings are shared anonymously and a second model, item-based collaborative filtering, learns which places the same people rate alike ("travelers who liked Lisbon also liked Porto"). It's blended into the taste score as more people rate places. Details: [docs/METHODS.md](docs/METHODS.md).
 
 ## Milestones
 - [x] Week 3: Idea set

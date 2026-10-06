@@ -5273,23 +5273,108 @@ function trainTaste() {
   TASTE.w = solve(A, b);
   TASTE.bias = yMean * rows.length / (rows.length + 2); // shrink toward "neutral" with few ratings
 }
-// How much the taste model counts toward the score: 10% from your profile alone, up to 30% with 4+ ratings.
-const tasteWeight = () => TASTE.w ? Math.min(0.3, 0.1 + 0.05 * TASTE.n) : 0;
+// How much taste counts toward the score: 10% from your profile alone (or from other travelers'
+// ratings), up to 30% with 4+ ratings of your own.
+const tasteWeight = () => TASTE.w ? Math.min(0.3, 0.1 + 0.05 * TASTE.n) : CROWD.raters >= 3 ? 0.1 : 0;
 const tasteCache = new Map();
+
+// ---------------------------------------------------------------- travelers like you (collaborative filtering)
+// Item-based collaborative filtering over every traveler's star ratings (shared anonymously; see
+// docs/ACCOUNTS.md). Two places count as similar when the same people rate them alike: adjusted
+// cosine similarity (each rating minus that person's average), shrunk toward 0 when few people rated
+// both. Your predicted rating for a place is your average plus the similarity-weighted deviations of
+// the places you've rated. With no ratings of your own, it falls back to how travelers rate the place
+// overall (a Bayesian average, so one 5★ doesn't beat fifty 4★s).
+let CROWD = { raters: 0, ratings: 0, sims: new Map(), avg: new Map(), v: 0 };
+function buildCrowd(rows) {
+  const byRater = new Map();
+  for (const { rater, place, stars } of rows) {
+    if (!(stars >= 1 && stars <= 5) || !beenPlace(place)) continue;
+    if (!byRater.has(rater)) byRater.set(rater, new Map());
+    byRater.get(rater).set(place, stars);
+  }
+  const dot = new Map(), sq = new Map(), co = new Map(), sum = new Map(), cnt = new Map();
+  let all = 0, n = 0;
+  for (const m of byRater.values()) {
+    const items = [...m.entries()], mean = items.reduce((s, [, r]) => s + r, 0) / items.length;
+    const dev = items.map(([p, r]) => [p, r - mean]);
+    for (const [p, r] of items) { sum.set(p, (sum.get(p) || 0) + r); cnt.set(p, (cnt.get(p) || 0) + 1); all += r; n++; }
+    for (const [p, d] of dev) sq.set(p, (sq.get(p) || 0) + d * d);
+    for (let i = 0; i < dev.length; i++) for (let j = i + 1; j < dev.length; j++) {
+      const [a, da] = dev[i], [b, db] = dev[j], k = a < b ? a + "|" + b : b + "|" + a;
+      dot.set(k, (dot.get(k) || 0) + da * db); co.set(k, (co.get(k) || 0) + 1);
+    }
+  }
+  const sims = new Map(), add = (a, b, s) => { if (!sims.has(a)) sims.set(a, new Map()); sims.get(a).set(b, s); };
+  for (const [k, d] of dot) {
+    const [a, b] = k.split("|"), c = co.get(k), den = Math.sqrt(sq.get(a) * sq.get(b));
+    if (c < 2 || !den) continue;
+    const s = (d / den) * (c / (c + 3)); // fewer co-raters → less trust
+    add(a, b, s); add(b, a, s);
+  }
+  const prior = n ? all / n : 3.5, avg = new Map();
+  for (const [p, c] of cnt) avg.set(p, { r: (sum.get(p) + 5 * prior) / (c + 5), n: c });
+  CROWD = { raters: byRater.size, ratings: n, sims, avg, v: CROWD.v + 1 };
+  tasteCache.clear();
+}
+// Predicted rating (0–1) for a place from other travelers, plus the rated place that drove it.
+function crowdPredict(id) {
+  if (CROWD.raters < 3) return null;
+  const mine = Object.entries(been).filter(([, b]) => b.r > 0).map(([p, b]) => [p, b.r]);
+  const sims = CROWD.sims.get(id), avg = CROWD.avg.get(id);
+  if (mine.length && sims) {
+    const mean = mine.reduce((s, [, r]) => s + r, 0) / mine.length;
+    let num = 0, den = 0, best = null;
+    for (const [p, r] of mine) {
+      const s = sims.get(p);
+      if (!(s > 0)) continue;
+      num += s * (r - mean); den += s;
+      if (r >= 4 && (!best || s > best.s)) best = { p, s };
+    }
+    if (den >= 0.15) {
+      const r = Math.max(1, Math.min(5, mean + num / den));
+      return { v: (r - 1) / 4, because: best && best.s > 0.25 ? best.p : null };
+    }
+  }
+  return avg && avg.n >= 3 ? { v: (avg.r - 1) / 4, popular: avg } : null;
+}
+async function loadCrowd() {
+  if (!cloudOn()) return;
+  try {
+    buildCrowd((await sb("/rest/v1/ratings_anon?select=rater,place,stars&limit=50000")) || []);
+    update();
+  } catch { /* not set up yet: the personal model works on its own */ }
+}
+// Share your star ratings (anonymously) so the model can learn from everyone. Logged-in only.
+async function pushRatings() {
+  const token = await accessToken(), a = auth.get();
+  if (!token || !a) return;
+  const rows = Object.entries(been).filter(([, b]) => b.r > 0).map(([place, b]) => ({ user_id: a.id, place, stars: b.r }));
+  if (rows.length) await sb("/rest/v1/ratings", { method: "POST", token, headers: { Prefer: "resolution=merge-duplicates,return=minimal" }, body: rows });
+  const keep = rows.map(r => `"${r.place}"`).join(",");
+  await sb(`/rest/v1/ratings?user_id=eq.${a.id}${keep ? `&place=not.in.(${keep})` : ""}`, { method: "DELETE", token });
+}
+// Taste 0–1: your own model (features of the place) blended with what travelers like you rated it.
+// The crowd part counts more as more travelers rate places (up to half).
 function tasteFor(id) {
-  if (!TASTE.w) return null;
-  const key = TASTE.v + "|" + id;
+  const key = TASTE.v + "|" + CROWD.v + "|" + id;
   if (tasteCache.has(key)) return tasteCache.get(key);
   const pl = beenPlace(id);
-  if (!pl) return null;
-  const x = features(pl);
-  const y = TASTE.bias + x.reduce((s, v, i) => s + v * TASTE.w[i], 0);
-  const v = Math.max(0, Math.min(1, 0.5 + 0.5 * y));
+  let v = null;
+  if (pl && TASTE.w) {
+    const x = features(pl);
+    v = Math.max(0, Math.min(1, 0.5 + 0.5 * (TASTE.bias + x.reduce((s, xi, i) => s + xi * TASTE.w[i], 0))));
+  }
+  const c = pl ? crowdPredict(id) : null;
+  if (c) { const wc = Math.min(0.5, CROWD.raters / 40); v = v == null ? c.v : (1 - wc) * v + wc * c.v; }
   tasteCache.set(key, v);
   return v;
 }
 // A short "why": the rated place it's most similar to, or the interest that pushed it up most.
 function tasteReason(t) {
+  const c = crowdPredict(t.dest.id);
+  if (c && c.because && c.v >= 0.6) return `travelers who liked ${beenPlace(c.because).name} also liked it`;
+  if (!TASTE.w && c && c.popular && c.v >= 0.6) return `rated ${c.popular.r.toFixed(1)}★ by ${c.popular.n} Weekender travelers`;
   if (!TASTE.w) return "";
   const pl = beenPlace(t.dest.id);
   if (!pl) return "";
@@ -5331,7 +5416,8 @@ const profileSelects = (pre) => `<div class="profile-row">
 </div>`;
 function tasteHtml() {
   const n = TASTE.n;
-  const about = `<h3>About you</h3>${profileSelects("pp")}`;
+  const crowd = CROWD.raters >= 3 ? `<p class="note crowd-note">Also learning from ${CROWD.ratings} ratings by ${CROWD.raters} Weekender travelers: places people like you rated highly score higher.</p>` : "";
+  const about = `<h3>About you</h3>${profileSelects("pp")}${crowd}`;
   if (!TASTE.w) return `${about}<h3 class="taste-h">Your taste</h3><p class="note">Pick some interests, tell us a bit about you, or rate places you've been, and every score starts adapting to you.</p>`;
   const s = tasteSummary();
   const src = [state.interests.size ? "your interests" : "", state.profile.age || state.profile.with ? "your profile" : "", n ? `${n} rating${n > 1 ? "s" : ""}` : ""].filter(Boolean);
@@ -5518,6 +5604,7 @@ async function pullCloud() {
 async function pushCloud(data = syncPart(store.get())) {
   const token = await accessToken(), a = auth.get();
   if (!token || !a) return;
+  pushRatings().catch(() => { /* ratings table not set up yet */ });
   await sb("/rest/v1/profiles", { method: "POST", token, headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
     body: { id: a.id, data, updated_at: new Date().toISOString() } });
 }
@@ -6664,6 +6751,7 @@ document.addEventListener("submit", (e) => {
   if (id === "acct-form" || id === "pass-form") { e.preventDefault(); handleAccountForm(e.target); }
 });
 readAuthLink();
+loadCrowd();
 $("#acct-btn").addEventListener("click", () => openLogin(auth.get() ? undefined : "login"));
 $("#lp-login").addEventListener("click", () => openLogin(auth.get() ? undefined : "login"));
 $("#login-modal").addEventListener("click", (e) => { if (e.target.id === "login-modal") closeLogin(); });

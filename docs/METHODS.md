@@ -54,6 +54,26 @@ This is ridge regression in the browser, with no server.
 - The model solves `w = (XᵀX + λI)⁻¹(Xᵀy + λ·w₀)` with λ = 1.5. The prior `w₀` comes from your picked interests plus small, stated nudges for age range and travel style. With few ratings the model stays near the prior; each rating pulls it toward your real taste.
 - Explanations use cosine similarity to places you rated ("similar to Barcelona, which you rated 5★") or the largest learned weight.
 
+## 4b. Travelers like you (collaborative filtering)
+The second model learns from **everyone's** ratings, not just yours. It is **item-based collaborative
+filtering**, the approach behind "customers who bought this also bought":
+- Ratings from logged-in travelers are shared anonymously (`ratings_anon` has no account ids).
+- Two places are similar when the same people rate them alike: **adjusted cosine similarity**, where
+  each rating is centered on that traveler's own average (some people rate everything 5★). The
+  similarity is shrunk by c/(c+3), with c the number of people who rated both, so a similarity backed
+  by two people counts less than one backed by twenty.
+- Your predicted rating for a place = your average rating + the similarity-weighted average of how far
+  your ratings of similar places sit above or below your average.
+- With no ratings of your own, it uses how travelers rate the place overall: a **Bayesian average**
+  (5 imaginary ratings at the overall average), so one 5★ doesn't outrank fifty 4★s.
+- It's blended into the taste part of the score with weight min(0.5, travelers/40), so it matters
+  more as more people use the site, and it adds explanations such as "travelers who liked Lisbon also
+  liked it".
+
+Limitation: like all collaborative filtering it needs data. With fewer than 3 raters it switches off
+and the personal model (section 4) works alone; places nobody has rated get no crowd signal (the
+"cold start" problem), which is why the personal content-based model stays in the mix.
+
 ## 5. Tailored itineraries
 
 Each of the 1,080 itinerary activities (120 cities × 3 days × 3 slots) is tagged with interests by keyword rules ("Picasso Museum" → Art & museums). About 85% get at least one tag. Days are reordered so the days that best match your interests come first, so a 2-day trip keeps the two days that suit you. The budget prices exactly the days shown. Matching activities are marked ✓. If an interest isn't covered by the city days, the plan suggests the day trip that covers it.
