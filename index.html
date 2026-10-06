@@ -506,6 +506,7 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
 .travel-banner > div { flex: 1; min-width: 0; }
 body.travel-mode .panel, body.travel-mode #spot, body.travel-mode .legend, body.travel-mode .drawer { display: none !important; }
 @media (max-width: 760px) { .acct-stats { grid-template-columns: repeat(2, 1fr); } .travel-banner { top: auto; bottom: 16px; flex-direction: column; align-items: stretch; } }
+.acct-pane .city-list, .been-pop .city-list { position: static; width: 100%; margin-top: 6px; max-height: 240px; }
 </style>
 </head>
 <body>
@@ -546,7 +547,7 @@ body.travel-mode .panel, body.travel-mode #spot, body.travel-mode .legend, body.
     <h3 id="been-label">Places I've been</h3>
     <p class="note">They won't be suggested again. Rate them and your scores start to follow your taste.</p>
     <div class="city-search">
-      <input id="been-input" type="text" role="combobox" aria-labelledby="been-label" aria-autocomplete="list" aria-expanded="false" aria-controls="been-list" autocomplete="off" spellcheck="false" placeholder="Add a city you've visited">
+      <input id="been-input" type="text" role="combobox" aria-labelledby="been-label" aria-autocomplete="list" aria-expanded="false" aria-controls="been-list" autocomplete="off" spellcheck="false" placeholder="Add any city or town you've visited">
       <ul id="been-list" class="city-list" role="listbox" aria-labelledby="been-label" hidden></ul>
     </div>
   </div>
@@ -644,7 +645,7 @@ body.travel-mode .panel, body.travel-mode #spot, body.travel-mode .legend, body.
       <div class="lp-field lp-guest"><span>A bit about you <small>optional: helps us suggest trips</small></span><div id="lp-profile"></div></div>
       <div class="lp-field lp-guest"><span id="lp-been-label">Places you've already been <small>optional</small></span>
         <div class="city-search">
-          <input id="lp-been-input" type="text" role="combobox" aria-labelledby="lp-been-label" aria-autocomplete="list" aria-expanded="false" aria-controls="lp-been-list" autocomplete="off" spellcheck="false" placeholder="Add a city you've visited">
+          <input id="lp-been-input" type="text" role="combobox" aria-labelledby="lp-been-label" aria-autocomplete="list" aria-expanded="false" aria-controls="lp-been-list" autocomplete="off" spellcheck="false" placeholder="Add any city or town you've visited">
           <ul id="lp-been-list" class="city-list" role="listbox" aria-labelledby="lp-been-label" hidden></ul>
         </div>
         <ul class="been-items" id="lp-been"></ul>
@@ -5187,12 +5188,18 @@ function saveBeen() { store.set({ been }); trainTaste(); }
 // Look up what a been-key refers to: a city, or an escape near a home city.
 function beenPlace(id) {
   const c = byId(id);
-  if (c) return { name: c.name, sub: c.country, city: c };
+  if (c) return { name: c.name, sub: c.country, city: c, country: c.country };
+  // Any other place in the world (added from the place search): stored with its own coordinates.
+  if (id.startsWith("geo:")) {
+    const g = been[id] || GEO_CACHE.get(id);
+    return g ? { name: g.n, sub: [g.a, g.c].filter(Boolean).join(", "), geo: { lat: g.lat, lon: g.lon }, country: g.c } : null;
+  }
   const m = id.match(/^([a-z]+)-(day|wkd)-(\d+)$/);
   const home = m && byId(m[1]);
   const e = home && (m[2] === "day" ? home.dayTrips : home.weekends)[Number(m[3])];
-  return e ? { name: e.name, sub: `Near ${home.name}`, escape: e, home } : null;
+  return e ? { name: e.name, sub: `Near ${home.name}`, escape: e, home, country: home.country } : null;
 }
+const GEO_CACHE = new Map();
 
 // ---- The taste model: ridge regression (a regularized linear model) trained in the browser.
 // Each place is described by 32 numbers: its 29 interest tags (a city's day trips count a little),
@@ -5278,7 +5285,7 @@ let TASTE = { n: 0, w: null, bias: 0, rows: [], v: 0 };
 function trainTaste() {
   const rows = Object.entries(been)
     .filter(([, b]) => b.r > 0)
-    .map(([id, b]) => { const pl = beenPlace(id); return pl ? { id, name: pl.name, r: b.r, x: features(pl), y: (b.r - 3) / 2 } : null; })
+    .map(([id, b]) => { const pl = beenPlace(id); return pl && (pl.city || pl.escape) ? { id, name: pl.name, r: b.r, x: features(pl), y: (b.r - 3) / 2 } : null; })
     .filter(Boolean);
   TASTE = { n: rows.length, w: null, bias: 0, rows, v: TASTE.v + 1 };
   tasteCache.clear();
@@ -5310,7 +5317,7 @@ let CROWD = { raters: 0, ratings: 0, sims: new Map(), avg: new Map(), v: 0 };
 function buildCrowd(rows) {
   const byRater = new Map();
   for (const { rater, place, stars } of rows) {
-    if (!(stars >= 1 && stars <= 5) || !beenPlace(place)) continue;
+    if (!(stars >= 1 && stars <= 5) || !(beenPlace(place) || place.startsWith("geo:"))) continue;
     if (!byRater.has(rater)) byRater.set(rater, new Map());
     byRater.get(rater).set(place, stars);
   }
@@ -5689,7 +5696,7 @@ const field = (id, label, type, extra = "") => `<label class="f"><span>${label}<
 let acctTab = "profile";
 function acctStatsHtml() {
   const nPlaces = Object.keys(been).length, nRated = Object.values(been).filter(b => b.r > 0).length;
-  const countries = new Set(Object.keys(been).map(id => { const pl = beenPlace(id); return pl && (pl.city ? pl.city.country : pl.home.country); }).filter(Boolean)).size;
+  const countries = new Set(Object.keys(been).map(id => { const pl = beenPlace(id); return pl && pl.country; }).filter(Boolean)).size;
   const stat = (n, label, tab) => `<button type="button" data-act="acct-tab" data-v="${tab}"><b>${n}</b><span>${label}</span></button>`;
   return `<div class="acct-stats" id="acct-stats">${stat(saved.length, `saved trip${saved.length === 1 ? "" : "s"}`, "trips")}${stat(nPlaces, `place${nPlaces === 1 ? "" : "s"} visited`, "places")}${stat(countries, `countr${countries === 1 ? "y" : "ies"}`, "places")}${stat(nRated, `rated`, "places")}</div>`;
 }
@@ -5714,7 +5721,7 @@ function accountPage() {
     trips: `<p class="note">Trips you saved with ☆ Save. Open one to see its plan again.</p><ul class="been-items saved-items" id="acct-saved">${savedHtml()}</ul>`,
     places: `<button type="button" class="cta map-cta" data-act="travel-map">🌍 See my travel map</button>
       <p class="note">Add the places you've been, when you went, and how much you liked them. Your ratings teach Weekender your taste.</p>
-      <div class="city-search"><input id="acct-been-input" type="text" role="combobox" aria-label="Add a place you've been" aria-autocomplete="list" aria-expanded="false" aria-controls="acct-been-list" autocomplete="off" spellcheck="false" placeholder="Add a city you've visited">
+      <div class="city-search"><input id="acct-been-input" type="text" role="combobox" aria-label="Add a place you've been" aria-autocomplete="list" aria-expanded="false" aria-controls="acct-been-list" autocomplete="off" spellcheck="false" placeholder="Add any city or town you've visited">
         <ul id="acct-been-list" class="city-list" role="listbox" hidden></ul></div>
       <ul class="been-items acct-been" id="acct-been">${beenListHtml()}</ul>`
   }[acctTab];
@@ -5740,7 +5747,7 @@ function renderAccount() {
   if (a && acctView !== "newpass") {
     body.innerHTML = accountPage();
     $("#login-modal .modal-card").classList.add("wide");
-    if ($("#acct-been-input")) makeCitySearch($("#acct-been-input"), $("#acct-been-list"), { text: () => "", pick: (id) => { markBeen(id, 0); update(); }, exclude: (c) => !!been[c.id] || c.id === state.home, prefix: "ab" });
+    if ($("#acct-been-input")) makePlaceSearch($("#acct-been-input"), $("#acct-been-list"), addVisited);
     return;
   }
   $("#login-modal .modal-card").classList.remove("wide");
@@ -5838,8 +5845,9 @@ function renderBeen() {
 }
 function markBeen(id, rating = 0) {
   const pl = beenPlace(id);
-  if (!pl || id === state.home) return;
-  been[id] = { r: rating, n: pl.name };
+  if (!pl) return;
+  const g = id.startsWith("geo:") ? GEO_CACHE.get(id) || been[id] : null;
+  been[id] = { ...(been[id] || {}), ...(g || {}), r: rating, n: pl.name };
   saveBeen();
 }
 function renderRatingPrompt(spot) {
@@ -6383,6 +6391,7 @@ function placeCoord(id) {
   const pl = beenPlace(id);
   if (!pl) return null;
   if (pl.city) return [pl.city.lon, pl.city.lat];
+  if (pl.geo) return [pl.geo.lon, pl.geo.lat];
   const p = (PLACES[pl.escape.name] || [])[0];
   return p ? [p[1], p[0]] : null;
 }
@@ -6394,7 +6403,7 @@ function travelStops() {
 }
 function travelBanner() {
   const { dated, undated } = travelStops(), all = [...dated, ...undated];
-  const countries = new Set(all.map(id => { const pl = beenPlace(id); return pl.city ? pl.city.country : pl.home.country; }));
+  const countries = new Set(all.map(id => beenPlace(id).country).filter(Boolean));
   let km = 0;
   for (let i = 1; i < dated.length; i++) km += d3.geoDistance(placeCoord(dated[i - 1]), placeCoord(dated[i])) * 6371;
   const rated = all.filter(id => been[id].r > 0), fav = [...rated].sort((a, b) => been[b].r - been[a].r)[0];
@@ -6687,6 +6696,79 @@ function makeCitySearch(input, list, { text, pick, exclude = () => false, prefix
   return { refresh: () => { input.value = text(); } };
 }
 
+// ---- place search for "places you've been": Weekender's own places first, then any city, town or
+// village in the world from the Open-Meteo geocoding API (free, no key, GeoNames data).
+const LOCAL_PLACES = (() => {
+  const out = [], seen = new Set();
+  for (const c of CITIES) { out.push({ id: c.id, name: c.name, sub: c.country }); seen.add(fold(c.name)); }
+  for (const c of CITIES) for (const [kind, list] of [["day", c.dayTrips], ["wkd", c.weekends || []]]) list.forEach((e, i) => {
+    if (seen.has(fold(e.name))) return;
+    seen.add(fold(e.name)); out.push({ id: `${c.id}-${kind}-${i}`, name: e.name, sub: `Near ${c.name}` });
+  });
+  return out;
+})();
+async function geocode(q) {
+  const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=8&language=en&format=json`);
+  const d = await res.json();
+  return (d.results || []).map(r => {
+    const g = { id: `geo:${r.id}`, n: r.name, a: r.admin1 && r.admin1 !== r.name ? r.admin1 : "", c: r.country || "", lat: r.latitude, lon: r.longitude };
+    GEO_CACHE.set(g.id, g);
+    return { id: g.id, name: g.n, sub: [g.a, g.c].filter(Boolean).join(", ") };
+  });
+}
+function makePlaceSearch(input, list, onPick) {
+  let items = [], active = 0, timer, seq = 0;
+  const esc = (s) => String(s).replace(/[&<>"]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]));
+  function show(q, remote, loading) {
+    const f = fold(q.trim());
+    const local = f ? LOCAL_PLACES.filter(p => !been[p.id] && fold(p.name).includes(f))
+      .sort((a, b) => (fold(a.name).startsWith(f) ? 0 : 1) - (fold(b.name).startsWith(f) ? 0 : 1)).slice(0, 5) : [];
+    const names = new Set(local.map(p => fold(p.name)));
+    const world = (remote || []).filter(p => !been[p.id] && !names.has(fold(p.name)));
+    items = [...local, ...world];
+    active = 0;
+    list.innerHTML = !f ? "" : items.length
+      ? items.map((p, i) => `<li role="option" data-i="${i}" aria-selected="${i === active}"><span class="nm">${esc(p.name)}</span><small>${esc(p.sub)}</small></li>`).join("")
+        + (loading ? `<li class="empty">Searching more places…</li>` : "")
+      : `<li class="empty">${loading ? "Searching…" : `No place called “${esc(q)}” found`}</li>`;
+    list.hidden = !f;
+    input.setAttribute("aria-expanded", String(!!f));
+  }
+  function choose(i) {
+    const p = items[i];
+    if (!p) return;
+    onPick(p.id);
+    input.value = ""; list.hidden = true; items = [];
+    toast(`Added ${p.name}. Add the month you went and a rating below.`);
+  }
+  input.addEventListener("input", () => {
+    const q = input.value, my = ++seq;
+    show(q, [], q.trim().length >= 2);
+    clearTimeout(timer);
+    if (q.trim().length < 2) return;
+    timer = setTimeout(async () => {
+      let remote = [];
+      try { remote = await geocode(q.trim()); } catch { /* offline: Weekender places only */ }
+      if (my === seq) show(q, remote, false);
+    }, 250);
+  });
+  input.addEventListener("keydown", (e) => {
+    const opts = list.querySelectorAll("li[role=option]");
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      e.preventDefault();
+      if (!opts.length) return;
+      active = (active + (e.key === "ArrowDown" ? 1 : -1) + opts.length) % opts.length;
+      opts.forEach((li, j) => li.setAttribute("aria-selected", String(j === active)));
+      opts[active].scrollIntoView({ block: "nearest" });
+    } else if (e.key === "Enter") { e.preventDefault(); choose(active); }
+    else if (e.key === "Escape") { list.hidden = true; }
+  });
+  input.addEventListener("blur", () => setTimeout(() => { list.hidden = true; }, 150));
+  list.addEventListener("mousedown", (e) => e.preventDefault());
+  list.addEventListener("click", (e) => { const li = e.target.closest("li[data-i]"); if (li) choose(Number(li.dataset.i)); });
+}
+const addVisited = (id) => { markBeen(id, 0); update(); };
+
 function setHome(id) {
   if (!id || id === state.home) return;
   $("#home").value = id;
@@ -6697,7 +6779,7 @@ function setupCitySearch() {
   const homeName = () => byId(state.home).name;
   homeSearch = makeCitySearch($("#home-input"), $("#home-list"), { text: homeName, pick: setHome, prefix: "ho" });
   const addBeen = (id) => { markBeen(id, 0); update(); };
-  makeCitySearch($("#been-input"), $("#been-list"), { text: () => "", pick: addBeen, exclude: (c) => !!been[c.id] || c.id === state.home, prefix: "bn" });
+  makePlaceSearch($("#been-input"), $("#been-list"), addVisited);
 }
 
 
@@ -6736,7 +6818,7 @@ function setupLanding() {
   $("#lp-interests").innerHTML = order.map(k => `<button type="button" class="chip${POPULAR_INTERESTS.includes(k) ? "" : " extra"}" data-v="${k}">${INTERESTS[k]}</button>`).join("")
     + `<button type="button" class="chip more" id="lp-int-more" aria-expanded="false">+ ${order.length - POPULAR_INTERESTS.length} more</button>`;
   lpHomeSearch = makeCitySearch($("#lp-home-input"), $("#lp-home-list"), { text: () => byId(state.home).name, pick: setHome, prefix: "lh" });
-  makeCitySearch($("#lp-been-input"), $("#lp-been-list"), { text: () => "", pick: (id) => { markBeen(id, 0); update(); }, exclude: (c) => !!been[c.id] || c.id === state.home, prefix: "lb" });
+  makePlaceSearch($("#lp-been-input"), $("#lp-been-list"), addVisited);
   $("#lp-profile").innerHTML = profileSelects("lp");
   document.addEventListener("change", (e) => {
     const s = e.target.closest("select[data-profile]");

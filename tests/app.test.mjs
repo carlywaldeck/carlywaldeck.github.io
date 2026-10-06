@@ -236,6 +236,24 @@ export default async function run() {
     t.check(tm.travel && tm.panelHidden && /3 places/.test(tm.banner) && /3 countries/.test(tm.banner) && tm.stops.join() === "lisbon,paris,rome",
       `the travel map shows your places in the order you went (${tm.banner.trim().slice(0, 80)})`);
     t.check(tm.back, "Back to trips leaves the travel map");
+    // 11. Any place in the world: Weekender's places plus the geocoder (faked here).
+    const gp = await openApp(browser, { setup: async (page) => {
+      await page.route("https://geocoding-api.open-meteo.com/**", (r) => r.fulfill({ contentType: "application/json", body: JSON.stringify({ results: [
+        { id: 1857910, name: "Kyoto", latitude: 35.02, longitude: 135.75, country: "Japan", admin1: "Kyoto" },
+        { id: 3170647, name: "Pisa", latitude: 43.71, longitude: 10.4, country: "Italy", admin1: "Tuscany" }] }) }));
+    } });
+    await gp.evaluate(() => { closeLanding(false); document.querySelector("#been-btn").click(); });
+    await gp.fill("#been-input", "pisa");
+    await gp.waitForFunction(() => [...document.querySelectorAll("#been-list li[role=option]")].some((li) => /Pisa/.test(li.textContent)));
+    const pisaFirst = await gp.evaluate(() => document.querySelector("#been-list li[role=option]").textContent);
+    await gp.fill("#been-input", "kyoto");
+    await gp.waitForFunction(() => /Kyoto/.test(document.querySelector("#been-list").textContent) && !/Searching/.test(document.querySelector("#been-list").textContent));
+    await gp.click("#been-list li[role=option]");
+    const geo = await gp.evaluate(() => ({ entry: been["geo:1857910"], listed: document.querySelector("#been-items").textContent, coord: placeCoord("geo:1857910"), countries: (showTravelMap(), document.querySelector("#travel-banner").textContent) }));
+    t.check(/Pisa/.test(pisaFirst), `typing Pisa finds it (${pisaFirst})`);
+    t.check(geo.entry && geo.entry.c === "Japan" && /Kyoto/.test(geo.listed) && geo.coord && Math.round(geo.coord[0]) === 136 && /1 place/.test(geo.countries),
+      `any city in the world can be added and shows on the travel map (${JSON.stringify(geo.entry)})`);
+    t.check(!gp.errors.length, `place search errors: ${gp.errors}`);
     t.check(!ap.errors.length && !lp.errors.length, `account page errors: ${[...ap.errors, ...lp.errors].join("; ")}`);
   } finally {
     await browser.close();
