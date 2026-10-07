@@ -6430,23 +6430,47 @@ function globeInit() {
   globeResize();
   window.addEventListener("resize", () => { globeResize(); fitGlobe(false); });
 
-  // Drag to spin, scroll to zoom, hover and click markers.
+  // Drag to spin, pinch or scroll to zoom, hover and click markers. Every finger on the screen is
+  // tracked: one finger spins, two fingers pinch (and spin with their midpoint). When fingers are
+  // added or lifted the gesture restarts from where the globe is, so it never jumps.
+  const pointers = new Map();
   let drag = null;
+  const startGesture = () => {
+    const pts = [...pointers.values()];
+    if (!pts.length) { drag = null; return; }
+    const mid = pts.length > 1 ? { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 } : pts[0];
+    const dist = pts.length > 1 ? Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y) : 0;
+    drag = { x: mid.x, y: mid.y, dist, scale: G.scale, rot: [...G.rot], moved: drag ? drag.moved : false, pinch: pts.length > 1 || (drag && drag.pinch) };
+  };
+  const endPointer = (e) => {
+    pointers.delete(e.pointerId);
+    if (pointers.size) { startGesture(); return null; }
+    const done = drag;
+    drag = null; G.dragging = false; fx.classList.remove("grabbing"); globeDirty();
+    return done;
+  };
   fx.addEventListener("pointerdown", (e) => {
-    drag = { x: e.clientX, y: e.clientY, rot: [...G.rot], moved: false };
-    fx.setPointerCapture(e.pointerId);
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    try { fx.setPointerCapture(e.pointerId); } catch { /* pointer already gone */ }
+    startGesture();
   });
   fx.addEventListener("pointermove", (e) => {
-    if (drag) {
-      const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
-      if (Math.abs(dx) + Math.abs(dy) > 3) { drag.moved = true; G.dragging = true; fx.classList.add("grabbing"); }
-      if (drag.moved) {
-        const k = 57.3 / G.scale;
-        G.rot = [drag.rot[0] + dx * k, Math.max(-85, Math.min(85, drag.rot[1] - dy * k))];
-        G.anim = null; globeDirty();
-      }
+    if (pointers.has(e.pointerId)) {
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (!drag) return;
+      const pts = [...pointers.values()];
+      const two = pts.length > 1;
+      const mx = two ? (pts[0].x + pts[1].x) / 2 : pts[0].x, my = two ? (pts[0].y + pts[1].y) / 2 : pts[0].y;
+      const dx = mx - drag.x, dy = my - drag.y;
+      if (!drag.moved && (two || Math.abs(dx) + Math.abs(dy) > 4)) { drag.moved = true; G.dragging = true; fx.classList.add("grabbing"); }
+      if (!drag.moved) return;
+      if (two && drag.dist > 0) G.scale = clampScale(drag.scale * Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y) / drag.dist);
+      const k = 57.3 / G.scale;
+      G.rot = [drag.rot[0] + dx * k, Math.max(-85, Math.min(85, drag.rot[1] - dy * k))];
+      G.anim = null; globeDirty();
       return;
     }
+    if (e.pointerType !== "mouse") return;
     const hit = hitTest(e);
     if (hit !== ui.hover) {
       ui.hover = hit; G.fxDirty = true;
@@ -6455,12 +6479,15 @@ function globeInit() {
     }
   });
   fx.addEventListener("pointerup", (e) => {
-    const moved = drag && drag.moved;
-    drag = null; G.dragging = false; fx.classList.remove("grabbing"); globeDirty();
-    if (moved) return;
+    if (!pointers.has(e.pointerId)) return;
+    const done = endPointer(e);
+    if (!done || done.moved || done.pinch) return; // a spin or pinch, not a tap
     const hit = hitTest(e);
     if (hit) select(hit);
   });
+  fx.addEventListener("pointercancel", (e) => { if (pointers.has(e.pointerId)) endPointer(e); });
+  // iPhone Safari: a pinch on the globe zooms the globe, not the whole page.
+  fx.addEventListener("gesturestart", (e) => e.preventDefault());
   fx.addEventListener("pointerleave", () => { ui.hover = null; G.fxDirty = true; });
   fx.addEventListener("wheel", (e) => {
     e.preventDefault();

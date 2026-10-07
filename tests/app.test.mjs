@@ -213,6 +213,21 @@ export default async function run() {
     const phone = await m.evaluate(() => ({ w: document.documentElement.scrollWidth, bar: document.querySelector(".topbar").getBoundingClientRect().height }));
     t.check(phone.w <= 360, `no sideways scrolling on phones (page is ${phone.w}px)`);
     t.check(phone.bar < 70, `top bar fits on one line on phones (${Math.round(phone.bar)}px tall)`);
+    // Two-finger pinch on the globe zooms smoothly (each step bigger than the last, no jumps back).
+    const tp = await openApp(browser, { width: 390, height: 844, context: { hasTouch: true, isMobile: true } });
+    await tp.evaluate(() => closeLanding(false)); await tp.waitForTimeout(800);
+    const cdp = await tp.context().newCDPSession(tp);
+    const touch = (type, pts) => cdp.send("Input.dispatchTouchEvent", { type, touchPoints: pts.map(([x, y], id) => ({ x, y, id })) });
+    const s0 = await tp.evaluate(() => G.scale), scales = [];
+    await touch("touchStart", [[165, 220], [225, 220]]);
+    for (let i = 1; i <= 6; i++) { await touch("touchMove", [[165 - i * 8, 220], [225 + i * 8, 220]]); scales.push(await tp.evaluate(() => G.scale)); }
+    await touch("touchEnd", []);
+    t.check(scales.every((v, i) => v > (i ? scales[i - 1] : s0)) && scales[5] > s0 * 2.5, `pinching zooms the globe smoothly (${[s0, ...scales].map(Math.round).join(" → ")})`);
+    await touch("touchStart", [[200, 260]]);
+    for (let i = 1; i <= 4; i++) await touch("touchMove", [[200 + i * 10, 260]]);
+    await touch("touchEnd", []);
+    const after = await tp.evaluate(() => ({ dragging: G.dragging, scale: G.scale }));
+    t.check(!after.dragging && Math.abs(after.scale - scales[5]) < 1 && !tp.errors.length, `one finger then spins without changing the zoom (${JSON.stringify(after)}; ${tp.errors})`);
     t.check(!m.errors.length, `phone page errors: ${m.errors}`);
 
     // 8. Accounts (with a fake Supabase): the emailed link signs you in, data from the account
