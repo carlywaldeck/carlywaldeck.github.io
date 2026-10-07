@@ -1,6 +1,6 @@
 # Data report
 
-Generated 2026-10-06 by `scripts/build-data.mjs`. This compares the original hand-written estimates in the app with the values computed from open data.
+Generated 2026-10-07 by `scripts/build-data.mjs`. This compares the original hand-written estimates in the app with the values computed from open data.
 
 ## Best months (1–5 scores)
 
@@ -80,9 +80,9 @@ Agreement = share of cities where the hand-picked tag and the data (top 40% of c
 | themeparks | 61% | – | Porto, Paris, London, Amsterdam, Berlin |
 | gardens | 59% | – | Barcelona, Madrid, Seville, Lisbon, Porto |
 | climbing | 59% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
-| lgbtq | 58% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
-| games | 61% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
-| students | 60% | – | Barcelona, Madrid, Seville, Lisbon, Paris |
+| lgbtq | 59% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
+| games | 59% | – | Barcelona, Madrid, Seville, Lisbon, Porto |
+| students | 59% | – | Barcelona, Madrid, Seville, Lisbon, Paris |
 | offbeat | 63% | Bologna, Ljubljana, Gdańsk, Riga, Sofia | Granada, Dubrovnik, Split, Valletta, Palma de Mallorca |
 
 ## Coverage
@@ -95,21 +95,21 @@ Agreement = share of cities where the hand-picked tag and the data (top 40% of c
 
 ## Flight fares and the flight price model
 
-- Real round-trip fares (Travelpayouts / Aviasales, fetched 2026-10-06): **28228** route-months on **8872** routes, each the median of up to 5 weekly snapshots (1 so far)
-- Models: ridge regression on log(fare), trained on 22978 fares. "New route": 11 features (log distance, log distance², demand at destination that month, demand at home that month, destination price level, destination popularity, home popularity, how cheap flights from this airport are, how cheap flights to this airport are, how cheap this month is, short hop (< 500 km)). "Known route" adds: this route in other months, has other months, the reverse route, has reverse route
+- Real round-trip fares (Travelpayouts / Aviasales, fetched 2026-10-07): **30330** route-months on **9209** routes, each the median of up to 5 weekly snapshots (2 so far)
+- Models: ridge regression on log(fare), trained on 24642 fares. "New route": 11 features (log distance, log distance², demand at destination that month, demand at home that month, destination price level, destination popularity, home popularity, how cheap flights from this airport are, how cheap flights to this airport are, how cheap this month is, short hop (< 500 km)). "Known route" adds: this route in other months, has other months, the reverse route, has reverse route
 
 | Test | Typical error | Average error |
 |---|---|---|
-| New-route model, 1392 routes it never saw | **24%** | 35% |
+| New-route model, 1442 routes it never saw | **24%** | 34% |
 | Old distance formula, same routes | 35% | 41% |
-| Missing month: reverse route's real fare that month (1808 cases) | **16%** | 25% |
-| Missing month: known-route model (2537 cases) | **20%** | 27% |
-| **All flight prices people see** (17% real fares, 6% reverse, 40% known-route model, 37% new-route model) | **17%** | 25% |
+| Missing month: reverse route's real fare that month (1988 cases) | **16%** | 25% |
+| Missing month: known-route model (2668 cases) | **19%** | 26% |
+| **All flight prices people see** (18% real fares, 6% reverse, 40% known-route model, 35% new-route model) | **15%** | 24% |
 
 
 ## Problems on this run
 
-- osm vilnius: all Overpass servers failed
 - osm santorini: all Overpass servers failed
-- osm zakynthos: all Overpass servers failed
-- time budget reached during osm; remaining cities keep their previous values
+- osm montpellier: all Overpass servers failed
+- osm cork: all Overpass servers failed
+- osm rabat: all Overpass servers failed
