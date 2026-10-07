@@ -393,6 +393,24 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
 }
 .landing-copy h1 { font: 600 clamp(32px, 4.4vw, 52px)/1.08 var(--display); letter-spacing: -0.035em; margin: 28px 0 16px; }
 .landing-copy p { font-size: 17px; color: var(--muted); max-width: 520px; margin: 0; }
+.book h4 { margin-bottom: 8px; }
+.bk-list { list-style: none; margin: 0; padding: 0; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+.bk-list li { display: grid; grid-template-columns: 30px 1fr auto; gap: 10px; align-items: center; padding: 12px 14px; }
+.bk-list li + li { border-top: 1px solid var(--line); }
+.bk-icon { font-size: 18px; text-align: center; }
+.bk-text { display: grid; gap: 1px; min-width: 0; }
+.bk-text b { font-weight: 600; font-size: 14.5px; }
+.bk-text small { color: var(--muted); font-size: 12.5px; }
+.bk-links { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.bk-main, .bk-alt { white-space: nowrap; font-size: 13px; font-weight: 600; text-decoration: none; padding: 7px 12px; border-radius: 9px; }
+.bk-main { background: var(--accent); color: #fff; }
+.bk-main:hover { background: #1F45C9; }
+.bk-alt { color: var(--accent); border: 1px solid var(--line); background: #fff; }
+.bk-alt:hover { border-color: var(--hover-line); }
+@media (max-width: 520px) {
+  .bk-list li { grid-template-columns: 30px 1fr; }
+  .bk-links { grid-column: 2; justify-content: flex-start; }
+}
 .price-tag { display: block; font-size: 12.5px; font-weight: 500; margin-top: 2px; }
 .price-tag.down { color: #0B8A7C; }
 .price-tag.up { color: var(--muted); }
@@ -4505,7 +4523,7 @@ function transportSection(dest, cost) {
     ${fareNote(cost)}
     ${(() => { const r = road(byId(state.home), dest); return r && landOf(state.home) === landOf(dest.id) ? `<p class="fine">By road it's ${r.km.toLocaleString()} km, about ${hrs(r.hours)} by car (OpenStreetMap routing via OSRM); bus and train times are based on that.</p>` : ""; })()}
     ${BUDGET_AIRPORTS[state.home] && allowed.some(o => o.mode === "flight") ? `<p class="fine">Flying from ${byId(state.home).name}? Budget airlines usually use ${BUDGET_AIRPORTS[state.home]}.</p>` : ""}
-    <p class="fine">Round-trip price estimates based on distance and season${cost.options.some(o => o.live) ? " (flights marked live are real fares)" : ""}; check live prices below before booking. ${hidden ? `${hidden} more option${hidden > 1 ? "s" : ""} hidden by your travel filter.` : "Pick one to update the total."}</p>
+    <p class="fine">Round-trip price estimates based on distance and season${cost.options.some(o => o.live) ? " (flights marked live are real fares)" : ""}; check live prices under Book this trip. ${hidden ? `${hidden} more option${hidden > 1 ? "s" : ""} hidden by your travel filter.` : "Pick one to update the total."}</p>
   </div>`;
 }
 
@@ -4652,9 +4670,12 @@ function itinerarySection(dest, cost) {
 }
 
 // TikTok searches for the place: always fresh videos, no API key needed.
+// TikTok's own search links open the app without the search on phones, so each topic opens a video
+// search of TikTok clips instead (tap one to watch it in TikTok), plus the place's hashtag page.
 function tiktokSection(dest, matched = []) {
-  const place = (dest.name.split(" (")[0]).replace(/ overnight$/, "");
-  const q = (s) => `https://www.tiktok.com/search?q=${encodeURIComponent(s)}`;
+  const place = (dest.name.split(" (")[0]).split(/ [&]/)[0].replace(/ overnight$/, "");
+  const q = (s) => `https://www.google.com/search?tbm=vid&q=${encodeURIComponent(`site:tiktok.com ${s}`)}`;
+  const tag = place.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^A-Za-z0-9]/g, "").toLowerCase();
   const topics = [
     ["Things to do", `things to do in ${place}`],
     ["On a budget", `${place} on a budget`],
@@ -4662,27 +4683,37 @@ function tiktokSection(dest, matched = []) {
     ...matched.slice(0, 2).map(k => [INTERESTS[k], `${place} ${INTERESTS[k].toLowerCase()}`]),
     ["Hidden gems", `${place} hidden gems`]
   ];
-  return `<div><h4>See it on TikTok</h4><p class="note">Real videos from people who've been. Opens TikTok search.</p>
-    <div class="links tiktok">${topics.map(([label, s]) => `<a href="${q(s)}" target="_blank" rel="noopener">♪ ${label} ↗</a>`).join("")}</div></div>`;
+  return `<div><h4>See it on TikTok</h4><p class="note">Real videos from people who've been. Tap a topic to see TikTok videos about it.</p>
+    <div class="links tiktok">${topics.map(([label, s]) => `<a href="${q(s)}" target="_blank" rel="noopener">♪ ${label} ↗</a>`).join("")}${tag ? `<a href="https://www.tiktok.com/tag/${tag}" target="_blank" rel="noopener">#${tag} on TikTok ↗</a>` : ""}</div></div>`;
 }
 
-function extrasSection(home, dest, cost) {
-  const mode = cost.transport.mode;
-  const book = mode === "flight"
-    ? `<a href="${kiwiLink(home, dest, state.days)}" target="_blank" rel="noopener">Flights on Kiwi.com ↗</a><a href="${aviasalesLink(home, dest, state.days)}" target="_blank" rel="noopener">Compare on Aviasales ↗</a>`
-    : mode === "boat"
-      ? `<a href="https://www.directferries.com/" target="_blank" rel="noopener">Ferries ↗</a>`
-      : `<a href="https://www.omio.com/" target="_blank" rel="noopener">${MODES[mode].label} tickets ↗</a>`;
-  const abroad = dest.country !== home.country;
-  return `<div class="two">
-    <div><h4>Save money</h4><ul class="tips">${dest.tips.map(t => `<li>${t}</li>`).join("")}</ul></div>
-    <div><h4>Check live prices</h4><div class="links">
-      ${book}
-      <a href="https://www.hostelworld.com/" target="_blank" rel="noopener">Hostels on Hostelworld ↗</a>
-      <a href="https://www.getyourguide.com/s/?q=${encodeURIComponent(dest.name)}${GYG_PARTNER_ID ? `&partner_id=${GYG_PARTNER_ID}` : ""}" target="_blank" rel="noopener">Tours &amp; tickets ↗</a>
-      ${abroad ? `<a href="https://www.airalo.com/" target="_blank" rel="noopener">Mobile data (eSIM) ↗</a>` : ""}
-    </div>${AFFILIATE_NOTE}</div>
-  </div>`;
+// "Book this trip": one calm row per thing to book, with what it is, the dates and the estimate,
+// and one clear button (plus a second option for flights). Used by city trips and escapes.
+const shortDate = (iso) => new Date(iso + "T12:00:00Z").toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
+function bookSection(home, dest, cost) {
+  const mode = cost.transport.mode, abroad = !isEscape({ dest }) && dest.country !== home.country;
+  const place = dest.name.split(/ [&(]/)[0];
+  const [go, back] = weekendDates(state.days);
+  const when = state.days > 1 ? `${shortDate(go)} – ${shortDate(back)}` : shortDate(go);
+  const btn = (href, label, main = true) => `<a class="${main ? "bk-main" : "bk-alt"}" href="${href}" target="_blank" rel="noopener">${label} ↗</a>`;
+  const travelCost = cost.transport.cost ?? cost.travel;
+  const rows = [];
+  if (mode === "flight") rows.push(["✈️", "Flights", `${home.code} → ${dest.code} · ${when}${travelCost ? ` · about ${euro(travelCost)} return` : ""}`,
+    btn(kiwiLink(home, dest, state.days), "Kiwi.com") + btn(aviasalesLink(home, dest, state.days), "Aviasales", false)]);
+  else if (mode === "boat") rows.push(["⛴️", "Ferry", `${when}${travelCost ? ` · about ${euro(travelCost)} return` : ""}`, btn("https://www.directferries.com/", "Direct Ferries")]);
+  else rows.push([mode === "train" ? "🚆" : "🚌", `${MODES[mode].label} tickets`, `${when}${travelCost ? ` · about ${euro(travelCost)} return` : ""}`, btn("https://www.omio.com/", "Omio")]);
+  const sleep = cost.lodging ?? cost.stay;
+  if (cost.nights > 0 && sleep) rows.push(["🛏️", "Hostel", `${cost.nights} night${cost.nights > 1 ? "s" : ""} in ${place} · about ${euro(sleep)}`, btn("https://www.hostelworld.com/", "Hostelworld", false)]);
+  rows.push(["🎟️", "Tours & tickets", `Skip-the-line entry and tours in ${place}`,
+    btn(`https://www.getyourguide.com/s/?q=${encodeURIComponent(place)}${GYG_PARTNER_ID ? `&partner_id=${GYG_PARTNER_ID}` : ""}`, "GetYourGuide", false)]);
+  if (abroad) rows.push(["📶", "Mobile data", `An eSIM for ${dest.country}, so you skip roaming fees`, btn("https://www.airalo.com/", "Airalo", false)]);
+  return `<div class="book"><h4>Book this trip</h4>
+    <ul class="bk-list">${rows.map(([icon, title, sub, links]) => `<li><span class="bk-icon" aria-hidden="true">${icon}</span>
+      <span class="bk-text"><b>${title}</b><small>${sub}</small></span><span class="bk-links">${links}</span></li>`).join("")}</ul>
+    ${AFFILIATE_NOTE}</div>`;
+}
+function tipsSection(dest) {
+  return `<div><h4>Save money</h4><ul class="tips">${dest.tips.map(t => `<li>${t}</li>`).join("")}</ul></div>`;
 }
 
 function escapePlan(home, esc, cost) {
@@ -5343,10 +5374,6 @@ function escapeDetails(home, dest, cost) {
     ["c3", "Food", dayWord(state.days), cost.food],
     ["c4", "Sights & entry", "", cost.sights]
   ].filter(p => p[3] > 0);
-  const mode = cost.transport.mode;
-  const book = mode === "boat"
-    ? `<a href="https://www.directferries.com/" target="_blank" rel="noopener">Ferries ↗</a>`
-    : `<a href="https://www.omio.com/" target="_blank" rel="noopener">${MODES[mode].label} tickets ↗</a>`;
   return `
     ${costBlock(parts, cost.total)}
     ${escapePlan(home, esc, cost)}
@@ -5355,11 +5382,7 @@ function escapeDetails(home, dest, cost) {
       <li>Leave early: you get a full day there, and the first departures are often the quietest.</li>
       ${cost.stay ? "<li>Small towns empty out after the day-trippers leave, and guesthouses there are often cheaper than city hostels.</li>" : ""}
     </ul></div>
-    <div><h4>Check live prices</h4><div class="links">
-      ${book}
-      ${cost.stay ? `<a href="https://www.hostelworld.com/" target="_blank" rel="noopener">Places to stay ↗</a>` : ""}
-      <a href="https://www.getyourguide.com/s/?q=${encodeURIComponent(dest.name.split(/ [&(]/)[0])}${GYG_PARTNER_ID ? `&partner_id=${GYG_PARTNER_ID}` : ""}" target="_blank" rel="noopener">Tours &amp; tickets ↗</a>
-    </div>${AFFILIATE_NOTE}</div>`;
+  `;
 }
 
 
@@ -6324,11 +6347,11 @@ function drawDrawer(t) {
   const live = `${weatherSection(t)}${holidaySection(t)}`;
   // Three tabs keep the plan short: what it costs and why it scores, the day-by-day plan, and the rest.
   const panes = isEscape(t)
-    ? [["overview", "Overview", `<p class="lede">${dest.escape.note}</p>${scoreSection(t)}${escapeDetails(home, dest, cost)}`],
+    ? [["overview", "Overview", `<p class="lede">${dest.escape.note}</p>${scoreSection(t)}${escapeDetails(home, dest, cost)}${bookSection(home, dest, cost)}`],
        ["details", "Details", `${about}${dataSection(t)}${live}${tiktokSection(dest, matched)}${sourcesNote()}`]]
-    : [["overview", "Overview", `${scoreSection(t)}${costSection(cost)}${transportSection(dest, cost)}`],
+    : [["overview", "Overview", `${scoreSection(t)}${costSection(cost)}${transportSection(dest, cost)}${bookSection(home, dest, cost)}`],
        ["plan", "Itinerary", `${itinerarySection(dest, cost)}${state.days > 1 ? dayTripsSection(dest, cost) : ""}${tiktokSection(dest, matched)}`],
-       ["details", "Details", `${about}${dataSection(t)}${live}${whenSection(dest)}${extrasSection(home, dest, cost)}${sourcesNote()}`]];
+       ["details", "Details", `${about}${dataSection(t)}${live}${whenSection(dest)}${tipsSection(dest)}${sourcesNote()}`]];
   if (!panes.some(([id]) => id === ui.tab)) ui.tab = "overview";
   const body = `<div class="tabs" role="tablist">${panes.map(([id, label]) =>
       `<button type="button" role="tab" id="tab-${id}" aria-controls="pane-${id}" aria-selected="${id === ui.tab}" data-act="tab" data-v="${id}">${label}</button>`).join("")}</div>

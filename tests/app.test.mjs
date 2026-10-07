@@ -128,8 +128,8 @@ export default async function run() {
     const booking = await p.evaluate(() => {
       const tr = current.trips.find((x) => x.cost.transport && x.cost.transport.mode === "flight" && x.dest.country !== current.home.country);
       if (!tr) return null;
-      ui.drawer = tr.key; ui.tab = "details"; renderDrawer();
-      const pane = document.querySelector("#pane-details");
+      ui.drawer = tr.key; ui.tab = "overview"; renderDrawer();
+      const pane = document.querySelector("#pane-overview"); // Book this trip sits on the overview
       const hrefs = [...pane.querySelectorAll("a")].map((a) => a.href);
       return { hrefs, text: pane.textContent };
     });
@@ -143,6 +143,9 @@ export default async function run() {
       `flight links are in English: Kiwi.com for the same weekend and Aviasales with locale=en (${kiwi})`);
     t.check(booking && booking.hrefs.some((h) => h.includes("airalo.com")) && booking.hrefs.some((h) => h.includes("hostelworld.com")) && /affiliate links/.test(booking.text),
       "plans link to hostels and an eSIM and disclose affiliate links");
+    const tk = await p.evaluate(() => [...document.querySelectorAll("#drawer-body .links.tiktok a")].map((a) => a.href));
+    t.check(tk.length >= 4 && tk.every((h) => /google\.com\/search\?tbm=vid&q=site%3Atiktok\.com|tiktok\.com\/tag\/[a-z0-9]+$/.test(h)) && !tk.some((h) => h.includes("tiktok.com/search")),
+      `TikTok links use searches that work on phones (${tk.slice(0, 2).join(" ")})`);
 
     // 5. Places you've been: hidden from results, and two ratings switch on the taste model.
     const been = await p.evaluate(() => {
