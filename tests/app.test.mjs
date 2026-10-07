@@ -12,6 +12,7 @@ export default async function run() {
     await p.click("#lp-home-input"); await p.keyboard.type("flor"); await p.keyboard.press("Enter");
     await p.click('#lp-interests .chip[data-v="food"]');
     await p.click('#lp-days .pick[data-v="2"]'); await p.click('#lp-days .pick[data-v="3"]'); // 2 on, 3 off
+    await p.click(".lp-more summary"); // currency sits under "More options"
     await p.selectOption("#lp-currency", "USD");
     await p.click(".lp-go"); await p.waitForTimeout(500);
     const s = await p.evaluate(() => ({ landing: landingOpen(), home: state.home, days: [...state.daysSet], cur: state.currency, rows: document.querySelectorAll("#results .row").length, price: document.querySelector("#results .row-price")?.textContent, topbar: $("#home-input").value }));
@@ -123,7 +124,7 @@ export default async function run() {
     const hs = await p.evaluate(() => transportOptions(byId("florence"), byId("rome"), 4).find((o) => o.mode === "train"));
     t.check(hs && hs.highSpeed && hs.hours < 2.2, `Florence–Rome by high-speed train (${hs && hs.hours.toFixed(1)}h)`);
 
-    // 4b. Booking links: a flight abroad links to a dated Aviasales search, an eSIM, and the affiliate disclosure.
+    // 4b. Booking links: a flight abroad links to dated Kiwi.com and Aviasales searches, an eSIM, and the affiliate disclosure.
     const booking = await p.evaluate(() => {
       const tr = current.trips.find((x) => x.cost.transport && x.cost.transport.mode === "flight" && x.dest.country !== current.home.country);
       if (!tr) return null;
@@ -136,6 +137,10 @@ export default async function run() {
     const dates = avia ? new URL(avia).searchParams : null;
     t.check(avia && /^\d{4}-\d{2}-\d{2}$/.test(dates.get("depart_date")) && dates.get("return_date") >= dates.get("depart_date") && new Date(dates.get("depart_date")).getUTCDay() === 5,
       `flights link to a dated Aviasales search starting on a Friday, got ${avia}`);
+    const kiwi = booking && booking.hrefs.find((h) => h.includes("kiwi.com"));
+    const kq = kiwi ? new URL(kiwi).searchParams : null;
+    t.check(kiwi && kq.get("departure") === dates.get("depart_date") && kq.get("lang") === "en" && dates.get("locale") === "en",
+      `flight links are in English: Kiwi.com for the same weekend and Aviasales with locale=en (${kiwi})`);
     t.check(booking && booking.hrefs.some((h) => h.includes("airalo.com")) && booking.hrefs.some((h) => h.includes("hostelworld.com")) && /affiliate links/.test(booking.text),
       "plans link to hostels and an eSIM and disclose affiliate links");
 

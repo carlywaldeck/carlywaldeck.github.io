@@ -116,7 +116,7 @@ Everything is cached in the browser, times out after 8 seconds, and is optional:
 
 ## Monetization (Travelpayouts)
 Weekender earns through [Travelpayouts](https://www.travelpayouts.com), a travel affiliate network. Travelpayouts **Drive** (a script in `<head>`) turns links to partner brands into affiliate links automatically, for every program joined in the Travelpayouts dashboard. Each plan's booking links point at partner brands:
-- **Flights:** an Aviasales search for the trip's route, prefilled with a weekend in the chosen month
+- **Flights:** a Kiwi.com search (English, strong on European budget airlines) for the trip's route and a weekend in the chosen month, plus an Aviasales search in English to compare
 - **Hostels:** Hostelworld
 - **Tours & tickets:** GetYourGuide
 - **Mobile data:** Airalo eSIM, for trips to another country

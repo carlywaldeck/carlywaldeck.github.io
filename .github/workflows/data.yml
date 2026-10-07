@@ -1,5 +1,5 @@
 # Refreshes the open data behind Weekender (climate, crowds, prices, OpenStreetMap, Wikipedia)
-# and embeds it into index.html. Runs monthly, when the data scripts change, or by hand
+# and writes it to data/app-data.js. Runs monthly, when the data scripts change, or by hand
 # (Actions tab → "Refresh city data" → Run workflow).
 name: Refresh city data
 
@@ -51,7 +51,7 @@ jobs:
         run: npm ci && npx playwright install --with-deps chromium
       - name: Save and commit the new data on top of the latest main
         run: |
-          # Keep this run's data files and re-embed them into the newest index.html, so a data run
+          # Keep this run's data files and rewrite data/app-data.js on top of the newest main, so a data run
           # never conflicts with commits pushed while it was running. Retries if main moves again.
           mkdir -p /tmp/newdata && cp data/city-data.json data/REPORT.md /tmp/newdata/
           git config user.name "github-actions[bot]"
@@ -63,7 +63,7 @@ jobs:
             cp /tmp/newdata/city-data.json /tmp/newdata/REPORT.md data/
             node scripts/embed-data.mjs
             node scripts/build-pages.mjs || echo "city pages not rebuilt"
-            git add data/city-data.json data/REPORT.md index.html from sitemap.xml robots.txt
+            git add data/city-data.json data/app-data.js data/REPORT.md index.html from sitemap.xml robots.txt
             if git diff --cached --quiet; then echo "No changes"; exit 0; fi
             git commit -m "Refresh city data from open sources"
             if git push origin HEAD:main; then exit 0; fi
