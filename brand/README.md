@@ -1,13 +1,13 @@
 # Weekender brand kit
 
 ## Slogan
-**Your semester, every weekend.**
+**Study here. Weekend everywhere.**
 
 Supporting line (for bios and ads): *Cheap weekend trips from wherever you're studying.*
 
 Alternatives if you want a different tone:
-- *Study abroad. See everything.* (aspirational)
-- *More weekends. Less spending.* (budget-first)
+- *Weekends, sorted.* (short, confident)
+- *See more. Spend less.* (budget-first)
 - *Where to this weekend?* (casual, good for TikTok captions)
 
 ## Logo
@@ -40,7 +40,7 @@ Use the same handle everywhere. Try in this order and take the first one free on
 `@weekender.trips` · `@weekendertrips` · `@getweekender` · `@weekender.eu`
 
 **Instagram bio (150 characters max)**
-> Your semester, every weekend ✈️
+> Study here. Weekend everywhere ✈️
 > Cheap weekend trips from wherever you're studying abroad 🌍
 > Free trip planner ↓
 
@@ -48,7 +48,7 @@ Use the same handle everywhere. Try in this order and take the first one free on
 > Cheap weekend trips for students abroad ✈️ Free planner ↓
 
 **X / Threads**
-> Your semester, every weekend. Free planner that finds cheap weekend trips from wherever you're studying abroad, with real fares and day-by-day plans.
+> Study here. Weekend everywhere. Free planner that finds cheap weekend trips from wherever you're studying abroad, with real fares and day-by-day plans.
 
 Put the site link in every bio (use the domain once you have it).
 
