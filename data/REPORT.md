@@ -73,16 +73,16 @@ Agreement = share of cities where the hand-picked tag and the data (top 40% of c
 | wildlife | 69% | Valencia, Edinburgh, Stockholm, Agadir, Paphos | Paris, London, Amsterdam, Berlin, Prague |
 | desert | 88% | Naples, Marrakech, Agadir, Tunis, Amman | Athens, Lyon, Bologna, Fez, Cologne |
 | vintage | 59% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
-| books | 59% | – | Barcelona, Madrid, Lisbon, Paris, London |
+| books | 59% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
 | vegan | 59% | – | Barcelona, Madrid, Lisbon, Paris, London |
 | cycling | 59% | – | Barcelona, Madrid, Seville, Lisbon, Paris |
 | caves | 59% | – | Barcelona, Lisbon, Prague, Vienna, Budapest |
 | themeparks | 61% | – | Porto, Paris, London, Amsterdam, Berlin |
-| gardens | 61% | – | Barcelona, Madrid, Seville, Lisbon, Porto |
+| gardens | 59% | – | Barcelona, Madrid, Seville, Lisbon, Porto |
 | climbing | 59% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
-| lgbtq | 62% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
-| games | 58% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
-| students | 59% | – | Barcelona, Madrid, Lisbon, Paris, London |
+| lgbtq | 58% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
+| games | 61% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
+| students | 60% | – | Barcelona, Madrid, Seville, Lisbon, Paris |
 | offbeat | 63% | Bologna, Ljubljana, Gdańsk, Riga, Sofia | Granada, Dubrovnik, Split, Valletta, Palma de Mallorca |
 
 ## Coverage
@@ -95,14 +95,21 @@ Agreement = share of cities where the hand-picked tag and the data (top 40% of c
 
 ## Flight fares and the flight price model
 
-- Real round-trip fares (Travelpayouts / Aviasales, fetched 2026-10-06): **22964** route-months on **6967** routes between our cities
-- Models: ridge regression on log(fare), trained on 22964 fares. "New route": 11 features (log distance, log distance², demand at destination that month, demand at home that month, destination price level, destination popularity, home popularity, how cheap flights from this airport are, how cheap flights to this airport are, how cheap this month is, short hop (< 500 km)). "Known route" adds: this route in other months, has other months, the reverse route, has reverse route
+- Real round-trip fares (Travelpayouts / Aviasales, fetched 2026-10-06): **28228** route-months on **8872** routes, each the median of up to 5 weekly snapshots (1 so far)
+- Models: ridge regression on log(fare), trained on 22978 fares. "New route": 11 features (log distance, log distance², demand at destination that month, demand at home that month, destination price level, destination popularity, home popularity, how cheap flights from this airport are, how cheap flights to this airport are, how cheap this month is, short hop (< 500 km)). "Known route" adds: this route in other months, has other months, the reverse route, has reverse route
 
 | Test | Typical error | Average error |
 |---|---|---|
-| New-route model, 1394 routes it never saw | **24%** | 33% |
-| Old distance formula, same routes | 34% | 40% |
-| Missing month: reverse route's real fare that month (1812 cases) | **16%** | 25% |
-| Missing month: known-route model (2520 cases) | **20%** | 27% |
-| **All flight prices people see** (16% real fares, 6% reverse, 40% known-route model, 37% new-route model) | **17%** | 25% |
+| New-route model, 1392 routes it never saw | **24%** | 35% |
+| Old distance formula, same routes | 35% | 41% |
+| Missing month: reverse route's real fare that month (1808 cases) | **16%** | 25% |
+| Missing month: known-route model (2537 cases) | **20%** | 27% |
+| **All flight prices people see** (17% real fares, 6% reverse, 40% known-route model, 37% new-route model) | **17%** | 25% |
 
+
+## Problems on this run
+
+- osm vilnius: all Overpass servers failed
+- osm santorini: all Overpass servers failed
+- osm zakynthos: all Overpass servers failed
+- time budget reached during osm; remaining cities keep their previous values
