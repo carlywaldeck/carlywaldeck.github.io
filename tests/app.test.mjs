@@ -179,6 +179,11 @@ export default async function run() {
     });
     t.check(fc.days >= 1 && /68°/.test(fc.text), `plans for this month show the daily forecast (${fc.days} days)`);
 
+    // 6d. "Get the app" explains how to install it (installable web app: manifest + service worker).
+    const ga = await p.evaluate(() => { openGetApp(); const txt = document.querySelector("#login-body").textContent; closeLogin();
+      return { txt, manifest: !!document.querySelector('link[rel="manifest"]') }; });
+    t.check(/Get the Weekender app/.test(ga.txt) && /Home screen/i.test(ga.txt) && ga.manifest, "Get the app explains installing it, and the page has a web app manifest");
+
     // 6b. City pages link into the planner with #from=<city>: it skips the questions and shows that city's trips.
     const cityLink = await openApp(browser, { hash: "#from=lisbon&days=2" });
     await cityLink.waitForTimeout(400);
