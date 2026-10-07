@@ -82,8 +82,8 @@ grant execute on function public.delete_my_account() to authenticated;
 
 ## 2. Allow sign-in links back to the site
 **Authentication → URL Configuration**:
-- **Site URL:** `https://carlywaldeck.github.io`
-- **Redirect URLs:** add `https://carlywaldeck.github.io/`
+- **Site URL:** `https://weekender-trips.com`
+- **Redirect URLs:** add `https://weekender-trips.com/**` and `https://www.weekender-trips.com/**` (keep `https://carlywaldeck.github.io/**` too)
 
 Email + password sign-in is on by default (**Authentication → Sign In / Providers → Email**). By default
 Supabase asks new users to confirm their email before the first login; turn off **Confirm email** there

@@ -7,7 +7,7 @@
 //
 // Setup: see docs/LIVE_PRICES.md. Needs two settings in the Cloudflare dashboard:
 //   TRAVELPAYOUTS_TOKEN  (secret)  your Travelpayouts API token
-//   ALLOWED_ORIGIN       (text)    your site, e.g. https://carlywaldeck.github.io
+//   ALLOWED_ORIGIN       (text)    your site, e.g. https://weekender-trips.com
 
 export default {
   async fetch(request, env) {

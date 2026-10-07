@@ -50,20 +50,21 @@ Use the same handle everywhere. Try in this order and take the first one free on
 **X / Threads**
 > Study here. Weekend everywhere. Free planner that finds cheap weekend trips from wherever you're studying abroad, with real fares and day-by-day plans.
 
-Put the site link in every bio (use the domain once you have it).
+Put **weekender-trips.com** in every bio.
 
 ## Domain
-Check these on **Cloudflare Registrar** (sells at cost, about $10/year, free privacy) or **Porkbun**,
-in this order: `weekendertrips.com`, `getweekender.com`, `weekender.travel`, `weekenderapp.com`.
-Prefer **.com**. Avoid hyphens.
+**https://weekender-trips.com** (Cloudflare Registrar). The repo's `CNAME` file tells GitHub Pages to
+serve the site there; `carlywaldeck.github.io` redirects to it.
 
-Once you buy it, tell Claude the domain: it adds a `CNAME` file to the repo, and you add these DNS records
-at the registrar (GitHub Pages docs: "Managing a custom domain"):
-- `A` records for the bare domain → `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
+DNS at Cloudflare (all **DNS only**, grey cloud, so GitHub can issue the HTTPS certificate):
+- `A` records for `@` → `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
 - `CNAME` record `www` → `carlywaldeck.github.io`
 
-Then in the repo: **Settings → Pages → Custom domain**, enter it and tick **Enforce HTTPS**. Also update
-Supabase **Site URL / Redirect URLs** and the Travelpayouts project to the new domain.
+Then **Settings → Pages**: the custom domain shows `weekender-trips.com`; tick **Enforce HTTPS** once offered.
+Supabase **Site URL / Redirect URLs** and the Travelpayouts project use the new domain.
+
+Say it as "weekender **dash** trips dot com". The typo domain `weekenderaborad.com` redirects here
+(Cloudflare Redirect Rule) until it expires; auto-renew is off.
 
 Before committing to the name, search "Weekender travel" on your national trademark register
 (e.g. USPTO, EUIPO) and the app stores: if a travel company already uses it, pick a variant.

@@ -8,7 +8,7 @@ import fs from "node:fs/promises";
 import { openBrowser, openApp } from "../tests/helpers.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
-const SITE = (process.env.SITE_URL || "https://carlywaldeck.github.io").replace(/\/$/, "");
+const SITE = (process.env.SITE_URL || "https://weekender-trips.com").replace(/\/$/, "");
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 const browser = await openBrowser();
