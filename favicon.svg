@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Weekender">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3D6BF5"/>
+      <stop offset="1" stop-color="#1F45C9"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="116" fill="url(#bg)"/>
+  <!-- Two trips between three cities: the hops form a "w" -->
+  <g transform="translate(0 30)">
+  <path d="M120 196 Q 188 372 256 196 Q 324 372 392 196" fill="none" stroke="#fff" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="120" cy="196" r="34" fill="#fff"/>
+  <circle cx="256" cy="196" r="34" fill="#fff"/>
+  <circle cx="392" cy="196" r="34" fill="#FFC857"/>
+  </g>
+</svg>
