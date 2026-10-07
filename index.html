@@ -4151,6 +4151,14 @@ function road(a, b) {
   return r === undefined ? undefined : r && { km: r[0], hours: r[1] };
 }
 
+// Cities on Europe's high-speed rail networks (Frecciarossa/Italo, AVE, TGV, ICE, Eurostar/Thalys).
+// Between two of them, trains run far faster than the road distance suggests (Florence–Rome is 1½h
+// by train vs 3h by road): about 170 km/h on the straight-line distance plus 25 minutes.
+const HIGH_SPEED = new Set(["milan", "turin", "bologna", "florence", "rome", "naples", "venice",
+  "madrid", "barcelona", "seville", "malaga", "valencia", "alicante", "zaragoza", "granada",
+  "paris", "lyon", "marseille", "bordeaux", "lille", "strasbourg", "montpellier",
+  "brussels", "amsterdam", "cologne", "london", "berlin", "munich", "hamburg", "nuremberg", "heidelberg"]);
+
 // Every way to get from home to dest, with a rough round-trip price and hours each way.
 // Overland: from the real road distance and driving time when we have them (coaches take ~10%
 // longer than a car, plus boarding; trains average ~115 km/h on the road distance), else from the straight line.
@@ -4165,7 +4173,8 @@ function transportOptions(home, dest, month) {
     opts.push({ mode: "bus", cost: Math.round(Math.max(18, rkm * 0.08) * mult), hours: r ? r.hours * 1.1 + 0.3 : km / 70 + 0.5, road: !!r });
   }
   if (!overWater && rkm <= 1750 && !NO_RAIL.has(home.id) && !NO_RAIL.has(dest.id)) {
-    opts.push({ mode: "train", cost: Math.round(Math.max(25, rkm * 0.16) * mult), hours: (r ? r.km / 115 : km / 120) + 0.5, road: !!r });
+    const fast = HIGH_SPEED.has(home.id) && HIGH_SPEED.has(dest.id) ? km / 170 + 0.4 : Infinity;
+    opts.push({ mode: "train", cost: Math.round(Math.max(25, rkm * 0.16) * mult), hours: Math.min(fast, (r ? r.km / 115 : km / 120) + 0.5), road: !!r, highSpeed: fast < Infinity });
   }
   const ferry = FERRIES[[home.id, dest.id].sort().join("-")];
   if (ferry) opts.push({ mode: "boat", cost: Math.round(ferry.cost * mult), hours: ferry.hours });
@@ -5631,6 +5640,11 @@ async function shareTrip(t) {
 // A shared link (#trip=...&from=...) opens straight onto that trip, skipping the landing page.
 function readShareLink() {
   const q = new URLSearchParams(location.hash.slice(1));
+  // "#from=florence" (links from the city pages): start straight on that city's trips.
+  if (q.get("from") && !q.get("trip") && byId(q.get("from"))) {
+    if (q.get("days") >= 1 && q.get("days") <= 5) { state.daysSet = new Set([Number(q.get("days"))]); state.days = Number(q.get("days")); }
+    return { homeOnly: true, home: q.get("from") };
+  }
   if (!q.get("trip") || !q.get("from")) return null;
   if (q.get("into")) state.interests = new Set(q.get("into").split(",").filter(k => INTERESTS[k]));
   if (["EUR", "USD", "GBP"].includes(q.get("cur"))) state.currency = q.get("cur");
@@ -7251,7 +7265,12 @@ if (cloudOn() && auth.get() && store.get().criteria && !shared && !/access_token
 }
 // Logged in: bring in anything saved from another device.
 if (cloudOn() && auth.get() && !/access_token=/.test(location.hash)) pullCloud().then((changed) => { if (changed) applyStore(); }).catch(() => {});
-if (shared) {
+if (shared && shared.homeOnly) {
+  state.home = shared.home; $("#home").value = shared.home; update();
+  if (homeSearch) homeSearch.refresh();
+  closeLanding(true);
+  history.replaceState(null, "", location.href.split("#")[0]);
+} else if (shared) {
   closeLanding(false);
   if (G.ok) { G.fitKey = ""; globeUpdate(); }
   openRef(shared);

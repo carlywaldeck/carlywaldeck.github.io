@@ -47,6 +47,8 @@ jobs:
           SKIP: ${{ github.event.schedule == '23 5 * * 1' && 'wikipedia,climate,crowds,prices,roads,coast,osm' || github.event.inputs.skip }}
           TRAVELPAYOUTS_TOKEN: ${{ secrets.TRAVELPAYOUTS_TOKEN }}
         run: node scripts/build-data.mjs
+      - name: Install the browser for the city pages
+        run: npm ci && npx playwright install --with-deps chromium
       - name: Save and commit the new data on top of the latest main
         run: |
           # Keep this run's data files and re-embed them into the newest index.html, so a data run
@@ -60,7 +62,8 @@ jobs:
             git reset --hard origin/main
             cp /tmp/newdata/city-data.json /tmp/newdata/REPORT.md data/
             node scripts/embed-data.mjs
-            git add data/city-data.json data/REPORT.md index.html
+            node scripts/build-pages.mjs || echo "city pages not rebuilt"
+            git add data/city-data.json data/REPORT.md index.html from sitemap.xml robots.txt
             if git diff --cached --quiet; then echo "No changes"; exit 0; fi
             git commit -m "Refresh city data from open sources"
             if git push origin HEAD:main; then exit 0; fi

@@ -119,6 +119,10 @@ export default async function run() {
     t.check(tiers.rev.kind === "reverse" && tiers.rev.rev === 90, `the reverse route's fare that month is used (${tiers.rev.kind})`);
     t.check(tiers.known.kind === "model" && tiers.known.known === true && tiers.fresh.kind === "model" && !tiers.fresh.known, `known and new routes use their own models (${tiers.known.kind}/${tiers.known.known}, ${tiers.fresh.kind}/${tiers.fresh.known})`);
 
+    // 4e. High-speed rail: Florence–Rome is about 2h by train, not the 3h+ the road distance suggests.
+    const hs = await p.evaluate(() => transportOptions(byId("florence"), byId("rome"), 4).find((o) => o.mode === "train"));
+    t.check(hs && hs.highSpeed && hs.hours < 2.2, `Florence–Rome by high-speed train (${hs && hs.hours.toFixed(1)}h)`);
+
     // 4b. Booking links: a flight abroad links to a dated Aviasales search, an eSIM, and the affiliate disclosure.
     const booking = await p.evaluate(() => {
       const tr = current.trips.find((x) => x.cost.transport && x.cost.transport.mode === "flight" && x.dest.country !== current.home.country);
@@ -154,6 +158,12 @@ export default async function run() {
     const opened = await p2.evaluate(() => ({ landing: landingOpen(), title: document.querySelector(".dr-head h2")?.textContent }));
     t.check(!opened.landing && opened.title === share.name, `share link should open ${share.name}, got ${opened.title}`);
     t.check(!p.errors.length && !p2.errors.length, `page errors: ${[...p.errors, ...p2.errors].join("; ")}`);
+
+    // 6b. City pages link into the planner with #from=<city>: it skips the questions and shows that city's trips.
+    const cityLink = await openApp(browser, { hash: "#from=lisbon&days=2" });
+    await cityLink.waitForTimeout(400);
+    const cl = await cityLink.evaluate(() => ({ landing: landingOpen(), home: state.home, days: [...state.daysSet], url: location.hash }));
+    t.check(!cl.landing && cl.home === "lisbon" && cl.days.join() === "2" && !cl.url, `city page links open that city's trips (${JSON.stringify(cl)})`);
 
     // 7. Phones: nothing wider than the screen, and the top bar fits on one line.
     const m = await openApp(browser, { width: 360, height: 780 });
