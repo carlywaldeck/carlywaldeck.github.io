@@ -54,6 +54,8 @@
     <tr><td>Email, password and first name</td><td>Supabase (passwords are stored hashed; nobody can read them)</td><td>To log you in and greet you</td></tr>
     <tr><td>Your star ratings of places</td><td>Supabase, shared with the recommendation model <em>without</em> your account id</td>
         <td>So "travelers who liked X also liked Y" can learn from everyone; nobody can see who rated what</td></tr>
+    <tr><td>If you turn on price alerts: which saved trips we last emailed you about, and at what price</td><td>Supabase</td>
+        <td>To email you when a saved trip gets cheaper, without repeating the same news. Untick the option in your account to stop</td></tr>
     <tr><td>Feedback messages (and your email if you give it)</td><td>Supabase</td><td>To read and reply to feedback</td></tr>
   </table>
   <p>We don't use advertising trackers, and we don't sell or rent your data to anyone.</p>
@@ -61,6 +63,7 @@
   <h2>Services the site uses</h2>
   <ul>
     <li><strong>Supabase</strong> (accounts and database), only if you create an account or send feedback.</li>
+    <li><strong>Resend</strong> sends price-alert emails, only if you turn them on. It receives your email address and the email's content.</li>
     <li><strong>Travelpayouts</strong>: a script that turns links to travel brands into affiliate links, and the
       Aviasales data that provides real flight fares. Affiliate partners may set cookies when you click a
       booking link, to credit the referral.</li>

@@ -158,6 +158,18 @@ export default async function run() {
       return { saved: isSaved(tr), link: shareLink(tr), name: tr.dest.name };
     });
     t.check(share.saved, "saving a trip works");
+    // 6a. Price alerts: a saved trip is priced again with today's data; a drop shows on My trips
+    // and is mentioned once when you come back.
+    const pa = await p.evaluate(() => {
+      const tr = current.trips[0], s = saved.find((x) => x.key === tr.key);
+      const same = priceNow(s) === Math.round(tr.cost.total);
+      s.total += 60; delete s.seen; store.set({ saved });
+      const tag = savedHtml(), first = checkPriceDrops(), second = checkPriceDrops();
+      return { same, tag: /cheaper than when you saved it/.test(tag), first: first && first.drop, second, toast: $("#toast").textContent };
+    });
+    t.check(pa.same, "a saved trip is priced again exactly like the live result");
+    t.check(pa.tag && pa.first >= 59 && pa.first <= 61 && !pa.second && /cheaper than last time/.test(pa.toast),
+      `a price drop shows on My trips and is mentioned once (${JSON.stringify(pa)})`);
     const p2 = await openApp(browser, { hash: "#" + share.link.split("#")[1] });
     await p2.waitForTimeout(500);
     const opened = await p2.evaluate(() => ({ landing: landingOpen(), title: document.querySelector(".dr-head h2")?.textContent }));
@@ -286,6 +298,14 @@ export default async function run() {
     await lp.click("#acct-form button[type=submit]");
     for (let i = 0; i < 50 && !calls.userUpdate; i++) await lp.waitForTimeout(100);
     t.check(calls.userUpdate && calls.userUpdate.data.name === "Carly W", "the account page updates your name");
+    // Price alerts are opt-in from the account's Saved trips tab, and the choice is saved to the account.
+    await lp.evaluate(() => { acctTab = "trips"; openLogin(); });
+    const nPosts = calls.posts.length;
+    await lp.check("#acct-alerts");
+    for (let i = 0; i < 40 && calls.posts.length === nPosts; i++) await lp.waitForTimeout(100);
+    const alertPost = calls.posts[calls.posts.length - 1];
+    t.check(alertPost && alertPost.data.alerts === true, `turning on price alerts saves to the account (${JSON.stringify(alertPost && alertPost.data.alerts)})`);
+    await lp.evaluate(() => { acctTab = "profile"; closeLogin(); });
     // Next visit: logged in with a saved search, you go straight to your trips.
     await lp.reload();
     await lp.waitForFunction(() => typeof update === "function" && document.querySelector("#results"), null, { timeout: 30000 });

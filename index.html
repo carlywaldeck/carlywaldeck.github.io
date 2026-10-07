@@ -393,6 +393,12 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
 }
 .landing-copy h1 { font: 600 clamp(32px, 4.4vw, 52px)/1.08 var(--display); letter-spacing: -0.035em; margin: 28px 0 16px; }
 .landing-copy p { font-size: 17px; color: var(--muted); max-width: 520px; margin: 0; }
+.price-tag { display: block; font-size: 12.5px; font-weight: 500; margin-top: 2px; }
+.price-tag.down { color: #0B8A7C; }
+.price-tag.up { color: var(--muted); }
+.alert-opt { display: flex; gap: 8px; align-items: baseline; font-size: 14px; font-weight: 500; margin: 4px 0 10px; cursor: pointer; }
+.alert-opt input { accent-color: var(--accent); }
+.alert-opt small { font-weight: 400; color: var(--muted); }
 .lp-how { list-style: none; counter-reset: how; padding: 0; margin: 32px 0 0; display: grid; gap: 18px; max-width: 460px; }
 .lp-how li { counter-increment: how; display: grid; grid-template-columns: 34px 1fr; column-gap: 14px; }
 .lp-how li::before { content: counter(how); grid-row: span 2; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-weight: 600; font-size: 14px; color: var(--accent); background: var(--accent-soft); }
@@ -5366,7 +5372,7 @@ const store = {
   set(patch, { local = false } = {}) {
     try { localStorage.setItem(STORE_KEY, JSON.stringify({ ...store.get(), ...patch })); } catch { /* private mode or blocked */ }
     // Signed in? Copy synced changes to the account too (see "accounts" below).
-    if (!local && typeof schedulePush === "function" && Object.keys(patch).some(k => ["been", "saved", "criteria"].includes(k))) schedulePush();
+    if (!local && typeof schedulePush === "function" && Object.keys(patch).some(k => ["been", "saved", "criteria", "alerts"].includes(k))) schedulePush();
   }
 };
 let been = store.get().been || {};
@@ -5665,10 +5671,51 @@ function toggleSave(t) {
 }
 function savedHtml() {
   if (!saved.length) return `<li class="note">No saved trips yet. Use ☆ Save in any plan.</li>`;
-  return saved.map((s, i) => `<li><span class="bi-name">${s.name}<small>From ${(byId(s.home) || {}).name || s.home} · ${dayWord(s.days)} · ${MONTHS[s.month]} · ${euro(s.total)} · ${Number(s.score).toFixed(1)}/10</small></span>
+  return saved.map((s, i) => `<li><span class="bi-name">${s.name}<small>From ${(byId(s.home) || {}).name || s.home} · ${dayWord(s.days)} · ${MONTHS[s.month]} · ${euro(s.total)} · ${Number(s.score).toFixed(1)}/10</small>${priceTag(s)}</span>
     <button type="button" class="ghost sm" data-act="open-saved" data-v="${i}">Open</button>
     <button type="button" class="bi-x" data-act="unsave" data-v="${i}" aria-label="Remove ${s.name} from saved trips">×</button></li>`).join("");
 }
+// ---------------------------------------------------------------- price alerts
+// What a saved trip costs today, with the search settings it was saved with. Fares and prices
+// refresh every week, so this moves; scripts/price-alerts.mjs uses the same function for emails.
+function priceNow(s) {
+  const home = byId(s.home), id = String(s.key).split("@")[0];
+  if (!home) return null;
+  const keep = { home: state.home, month: state.month, budget: state.budget };
+  Object.assign(state, { home: s.home, month: Number(s.month), budget: Number(s.budget) });
+  try {
+    return withDays(Number(s.days), () => {
+      const dest = byId(id), esc = dest ? null : nearbyEscapes(home).find(e => e.id === id);
+      const cost = dest ? estimateTrip(home, dest) : esc ? estimateEscape(home, esc) : null;
+      return cost ? Math.round(cost.total) : null;
+    });
+  } finally { Object.assign(state, keep); }
+}
+// A change worth mentioning: at least €10 and 5% of the trip.
+const PRICE_STEP = (total) => Math.max(10, total * 0.05);
+function priceTag(s) {
+  const now = priceNow(s);
+  if (now == null || !s.total) return "";
+  const diff = now - Math.round(s.total);
+  if (Math.abs(diff) < PRICE_STEP(s.total)) return "";
+  return diff < 0 ? `<span class="price-tag down">↓ ${euro(-diff)} cheaper than when you saved it (now ${euro(now)})</span>`
+    : `<span class="price-tag up">↑ ${euro(diff)} more than when you saved it (now ${euro(now)})</span>`;
+}
+// On opening the app: mention the biggest drop since the last visit, once.
+function checkPriceDrops() {
+  let best = null;
+  const next = saved.map(s => {
+    const now = priceNow(s);
+    if (now == null) return s;
+    const ref = s.seen ?? Math.round(s.total);
+    if (ref - now >= PRICE_STEP(ref) && (!best || ref - now > best.drop)) best = { name: s.name, drop: ref - now, now };
+    return { ...s, seen: now };
+  });
+  if (JSON.stringify(next) !== JSON.stringify(saved)) { saved = next; store.set({ saved }, { local: true }); }
+  if (best) toast(`Good news: ${best.name} is ${euro(best.drop)} cheaper than last time (now ${euro(best.now)}). See My trips.`);
+  return best;
+}
+
 // Go to a saved or shared trip: set the search it came from, then open its plan.
 function openRef(r) {
   if (!byId(r.home)) return false;
@@ -5728,7 +5775,7 @@ function toast(msg) {
 // Left empty, the app works without accounts and keeps everything in this browser only.
 const SUPABASE_URL = window.WEEKENDER_SUPABASE_URL || "https://jjvahhycqdizyfrosqft.supabase.co";
 const SUPABASE_ANON_KEY = window.WEEKENDER_SUPABASE_KEY || "sb_publishable_LXKmiTP_kHxZhIn_FYFYcQ_TJQJdvpn";
-const SYNC_KEYS = ["been", "saved", "criteria"];
+const SYNC_KEYS = ["been", "saved", "criteria", "alerts"];
 const AUTH_KEY = "weekender:auth";
 const cloudOn = () => !!(SUPABASE_URL && SUPABASE_ANON_KEY);
 const auth = {
@@ -5814,7 +5861,7 @@ function mergeData(local, remote) {
     const id = refId(s);
     if (!seen.has(id)) { seen.add(id); saved.push(s); }
   }
-  return { been, saved, criteria: local.criteria || remote.criteria };
+  return { been, saved, criteria: local.criteria || remote.criteria, alerts: local.alerts ?? remote.alerts };
 }
 const syncPart = (o) => Object.fromEntries(SYNC_KEYS.filter(k => o[k] != null).map(k => [k, o[k]]));
 // Fetch the account's data, merge it in, and save the merged copy on both sides.
@@ -5928,7 +5975,8 @@ function accountPage() {
       </details>
       <div class="modal-actions"><button type="button" class="ghost" data-act="logout">Log out</button></div>
       <p class="note acct-legal"><a href="privacy.html">Privacy &amp; terms</a> · <button type="button" class="linkish" data-act="delete-account">Delete my account</button></p>`,
-    trips: `<p class="note">Trips you saved with ☆ Save. Open one to see its plan again.</p><ul class="been-items saved-items" id="acct-saved">${savedHtml()}</ul>`,
+    trips: `<p class="note">Trips you saved with ☆ Save. Open one to see its plan again.</p>
+      <label class="alert-opt"><input type="checkbox" id="acct-alerts" ${store.get().alerts ? "checked" : ""}> Email me when a saved trip gets cheaper <small>(checked weekly with the new fares)</small></label><ul class="been-items saved-items" id="acct-saved">${savedHtml()}</ul>`,
     places: `<button type="button" class="cta map-cta" data-act="travel-map">🌍 See my travel map</button>
       <p class="note">Add the places you've been, when you went, and how much you liked them. Your ratings teach Weekender your taste.</p>
       <div class="city-search"><input id="acct-been-input" type="text" role="combobox" aria-label="Add a place you've been" aria-autocomplete="list" aria-expanded="false" aria-controls="acct-been-list" autocomplete="off" spellcheck="false" placeholder="Add any city or town you've visited">
@@ -6000,7 +6048,7 @@ function openLogin(view) {
 // when keeping things across devices actually matters. Asked once; "Not now" is remembered.
 function offerAccount(why) {
   if (!cloudOn() || auth.get() || store.get().loginAsked) return;
-  acctPitch = why === "save" ? "Trip saved! Create a free account to keep your trips on every device." : "Nice! Create a free account to keep your ratings and travel map on every device.";
+  acctPitch = why === "save" ? "Trip saved! Create a free account to keep your trips on every device and get an email if one gets cheaper." : "Nice! Create a free account to keep your ratings and travel map on every device.";
   setTimeout(() => openLogin("signup"), 600);
 }
 let acctPitch = "";
@@ -7327,7 +7375,13 @@ const shared = readShareLink();
 update();
 renderLanding();
 renderAccount();
+if (saved.length) setTimeout(checkPriceDrops, 1200);
 document.addEventListener("change", (e) => {
+  if (e.target.id === "acct-alerts") {
+    store.set({ alerts: e.target.checked });
+    toast(e.target.checked ? "Price alerts on: we'll email you when a saved trip gets cheaper" : "Price alerts off");
+    return;
+  }
   const d = e.target.closest && e.target.closest(".bi-date");
   if (!d || !been[d.dataset.id]) return;
   been[d.dataset.id].d = d.value || undefined;

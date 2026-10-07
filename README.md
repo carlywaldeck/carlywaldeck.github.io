@@ -21,7 +21,7 @@ No installs needed. Download the repo and double-click `index.html` to open it i
 ## Tests
 ```
 npm install
-npm test        # data checks + app tests in headless Chromium
+npm test        # data, flight-model and price-alert checks + app tests in headless Chromium
 ```
 The data suite checks every city (fields, coordinates, seasons, tags, itineraries, travel speeds). The app suite drives the real page: the landing flow, a sweep of every city × 1–5 days × 4 months (over 50,000 trips), plan tabs, tailoring, the taste model, save and share links, and the phone layout. GitHub Actions runs both on every push (`.github/workflows/test.yml`).
 
@@ -113,6 +113,12 @@ When the site runs somewhere that allows outside requests (e.g. GitHub Pages), i
 - **Exchange rates** for the € / $ / £ picker and local-currency amounts from the ECB via [Frankfurter](https://www.frankfurter.app), plus [ExchangeRate-API](https://www.exchangerate-api.com) for currencies the ECB doesn't publish (MAD, TND, JOD, GEL, RSD, ALL, BAM, MKD, AMD, EGP)
 
 Everything is cached in the browser, times out after 8 seconds, and is optional: if a service is down or blocked, the app keeps working on its built-in estimates and says so.
+
+## Price alerts
+Saved trips are priced again with each week's fares: My trips shows how much each one moved since it
+was saved, and returning visitors hear about the biggest drop. With an account, people can also opt
+in to a Monday email when a saved trip gets cheaper (`scripts/price-alerts.mjs`, run by the data
+workflow). Setup: [docs/PRICE_ALERTS.md](docs/PRICE_ALERTS.md).
 
 ## Monetization (Travelpayouts)
 Weekender earns through [Travelpayouts](https://www.travelpayouts.com), a travel affiliate network. Travelpayouts **Drive** (a script in `<head>`) turns links to partner brands into affiliate links automatically, for every program joined in the Travelpayouts dashboard. Each plan's booking links point at partner brands:

@@ -70,3 +70,9 @@ jobs:
             echo "main moved; retrying ($attempt)"; sleep 5
           done
           exit 1
+      - name: Email price alerts for saved trips that got cheaper
+        continue-on-error: true # never fail the data refresh over emails
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+        run: node scripts/price-alerts.mjs
