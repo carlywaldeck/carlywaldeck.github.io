@@ -159,6 +159,26 @@ export default async function run() {
     t.check(!opened.landing && opened.title === share.name, `share link should open ${share.name}, got ${opened.title}`);
     t.check(!p.errors.length && !p2.errors.length, `page errors: ${[...p.errors, ...p2.errors].join("; ")}`);
 
+    // 6c. Forecast: for a trip this month, plans show the real daily forecast (faked here).
+    const fcp = await openApp(browser, { setup: async (page) => {
+      await page.route("https://api.open-meteo.com/**", (r) => {
+        const days = Array.from({ length: 14 }, (_, i) => new Date(Date.now() + i * 864e5).toISOString().slice(0, 10));
+        r.fulfill({ contentType: "application/json", body: JSON.stringify({ daily: { time: days, weather_code: days.map((_, i) => [0, 3, 61][i % 3]),
+          temperature_2m_max: days.map(() => 20), temperature_2m_min: days.map(() => 10), precipitation_probability_max: days.map(() => 30) } }) });
+      });
+      await page.route("https://archive-api.open-meteo.com/**", (r) => r.abort());
+    } });
+    const fc = await fcp.evaluate(async () => {
+      closeLanding(false); state.month = new Date().getMonth(); update();
+      const t = current.trips.find((x) => !x.dest.escape);
+      ui.drawer = t.key; ui.tab = "details"; renderDrawer();
+      tripForecast(t);
+      await new Promise((r) => setTimeout(r, 600));
+      renderDrawer();
+      return { days: document.querySelectorAll("#drawer .fc-day").length, text: (document.querySelector("#drawer .fc") || {}).textContent || "" };
+    });
+    t.check(fc.days >= 1 && /68°/.test(fc.text), `plans for this month show the daily forecast (${fc.days} days)`);
+
     // 6b. City pages link into the planner with #from=<city>: it skips the questions and shows that city's trips.
     const cityLink = await openApp(browser, { hash: "#from=lisbon&days=2" });
     await cityLink.waitForTimeout(400);
@@ -244,7 +264,8 @@ export default async function run() {
     await lp.fill("#auth-email", "carly@school.edu");
     await lp.fill("#auth-pass", "travel1234");
     await lp.click("#auth-form button[type=submit]");
-    await lp.waitForFunction(() => /Hi, Carly/.test(document.querySelector("#acct-btn").textContent), null, { timeout: 30000 });
+    try { await lp.waitForFunction(() => /Hi, Carly/.test(document.querySelector("#acct-btn").textContent), null, { timeout: 30000 }); }
+    catch { throw new Error(`password login didn't greet. Button: ${await lp.textContent("#acct-btn").catch(() => "?")}. Window: ${(await lp.innerHTML("#login-body").catch(() => "")).replace(/\s+/g, " ").slice(0, 300)} Requests: ${calls.log.slice(-10).join(" | ")} Errors: ${lp.errors}`); }
     await lp.waitForLoadState("load");
     await lp.waitForFunction(() => typeof openLanding === "function", null, { timeout: 30000 });
     const greet = await lp.evaluate(() => { openLanding(); return { title: document.querySelector("#lp-title").textContent, guest: [...document.querySelectorAll(".lp-guest")].every(el => el.hidden) }; });

@@ -537,6 +537,10 @@ body.travel-mode .panel, body.travel-mode #spot, body.travel-mode .legend, body.
   .modal-card { padding: 24px 18px 18px; }
 }
 .lp-slogan { margin: 10px 0 0; font-weight: 600; color: var(--accent); letter-spacing: 0.01em; }
+.fc { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 6px; }
+.fc-day { flex: 0 0 auto; display: grid; justify-items: center; gap: 1px; min-width: 52px; padding: 6px 4px; border-radius: 10px; background: var(--soft); font-size: 12px; }
+.fc-day.wkd { background: var(--accent-soft); outline: 1px solid rgba(47,91,234,.25); }
+.fc-d { color: var(--muted); font-weight: 600; } .fc-i { font-size: 18px; } .fc-t { font-weight: 700; } .fc-l { color: var(--muted); } .fc-r { color: #3B7DD8; font-size: 11px; }
 </style>
 </head>
 <body>
@@ -5113,6 +5117,40 @@ function climateAt(lat, lon) {
 
 function tripClimate(t) { const p = placeLatLon(t); return p ? climateAt(p.lat, p.lon) : null; }
 
+// ---- Open-Meteo forecast: the next 14 days, shown when the trip month has started or is about to
+function forecastAt(lat, lon) {
+  const key = `fc:${lat.toFixed(2)},${lon.toFixed(2)}:${new Date().toISOString().slice(0, 13)}`; // refreshed hourly
+  if (!liveCache[key]) {
+    cachedLoad(key, 0.25, async () => {
+      const d = await getJSON(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
+        `&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=14&timezone=auto`);
+      const x = d.daily;
+      return x.time.map((date, i) => ({ date, code: x.weather_code[i], hi: x.temperature_2m_max[i], lo: x.temperature_2m_min[i], rain: x.precipitation_probability_max[i] }));
+    });
+  }
+  return peek(key);
+}
+// Days of the forecast that fall in the chosen month (none if the month is further away).
+function tripForecast(t) {
+  const ym = travelMonth(), today = new Date().toISOString().slice(0, 10);
+  const in14 = new Date(Date.now() + 13 * 864e5).toISOString().slice(0, 7);
+  if (ym !== today.slice(0, 7) && ym !== in14) return null;
+  const p = placeLatLon(t), f = p ? forecastAt(p.lat, p.lon) : null;
+  return f ? f.filter(d => d.date.startsWith(ym)) : null;
+}
+const WX_ICON = (c) => c === 0 ? "☀️" : c <= 2 ? "🌤️" : c === 3 ? "☁️" : c <= 48 ? "🌫️" : c <= 67 || (c >= 80 && c <= 82) ? "🌧️" : c <= 77 || c === 85 || c === 86 ? "❄️" : "⛈️";
+function forecastHtml(t) {
+  const f = tripForecast(t);
+  if (!f || !f.length) return "";
+  const day = (d) => new Date(d + "T12:00:00");
+  return `<h4>Forecast</h4>
+    <div class="fc" role="list">${f.map(d => { const dd = day(d.date), wkd = [0, 5, 6].includes(dd.getDay());
+      return `<div class="fc-day${wkd ? " wkd" : ""}" role="listitem" title="${dd.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" })}: ${toF(d.hi)}°F / ${toF(d.lo)}°F, ${d.rain ?? 0}% chance of rain">
+        <span class="fc-d">${dd.toLocaleDateString("en-GB", { weekday: "short" })} ${dd.getDate()}</span><span class="fc-i" aria-hidden="true">${WX_ICON(d.code)}</span>
+        <span class="fc-t">${toF(d.hi)}°</span><span class="fc-l">${toF(d.lo)}°</span><span class="fc-r">${d.rain ?? 0}%</span></div>`; }).join("")}</div>
+    <p class="fine">Daily forecast from Open-Meteo: highs, lows (°F) and chance of rain. Weekends highlighted.</p>`;
+}
+
 // ---- Nager.Date: public holidays
 
 const COUNTRY_CODES = {
@@ -5213,11 +5251,12 @@ function weatherLine(t) {
 function weatherSection(t) {
   const c = tripClimate(t);
   if (!c) {
-    return `<div><h4>Typical weather</h4><p class="fine">${inflight.size ? "Loading weather records…" : "Weather records aren't available right now; see the month guide below."}</p></div>`;
+    return `<div>${forecastHtml(t)}<h4>Typical weather</h4><p class="fine">${inflight.size ? "Loading weather records…" : "Weather records aren't available right now; see the month guide below."}</p></div>`;
   }
   const m = state.month, maxHi = Math.max(...c.hi), minLo = Math.min(...c.lo);
   const warm = (v) => v >= 28 ? "hot" : v >= 22 ? "warm" : v >= 15 ? "mild" : v >= 8 ? "cool" : "cold";
   return `<div>
+    ${forecastHtml(t)}
     <h4>Typical weather</h4>
     <p class="wx-summary"><strong>${MONTHS_FULL[m]}:</strong> highs around ${toF(c.hi[m])}°F, lows ${toF(c.lo[m])}°F,
       ${c.wet[m]} rainy day${c.wet[m] === 1 ? "" : "s"} and about ${c.sun[m]} hours of sun a day.</p>
