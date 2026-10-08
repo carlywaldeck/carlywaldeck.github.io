@@ -4670,21 +4670,24 @@ function itinerarySection(dest, cost) {
 }
 
 // TikTok searches for the place: always fresh videos, no API key needed.
-// TikTok's own search links open the app without the search on phones, so each topic opens a video
-// search of TikTok clips instead (tap one to watch it in TikTok), plus the place's hashtag page.
+// TikTok links that open TikTok directly. On phones only some TikTok links open the app with the
+// right page (hashtags do; searches lose the query), so phones get hashtag pages and computers
+// get TikTok's own search.
+const tagOf = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^A-Za-z0-9]/g, "").toLowerCase();
 function tiktokSection(dest, matched = []) {
   const place = (dest.name.split(" (")[0]).split(/ [&]/)[0].replace(/ overnight$/, "");
-  const q = (s) => `https://www.google.com/search?tbm=vid&q=${encodeURIComponent(`site:tiktok.com ${s}`)}`;
-  const tag = place.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^A-Za-z0-9]/g, "").toLowerCase();
+  const p = tagOf(place);
+  const phone = matchMedia("(pointer: coarse)").matches;
   const topics = [
-    ["Things to do", `things to do in ${place}`],
-    ["On a budget", `${place} on a budget`],
-    ["Where to eat", `where to eat in ${place}`],
-    ...matched.slice(0, 2).map(k => [INTERESTS[k], `${place} ${INTERESTS[k].toLowerCase()}`]),
-    ["Hidden gems", `${place} hidden gems`]
+    ["Things to do", `things to do in ${place}`, `thingstodoin${p}`],
+    ["Travel tips", `${place} travel tips`, `${p}travel`],
+    ["Food", `where to eat in ${place}`, `${p}food`],
+    ...matched.slice(0, 2).map(k => [INTERESTS[k], `${place} ${INTERESTS[k].toLowerCase()}`, p + tagOf(INTERESTS[k].split(/ [&]/)[0])]),
+    [`#${p}`, place, p]
   ];
-  return `<div><h4>See it on TikTok</h4><p class="note">Real videos from people who've been. Tap a topic to see TikTok videos about it.</p>
-    <div class="links tiktok">${topics.map(([label, s]) => `<a href="${q(s)}" target="_blank" rel="noopener">♪ ${label} ↗</a>`).join("")}${tag ? `<a href="https://www.tiktok.com/tag/${tag}" target="_blank" rel="noopener">#${tag} on TikTok ↗</a>` : ""}</div></div>`;
+  const href = ([, query, tag]) => phone ? `https://www.tiktok.com/tag/${tag}` : `https://www.tiktok.com/search?q=${encodeURIComponent(query)}`;
+  return `<div><h4>See it on TikTok</h4><p class="note">Real videos from people who've been. Opens TikTok.</p>
+    <div class="links tiktok">${topics.map((tp) => `<a href="${href(tp)}" target="_blank" rel="noopener">♪ ${phone ? `#${tp[2]}` : tp[0]} ↗</a>`).join("")}</div></div>`;
 }
 
 // "Book this trip": one calm row per thing to book, with what it is, the dates and the estimate,

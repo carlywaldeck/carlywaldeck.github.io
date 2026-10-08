@@ -144,8 +144,7 @@ export default async function run() {
     t.check(booking && booking.hrefs.some((h) => h.includes("airalo.com")) && booking.hrefs.some((h) => h.includes("hostelworld.com")) && /affiliate links/.test(booking.text),
       "plans link to hostels and an eSIM and disclose affiliate links");
     const tk = await p.evaluate(() => [...document.querySelectorAll("#drawer-body .links.tiktok a")].map((a) => a.href));
-    t.check(tk.length >= 4 && tk.every((h) => /google\.com\/search\?tbm=vid&q=site%3Atiktok\.com|tiktok\.com\/tag\/[a-z0-9]+$/.test(h)) && !tk.some((h) => h.includes("tiktok.com/search")),
-      `TikTok links use searches that work on phones (${tk.slice(0, 2).join(" ")})`);
+    t.check(tk.length >= 4 && tk.every((h) => h.startsWith("https://www.tiktok.com/search?q=")), `on computers, TikTok links open TikTok search (${tk[0]})`);
 
     // 5. Places you've been: hidden from results, and two ratings switch on the taste model.
     const been = await p.evaluate(() => {
@@ -229,6 +228,8 @@ export default async function run() {
     await touch("touchStart", [[200, 260]]);
     for (let i = 1; i <= 4; i++) await touch("touchMove", [[200 + i * 10, 260]]);
     await touch("touchEnd", []);
+    const tags = await tp.evaluate(() => { const t = current.trips[0]; ui.drawer = t.key; ui.tab = "plan"; renderDrawer(); const r = [...document.querySelectorAll("#drawer-body .links.tiktok a")].map((a) => a.href); ui.drawer = null; renderDrawer(); return r; });
+    t.check(tags.length >= 4 && tags.every((h) => /^https:\/\/www\.tiktok\.com\/tag\/[a-z0-9]+$/.test(h)), `on phones, TikTok links open hashtag pages in the app (${tags[0]})`);
     const after = await tp.evaluate(() => ({ dragging: G.dragging, scale: G.scale }));
     t.check(!after.dragging && Math.abs(after.scale - scales[5]) < 1 && !tp.errors.length, `one finger then spins without changing the zoom (${JSON.stringify(after)}; ${tp.errors})`);
     t.check(!m.errors.length, `phone page errors: ${m.errors}`);
