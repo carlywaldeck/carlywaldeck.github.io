@@ -4691,6 +4691,9 @@ function tiktokSection(dest, matched = []) {
     <div class="links tiktok">${topics.map((tp) => `<a href="${href(tp)}" target="_blank" rel="noopener">♪ ${phone ? `#${tp[2]}` : tp[0]} ↗</a>`).join("")}</div></div>`;
 }
 
+// Travelpayouts tracked links (from the Travelpayouts dashboard) for programs without a search link.
+const KIWITAXI_LINK = "https://kiwitaxi.tpo.lu/HlpNcDzw";
+const KLOOK_LINK = "https://klook.tpo.lu/d2StmpvB";
 // "Book this trip": one calm row per thing to book, with what it is, the dates and the estimate,
 // and one clear button (plus a second option for flights). Used by city trips and escapes.
 const shortDate = (iso) => new Date(iso + "T12:00:00Z").toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
@@ -4706,10 +4709,11 @@ function bookSection(home, dest, cost) {
     btn(kiwiLink(home, dest, state.days), "Kiwi.com") + btn(aviasalesLink(home, dest, state.days), "Aviasales", false)]);
   else if (mode === "boat") rows.push(["⛴️", "Ferry", `${when}${travelCost ? ` · about ${euro(travelCost)} return` : ""}`, btn("https://www.directferries.com/", "Direct Ferries")]);
   else rows.push([mode === "train" ? "🚆" : "🚌", `${MODES[mode].label} tickets`, `${when}${travelCost ? ` · about ${euro(travelCost)} return` : ""}`, btn("https://www.omio.com/", "Omio")]);
+  if (mode === "flight") rows.push(["🚕", "Airport transfer", `A booked ride between ${dest.name}'s airport and the center (the airport bus is cheaper)`, btn(KIWITAXI_LINK, "Kiwitaxi", false)]);
   const sleep = cost.lodging ?? cost.stay;
   if (cost.nights > 0 && sleep) rows.push(["🛏️", "Hostel", `${cost.nights} night${cost.nights > 1 ? "s" : ""} in ${place} · about ${euro(sleep)}`, btn("https://www.hostelworld.com/", "Hostelworld", false)]);
   rows.push(["🎟️", "Tours & tickets", `Skip-the-line entry and tours in ${place}`,
-    btn(`https://www.getyourguide.com/s/?q=${encodeURIComponent(place)}${GYG_PARTNER_ID ? `&partner_id=${GYG_PARTNER_ID}` : ""}`, "GetYourGuide", false)]);
+    btn(`https://www.getyourguide.com/s/?q=${encodeURIComponent(place)}${GYG_PARTNER_ID ? `&partner_id=${GYG_PARTNER_ID}` : ""}`, "GetYourGuide", false) + btn(KLOOK_LINK, "Klook", false)]);
   if (abroad) rows.push(["📶", "Mobile data", `An eSIM for ${dest.country}, so you skip roaming fees`, btn("https://www.airalo.com/", "Airalo", false)]);
   return `<div class="book"><h4>Book this trip</h4>
     <ul class="bk-list">${rows.map(([icon, title, sub, links]) => `<li><span class="bk-icon" aria-hidden="true">${icon}</span>

@@ -14,6 +14,8 @@ In Travelpayouts → **Programs**, join each of these (some need approval, which
 | **Omio** | Train, bus and ferry tickets | ~6% of the booking |
 | **Hostelworld** | Hostel | % of the deposit |
 | **GetYourGuide** | Tours & tickets | ~8% |
+| **Klook** | Tours & tickets (second button) | joined ✓ |
+| **Kiwitaxi** | Airport transfer (flights only) | joined ✓ |
 | **Airalo** | Mobile data (eSIM) | ~10% |
 
 Then open a plan on the live site, tap each button, and check that the address briefly passes
