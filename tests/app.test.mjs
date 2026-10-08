@@ -389,8 +389,10 @@ export default async function run() {
     await lp.evaluate(() => { acctTab = "trips"; openLogin(); });
     const nPosts = calls.posts.length;
     await lp.check("#acct-alerts");
-    for (let i = 0; i < 40 && calls.posts.length === nPosts; i++) await lp.waitForTimeout(100);
-    const alertPost = calls.posts[calls.posts.length - 1];
+    // Wait for the save that carries the setting (an earlier save can still be on its way on slow machines).
+    const alertSaved = () => calls.posts.slice(nPosts).find((x) => x.data && x.data.alerts === true);
+    for (let i = 0; i < 80 && !alertSaved(); i++) await lp.waitForTimeout(100);
+    const alertPost = alertSaved() || calls.posts[calls.posts.length - 1];
     t.check(alertPost && alertPost.data.alerts === true, `turning on price alerts saves to the account (${JSON.stringify(alertPost && alertPost.data.alerts)})`);
     await lp.evaluate(() => { acctTab = "profile"; closeLogin(); });
     // Next visit: logged in with a saved search, you go straight to your trips.
