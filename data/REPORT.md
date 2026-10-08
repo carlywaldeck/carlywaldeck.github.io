@@ -1,12 +1,12 @@
 # Data report
 
-Generated 2026-10-07 by `scripts/build-data.mjs`. This compares the original hand-written estimates in the app with the values computed from open data.
+Generated 2026-10-08 by `scripts/build-data.mjs`. This compares the original hand-written estimates in the app with the values computed from open data.
 
 ## Best months (1–5 scores)
 
 - City-months compared: 1440
 - Correlation between estimates and data: **0.74** (1 = identical ranking, 0 = unrelated)
-- Within one point of each other: **85%**
+- Within one point of each other: **84%**
 
 Biggest disagreements (average points off per month):
 
@@ -72,16 +72,16 @@ Agreement = share of cities where the hand-picked tag and the data (top 40% of c
 | snow | 94% | Kraków, Granada, Munich, Sofia, Tbilisi | – |
 | wildlife | 69% | Valencia, Edinburgh, Stockholm, Agadir, Paphos | Paris, London, Amsterdam, Berlin, Prague |
 | desert | 88% | Naples, Marrakech, Agadir, Tunis, Amman | Athens, Lyon, Bologna, Fez, Cologne |
-| vintage | 59% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
-| books | 59% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
-| vegan | 59% | – | Barcelona, Madrid, Lisbon, Paris, London |
+| vintage | 58% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
+| books | 60% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
+| vegan | 59% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
 | cycling | 59% | – | Barcelona, Madrid, Seville, Lisbon, Paris |
 | caves | 59% | – | Barcelona, Lisbon, Prague, Vienna, Budapest |
-| themeparks | 61% | – | Porto, Paris, London, Amsterdam, Berlin |
-| gardens | 59% | – | Barcelona, Madrid, Seville, Lisbon, Porto |
+| themeparks | 62% | – | Porto, Paris, London, Amsterdam, Berlin |
+| gardens | 60% | – | Barcelona, Madrid, Seville, Lisbon, Porto |
 | climbing | 59% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
-| lgbtq | 59% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
-| games | 59% | – | Barcelona, Madrid, Seville, Lisbon, Porto |
+| lgbtq | 61% | – | Barcelona, Madrid, Lisbon, Porto, Paris |
+| games | 60% | – | Barcelona, Madrid, Seville, Lisbon, Porto |
 | students | 59% | – | Barcelona, Madrid, Seville, Lisbon, Paris |
 | offbeat | 63% | Bologna, Ljubljana, Gdańsk, Riga, Sofia | Granada, Dubrovnik, Split, Valletta, Palma de Mallorca |
 
@@ -95,21 +95,14 @@ Agreement = share of cities where the hand-picked tag and the data (top 40% of c
 
 ## Flight fares and the flight price model
 
-- Real round-trip fares (Travelpayouts / Aviasales, fetched 2026-10-07): **30330** route-months on **9209** routes, each the median of up to 5 weekly snapshots (2 so far)
-- Models: ridge regression on log(fare), trained on 24642 fares. "New route": 11 features (log distance, log distance², demand at destination that month, demand at home that month, destination price level, destination popularity, home popularity, how cheap flights from this airport are, how cheap flights to this airport are, how cheap this month is, short hop (< 500 km)). "Known route" adds: this route in other months, has other months, the reverse route, has reverse route
+- Real round-trip fares (Travelpayouts / Aviasales, fetched 2026-10-08): **30648** route-months on **9263** routes, each the median of up to 5 weekly snapshots (3 so far)
+- Models: ridge regression on log(fare), trained on 24863 fares. "New route": 11 features (log distance, log distance², demand at destination that month, demand at home that month, destination price level, destination popularity, home popularity, how cheap flights from this airport are, how cheap flights to this airport are, how cheap this month is, short hop (< 500 km)). "Known route" adds: this route in other months, has other months, the reverse route, has reverse route
 
 | Test | Typical error | Average error |
 |---|---|---|
-| New-route model, 1442 routes it never saw | **24%** | 34% |
-| Old distance formula, same routes | 35% | 41% |
-| Missing month: reverse route's real fare that month (1988 cases) | **16%** | 25% |
-| Missing month: known-route model (2668 cases) | **19%** | 26% |
-| **All flight prices people see** (18% real fares, 6% reverse, 40% known-route model, 35% new-route model) | **15%** | 24% |
+| New-route model, 1449 routes it never saw | **24%** | 34% |
+| Old distance formula, same routes | 34% | 40% |
+| Missing month: reverse route's real fare that month (2013 cases) | **16%** | 25% |
+| Missing month: known-route model (2689 cases) | **19%** | 27% |
+| **All flight prices people see** (19% real fares, 6% reverse, 40% known-route model, 35% new-route model) | **15%** | 24% |
 
-
-## Problems on this run
-
-- osm santorini: all Overpass servers failed
-- osm montpellier: all Overpass servers failed
-- osm cork: all Overpass servers failed
-- osm rabat: all Overpass servers failed
