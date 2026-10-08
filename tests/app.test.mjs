@@ -128,8 +128,8 @@ export default async function run() {
     const booking = await p.evaluate(() => {
       const tr = current.trips.find((x) => x.cost.transport && x.cost.transport.mode === "flight" && x.dest.country !== current.home.country);
       if (!tr) return null;
-      ui.drawer = tr.key; ui.tab = "overview"; renderDrawer();
-      const pane = document.querySelector("#pane-overview"); // Book this trip sits on the overview
+      ui.drawer = tr.key; ui.tab = "book"; renderDrawer();
+      const pane = document.querySelector("#pane-book"); // the Booking tab
       const hrefs = [...pane.querySelectorAll("a")].map((a) => a.href);
       return { hrefs, text: pane.textContent };
     });

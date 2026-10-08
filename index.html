@@ -485,6 +485,7 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
 .tabs { position: sticky; top: 0; z-index: 2; display: flex; gap: 4px; margin: 0 -2px 4px; padding: 8px 2px; background: #fff; border-bottom: 1px solid var(--line); }
 .tabs [role=tab] { border: 0; background: none; border-radius: 8px; padding: 7px 12px; font-weight: 500; color: var(--muted); }
 .tabs [role=tab][aria-selected="true"] { background: var(--accent-soft); color: var(--accent); }
+@media (max-width: 420px) { .tabs { gap: 0; } .tabs [role=tab] { flex: 1; padding: 7px 4px; font-size: 14px; } }
 #filters select { width: 100%; }
 @media (max-width: 760px) { .legend { display: none !important; } #key-btn { display: none; } }
 .dr-actions { float: right; display: flex; gap: 6px; margin: 2px 48px 0 0; }
@@ -4523,7 +4524,7 @@ function transportSection(dest, cost) {
     ${fareNote(cost)}
     ${(() => { const r = road(byId(state.home), dest); return r && landOf(state.home) === landOf(dest.id) ? `<p class="fine">By road it's ${r.km.toLocaleString()} km, about ${hrs(r.hours)} by car (OpenStreetMap routing via OSRM); bus and train times are based on that.</p>` : ""; })()}
     ${BUDGET_AIRPORTS[state.home] && allowed.some(o => o.mode === "flight") ? `<p class="fine">Flying from ${byId(state.home).name}? Budget airlines usually use ${BUDGET_AIRPORTS[state.home]}.</p>` : ""}
-    <p class="fine">Round-trip price estimates based on distance and season${cost.options.some(o => o.live) ? " (flights marked live are real fares)" : ""}; check live prices under Book this trip. ${hidden ? `${hidden} more option${hidden > 1 ? "s" : ""} hidden by your travel filter.` : "Pick one to update the total."}</p>
+    <p class="fine">Round-trip price estimates based on distance and season${cost.options.some(o => o.live) ? " (flights marked live are real fares)" : ""}; check live prices in the Booking tab. ${hidden ? `${hidden} more option${hidden > 1 ? "s" : ""} hidden by your travel filter.` : "Pick one to update the total."}</p>
   </div>`;
 }
 
@@ -6348,12 +6349,14 @@ function drawDrawer(t) {
     ? `<div><h4>About ${w.title || dest.name}</h4><p class="about">${w.extract}</p>
         ${w.page ? `<a class="more" href="${w.page}" target="_blank" rel="noopener">Read more on Wikipedia ↗</a>` : ""}</div>` : "";
   const live = `${weatherSection(t)}${holidaySection(t)}`;
-  // Three tabs keep the plan short: what it costs and why it scores, the day-by-day plan, and the rest.
+  // Tabs keep the plan short: what it costs and why it scores, the day-by-day plan, where to book, and the rest.
   const panes = isEscape(t)
-    ? [["overview", "Overview", `<p class="lede">${dest.escape.note}</p>${scoreSection(t)}${escapeDetails(home, dest, cost)}${bookSection(home, dest, cost)}`],
+    ? [["overview", "Overview", `<p class="lede">${dest.escape.note}</p>${scoreSection(t)}${escapeDetails(home, dest, cost)}`],
+       ["book", "Booking", bookSection(home, dest, cost)],
        ["details", "Details", `${about}${dataSection(t)}${live}${tiktokSection(dest, matched)}${sourcesNote()}`]]
-    : [["overview", "Overview", `${scoreSection(t)}${costSection(cost)}${transportSection(dest, cost)}${bookSection(home, dest, cost)}`],
+    : [["overview", "Overview", `${scoreSection(t)}${costSection(cost)}${transportSection(dest, cost)}`],
        ["plan", "Itinerary", `${itinerarySection(dest, cost)}${state.days > 1 ? dayTripsSection(dest, cost) : ""}${tiktokSection(dest, matched)}`],
+       ["book", "Booking", bookSection(home, dest, cost)],
        ["details", "Details", `${about}${dataSection(t)}${live}${whenSection(dest)}${tipsSection(dest)}${sourcesNote()}`]];
   if (!panes.some(([id]) => id === ui.tab)) ui.tab = "overview";
   const body = `<div class="tabs" role="tablist">${panes.map(([id, label]) =>
