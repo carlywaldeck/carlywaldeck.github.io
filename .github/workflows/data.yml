@@ -63,7 +63,7 @@ jobs:
             cp /tmp/newdata/city-data.json /tmp/newdata/REPORT.md data/
             node scripts/embed-data.mjs
             node scripts/build-pages.mjs || echo "city pages not rebuilt"
-            git add data/city-data.json data/app-data.js data/fare-details.js data/REPORT.md index.html from sitemap.xml robots.txt
+            git add data/city-data.json data/app-data.js data/app-data.json data/fare-details.js data/REPORT.md index.html from sitemap.xml robots.txt
             if git diff --cached --quiet; then echo "No changes"; exit 0; fi
             git commit -m "Refresh city data from open sources"
             if git push origin HEAD:main; then exit 0; fi

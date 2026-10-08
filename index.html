@@ -3968,7 +3968,11 @@ window.CITIES = [
 </script>
 <!-- Real data for each city (climate, crowds, prices, OpenStreetMap counts, Wikipedia popularity, fares),
      written by scripts/embed-data.mjs from data/city-data.json. See data/REPORT.md. -->
-<script src="data/app-data.js?v=eabe6ecd1a"></script>
+<script>
+// Phone apps: use the newest prices downloaded last time (see refreshAppData), if newer than the built-in copy.
+if (window.Capacitor) { try { const d = JSON.parse(localStorage.getItem("weekender:data") || "null"); if (d && d.generated) window.CITY_DATA = d; } catch { /* no saved copy */ } }
+</script>
+<script src="data/app-data.js?v=7049174b8e"></script>
 <script>
 // ======================================================================
 // Weekender app logic
@@ -5929,12 +5933,47 @@ function shareLink(t) {
   const r = tripRef(t);
   const q = new URLSearchParams({ trip: r.key, from: r.home, days: r.days, month: r.month, budget: r.budget, cur: state.currency });
   if (state.interests.size) q.set("into", [...state.interests].join(","));
-  return location.href.split("#")[0] + "#" + q.toString();
+  return SITE_BASE + "#" + q.toString();
+}
+// ---------------------------------------------------------------- phone apps (Capacitor)
+// Inside the iOS/Android app the page runs from the device, so links and images point at the
+// real site, and sharing uses the phone's own share sheet (Capacitor's Share plugin).
+const NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+const plugin = (name) => (NATIVE && window.Capacitor.Plugins && window.Capacitor.Plugins[name]) || null;
+const ON_SITE = /^https?:$/.test(location.protocol) && !/^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+const SITE_BASE = ON_SITE ? location.href.split("#")[0] : "https://weekender-trips.com/";
+const SITE_HOST = ON_SITE ? location.hostname : "weekender-trips.com";
+async function nativeShareText(text, url, title = "Weekender") {
+  const S = plugin("Share");
+  if (!S) return false;
+  try { await S.share({ title, text, url, dialogTitle: title }); } catch { /* closed */ }
+  return true;
+}
+async function nativeShareImage(blob, filename, title) {
+  const S = plugin("Share"), FS = plugin("Filesystem");
+  if (!S || !FS) return false;
+  const data = await new Promise((done) => { const r = new FileReader(); r.onload = () => done(String(r.result).split(",")[1]); r.readAsDataURL(blob); });
+  const { uri } = await FS.writeFile({ path: filename, data, directory: "CACHE" });
+  try { await S.share({ title, files: [uri], dialogTitle: title }); } catch { /* closed */ }
+  return true;
+}
+// In the app, download this week's prices for next time (the app ships with a copy).
+async function refreshAppData() {
+  if (!NATIVE) return;
+  try {
+    const r = await fetch("https://weekender-trips.com/data/app-data.json", { cache: "no-store" });
+    const d = await r.json();
+    if (d && d.generated && (!DATA || d.generated > DATA.generated)) {
+      localStorage.setItem("weekender:data", JSON.stringify(d));
+      toast("New prices downloaded: they'll show next time you open the app.");
+    }
+  } catch { /* offline: keep the built-in data */ }
 }
 async function shareTrip(t) {
   const url = shareLink(t);
   const text = `${t.dest.name} from ${current.home.name}: ${dayWord(t.days)} in ${MONTHS_FULL[state.month]} for about ${euro(t.cost.total)} (score ${t.score10}/10)`;
   try {
+    if (await nativeShareText(text, url, "Weekender trip")) return;
     if (navigator.share && matchMedia("(pointer: coarse)").matches) { await navigator.share({ title: "Weekender trip", text, url }); return; }
     await navigator.clipboard.writeText(url);
     toast("Link copied: anyone who opens it sees this trip");
@@ -5945,6 +5984,7 @@ async function shareTrip(t) {
 
 // Share a picture: the share sheet on phones (straight to Instagram/TikTok stories), a download elsewhere.
 async function shareImage(blob, filename, title) {
+  if (await nativeShareImage(blob, filename, title).catch(() => false)) return blob;
   const file = new File([blob], filename, { type: "image/png" });
   try {
     if (matchMedia("(pointer: coarse)").matches && navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -5997,7 +6037,7 @@ async function tripImage(t) {
   const parts = [[MODES[cost.transport.mode].label.toLowerCase(), cost.transport.cost ?? cost.travel], ["hostel", cost.lodging ?? cost.stay], ["food", cost.food], ["sights", cost.local ?? cost.sights]].filter(p => p[1] > 0);
   x.fillText(parts.map(([k, v]) => `${k} ${euro(v)}`).join("  ·  "), 80, 1670);
   x.fillStyle = "#2F5BEA"; x.font = font(700, 40);
-  x.fillText(`plan yours free → ${location.hostname || "weekender-trips.com"}`, 80, 1820);
+  x.fillText(`plan yours free → ${SITE_HOST}`, 80, 1820);
   const blob = await new Promise(r => c.toBlob(r, "image/png"));
   return shareImage(blob, `weekend-${tagOf(dest.name)}.png`, `${dest.name} for ${euro(cost.total)}`);
 }
@@ -6028,7 +6068,7 @@ function downloadIcs(t) {
 // group chat through the share sheet, so nothing needs an account or a server.
 const voteRef = (r) => [r.key, r.home, r.days, r.month, r.budget].join("~");
 function voteLink(refs) {
-  return location.href.split("#")[0] + "#vote=" + encodeURIComponent(refs.slice(0, 4).map(voteRef).join(","));
+  return SITE_BASE + "#vote=" + encodeURIComponent(refs.slice(0, 4).map(voteRef).join(","));
 }
 function parseVote(v) {
   return String(v).split(",").map(x => { const [key, home, days, month, budget] = x.split("~"); return { key, home, days: Number(days), month: Number(month), budget: Number(budget) }; })
@@ -6036,6 +6076,7 @@ function parseVote(v) {
 }
 async function sendText(text, url, done = "Copied: paste it in your group chat") {
   try {
+    if (await nativeShareText(text, url)) return;
     if (navigator.share && matchMedia("(pointer: coarse)").matches) { await navigator.share({ text, url }); return; }
     await navigator.clipboard.writeText(`${text} ${url}`);
     toast(done);
@@ -6378,7 +6419,7 @@ let acctPitch = "";
 // ---- install as an app (works offline, opens full screen, icon on the home screen)
 let installPrompt = null;
 window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); installPrompt = e; });
-if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {});
+if ("serviceWorker" in navigator && location.protocol === "https:" && !window.Capacitor) navigator.serviceWorker.register("sw.js").catch(() => {});
 function openGetApp() {
   const ios = /iphone|ipad|ipod/i.test(navigator.userAgent), standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
   $("#login-modal .modal-card").classList.remove("wide");
@@ -7123,24 +7164,12 @@ async function travelImage() {
     y += 56;
   }
   if (fav) { x.fillStyle = "#1F9E89"; x.font = font(600, 34); x.fillText(`Favorite: ${been[fav].n}`, 80, Math.min(y + 10, 1790)); }
-  const cta = `Plan your next cheap weekend at ${location.hostname || "weekender-trips.com"}`;
+  const cta = `Plan your next cheap weekend at ${SITE_HOST}`;
   let fs = 36; x.font = font(600, fs);
   while (x.measureText(cta).width > W - 160 && fs > 22) x.font = font(600, --fs);
   x.fillStyle = "#2F5BEA"; x.fillText(cta, 80, 1860);
   const blob = await new Promise(r => c.toBlob(r, "image/png"));
-  const file = new File([blob], "my-travel-map.png", { type: "image/png" });
-  try {
-    if (matchMedia("(pointer: coarse)").matches && navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({ files: [file], title: "My travels" });
-      return blob;
-    }
-  } catch { /* share sheet closed: fall back to a download */ }
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob); a.download = "my-travel-map.png";
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-  toast("Image saved: share it on your story!");
-  return blob;
+  return shareImage(blob, "my-travel-map.png", "My travels");
 }
 function showTravelMap() {
   if (landingOpen()) closeLanding(false);
@@ -7738,6 +7767,7 @@ update();
 renderLanding();
 renderAccount();
 if (saved.length) setTimeout(checkPriceDrops, 1200);
+setTimeout(refreshAppData, 3000);
 document.addEventListener("change", (e) => {
   if (e.target.id === "acct-alerts") {
     store.set({ alerts: e.target.checked });

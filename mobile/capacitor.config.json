@@ -1,0 +1,12 @@
+{
+  "appId": "com.weekendertrips.app",
+  "appName": "Weekender",
+  "webDir": "www",
+  "backgroundColor": "#F7F8FA",
+  "ios": { "contentInset": "never", "scheme": "Weekender" },
+  "android": { "allowMixedContent": false },
+  "plugins": {
+    "SplashScreen": { "launchShowDuration": 900, "backgroundColor": "#F7F8FA", "showSpinner": false },
+    "StatusBar": { "style": "LIGHT", "backgroundColor": "#F7F8FA", "overlaysWebView": false }
+  }
+}
