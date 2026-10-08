@@ -411,6 +411,11 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
   .bk-list li { grid-template-columns: 30px 1fr; }
   .bk-links { grid-column: 2; justify-content: flex-start; }
 }
+.vote-li { display: grid; gap: 4px; padding: 4px 0 10px; }
+.vote-li small { color: var(--muted); font-size: 12.5px; }
+.vote-row { align-items: center; }
+.vote-acts { display: flex; gap: 6px; flex: none; }
+.vote-row b { color: #0B8A7C; }
 .price-tag { display: block; font-size: 12.5px; font-weight: 500; margin-top: 2px; }
 .price-tag.down { color: #0B8A7C; }
 .price-tag.up { color: var(--muted); }
@@ -4698,7 +4703,7 @@ const AIRALO_LINK = "https://airalo.tpo.lu/hntsuX4W";
 // "Book this trip": one calm row per thing to book, with what it is, the dates and the estimate,
 // and one clear button (plus a second option for flights). Used by city trips and escapes.
 const shortDate = (iso) => new Date(iso + "T12:00:00Z").toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
-function bookSection(home, dest, cost) {
+function bookSection(home, dest, cost, t) {
   const mode = cost.transport.mode, abroad = !isEscape({ dest }) && dest.country !== home.country;
   const place = dest.name.split(/ [&(]/)[0];
   const [go, back] = weekendDates(state.days);
@@ -4715,6 +4720,7 @@ function bookSection(home, dest, cost) {
   if (cost.nights > 0 && sleep) rows.push(["🛏️", "Hostel", `${cost.nights} night${cost.nights > 1 ? "s" : ""} in ${place} · about ${euro(sleep)}`, btn("https://www.hostelworld.com/", "Hostelworld", false)]);
   rows.push(["🎟️", "Tours & tickets", `Skip-the-line entry and tours in ${place}`,
     btn(`https://www.getyourguide.com/s/?q=${encodeURIComponent(place)}${GYG_PARTNER_ID ? `&partner_id=${GYG_PARTNER_ID}` : ""}`, "GetYourGuide", false) + btn(KLOOK_LINK, "Klook", false)]);
+  rows.push(["📅", "Add to calendar", `Block ${when} so nothing else gets planned`, `<button type="button" class="bk-alt" data-act="ics" data-id="${t ? t.key : ""}">Calendar</button>`]);
   if (abroad) rows.push(["📶", "Mobile data", `An eSIM for ${dest.country}, so you skip roaming fees`, btn(AIRALO_LINK, "Airalo", false)]);
   return `<div class="book"><h4>Book this trip</h4>
     <ul class="bk-list">${rows.map(([icon, title, sub, links]) => `<li><span class="bk-icon" aria-hidden="true">${icon}</span>
@@ -5713,7 +5719,8 @@ function toggleSave(t) {
 }
 function savedHtml() {
   if (!saved.length) return `<li class="note">No saved trips yet. Use ☆ Save in any plan.</li>`;
-  return saved.map((s, i) => `<li><span class="bi-name">${s.name}<small>From ${(byId(s.home) || {}).name || s.home} · ${dayWord(s.days)} · ${MONTHS[s.month]} · ${euro(s.total)} · ${Number(s.score).toFixed(1)}/10</small>${priceTag(s)}</span>
+  const vote = saved.length >= 2 ? `<li class="vote-li"><button type="button" class="cta sm" data-act="vote-share">🗳️ Ask friends to vote</button><small>Sends one link with your saved trips to your group chat.</small></li>` : "";
+  return vote + saved.map((s, i) => `<li><span class="bi-name">${s.name}<small>From ${(byId(s.home) || {}).name || s.home} · ${dayWord(s.days)} · ${MONTHS[s.month]} · ${euro(s.total)} · ${Number(s.score).toFixed(1)}/10</small>${priceTag(s)}</span>
     <button type="button" class="ghost sm" data-act="open-saved" data-v="${i}">Open</button>
     <button type="button" class="bi-x" data-act="unsave" data-v="${i}" aria-label="Remove ${s.name} from saved trips">×</button></li>`).join("");
 }
@@ -5789,9 +5796,135 @@ async function shareTrip(t) {
     prompt("Copy this link to share the trip:", url);
   }
 }
+
+// Share a picture: the share sheet on phones (straight to Instagram/TikTok stories), a download elsewhere.
+async function shareImage(blob, filename, title) {
+  const file = new File([blob], filename, { type: "image/png" });
+  try {
+    if (matchMedia("(pointer: coarse)").matches && navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title });
+      return blob;
+    }
+  } catch { /* share sheet closed: fall back to a download */ }
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  toast("Image saved: share it on your story!");
+  return blob;
+}
+// Copy the globe as it is on screen (base map + routes) into a rounded square of an image.
+function drawGlobeSquare(x, gx, gy, gs) {
+  const base = $("#globe-base"), fx = $("#globe-fx"), dpr = G.dpr || 1;
+  const side = Math.min(base.width, base.height), sx = Math.max(0, Math.min(base.width - side, G.cx * dpr - side / 2)), sy = Math.max(0, Math.min(base.height - side, G.cy * dpr - side / 2));
+  x.save(); x.beginPath(); x.roundRect(gx, gy, gs, gs, 48); x.clip();
+  x.fillStyle = "#DCE8F4"; x.fillRect(gx, gy, gs, gs);
+  if (G.ok) { x.drawImage(base, sx, sy, side, side, gx, gy, gs, gs); x.drawImage(fx, sx, sy, side, side, gx, gy, gs, gs); }
+  x.restore();
+}
+
+// ---------------------------------------------------------------- story image for one trip
+async function tripImage(t) {
+  select(t.key, { fly: true });
+  for (let i = 0; i < 60 && G.anim; i++) await new Promise(r => setTimeout(r, 50)); // let the globe arrive
+  globeDirty();
+  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+  const home = current.home, { dest, cost } = t;
+  const W = 1080, H = 1920, c = document.createElement("canvas");
+  c.width = W; c.height = H;
+  const x = c.getContext("2d");
+  const bg = x.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, "#EAF1FA"); bg.addColorStop(1, "#F7F8FA");
+  x.fillStyle = bg; x.fillRect(0, 0, W, H);
+  const font = (w, s) => `${w} ${s}px Geist, system-ui, -apple-system, sans-serif`;
+  x.fillStyle = "#13233F"; x.font = font(700, 44); x.fillText("weekender", 80, 130);
+  const bw = x.measureText("weekender").width; x.fillStyle = "#2F5BEA"; x.fillText(".", 80 + bw, 130);
+  x.fillStyle = "#5A6B85"; x.font = font(600, 38); x.fillText("my next weekend 👀", 80, 240);
+  x.fillStyle = "#13233F"; x.font = font(800, dest.name.length > 16 ? 70 : 92);
+  x.fillText(dest.name.replace(/ overnight$/, ""), 80, 340);
+  x.fillStyle = "#5A6B85"; x.font = font(500, 38);
+  x.fillText(`from ${home.name} · ${dayWord(t.days)} · ${MONTHS_FULL[state.month]}`, 80, 405);
+  drawGlobeSquare(x, 40, 460, 1000);
+  x.fillStyle = "#0B8A7C"; x.font = font(800, 120); x.fillText(euro(cost.total), 80, 1600);
+  const pw = x.measureText(euro(cost.total)).width;
+  x.fillStyle = "#13233F"; x.font = font(600, 38); x.fillText("all in", 80 + pw + 24, 1600);
+  x.fillStyle = "#5A6B85"; x.font = font(500, 34);
+  const parts = [[MODES[cost.transport.mode].label.toLowerCase(), cost.transport.cost ?? cost.travel], ["hostel", cost.lodging ?? cost.stay], ["food", cost.food], ["sights", cost.local ?? cost.sights]].filter(p => p[1] > 0);
+  x.fillText(parts.map(([k, v]) => `${k} ${euro(v)}`).join("  ·  "), 80, 1670);
+  x.fillStyle = "#2F5BEA"; x.font = font(700, 40);
+  x.fillText(`plan yours free → ${location.hostname || "weekender-trips.com"}`, 80, 1820);
+  const blob = await new Promise(r => c.toBlob(r, "image/png"));
+  return shareImage(blob, `weekend-${tagOf(dest.name)}.png`, `${dest.name} for ${euro(cost.total)}`);
+}
+
+// ---------------------------------------------------------------- add to calendar
+function tripIcs(t) {
+  const [go, back] = weekendDates(t.days);
+  const d = (iso, add = 0) => { const x = new Date(iso + "T12:00:00Z"); x.setUTCDate(x.getUTCDate() + add); return x.toISOString().slice(0, 10).replace(/-/g, ""); };
+  const esc = (v) => String(v).replace(/[\\;,]/g, (m) => "\\" + m).replace(/\n/g, "\\n");
+  const name = t.dest.name.replace(/ overnight$/, "");
+  return ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Weekender//EN", "BEGIN:VEVENT",
+    `UID:${tagOf(t.key)}-${go}@weekender-trips.com`, `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, "").slice(0, 15)}Z`,
+    `DTSTART;VALUE=DATE:${d(go)}`, `DTEND;VALUE=DATE:${d(back, 1)}`,
+    `SUMMARY:${esc(`Weekend in ${name}`)}`,
+    `DESCRIPTION:${esc(`About ${euro(t.cost.total)} all in from ${current.home.name}. Plan and booking links: ${shareLink(t)}`)}`,
+    "END:VEVENT", "END:VCALENDAR"].join("\r\n");
+}
+function downloadIcs(t) {
+  const blob = new Blob([tripIcs(t)], { type: "text/calendar" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = `weekend-${tagOf(t.dest.name)}.ics`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+
+// ---------------------------------------------------------------- group vote
+// One link with your saved trips. Friends open it, compare, and vote: the vote goes back to the
+// group chat through the share sheet, so nothing needs an account or a server.
+const voteRef = (r) => [r.key, r.home, r.days, r.month, r.budget].join("~");
+function voteLink(refs) {
+  return location.href.split("#")[0] + "#vote=" + encodeURIComponent(refs.slice(0, 4).map(voteRef).join(","));
+}
+function parseVote(v) {
+  return String(v).split(",").map(x => { const [key, home, days, month, budget] = x.split("~"); return { key, home, days: Number(days), month: Number(month), budget: Number(budget) }; })
+    .filter(r => r.key && byId(r.home) && r.days >= 1 && r.days <= 5 && r.month >= 0 && r.month <= 11).slice(0, 4);
+}
+async function sendText(text, url, done = "Copied: paste it in your group chat") {
+  try {
+    if (navigator.share && matchMedia("(pointer: coarse)").matches) { await navigator.share({ text, url }); return; }
+    await navigator.clipboard.writeText(`${text} ${url}`);
+    toast(done);
+  } catch { /* closed the share sheet */ }
+}
+function shareVote() {
+  const refs = saved.slice(0, 4);
+  if (refs.length < 2) { toast("Save at least 2 trips first, then ask your friends to vote."); return; }
+  sendText(`Help us pick our next weekend 🗳️ ${refs.map(r => r.name).join(" vs ")}`, voteLink(refs));
+}
+function openVote(refs) {
+  ui.vote = refs;
+  const rows = refs.map((r, i) => {
+    const pl = beenPlace(String(r.key).split("@")[0]), name = pl ? pl.name.replace(/ overnight$/, "") : r.key, now = priceNow(r);
+    return `<li class="vote-row"><span class="bi-name">${escHtml(name)}<small>From ${escHtml(byId(r.home).name)} · ${dayWord(r.days)} · ${MONTHS_FULL[r.month]}${now != null ? ` · <b>${euro(now)}</b> all in` : ""}</small></span>
+      <span class="vote-acts"><button type="button" class="ghost sm" data-act="vote-open" data-v="${i}">See plan</button><button type="button" class="cta sm" data-act="vote-pick" data-v="${i}">Vote</button></span></li>`;
+  }).join("");
+  $("#login-modal .modal-card").classList.remove("wide");
+  $("#login-body").innerHTML = `<h2 id="login-title">Where should we go? 🗳️</h2>
+    <p class="lede">Your friend wants your vote. Look at the plans, then tap Vote: it sends your pick back to the chat.</p>
+    <ul class="been-items vote-items">${rows}</ul>
+    <div class="modal-actions"><button type="button" class="ghost" data-act="login-close">Just looking</button></div>`;
+  $("#login-modal").hidden = false;
+}
+function votePick(i) {
+  const r = ui.vote && ui.vote[i];
+  if (!r) return;
+  const pl = beenPlace(String(r.key).split("@")[0]), name = pl ? pl.name.replace(/ overnight$/, "") : r.key, now = priceNow(r);
+  sendText(`I vote ${name}! 🗳️${now != null ? ` (${euro(now)} for ${dayWord(r.days)})` : ""}`, voteLink(ui.vote), "Vote copied: paste it in your group chat");
+}
 // A shared link (#trip=...&from=...) opens straight onto that trip, skipping the landing page.
 function readShareLink() {
   const q = new URLSearchParams(location.hash.slice(1));
+  // "#vote=…": a friend's group vote.
+  if (q.get("vote")) { const refs = parseVote(q.get("vote")); return refs.length ? { vote: refs } : null; }
   // "#from=florence" (links from the city pages): start straight on that city's trips.
   if (q.get("from") && !q.get("trip") && byId(q.get("from"))) {
     if (q.get("days") >= 1 && q.get("days") <= 5) { state.daysSet = new Set([Number(q.get("days"))]); state.days = Number(q.get("days")); }
@@ -6370,11 +6503,11 @@ function drawDrawer(t) {
   const panes = isEscape(t)
     ? [["overview", "Overview", `<p class="lede">${dest.escape.note}</p>${scoreSection(t)}${escapeDetails(home, dest, cost)}`],
        ["plan", "Itinerary", `${escapePlan(home, dest.escape, cost)}${tiktokSection(dest, matched)}`],
-       ["book", "Booking", bookSection(home, dest, cost)],
+       ["book", "Booking", bookSection(home, dest, cost, t)],
        ["details", "Details", `${about}${dataSection(t)}${live}${escapeTips(cost)}${sourcesNote()}`]]
     : [["overview", "Overview", `${scoreSection(t)}${costSection(cost)}${transportSection(dest, cost)}`],
        ["plan", "Itinerary", `${itinerarySection(dest, cost)}${state.days > 1 ? dayTripsSection(dest, cost) : ""}${tiktokSection(dest, matched)}`],
-       ["book", "Booking", bookSection(home, dest, cost)],
+       ["book", "Booking", bookSection(home, dest, cost, t)],
        ["details", "Details", `${about}${dataSection(t)}${live}${whenSection(dest)}${tipsSection(dest)}${sourcesNote()}`]];
   if (!panes.some(([id]) => id === ui.tab)) ui.tab = "overview";
   const body = `<div class="tabs" role="tablist">${panes.map(([id, label]) =>
@@ -6386,6 +6519,7 @@ function drawDrawer(t) {
       <div class="dr-actions">
         <button type="button" class="ghost sm" data-act="save" data-id="${t.key}" aria-pressed="${isSaved(t)}">${isSaved(t) ? "★ Saved" : "☆ Save"}</button>
         <button type="button" class="ghost sm" data-act="share" data-id="${t.key}">Share</button>
+        <button type="button" class="ghost sm" data-act="story" data-id="${t.key}">Story image</button>
       </div>
       <span class="eyebrow">${isEscape(t) ? `${tripKind(t)} from ${home.name}` : `${home.code} → ${dest.code} · ${dest.country}`}</span>
       <h2>${dest.name}</h2>
@@ -7421,6 +7555,11 @@ function setupControls() {
     if (act === "travel-image") travelImage();
     if (act === "save") { const t = tripById(id); if (t) { toggleSave(t); renderDrawer(); renderBeen(); toast(isSaved(t) ? "Saved to My trips" : "Removed from My trips"); if (isSaved(t)) offerAccount("save"); } }
     if (act === "share") { const t = tripById(id); if (t) shareTrip(t); }
+    if (act === "story") { const t = tripById(id); if (t) tripImage(t); }
+    if (act === "ics") { const t = tripById(id); if (t) downloadIcs(t); }
+    if (act === "vote-share") shareVote();
+    if (act === "vote-pick") votePick(Number(v));
+    if (act === "vote-open") { const r = ui.vote && ui.vote[Number(v)]; if (r) { closeLogin(); openRef(r); } }
     if (act === "open-saved") { const s = saved[Number(v)]; if (s) { $("#been-pop").hidden = true; $("#been-btn").setAttribute("aria-expanded", "false"); openRef(s); } }
     if (act === "unsave") { saved.splice(Number(v), 1); store.set({ saved }); renderBeen(); }
     if (act === "unbeen") { delete been[id]; saveBeen(); update(); }
@@ -7482,7 +7621,12 @@ if (cloudOn() && auth.get() && store.get().criteria && !shared && !/access_token
 }
 // Logged in: bring in anything saved from another device.
 if (cloudOn() && auth.get() && !/access_token=/.test(location.hash)) pullCloud().then((changed) => { if (changed) applyStore(); }).catch(() => {});
-if (shared && shared.homeOnly) {
+if (shared && shared.vote) {
+  closeLanding(false);
+  state.home = shared.vote[0].home; update();
+  openVote(shared.vote);
+  history.replaceState(null, "", location.href.split("#")[0]);
+} else if (shared && shared.homeOnly) {
   state.home = shared.home; $("#home").value = shared.home; update();
   if (homeSearch) homeSearch.refresh();
   closeLanding(true);

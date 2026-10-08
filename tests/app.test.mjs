@@ -190,6 +190,23 @@ export default async function run() {
     t.check(!opened.landing && opened.title === share.name, `share link should open ${share.name}, got ${opened.title}`);
     t.check(!p.errors.length && !p2.errors.length, `page errors: ${[...p.errors, ...p2.errors].join("; ")}`);
 
+    // 6b. Group vote, story image and calendar.
+    const extra = await p.evaluate(async () => {
+      const [a, b] = current.trips.slice(0, 2); if (!isSaved(a)) toggleSave(a); if (!isSaved(b)) toggleSave(b);
+      const list = savedHtml(), link = voteLink(saved), back = parseVote(new URLSearchParams(link.split("#")[1]).get("vote"));
+      const ics = tripIcs(a), blob = await tripImage(a);
+      return { button: /Ask friends to vote/.test(list), link, same: back.length === Math.min(4, saved.length) && back[0].key === saved[0].key && back[0].home === saved[0].home,
+        ics: /DTSTART;VALUE=DATE:\d{8}/.test(ics) && /SUMMARY:Weekend in/.test(ics) && /END:VCALENDAR/.test(ics), img: blob && blob.size > 20000, imgType: blob && blob.type };
+    });
+    t.check(extra.button && extra.same, `saved trips make a group vote link (${extra.link.slice(-60)})`);
+    t.check(extra.ics, "plans can be added to the calendar (.ics with the weekend's dates)");
+    t.check(extra.img && extra.imgType === "image/png", `trips make a story image (${extra.imgType})`);
+    const vp = await openApp(browser, { hash: "#" + extra.link.split("#")[1] });
+    await vp.waitForTimeout(400);
+    const vote = await vp.evaluate(() => ({ open: !$("#login-modal").hidden, rows: document.querySelectorAll(".vote-row").length, text: $("#login-body").textContent }));
+    t.check(vote.open && vote.rows >= 2 && /Where should we go/.test(vote.text) && /€\d+/.test(vote.text) && !vp.errors.length,
+      `a vote link opens the vote with each trip's price (${vote.rows} rows; ${vp.errors})`);
+
     // 6c. Forecast: for a trip this month, plans show the real daily forecast (faked here).
     const fcp = await openApp(browser, { setup: async (page) => {
       await page.route("https://api.open-meteo.com/**", (r) => {

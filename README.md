@@ -114,6 +114,15 @@ When the site runs somewhere that allows outside requests (e.g. GitHub Pages), i
 
 Everything is cached in the browser, times out after 8 seconds, and is optional: if a service is down or blocked, the app keeps working on its built-in estimates and says so.
 
+## Sharing: group votes, story images, calendar
+- **Group vote:** with 2+ saved trips, My trips offers *Ask friends to vote*: one link (`#vote=…`)
+  with up to 4 trips. Friends see each trip's current price, open the plans, and tap *Vote*, which
+  sends "I vote Prague! 🗳️" back to the group chat through the share sheet. No accounts or server.
+- **Story image:** *Story image* in any plan makes a 1080×1920 picture (destination, the route on
+  the globe, the all-in price and its breakdown, the site address) for Instagram or TikTok stories.
+- **Add to calendar:** the Booking tab downloads an `.ics` event for the weekend's dates with a
+  link back to the plan.
+
 ## Price alerts
 Saved trips are priced again with each week's fares: My trips shows how much each one moved since it
 was saved, and returning visitors hear about the biggest drop. With an account, people can also opt
