@@ -227,6 +227,21 @@ export default async function run() {
     t.check([5, 6].includes(lmr.dow) && lmr.days === 1 && /leaving/.test(lmr.sub) && lmr.menu === "lm", `This weekend leaves this Friday (${JSON.stringify(lmr)})`);
     t.check(lmr.wx > 0 && lmr.lis > 0.9 && lmr.other < 0.5 && lmr.note && !lm.errors.length, `last-minute trips are ranked with this weekend's forecast (${lmr.lis} vs ${lmr.other}; ${lm.errors})`);
 
+    // 6e. Real details: the flight behind a real fare, and sunrise/sunset on each day of the plan.
+    const real = await p.evaluate(() => {
+      let found = null;
+      for (const x of current.trips) { const o = x.cost.options && x.cost.options.find((o) => o.mode === "flight" && o.fare && o.fare.kind === "real"); if (o) { found = { t: x, f: o.fare }; break; } }
+      if (!found) return { none: true };
+      FARE_DETAILS = { [found.f.route]: { [found.f.ym]: [35, "2026-11-06T18:25:00+01:00", "2026-11-08T21:10:00+01:00", 0, 125, "FR"] } };
+      ui.drawer = found.t.key; ui.tab = "overview"; modeChoice.set(found.t.dest.id, "flight"); update(); renderDrawer();
+      const text = $("#drawer-body").textContent;
+      const flo = byId("florence"), line = dayLine({ lat: flo.lat, lon: flo.lon, country: "Italy" }, 0);
+      modeChoice.delete(found.t.dest.id); ui.drawer = null; update();
+      return { text: (text.match(/cheapest flight found this week[^.]*/) || [""])[0], line };
+    });
+    t.check(real.none || /out Fri,? 6 Nov 18:25/.test(real.text) && /direct/.test(real.text) && /2h 05m/.test(real.text) && /Ryanair/.test(real.text), `plans show the real flight behind a fare (${real.text})`);
+    t.check(/sunrise \d\d:\d\d · sunset \d\d:\d\d/.test(real.line), `each day shows its date, sunrise and sunset (${real.line.replace(/<[^>]+>/g, "")})`);
+
     // 6c. Forecast: for a trip this month, plans show the real daily forecast (faked here).
     const fcp = await openApp(browser, { setup: async (page) => {
       await page.route("https://api.open-meteo.com/**", (r) => {

@@ -390,6 +390,8 @@ async function fetchFares() {
   const codes = [...new Set([...cities.map((c) => c.code), ...Object.values(NEARBY).flat().map((a) => a[0])])];
   const wanted = new Set(codes);
   const prices = {};
+  // The flight behind each route-month's cheapest fare this week: [price, departure, return, stops, minutes there, airline].
+  const details = {};
   let rows = 0, failed = 0;
   for (const origin of codes) {
     for (const [mi, month] of months.entries()) {
@@ -403,7 +405,10 @@ async function fetchFares() {
           if (!wanted.has(r.destination) || r.destination === origin || !(r.price > 0)) continue;
           const k = `${origin}-${r.destination}`;
           prices[k] = prices[k] || Array(12).fill(0);
-          if (!prices[k][mi] || r.price < prices[k][mi]) prices[k][mi] = Math.round(r.price);
+          if (!prices[k][mi] || r.price < prices[k][mi]) {
+            prices[k][mi] = Math.round(r.price);
+            (details[k] = details[k] || {})[month] = [Math.round(r.price), r.departure_at || "", r.return_at || "", r.transfers ?? null, r.duration_to ?? null, r.airline || ""];
+          }
           rows++;
         }
       } catch (e) {
@@ -414,7 +419,7 @@ async function fetchFares() {
   }
   log(`fares: ${rows} fares for ${Object.keys(prices).length} routes (${failed} failed requests)`);
   annotate(rows ? "notice" : "warning", `fares: ${rows} fares on ${Object.keys(prices).length} routes, ${failed} of ${codes.length * months.length} requests failed${errors.find((e) => e.startsWith("fares")) ? `; first error: ${errors.find((e) => e.startsWith("fares"))}` : ""}`);
-  if (rows) fares = smoothFares(prices, months, previous.fares);
+  if (rows) { fares = smoothFares(prices, months, previous.fares); fares.details = details; }
   else errors.push("fares: the API returned no fares for our cities (check the token and that the Aviasales program is joined)");
 }
 

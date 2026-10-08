@@ -411,6 +411,8 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
   .bk-list li { grid-template-columns: 30px 1fr; }
   .bk-links { grid-column: 2; justify-content: flex-start; }
 }
+.day-sun { flex: 1; font-size: 12px; color: var(--muted); margin-left: 8px; font-weight: 500; }
+.fare-flight b { color: var(--ink); }
 .row-wx { font-size: 12px; color: var(--muted); white-space: nowrap; }
 .lp-lastmin { border: 0; background: none; color: var(--accent); font-weight: 600; font-size: 14px; padding: 2px; justify-self: center; cursor: pointer; }
 .lp-lastmin:hover { text-decoration: underline; }
@@ -4066,6 +4068,55 @@ const GYG_PARTNER_ID = "";
 // partner brands into affiliate links; the marker also tags Aviasales links built here directly.
 const TP_MARKER = "";
 const withMarker = (url) => TP_MARKER ? url + (url.includes("?") ? "&" : "?") + "marker=" + TP_MARKER : url;
+// ---------------------------------------------------------------- real flight details, sun and local time
+// The flight behind each real fare (departure, return, stops, minutes, airline), from the weekly data
+// run. It's only loaded when a plan with a real fare opens.
+let FARE_DETAILS = null, fareDetailsLoading = null;
+function loadFareDetails() {
+  if (fareDetailsLoading) return fareDetailsLoading;
+  fareDetailsLoading = new Promise((done) => {
+    const sc = document.createElement("script");
+    sc.src = "data/fare-details.js?v=" + ((DATA && DATA.fares && DATA.fares.fetched) || "");
+    sc.onload = () => { FARE_DETAILS = window.FARE_DETAILS || {}; done(); if (ui.drawer) renderDrawer(); };
+    sc.onerror = () => { FARE_DETAILS = {}; done(); };
+    document.head.appendChild(sc);
+  });
+  return fareDetailsLoading;
+}
+const AIRLINES = { FR: "Ryanair", U2: "easyJet", EC: "easyJet", W6: "Wizz Air", W4: "Wizz Air", VY: "Vueling", HV: "Transavia", TO: "Transavia", V7: "Volotea", LS: "Jet2", EW: "Eurowings",
+  AZ: "ITA Airways", IB: "Iberia", UX: "Air Europa", BA: "British Airways", AF: "Air France", KL: "KLM", LH: "Lufthansa", LX: "SWISS", OS: "Austrian", SN: "Brussels Airlines",
+  TP: "TAP", A3: "Aegean", PC: "Pegasus", TK: "Turkish Airlines", AT: "Royal Air Maroc", DY: "Norwegian", D8: "Norwegian", SK: "SAS", AY: "Finnair", EI: "Aer Lingus", FI: "Icelandair", LO: "LOT", RO: "Tarom", JU: "Air Serbia", "3O": "Air Arabia" };
+// One time zone per country (all of each country's cities share it).
+const TZ = { Spain: "Europe/Madrid", Portugal: "Europe/Lisbon", France: "Europe/Paris", UK: "Europe/London", Netherlands: "Europe/Amsterdam", Germany: "Europe/Berlin", Czechia: "Europe/Prague",
+  Austria: "Europe/Vienna", Hungary: "Europe/Budapest", Poland: "Europe/Warsaw", Italy: "Europe/Rome", Greece: "Europe/Athens", Ireland: "Europe/Dublin", Belgium: "Europe/Brussels",
+  Denmark: "Europe/Copenhagen", Sweden: "Europe/Stockholm", Switzerland: "Europe/Zurich", Croatia: "Europe/Zagreb", Slovenia: "Europe/Ljubljana", Estonia: "Europe/Tallinn",
+  Latvia: "Europe/Riga", "Türkiye": "Europe/Istanbul", Bulgaria: "Europe/Sofia", Romania: "Europe/Bucharest", Serbia: "Europe/Belgrade", Malta: "Europe/Malta", Morocco: "Africa/Casablanca",
+  Tunisia: "Africa/Tunis", Jordan: "Asia/Amman", Georgia: "Asia/Tbilisi", Cyprus: "Asia/Nicosia", Albania: "Europe/Tirane", "Bosnia & Herzegovina": "Europe/Sarajevo",
+  Lithuania: "Europe/Vilnius", Iceland: "Atlantic/Reykjavik", Norway: "Europe/Oslo", Finland: "Europe/Helsinki", Luxembourg: "Europe/Luxembourg", Montenegro: "Europe/Podgorica",
+  "North Macedonia": "Europe/Skopje", Armenia: "Asia/Yerevan", Egypt: "Africa/Cairo" };
+const localTime = (d, tz) => { try { return d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: tz }); } catch { return d.toISOString().slice(11, 16); } };
+// Sunrise and sunset (the standard solar equations; within a few minutes of published tables).
+function sunTimes(lat, lon, iso) {
+  const rad = Math.PI / 180, jd = Date.parse(iso + "T12:00:00Z") / 864e5 + 2440587.5;
+  const n = Math.round(jd - 2451545.0 + 0.0008), Js = n - lon / 360;
+  const M = (357.5291 + 0.98560028 * Js) % 360;
+  const C = 1.9148 * Math.sin(M * rad) + 0.02 * Math.sin(2 * M * rad) + 0.0003 * Math.sin(3 * M * rad);
+  const L = (M + C + 180 + 102.9372) % 360;
+  const Jt = 2451545.0 + Js + 0.0053 * Math.sin(M * rad) - 0.0069 * Math.sin(2 * L * rad);
+  const dec = Math.asin(Math.sin(L * rad) * Math.sin(23.4397 * rad));
+  const cosw = (Math.sin(-0.833 * rad) - Math.sin(lat * rad) * Math.sin(dec)) / (Math.cos(lat * rad) * Math.cos(dec));
+  if (cosw < -1 || cosw > 1) return null;
+  const w = Math.acos(cosw) / rad, at = (J) => new Date((J - 2440587.5) * 864e5);
+  return { rise: at(Jt - w / 360), set: at(Jt + w / 360) };
+}
+// "Fri 6 Nov · sunrise 06:57 · sunset 17:00" for day d of the trip, in the destination's time.
+function dayLine(place, d) {
+  if (!place || place.lat == null) return "";
+  const [go] = weekendDates(state.days), iso = new Date(Date.parse(go + "T12:00:00Z") + d * 864e5).toISOString().slice(0, 10);
+  const sun = sunTimes(place.lat, place.lon, iso), tz = TZ[place.country] || "UTC";
+  return `<span class="day-sun">${shortDate(iso)}${sun ? ` · sunrise ${localTime(sun.rise, tz)} · sunset ${localTime(sun.set, tz)}` : ""}</span>`;
+}
+
 // The weekend to search in the chosen month: the first Friday that's at least 2 days away.
 function weekendDates(days) {
   if (state.lastMinute) {
@@ -4199,7 +4250,7 @@ function flightFare(home, dest, month, km) {
       const total = p + 2 * (o.cost + d.cost);
       if (!best || total < best.total) best = { total, p, o, d };
     }
-    if (best) return { kind: "real", price: best.total, fare: best.p, fetched: F.fetched, via: [best.o, best.d].filter(a => a.cost), extraHours: best.o.hours + best.d.hours };
+    if (best) return { kind: "real", price: best.total, fare: best.p, fetched: F.fetched, via: [best.o, best.d].filter(a => a.cost), extraHours: best.o.hours + best.d.hours, route: `${best.o.code}-${best.d.code}`, ym: ymFor(month) };
   }
   const mult = dest.priceMult[month];
   if (M && M.w) {
@@ -4560,7 +4611,11 @@ function fareNoteMonth(f) {
   const t = f.model ? f.model.test || {} : {}, pct = (s, fallback) => (s && s.median != null ? s.median : fallback);
   if (f.kind === "real") {
     const via = f.via.length ? ` via ${f.via.map(a => `${a.name} (${a.how || "train"} ${euro(a.cost)} each way, included)`).join(" and ")}` : "";
-    return `<p class="fine">Flight: real round-trip fare of ${euro(f.fare)} that Aviasales travelers found for ${MONTHS_FULL[state.month]}${via} (checked ${monthLabel(f.fetched.slice(0, 7))}), plus ~€25 for airport transfers. Prices change; check the link before booking.</p>`;
+    if (!FARE_DETAILS) loadFareDetails();
+    const det = FARE_DETAILS && f.route && (FARE_DETAILS[f.route] || {})[f.ym];
+    const when = (iso) => iso ? `${shortDate(iso.slice(0, 10))} ${iso.slice(11, 16)}` : "";
+    const flight = det && det[1] ? `<p class="fine fare-flight">✈️ The cheapest flight found this week: <b>${euro(det[0])}</b>, out ${when(det[1])}${det[2] ? `, back ${when(det[2])}` : ""}${det[3] === 0 ? " · direct" : det[3] ? ` · ${det[3]} stop${det[3] > 1 ? "s" : ""}` : ""}${det[4] ? ` · ${Math.floor(det[4] / 60)}h ${String(det[4] % 60).padStart(2, "0")}m` : ""}${det[5] ? ` · ${AIRLINES[det[5]] || det[5]}` : ""} (local times).</p>` : "";
+    return `<p class="fine">Flight: real round-trip fare of ${euro(f.fare)} that Aviasales travelers found for ${MONTHS_FULL[state.month]}${via} (checked ${monthLabel(f.fetched.slice(0, 7))}), plus ~€25 for airport transfers. Prices change; check the link before booking.</p>${flight}`;
   }
   if (f.kind === "reverse") return `<p class="fine">Flight: no fare yet for this direction in ${MONTHS_FULL[state.month]}, so ${euro(f.price)} combines the real fare the other way (${euro(f.rev)}) with the price model (typically within ${pct(t.blend || t.reverse, 16)}%).</p>`;
   const tier = f.known ? pct(t.knownRoute, t.medianModel) : pct(t.newRoute, t.medianModel);
@@ -4668,7 +4723,7 @@ function itinerarySection(dest, cost) {
   const days = shown.map((day, d) => {
     const sum = day.reduce((s, [, c]) => s + c, 0);
     return `<div class="day">
-      <div class="day-head"><strong>Day ${d + 1}</strong><span class="num">${sum ? euro(sum) : "Free"}</span></div>
+      <div class="day-head"><strong>Day ${d + 1}</strong>${dayLine(dest, d)}<span class="num">${sum ? euro(sum) : "Free"}</span></div>
       <ol>${day.map(([what, c], s) => {
         const mine = activityTags(what).filter(k => state.interests.has(k));
         total++; if (mine.length) hits++;
