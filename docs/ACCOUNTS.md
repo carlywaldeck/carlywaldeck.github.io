@@ -85,11 +85,20 @@ grant execute on function public.delete_my_account() to authenticated;
 - **Site URL:** `https://weekender-trips.com`
 - **Redirect URLs:** add `https://weekender-trips.com/**` and `https://www.weekender-trips.com/**` (keep `https://carlywaldeck.github.io/**` too)
 
-Email + password sign-in is on by default (**Authentication → Sign In / Providers → Email**). By default
-Supabase asks new users to confirm their email before the first login; turn off **Confirm email** there
-if you'd rather people get in straight away. Set the **minimum password length** to 8 to match the form.
-Supabase's built-in email sender allows only a few emails per hour, which is fine for a class demo; for
-more, connect your own email service under **Authentication → SMTP**.
+Email + password sign-in is on by default (**Authentication → Sign In / Providers → Email**). Set the
+**minimum password length** to 8 to match the form.
+
+### Emails (confirmations and password resets)
+Supabase's built-in email sender only delivers to people on your Supabase team, and only about 2 an
+hour, so real users never get confirmation or reset emails until you connect your own sender:
+1. **Right away:** in **Authentication → Sign In / Providers → Email**, turn off **Confirm email**.
+   New users are then logged in as soon as they sign up, no email needed.
+2. **Then, for password resets:** connect Resend (free, the same account as the price alerts in
+   `docs/PRICE_ALERTS.md`). Verify `weekender-trips.com` in Resend, create an API key, then in Supabase
+   go to **Authentication → Emails → SMTP Settings**, turn on **Enable custom SMTP** and enter:
+   host `smtp.resend.com`, port `465`, username `resend`, password = the Resend API key,
+   sender email `hello@weekender-trips.com`, sender name `Weekender`.
+   Once this works you can turn **Confirm email** back on if you want verified addresses.
 
 ## 3. Connect the site
 **Project Settings → API**: copy the **Project URL** and the **anon public** key. Both are meant to

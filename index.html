@@ -4693,7 +4693,8 @@ function tiktokSection(dest, matched = []) {
 
 // Travelpayouts tracked links (from the Travelpayouts dashboard) for programs without a search link.
 const KIWITAXI_LINK = "https://kiwitaxi.tpo.lu/HlpNcDzw";
-const KLOOK_LINK = "https://klook.tpo.lu/d2StmpvB";
+const KLOOK_LINK = "https://klook.tpo.lu/SZgCAs8N";
+const AIRALO_LINK = "https://airalo.tpo.lu/hntsuX4W";
 // "Book this trip": one calm row per thing to book, with what it is, the dates and the estimate,
 // and one clear button (plus a second option for flights). Used by city trips and escapes.
 const shortDate = (iso) => new Date(iso + "T12:00:00Z").toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
@@ -4714,7 +4715,7 @@ function bookSection(home, dest, cost) {
   if (cost.nights > 0 && sleep) rows.push(["🛏️", "Hostel", `${cost.nights} night${cost.nights > 1 ? "s" : ""} in ${place} · about ${euro(sleep)}`, btn("https://www.hostelworld.com/", "Hostelworld", false)]);
   rows.push(["🎟️", "Tours & tickets", `Skip-the-line entry and tours in ${place}`,
     btn(`https://www.getyourguide.com/s/?q=${encodeURIComponent(place)}${GYG_PARTNER_ID ? `&partner_id=${GYG_PARTNER_ID}` : ""}`, "GetYourGuide", false) + btn(KLOOK_LINK, "Klook", false)]);
-  if (abroad) rows.push(["📶", "Mobile data", `An eSIM for ${dest.country}, so you skip roaming fees`, btn("https://www.airalo.com/", "Airalo", false)]);
+  if (abroad) rows.push(["📶", "Mobile data", `An eSIM for ${dest.country}, so you skip roaming fees`, btn(AIRALO_LINK, "Airalo", false)]);
   return `<div class="book"><h4>Book this trip</h4>
     <ul class="bk-list">${rows.map(([icon, title, sub, links]) => `<li><span class="bk-icon" aria-hidden="true">${icon}</span>
       <span class="bk-text"><b>${title}</b><small>${sub}</small></span><span class="bk-links">${links}</span></li>`).join("")}</ul>
@@ -5847,6 +5848,8 @@ function authMessage(e) {
   if (/not confirmed/i.test(m)) return "Please confirm your email first: open the link we sent you.";
   if (/already registered|already exists/i.test(m)) return "There's already an account with that email. Log in instead.";
   if (/password/i.test(m) && /least|short|weak/i.test(m)) return "Please use a password with at least 8 characters.";
+  // Supabase couldn't send the confirmation or reset email (email limit, or email not set up yet).
+  if (/email rate limit|error sending|sending (confirmation|recovery|magic link)|not authorized/i.test(m)) return "We couldn't send the email right now. Please try again in an hour, or tell us through Feedback.";
   if (/rate limit|too many/i.test(m)) return "Too many tries in a short time. Please wait a minute and try again.";
   if (/failed to fetch|network/i.test(m)) return "Couldn't reach the server. Check your connection and try again.";
   return m || "Something went wrong. Please try again.";

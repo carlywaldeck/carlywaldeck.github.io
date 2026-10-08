@@ -1,5 +1,10 @@
 # TikTok videos
 
+They're made to look like a phone screen recording posted by a student: a status bar, TikTok's own
+text styles (white with a black outline, or a white highlight), casual lowercase captions, no tap
+circles and no branded end card: each one ends on the app with "it's free, link in bio".
+Video 5 is a list typed into a notes page; video 7 opens on a phone's grid of 47 open tabs.
+
 Three vertical videos (1080×1920, 30 fps, 15–18 s), recorded from the real app with real prices.
 They have **no music on purpose**: add a trending sound inside TikTok (tap **Add sound** when
 posting, pick one from "Trending" or "For you"), at low volume under the captions. Sounds added in the

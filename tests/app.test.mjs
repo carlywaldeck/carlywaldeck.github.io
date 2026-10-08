@@ -141,7 +141,7 @@ export default async function run() {
     const kq = kiwi ? new URL(kiwi).searchParams : null;
     t.check(kiwi && kq.get("departure") === dates.get("depart_date") && kq.get("lang") === "en" && dates.get("locale") === "en",
       `flight links are in English: Kiwi.com for the same weekend and Aviasales with locale=en (${kiwi})`);
-    t.check(booking && booking.hrefs.some((h) => h.includes("airalo.com")) && booking.hrefs.some((h) => h.includes("hostelworld.com")) && /affiliate links/.test(booking.text),
+    t.check(booking && booking.hrefs.some((h) => /airalo\.(com|tpo\.lu)/.test(h)) && booking.hrefs.some((h) => h.includes("hostelworld.com")) && /affiliate links/.test(booking.text),
       "plans link to hostels and an eSIM and disclose affiliate links");
     const tabSets = await p.evaluate(() => {
       const keep = new Set(state.daysSet), out = [];
@@ -329,6 +329,8 @@ export default async function run() {
     await lp.click("#acct-form button[type=submit]");
     for (let i = 0; i < 50 && !calls.userUpdate; i++) await lp.waitForTimeout(100);
     t.check(calls.userUpdate && calls.userUpdate.data.name === "Carly W", "the account page updates your name");
+    const mailErr = await lp.evaluate(() => [authMessage({ message: "Error sending confirmation email" }), authMessage({ message: "email rate limit exceeded" }), authMessage({ message: "Email address \"a@b.c\" is not authorized" })]);
+    t.check(mailErr.every((m) => /couldn't send the email/.test(m)), `email delivery problems get a plain message (${mailErr[0]})`);
     // Price alerts are opt-in from the account's Saved trips tab, and the choice is saved to the account.
     await lp.evaluate(() => { acctTab = "trips"; openLogin(); });
     const nPosts = calls.posts.length;
