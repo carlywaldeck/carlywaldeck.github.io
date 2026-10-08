@@ -85,22 +85,23 @@ async function fetchRoutes(colleges, placesFor) {
 }
 // The Sierra passes on the fastest summer routes to the east side (Tioga, Sonora and Ebbetts) close in
 // winter, usually November to May. For Mono Lake, Mammoth and Bishop we also route over roads that stay
-// open (US 50 at Echo Summit from the north, US 395 past Olancha from the south) and, when that's
-// clearly slower than the summer drive, keep it as the winter route.
-const OPEN_VIA = [[38.8122, -120.0305], [36.2830, -117.9930]];
+// open (US 50 over Echo Summit, then down US 395 from Minden, which skips Monitor Pass, also closed in
+// winter; or up US 395 past Olancha from the south) and, when that's clearly slower than the summer
+// drive, keep it as the winter route.
+const OPEN_VIA = [[[38.8122, -120.0305], [38.9541, -119.7652]], [[36.2830, -117.9930]]], WINTER_VERSION = 2;
 async function osrmRoute(points) {
   const d = await get(`https://router.project-osrm.org/route/v1/driving/${points.map(([la, lo]) => `${lo.toFixed(5)},${la.toFixed(5)}`).join(";")}?overview=false`, { wait: 5000 });
   return d.routes && d.routes[0] ? [Math.round(d.routes[0].distance / 100) / 10, Math.round(d.routes[0].duration / 36) / 100] : null;
 }
 async function fetchWinterRoutes(colleges, places) {
-  sources.winterRoutes = sources.winterRoutes || {};
+  if (sources.winterVersion !== WINTER_VERSION) { sources.winterRoutes = {}; sources.winterVersion = WINTER_VERSION; } // routing changed: redo
   delete sources.winter; // the first version only checked Tioga Pass
   for (const c of colleges) for (const p of places.filter((x) => x.tioga)) {
     const key = `${c.id}|${p.id}`, summer = sources.routes[key];
     if (!summer || sources.winterRoutes[key] !== undefined) continue;
     try {
       let best = null;
-      for (const w of OPEN_VIA) { const r = await osrmRoute([[c.lat, c.lon], w, [p.lat, p.lon]]); await sleep(1100); if (r && (!best || r[1] < best[1])) best = r; }
+      for (const via of OPEN_VIA) { const r = await osrmRoute([[c.lat, c.lon], ...via, [p.lat, p.lon]]); await sleep(1100); if (r && (!best || r[1] < best[1])) best = r; }
       sources.winterRoutes[key] = best && best[1] > summer[1] * 1.08 ? best : null;
     } catch (e) { log(`winter ${key}:`, e.message); }
   }
