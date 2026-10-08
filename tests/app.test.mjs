@@ -298,6 +298,17 @@ export default async function run() {
     t.check(tags.length >= 4 && tags.every((h) => /^https:\/\/www\.tiktok\.com\/tag\/[a-z0-9]+$/.test(h)), `on phones, TikTok links open hashtag pages in the app (${tags[0]})`);
     const after = await tp.evaluate(() => ({ dragging: G.dragging, scale: G.scale }));
     t.check(!after.dragging && Math.abs(after.scale - scales[5]) < 1 && !tp.errors.length, `one finger then spins without changing the zoom (${JSON.stringify(after)}; ${tp.errors})`);
+    // Install nudge: on phones, after opening a plan (never on arrival), and not again once dismissed.
+    const nz = await openApp(browser, { width: 390, height: 844, context: { hasTouch: true, isMobile: true } });
+    await nz.evaluate(() => { closeLanding(false); ui.drawer = current.trips[0].key; renderDrawer(); });
+    await nz.waitForSelector("#install-nudge", { timeout: 6000 }).catch(() => {});
+    const shown = await nz.isVisible("#install-nudge");
+    if (shown) await nz.click('[data-act="nudge-install"]');
+    const nzAfter = await nz.evaluate(() => ({ gone: !$("#install-nudge"), modal: !$("#login-modal").hidden && /Get the Weekender app/.test($("#login-body").textContent), off: (store.get().installNudge || {}).off }));
+    const desk = await openApp(browser);
+    await desk.evaluate(() => { closeLanding(false); ui.drawer = current.trips[0].key; renderDrawer(); });
+    await desk.waitForTimeout(3000);
+    t.check(shown && nzAfter.gone && nzAfter.modal && nzAfter.off && !(await desk.$("#install-nudge")), `phones get one gentle install prompt after opening a plan (${JSON.stringify({ shown, ...nzAfter })})`);
     t.check(!m.errors.length, `phone page errors: ${m.errors}`);
 
     // 8. Accounts (with a fake Supabase): the emailed link signs you in, data from the account
