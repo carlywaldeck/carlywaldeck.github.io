@@ -61,7 +61,7 @@ const foot = `<footer>Prices are per person for ${data.month} ${data.year} with 
 <br><a href="/">Weekender</a> · <a href="/from/">All cities</a> · <a href="/privacy.html">Privacy &amp; terms</a> · Some links on Weekender are affiliate links.</footer></main></body></html>`;
 
 await fs.rm(ROOT + "from", { recursive: true, force: true });
-const urls = [`${SITE}/`, `${SITE}/from/`, `${SITE}/privacy.html`];
+const urls = [`${SITE}/`, `${SITE}/us/`, `${SITE}/from/`, `${SITE}/privacy.html`];
 for (const c of data.cities) {
   if (!c.cities.length && !c.near.length) continue;
   const path = `from/${c.id}/`, cheapest = [...c.cities, ...c.near].reduce((m, t) => Math.min(m, t.total), Infinity);
@@ -92,4 +92,4 @@ ${foot}`);
 const today = new Date().toISOString().slice(0, 10);
 await fs.writeFile(ROOT + "sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url><loc>${u}</loc><lastmod>${today}</lastmod></url>`).join("\n")}\n</urlset>\n`);
 await fs.writeFile(ROOT + "robots.txt", `User-agent: *\nAllow: /\nSitemap: ${SITE}/sitemap.xml\n`);
-console.log(`built ${urls.length - 3} city pages + index, sitemap.xml, robots.txt`);
+console.log(`built ${urls.length - 4} city pages + index, sitemap.xml, robots.txt`);

@@ -127,6 +127,13 @@ note that last-minute fares often cost more than the month's fares.
 - **Sunrise and sunset** for each day of a plan, computed with the standard solar equations and
   shown in the destination's local time.
 
+## California version (/us/)
+weekender-trips.com/us/ is the same planner for California college students: pick your college
+(49, Cal Poly SLO included) and get local finds, day trips and weekend road trips, priced for
+driving (gas split between friends, park fees, campsites). Visitors choose Europe or California on
+the landing page and the site remembers. Data: hand-picked places, OSRM routes, Wikipedia,
+Open-Meteo, OpenStreetMap and EIA gas prices. See [docs/US.md](docs/US.md).
+
 ## Phone apps
 `mobile/` wraps the site into iOS and Android apps with Capacitor; GitHub builds an installable
 Android test app on every change. Publishing steps and the store listing: [docs/MOBILE.md](docs/MOBILE.md).

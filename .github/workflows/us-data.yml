@@ -1,0 +1,58 @@
+# Refreshes the California data for the US version (weekender-trips.com/us/): real driving routes
+# from every campus (OSRM), Wikipedia coordinates and popularity, 5 years of weather (Open-Meteo),
+# extra local finds from OpenStreetMap and this week's gas price (EIA, if the EIA_KEY secret is set).
+# Writes data/us-sources.json, data/us-data.js and us/index.html. Runs weekly, when the US data
+# scripts change, or by hand (Actions tab → "Refresh California data" → Run workflow).
+name: Refresh California data
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "41 6 * * 3" # 06:41 UTC every Wednesday
+  push:
+    branches: [main]
+    paths:
+      - "scripts/build-us.mjs"
+      - "scripts/us/**"
+      - ".github/workflows/us-data.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: us-data
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Fetch open data
+        continue-on-error: true # keep whatever was fetched, even if some sources failed
+        env:
+          FETCH: "1"
+          EIA_KEY: ${{ secrets.EIA_KEY }}
+        run: node scripts/build-us.mjs
+      - name: Save and commit the new data on top of the latest main
+        run: |
+          mkdir -p /tmp/newdata && cp data/us-sources.json /tmp/newdata/ 2>/dev/null || true
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            [ -f /tmp/newdata/us-sources.json ] && cp /tmp/newdata/us-sources.json data/
+            node scripts/build-us.mjs
+            node scripts/build-us-page.mjs
+            git add data/us-sources.json data/us-data.js us/index.html
+            if git diff --cached --quiet; then echo "No changes"; exit 0; fi
+            git commit -m "Refresh California data from open sources"
+            if git push origin HEAD:main; then exit 0; fi
+            echo "main moved; retrying ($attempt)"; sleep 5
+          done
+          exit 1

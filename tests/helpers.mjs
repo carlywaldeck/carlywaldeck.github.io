@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 
 export const ROOT = fileURLToPath(new URL("..", import.meta.url));
 export const INDEX = ROOT + "index.html";
+export const US_INDEX = ROOT + "us/index.html";
 const html = fs.readFileSync(INDEX, "utf8");
 
 const between = (start, end) => { const a = html.indexOf(start); if (a < 0) throw new Error(`not found: ${start}`); return html.slice(a + start.length, html.indexOf(end, a)); };
@@ -38,7 +39,7 @@ export async function openBrowser() {
   const { chromium } = await import("playwright");
   return chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
 }
-export async function openApp(browser, { width = 1440, height = 900, hash = "", context = {}, setup, firstVisit = false } = {}) {
+export async function openApp(browser, { width = 1440, height = 900, hash = "", context = {}, setup, firstVisit = false, file = INDEX } = {}) {
   const ctx = await browser.newContext({ viewport: { width, height }, ...context });
   const page = await ctx.newPage();
   const d3 = fs.readFileSync(ROOT + "node_modules/d3/dist/d3.min.js", "utf8");
@@ -48,8 +49,8 @@ export async function openApp(browser, { width = 1440, height = 900, hash = "", 
   if (!firstVisit) await page.addInitScript(() => { try { if (!localStorage.getItem("weekender:v1")) localStorage.setItem("weekender:v1", JSON.stringify({ loginAsked: true })); } catch {} });
   if (setup) await setup(page); // extra routes or init scripts, registered after the defaults so they win
   page.errors = [];
-  page.on("pageerror", (e) => page.errors.push(e.message));
-  await page.goto("file://" + INDEX + hash);
+  page.on("pageerror", (e) => page.errors.push(process.env.STACK ? e.stack : e.message));
+  await page.goto("file://" + file + hash);
   await page.waitForFunction(() => typeof update === "function" && document.querySelector("#results"));
   return page;
 }
