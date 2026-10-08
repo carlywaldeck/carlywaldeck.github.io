@@ -32,7 +32,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
 <style>
 /* Daylight theme (single theme by design). */
 :root {
@@ -588,6 +588,41 @@ body.travel-mode .panel, body.travel-mode #spot, body.travel-mode .legend, body.
 .fc-day.wkd { background: var(--accent-soft); outline: 1px solid rgba(47,91,234,.25); }
 .fc-d { color: var(--muted); font-weight: 600; } .fc-i { font-size: 18px; } .fc-t { font-weight: 700; } .fc-l { color: var(--muted); } .fc-r { color: #3B7DD8; font-size: 11px; }
 .steps { padding-left: 20px; margin: 4px 0 12px; } .steps li { margin: 6px 0; }
+
+/* ---- Personality pass: a friendlier display face, warm sunlight accents, photo-forward rows.
+   Same calm layout; character comes from type and a little color, not more things on screen. ---- */
+:root {
+  --display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  --sun: #FFC857; --sun-soft: rgba(255, 200, 87, 0.24); --sun-ink: #8A6100;
+  --grad: linear-gradient(135deg, #3D6BF5 0%, #2F5BEA 50%, #1F45C9 100%);
+  --space: #EDF2FB;
+}
+body { background: radial-gradient(1100px 620px at 85% -12%, #FFF3D6 0%, rgba(255, 243, 214, 0) 62%), var(--space); }
+.landing { background:
+  radial-gradient(820px 520px at 92% 2%, rgba(255, 200, 87, 0.30), rgba(255, 200, 87, 0) 62%),
+  radial-gradient(900px 640px at -5% 105%, rgba(47, 91, 234, 0.14), rgba(47, 91, 234, 0) 62%),
+  linear-gradient(115deg, rgba(247, 248, 250, 0.97) 0%, rgba(247, 248, 250, 0.9) 48%, rgba(247, 248, 250, 0.62) 100%); }
+.landing-copy h1 { font-weight: 800; letter-spacing: -0.03em; }
+.landing-copy h1 .hl { background: linear-gradient(90deg, #2F5BEA 0%, #1F9E89 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.lp-slogan { color: #1F45C9; }
+.lp-how li::before { background: var(--sun-soft); color: var(--sun-ink); font-family: var(--display); font-weight: 800; }
+.brand { font-weight: 800; letter-spacing: -0.025em; }
+.cta { background: var(--grad); box-shadow: 0 8px 22px rgba(47, 91, 234, 0.30); border-radius: 12px; }
+.cta:hover { filter: brightness(1.06); }
+.landing-card { border-radius: 22px; box-shadow: 0 20px 60px rgba(30, 60, 110, 0.14), 0 1px 3px rgba(30, 60, 110, 0.08); }
+.chip .ci { margin-right: 5px; font-size: 0.95em; }
+.chip[aria-pressed="true"] .ci { filter: saturate(1.1); }
+.panel-head h2, .dr-head h2 { font-weight: 800; letter-spacing: -0.03em; }
+.thumb { width: 52px; height: 52px; border-radius: 14px; box-shadow: inset 0 0 0 1px rgba(19, 35, 63, 0.06); }
+.thumb:not(.has-img)::after { font: 800 19px var(--display); }
+.row-main strong { font-weight: 600; }
+.row-price { font: 800 17px/1.1 var(--display); letter-spacing: -0.01em; }
+.row.active { box-shadow: inset 3px 0 0 var(--sun); }
+.dr-price strong, .spot-price strong { font: 800 40px/1 var(--display); letter-spacing: -0.03em; }
+.spot h2 { font-weight: 800; }
+.tabs [role=tab][aria-selected="true"] { background: var(--sun-soft); color: var(--sun-ink); }
+.group { letter-spacing: 0.06em; }
+.bk-main { background: var(--grad); }
 </style>
 </head>
 <body>
@@ -700,7 +735,7 @@ body.travel-mode .panel, body.travel-mode #spot, body.travel-mode .legend, body.
     <div class="landing-copy">
       <div class="brand big"><svg class="mark" viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="116" fill="#2F5BEA"/><g transform="translate(0 30)"><path d="M120 196 Q 188 372 256 196 Q 324 372 392 196" fill="none" stroke="#fff" stroke-width="40" stroke-linecap="round"/><circle cx="120" cy="196" r="38" fill="#fff"/><circle cx="256" cy="196" r="38" fill="#fff"/><circle cx="392" cy="196" r="38" fill="#FFC857"/></g></svg>weekender<span>.</span></div>
       <p class="lp-slogan">Study here. Weekend everywhere.</p>
-      <h1 id="lp-title">Cheap trips from wherever you're studying.</h1>
+      <h1 id="lp-title">Cheap trips from <span class="hl">wherever you're studying.</span></h1>
       <p>Real prices for 120 cities and 640+ day trips, scored 1–10 for you.</p>
       <ol class="lp-how" aria-label="How it works">
         <li><b>Pick your city and budget</b><span>Where you're studying, when, and what you want to spend.</span></li>
@@ -3980,6 +4015,12 @@ const INTERESTS = {
   cycling: "Cycling", caves: "Caves & waterfalls", themeparks: "Theme & water parks", gardens: "Gardens",
   climbing: "Climbing", lgbtq: "LGBTQ+ friendly", games: "Escape rooms & games", students: "Student life"
 };
+// A small emoji per interest for the chips.
+const INTEREST_ICON = { food: "🍝", nightlife: "🪩", history: "🏛️", art: "🎨", architecture: "🏰", castles: "👑", nature: "🌿", hiking: "🥾", beach: "🏖️", islands: "⛵",
+  wine: "🍷", cafes: "☕", markets: "🛍️", music: "🎸", streetart: "🖌️", festivals: "🎉", mountains: "🏔️", lakes: "🛶", villages: "🏘️", views: "📸", spas: "♨️", surf: "🏄",
+  snow: "⛷️", wildlife: "🦌", sacred: "🕌", desert: "🌋", film: "🎬", sports: "⚽", offbeat: "💎", vintage: "🧥", books: "📚", vegan: "🥗", cycling: "🚲", caves: "💧",
+  themeparks: "🎢", gardens: "🌷", climbing: "🧗", lgbtq: "🏳️‍🌈", games: "🧩", students: "🎓" };
+const chipLabel = (k) => `${INTEREST_ICON[k] ? `<span class="ci" aria-hidden="true">${INTEREST_ICON[k]}</span>` : ""}${INTERESTS[k]}`;
 // The landing page shows these first; the rest sit behind "More".
 const POPULAR_INTERESTS = ["food", "nightlife", "beach", "history", "art", "nature", "hiking", "cafes", "wine", "offbeat"];
 const MODES = {
@@ -4819,7 +4860,7 @@ function escapePlan(home, esc, cost) {
             [["Explore", esc.days[1]], ["Evening", `Back in ${home.name}`]]];
   }
   const cards = days.map((d, i) => `<div class="day">
-      <div class="day-head"><strong>${days.length > 1 ? `Day ${i + 1}` : "Your day"}</strong></div>
+      <div class="day-head"><strong>${days.length > 1 ? `Day ${i + 1}` : "Your day"}</strong>${(() => { const p = (PLACES[esc.name] || [])[0]; return p ? dayLine({ lat: p[0], lon: p[1], country: home.country }, i) : ""; })()}</div>
       <ol>${d.map(([slot, what]) => `<li><span class="slot">${slot}</span><span class="what solo"><span>${what}</span></span></li>`).join("")}</ol>
     </div>`).join("");
   const more = esc.overnight && state.days === 1 ? `<p class="fine">Stay the night to also see: ${esc.days[1]}. Switch to 2 days to price it.</p>` : "";
@@ -6630,7 +6671,7 @@ function drawDrawer(t) {
       </div>
       <span class="eyebrow">${isEscape(t) ? `${tripKind(t)} from ${home.name}` : `${home.code} → ${dest.code} · ${dest.country}`}</span>
       <h2>${dest.name}</h2>
-      <div class="spot-price"><strong class="num">${euro(cost.total)}</strong>
+      <div class="spot-price dr-price"><strong class="num">${euro(cost.total)}</strong>
         <span class="${left >= 0 ? "good" : "warn"}">${left >= 0 ? `${euro(left)} under budget` : `${euro(-left)} over budget`}</span></div>
       ${localCurrencyNote(t)}
       <div class="tags">
@@ -7486,7 +7527,7 @@ function renderLanding() {
   if (lpHomeSearch) lpHomeSearch.refresh();
   // Logged in: greet by name, and skip the questions the account already answers.
   const name = typeof firstName === "function" && auth.get() ? firstName() : "";
-  $("#lp-title").textContent = auth.get() ? `Hello${name ? `, ${name}` : ""}. Where to next?` : "Cheap trips from wherever you're studying.";
+  $("#lp-title").innerHTML = auth.get() ? `Hello${name ? `, ${escHtml(name)}` : ""}. <span class="hl">Where to next?</span>` : `Cheap trips from <span class="hl">wherever you're studying.</span>`;
   document.querySelectorAll(".lp-guest").forEach(el => { el.hidden = !!auth.get(); });
 }
 function openLanding() {
@@ -7507,7 +7548,7 @@ function setupLanding() {
   $("#lp-month").innerHTML = `<option value="lm">⚡ This weekend</option>` + MONTHS_FULL.map((m, i) => `<option value="${i}">${m}</option>`).join("");
   $("#lp-days").innerHTML = [1, 2, 3, 4, 5].map(d => `<button type="button" class="pick" data-v="${d}" aria-label="${d === 5 ? "5 or more days" : dayWord(d)}">${d === 5 ? "5+" : d}</button>`).join("");
   const order = [...POPULAR_INTERESTS, ...Object.keys(INTERESTS).filter(k => !POPULAR_INTERESTS.includes(k))];
-  $("#lp-interests").innerHTML = order.map(k => `<button type="button" class="chip${POPULAR_INTERESTS.includes(k) ? "" : " extra"}" data-v="${k}">${INTERESTS[k]}</button>`).join("")
+  $("#lp-interests").innerHTML = order.map(k => `<button type="button" class="chip${POPULAR_INTERESTS.includes(k) ? "" : " extra"}" data-v="${k}">${chipLabel(k)}</button>`).join("")
     + `<button type="button" class="chip more" id="lp-int-more" aria-expanded="false">+ ${order.length - POPULAR_INTERESTS.length} more</button>`;
   lpHomeSearch = makeCitySearch($("#lp-home-input"), $("#lp-home-list"), { text: () => byId(state.home).name, pick: setHome, prefix: "lh" });
   makePlaceSearch($("#lp-been-input"), $("#lp-been-list"), addVisited);
@@ -7565,7 +7606,7 @@ function toggle(set, value) { set.has(value) ? set.delete(value) : set.add(value
 function setupControls() {
   $("#days").innerHTML = [1, 2, 3, 4, 5].map(d => `<button type="button" class="pick" data-v="${d}" aria-label="${d === 5 ? "5 or more days" : dayWord(d)}">${d === 5 ? "5+" : d}</button>`).join("");
   $("#month").innerHTML = `<option value="lm">⚡ This weekend</option>` + MONTHS_FULL.map((m, i) => `<option value="${i}">${m}</option>`).join("");
-  $("#interests").innerHTML = Object.entries(INTERESTS).map(([k, label]) => `<button type="button" class="chip" data-v="${k}">${label}</button>`).join("");
+  $("#interests").innerHTML = Object.keys(INTERESTS).map((k) => `<button type="button" class="chip" data-v="${k}">${chipLabel(k)}</button>`).join("");
   $("#modes").innerHTML = Object.entries(MODES).map(([k, m]) => `<button type="button" class="chip" data-v="${k}">${m.label}</button>`).join("");
   $("#home").innerHTML = [...CITIES].sort((a, b) => a.name.localeCompare(b.name)).map(c => `<option value="${c.id}">${c.name}</option>`).join("");
   $("#home").value = state.home;
