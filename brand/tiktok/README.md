@@ -35,6 +35,54 @@ A semester from Florence draws itself on the globe: 8 trips, 7 countries, 5,324 
 
 **Sound idea:** a sentimental or "recap" trending sound (these do well at the end of a semester).
 
+## 4. `4-where-you-study.mp4` · Tell me where you study…
+"Tell me where you study and I'll tell you your cheapest weekend 👇" → hard cuts, one city per beat:
+Florence → Pisa & Lucca €106, Rome → Lake Bracciano €100, Madrid → Toledo €92, Barcelona → Tarragona
+€98, Paris → Rouen & Étretat €129, London → Seven Sisters & Brighton €114, Lisbon → Ericeira €76,
+Prague → Bohemian Switzerland €83.
+
+**Caption:**
+> tell me where you study and I'll tell you your cheapest weekend 👇 (whole weekend, all in) didn't
+> see your city? comment it 👀 #studyabroad #erasmus #budgettravel #weekendtrip #europetravel #studentlife
+
+**Sound idea:** any fast trending beat; the cuts are every 1.15 s, so pick a sound around 104 or
+208 BPM, or nudge the clips in TikTok's editor to the beat.
+
+## 5. `5-costs-more-than-toledo.mp4` · Things that cost more than a weekend in Toledo
+AirPods, sneakers, a concert ticket, a Zara haul, one big night out… and then: a whole weekend in
+Toledo, €92 (bus from Madrid, hostel, food & sights).
+
+**Caption:**
+> the math is mathing 🧮 a whole weekend in Toledo costs less than AirPods #studyabroad #madrid
+> #studyabroadspain #budgettravel #weekendtrip #erasmus
+
+**Sound idea:** a "the math is mathing" or a dramatic reveal sound. (The other prices are typical
+prices, not quotes.)
+
+## 6. `6-wish-i-knew.mp4` · Things I wish I knew before studying abroad
+Five tips from the app's own data: budget flights from Florence leave from Pisa or Bologna; regional
+trains don't need booking; one night away is the cheapest way to travel (Toledo €92); Morocco is a
+cheap weekend from Spain (Marrakech ~€204 for 3 days); plan by month, not by city.
+
+**Caption:**
+> things I wish I knew before studying abroad in Europe 🇪🇺 save this for your semester ✈️
+> #studyabroad #studyabroadtips #erasmus #europetravel #budgettravel #semesterabroad
+
+**Sound idea:** a soft, chatty trending sound. Saves matter most for tips videos; the caption asks
+for them.
+
+## 7. `7-sad-until-weekender.mp4` · I was so sad… until I found weekender
+A grey pile of tabs and price shocks ("€487?? on a Saturday", "sold out", "4 transfers · 19h") under
+"me trying to plan ONE cheap weekend while studying abroad 😭", then a flash to "…until I found
+weekender 🤩", then the app in color: 8 weekends under €150 from Florence, Pisa & Lucca for €106,
+the plan and where to book it.
+
+**Caption:**
+> it was genuinely so hard to find cheap weekend trips while studying abroad 😭 until this
+> (free, link in bio) #studyabroad #studyabroadlife #florence #budgettravel #weekendtrip #erasmus
+
+**Sound idea:** a "sad → happy" transition sound, with the switch landing on the flash at 4.4 s.
+
 ## Posting tips
 - **Post 2–3 times a week**, around 6–9 pm in your audience's time zone. Students abroad are mostly
   in Europe, so evenings in Central European Time.
