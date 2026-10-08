@@ -114,6 +114,23 @@ When the site runs somewhere that allows outside requests (e.g. GitHub Pages), i
 
 Everything is cached in the browser, times out after 8 seconds, and is optional: if a service is down or blocked, the app keeps working on its built-in estimates and says so.
 
+## This weekend (last minute)
+Pick **⚡ This weekend** in the month menu (or the link under *Show my trips*): trips leave this
+Friday (or today on a Saturday), and instead of 5-year climate averages they're ranked with this
+weekend's real forecast for every city (one Open-Meteo request), shown on each row. Flights carry a
+note that last-minute fares often cost more than the month's fares.
+
+## Real details in plans
+- **The real flight behind a fare:** the weekly data job keeps the flight behind each route-month's
+  cheapest fare (departure and return times, stops, duration, airline) in `data/fare-details.js`,
+  loaded only when a plan needs it.
+- **Sunrise and sunset** for each day of a plan, computed with the standard solar equations and
+  shown in the destination's local time.
+
+## Phone apps
+`mobile/` wraps the site into iOS and Android apps with Capacitor; GitHub builds an installable
+Android test app on every change. Publishing steps and the store listing: [docs/MOBILE.md](docs/MOBILE.md).
+
 ## Sharing: group votes, story images, calendar
 - **Group vote:** with 2+ saved trips, My trips offers *Ask friends to vote*: one link (`#vote=…`)
   with up to 4 trips. Friends see each trip's current price, open the plans, and tap *Vote*, which
