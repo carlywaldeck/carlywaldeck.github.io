@@ -26,6 +26,8 @@ export function suite(name) {
     done() {
       console.log(`${failures.length ? "✗" : "✓"} ${name}: ${passed} passed, ${failures.length} failed`);
       failures.slice(0, 30).forEach((f) => console.log("   - " + f));
+      // On GitHub, also report each failure as an annotation (readable without the full log).
+      if (process.env.GITHUB_ACTIONS) failures.slice(0, 10).forEach((f) => console.log(`::error title=${name} test::${String(f).replace(/\r?\n/g, " ").slice(0, 900)}`));
       if (failures.length > 30) console.log(`   … and ${failures.length - 30} more`);
       return failures.length;
     }
