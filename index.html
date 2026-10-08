@@ -411,6 +411,9 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
   .bk-list li { grid-template-columns: 30px 1fr; }
   .bk-links { grid-column: 2; justify-content: flex-start; }
 }
+.row-wx { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.lp-lastmin { border: 0; background: none; color: var(--accent); font-weight: 600; font-size: 14px; padding: 2px; justify-self: center; cursor: pointer; }
+.lp-lastmin:hover { text-decoration: underline; }
 .vote-li { display: grid; gap: 4px; padding: 4px 0 10px; }
 .vote-li small { color: var(--muted); font-size: 12.5px; }
 .vote-row { align-items: center; }
@@ -734,6 +737,7 @@ body.travel-mode .panel, body.travel-mode #spot, body.travel-mode .legend, body.
         </div>
       </details>
       <button type="submit" class="cta lp-go">Show my trips →</button>
+      <button type="button" class="lp-lastmin" data-act="last-minute">⚡ Leaving this weekend? See last-minute trips</button>
     </form>
   </div>
   <footer class="lp-foot"><button type="button" class="linkish" data-act="get-app">📱 Get the app</button> · <a href="privacy.html">Privacy &amp; terms</a> · <button type="button" class="linkish" data-act="feedback">Send feedback</button> · Some links are affiliate links</footer>
@@ -4064,6 +4068,10 @@ const TP_MARKER = "";
 const withMarker = (url) => TP_MARKER ? url + (url.includes("?") ? "&" : "?") + "marker=" + TP_MARKER : url;
 // The weekend to search in the chosen month: the first Friday that's at least 2 days away.
 function weekendDates(days) {
+  if (state.lastMinute) {
+    const go = lastMinuteStart(), back = new Date(Date.parse(go + "T12:00:00Z") + Math.max(0, days - 1) * 864e5).toISOString().slice(0, 10);
+    return [go, back];
+  }
   const [y, m] = travelMonth().split("-").map(Number);
   const d = new Date(Date.UTC(y, m - 1, 1));
   const soon = Date.now() + 2 * 864e5;
@@ -4087,7 +4095,15 @@ const AFFILIATE_NOTE = `<p class="note aff">Some of these are affiliate links: b
 const liveFares = new Map(); // "MAD-LIS-2026-10" -> { status: "loading" | "ok" | "none", price, link, depart, ret }
 
 // The next time the chosen month comes around, as YYYY-MM.
+// Last minute: the weekend starting this Friday (or today if it's already Saturday).
+function lastMinuteStart() {
+  const d = new Date(); d.setHours(12, 0, 0, 0);
+  const day = d.getDay(), add = day === 6 ? 0 : day === 0 ? 5 : 5 - day;
+  d.setDate(d.getDate() + add);
+  return new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+}
 function travelMonth() {
+  if (state.lastMinute) return lastMinuteStart().slice(0, 7);
   const now = new Date();
   const year = state.month >= now.getMonth() ? now.getFullYear() : now.getFullYear() + 1;
   return `${year}-${String(state.month + 1).padStart(2, "0")}`;
@@ -4115,6 +4131,7 @@ const state = {
   budget: 300,
   days: 3,
   month: (new Date().getMonth() + 1) % 12,
+  lastMinute: false, // "This weekend": leave this Friday, ranked with the real forecast
   interests: new Set(), // none picked: rank by price and timing until you choose
   modes: new Set(Object.keys(MODES)),
   daysSet: new Set([3]), // trip lengths to show (any combination of 1–4)
@@ -4457,7 +4474,7 @@ function findTripsFor() {
     const viaDayTrip = wanted.filter(i => !dest.interests.includes(i) && tripTags.has(i));
     const parts = {
       price: priceScore(cost.total),
-      season: seasonScore(dest.season[state.month]),
+      season: state.lastMinute && weekendWx(dest, home) ? wxScore(weekendWx(dest, home)) : seasonScore(dest.season[state.month]),
       interest: wanted.length ? wanted.reduce((s, i) => s + Math.max(strength(dest, i), tripTags.has(i) ? 0.6 : 0), 0) / wanted.length : null,
       length: lengthScore(state.days, cost.transport.hours, null),
       taste: tasteFor(dest.id)
@@ -4472,7 +4489,7 @@ function findTripsFor() {
     const matched = wanted.filter(i => esc.tags.includes(i));
     const parts = {
       price: priceScore(cost.total),
-      season: seasonScore(home.season[state.month]),
+      season: state.lastMinute && weekendWx(dest, home) ? wxScore(weekendWx(dest, home)) : seasonScore(home.season[state.month]),
       interest: wanted.length ? matched.length / wanted.length : null,
       length: lengthScore(state.days, cost.transport.hours, esc),
       taste: tasteFor(esc.id)
@@ -4535,6 +4552,10 @@ function transportSection(dest, cost) {
 
 function fareNote(cost) {
   const f = (cost.options.find(o => o.mode === "flight" && !o.live) || {}).fare;
+  const late = state.lastMinute && cost.options.some(o => o.mode === "flight") ? `<p class="fine"><b>Last minute:</b> flights booked a few days ahead often cost more than the fares found earlier in the month. Check the live price before you count on it; trains and buses usually keep their price.</p>` : "";
+  return late + fareNoteMonth(f);
+}
+function fareNoteMonth(f) {
   if (!f || f.kind === "formula") return "";
   const t = f.model ? f.model.test || {} : {}, pct = (s, fallback) => (s && s.median != null ? s.median : fallback);
   if (f.kind === "real") {
@@ -5207,6 +5228,35 @@ function forecastAt(lat, lon) {
   return peek(key);
 }
 // Days of the forecast that fall in the chosen month (none if the month is further away).
+// This weekend's forecast for every city, in one request (Open-Meteo takes many coordinates at once).
+const WEEKEND_WX = new Map(); // city id -> { hi, lo, rain, code }
+let weekendWxFor = "";
+async function loadWeekendForecast() {
+  const [go] = weekendDates(1), [, back] = weekendDates(Math.max(2, state.days));
+  if (weekendWxFor === go + back) return;
+  weekendWxFor = go + back;
+  try {
+    const lat = CITIES.map(c => c.lat.toFixed(2)).join(","), lon = CITIES.map(c => c.lon.toFixed(2)).join(",");
+    const d = await getJSON(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&start_date=${go}&end_date=${back}&timezone=auto`);
+    (Array.isArray(d) ? d : [d]).forEach((x, i) => {
+      const t = x.daily; if (!t || !CITIES[i]) return;
+      const avg = (a) => a.reduce((s, v) => s + (v ?? 0), 0) / a.length;
+      const worst = t.weather_code.reduce((w, c) => (c > w ? c : w), 0);
+      WEEKEND_WX.set(CITIES[i].id, { hi: Math.round(avg(t.temperature_2m_max)), lo: Math.round(avg(t.temperature_2m_min)), rain: Math.round(Math.max(...t.precipitation_probability_max.map(v => v ?? 0))), code: worst });
+    });
+    if (state.lastMinute) update();
+  } catch { weekendWxFor = ""; /* offline: fall back to climate averages */ }
+}
+const weekendWx = (dest, home) => WEEKEND_WX.get(dest.escape ? home.id : dest.id);
+// 0..1 like seasonScore: comfortable 17–27°C highs and a dry forecast score best.
+function wxScore(w) {
+  const temp = w.hi >= 17 && w.hi <= 27 ? 1 : Math.max(0, 1 - Math.min(Math.abs(w.hi - 17), Math.abs(w.hi - 27)) / 12);
+  return Math.max(0.1, 0.5 * temp + 0.5 * (1 - w.rain / 100));
+}
+function enableLastMinute(on = true) {
+  state.lastMinute = on;
+  if (on) { state.month = Number(lastMinuteStart().slice(5, 7)) - 1; if (![...state.daysSet].every(d => d <= 3)) { state.daysSet = new Set([2]); state.days = 2; } loadWeekendForecast(); }
+}
 function tripForecast(t) {
   const ym = travelMonth(), today = new Date().toISOString().slice(0, 10);
   const in14 = new Date(Date.now() + 13 * 864e5).toISOString().slice(0, 7);
@@ -6412,7 +6462,9 @@ function renderPanel(result) {
   const n = fits.length;
   const multi = state.daysSet.size > 1;
   $("#results-title").textContent = n ? `${n} trip${n === 1 ? "" : "s"} fit` : "Nothing fits yet";
-  $("#results-sub").textContent = `From ${home.name} · ${daysLabel()} · ${MONTHS_FULL[state.month]} · ${euro(state.budget)}`;
+  $("#results-sub").textContent = state.lastMinute
+    ? `From ${home.name} · ${daysLabel()} · leaving ${shortDate(lastMinuteStart())} · ${euro(state.budget)} · ranked with this weekend's forecast`
+    : `From ${home.name} · ${daysLabel()} · ${MONTHS_FULL[state.month]} · ${euro(state.budget)}`;
   if (!state.modes.size) {
     $("#results").innerHTML = `<p class="empty">Pick at least one way to travel under Transport.</p>`;
     return;
@@ -6441,7 +6493,7 @@ function renderPanel(result) {
         <span class="thumb" data-wiki="${t.dest.name.replace(/"/g, "&quot;")}" data-initial="${t.dest.name[0]}"></span>
         <span class="row-main"><strong>${t.dest.name}</strong>
           <small>${multi ? `${dayWord(t.days)} · ` : ""}${tripKind(t)} · ${MODES[t.cost.transport.mode].label} ${hrs(t.cost.transport.hours)}${state.interests.size && likes.length ? ` · <span class="match">✓ ${likes.join(", ")}</span>` : ""}</small></span>
-        <span class="row-right">${scoreBadge(t)}<span class="row-price num">${euro(t.cost.total)}</span></span>
+        <span class="row-right">${scoreBadge(t)}<span class="row-price num">${euro(t.cost.total)}</span>${(() => { const w = state.lastMinute && weekendWx(t.dest, current.home || byId(state.home)); return w ? `<span class="row-wx">${WX_ICON(w.code)} ${w.hi}°</span>` : ""; })()}</span>
       </button>`;
     }).join("")}`).join("");
 }
@@ -7203,7 +7255,7 @@ function frame(now) {
 
 function update() {
   $("#budget-out").textContent = euro(state.budget);
-  $("#month").value = String(state.month);
+  $("#month").value = state.lastMinute ? "lm" : String(state.month);
   $("#currency").value = state.currency;
   document.querySelectorAll("#days .pick").forEach(b => b.setAttribute("aria-pressed", state.daysSet.has(Number(b.dataset.v))));
   document.querySelectorAll("#interests .chip").forEach(b => b.setAttribute("aria-pressed", state.interests.has(b.dataset.v)));
@@ -7370,7 +7422,7 @@ function setupCitySearch() {
 // ---------------------------------------------------------------- landing page
 function landingOpen() { return document.body.classList.contains("landing-open"); }
 function renderLanding() {
-  $("#lp-month").value = String(state.month);
+  $("#lp-month").value = state.lastMinute ? "lm" : String(state.month);
   $("#lp-currency").value = state.currency;
   $("#lp-budget").value = String(state.budget);
   $("#lp-budget-out").textContent = euro(state.budget);
@@ -7397,7 +7449,7 @@ function closeLanding(fly = true) {
   if (current.trips[0] && !ui.selected && !matchMedia("(max-width: 760px)").matches) select(current.trips[0].key, { fly: false });
 }
 function setupLanding() {
-  $("#lp-month").innerHTML = MONTHS_FULL.map((m, i) => `<option value="${i}">${m}</option>`).join("");
+  $("#lp-month").innerHTML = `<option value="lm">⚡ This weekend</option>` + MONTHS_FULL.map((m, i) => `<option value="${i}">${m}</option>`).join("");
   $("#lp-days").innerHTML = [1, 2, 3, 4, 5].map(d => `<button type="button" class="pick" data-v="${d}" aria-label="${d === 5 ? "5 or more days" : dayWord(d)}">${d === 5 ? "5+" : d}</button>`).join("");
   const order = [...POPULAR_INTERESTS, ...Object.keys(INTERESTS).filter(k => !POPULAR_INTERESTS.includes(k))];
   $("#lp-interests").innerHTML = order.map(k => `<button type="button" class="chip${POPULAR_INTERESTS.includes(k) ? "" : " extra"}" data-v="${k}">${INTERESTS[k]}</button>`).join("")
@@ -7410,7 +7462,7 @@ function setupLanding() {
     if (s) { state.profile[s.dataset.profile] = s.value; update(); renderLanding(); }
   });
   const changed = () => { update(); renderLanding(); };
-  $("#lp-month").addEventListener("change", (e) => { state.month = Number(e.target.value); changed(); });
+  $("#lp-month").addEventListener("change", (e) => { if (e.target.value === "lm") enableLastMinute(); else { state.lastMinute = false; state.month = Number(e.target.value); } changed(); });
   $("#lp-currency").addEventListener("change", (e) => { state.currency = e.target.value; changed(); });
   $("#lp-budget").addEventListener("input", (e) => { state.budget = Number(e.target.value); changed(); });
   $("#lp-days").addEventListener("click", (e) => {
@@ -7457,7 +7509,7 @@ function toggle(set, value) { set.has(value) ? set.delete(value) : set.add(value
 
 function setupControls() {
   $("#days").innerHTML = [1, 2, 3, 4, 5].map(d => `<button type="button" class="pick" data-v="${d}" aria-label="${d === 5 ? "5 or more days" : dayWord(d)}">${d === 5 ? "5+" : d}</button>`).join("");
-  $("#month").innerHTML = MONTHS_FULL.map((m, i) => `<option value="${i}">${m}</option>`).join("");
+  $("#month").innerHTML = `<option value="lm">⚡ This weekend</option>` + MONTHS_FULL.map((m, i) => `<option value="${i}">${m}</option>`).join("");
   $("#interests").innerHTML = Object.entries(INTERESTS).map(([k, label]) => `<button type="button" class="chip" data-v="${k}">${label}</button>`).join("");
   $("#modes").innerHTML = Object.entries(MODES).map(([k, m]) => `<button type="button" class="chip" data-v="${k}">${m.label}</button>`).join("");
   $("#home").innerHTML = [...CITIES].sort((a, b) => a.name.localeCompare(b.name)).map(c => `<option value="${c.id}">${c.name}</option>`).join("");
@@ -7467,7 +7519,7 @@ function setupControls() {
   const changed = () => update();
   $("#home").addEventListener("change", (e) => { state.home = e.target.value; modeChoice.clear(); ui.selected = null; ui.drawer = null; changed(); });
   $("#budget").addEventListener("input", (e) => { state.budget = Number(e.target.value); changed(); });
-  $("#month").addEventListener("change", (e) => { state.month = Number(e.target.value); changed(); });
+  $("#month").addEventListener("change", (e) => { if (e.target.value === "lm") enableLastMinute(); else { state.lastMinute = false; state.month = Number(e.target.value); } changed(); });
   $("#currency").addEventListener("change", (e) => { state.currency = e.target.value; changed(); });
   // Trip lengths toggle on and off; at least one stays selected.
   $("#days").addEventListener("click", (e) => {
@@ -7558,6 +7610,7 @@ function setupControls() {
     if (act === "story") { const t = tripById(id); if (t) tripImage(t); }
     if (act === "ics") { const t = tripById(id); if (t) downloadIcs(t); }
     if (act === "vote-share") shareVote();
+    if (act === "last-minute") { enableLastMinute(); update(); renderLanding(); closeLanding(true); }
     if (act === "vote-pick") votePick(Number(v));
     if (act === "vote-open") { const r = ui.vote && ui.vote[Number(v)]; if (r) { closeLogin(); openRef(r); } }
     if (act === "open-saved") { const s = saved[Number(v)]; if (s) { $("#been-pop").hidden = true; $("#been-btn").setAttribute("aria-expanded", "false"); openRef(s); } }

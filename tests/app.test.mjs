@@ -207,6 +207,26 @@ export default async function run() {
     t.check(vote.open && vote.rows >= 2 && /Where should we go/.test(vote.text) && /€\d+/.test(vote.text) && !vp.errors.length,
       `a vote link opens the vote with each trip's price (${vote.rows} rows; ${vp.errors})`);
 
+    // 6d. Last minute: "This weekend" leaves this Friday and ranks with the real forecast (faked here:
+    // sunny in Lisbon, rainy everywhere else).
+    const lm = await openApp(browser, { setup: async (page) => {
+      await page.route("https://api.open-meteo.com/v1/forecast**", (r) => {
+        const u = new URL(r.request().url()), lats = u.searchParams.get("latitude").split(","), lisbon = lats.indexOf("38.72");
+        const day = (i) => ({ daily: { time: ["d1", "d2"], weather_code: i === lisbon ? [0, 1] : [63, 61], temperature_2m_max: i === lisbon ? [23, 24] : [11, 12], temperature_2m_min: [8, 9], precipitation_probability_max: i === lisbon ? [5, 10] : [90, 80] } });
+        r.fulfill({ contentType: "application/json", body: JSON.stringify(lats.length > 1 ? lats.map((_, i) => day(i)) : day(0)) });
+      });
+    } });
+    await lm.evaluate(() => { closeLanding(false); state.home = "madrid"; state.daysSet = new Set([3]); state.days = 3; state.budget = 400; enableLastMinute(); update(); });
+    await lm.waitForFunction(() => WEEKEND_WX.size > 0, null, { timeout: 10000 }).catch(() => {});
+    const lmr = await lm.evaluate(() => {
+      const [go, back] = weekendDates(2), dow = new Date(go + "T12:00:00Z").getUTCDay();
+      const lis = current.trips.find((x) => x.dest.id === "lisbon"), other = current.trips.find((x) => !x.dest.escape && x.dest.id !== "lisbon");
+      return { dow, days: (Date.parse(back) - Date.parse(go)) / 864e5, sub: $("#results-sub").textContent, wx: document.querySelectorAll(".row-wx").length, menu: $("#month").value,
+        lis: lis && lis.parts.season, other: other && other.parts.season, note: (() => { ui.drawer = (lis || current.trips[0]).key; ui.tab = "overview"; renderDrawer(); return /Last minute:/.test($("#drawer-body").textContent); })() };
+    });
+    t.check([5, 6].includes(lmr.dow) && lmr.days === 1 && /leaving/.test(lmr.sub) && lmr.menu === "lm", `This weekend leaves this Friday (${JSON.stringify(lmr)})`);
+    t.check(lmr.wx > 0 && lmr.lis > 0.9 && lmr.other < 0.5 && lmr.note && !lm.errors.length, `last-minute trips are ranked with this weekend's forecast (${lmr.lis} vs ${lmr.other}; ${lm.errors})`);
+
     // 6c. Forecast: for a trip this month, plans show the real daily forecast (faked here).
     const fcp = await openApp(browser, { setup: async (page) => {
       await page.route("https://api.open-meteo.com/**", (r) => {
