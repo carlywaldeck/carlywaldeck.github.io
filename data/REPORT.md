@@ -95,14 +95,14 @@ Agreement = share of cities where the hand-picked tag and the data (top 40% of c
 
 ## Flight fares and the flight price model
 
-- Real round-trip fares (Travelpayouts / Aviasales, fetched 2026-10-08): **30659** route-months on **9263** routes, each the median of up to 5 weekly snapshots (3 so far)
-- Models: ridge regression on log(fare), trained on 24872 fares. "New route": 11 features (log distance, log distance², demand at destination that month, demand at home that month, destination price level, destination popularity, home popularity, how cheap flights from this airport are, how cheap flights to this airport are, how cheap this month is, short hop (< 500 km)). "Known route" adds: this route in other months, has other months, the reverse route, has reverse route
+- Real round-trip fares (Travelpayouts / Aviasales, fetched 2026-10-08): **30730** route-months on **9269** routes, each the median of up to 5 weekly snapshots (3 so far)
+- Models: ridge regression on log(fare), trained on 24930 fares. "New route": 11 features (log distance, log distance², demand at destination that month, demand at home that month, destination price level, destination popularity, home popularity, how cheap flights from this airport are, how cheap flights to this airport are, how cheap this month is, short hop (< 500 km)). "Known route" adds: this route in other months, has other months, the reverse route, has reverse route
 
 | Test | Typical error | Average error |
 |---|---|---|
-| New-route model, 1449 routes it never saw | **24%** | 34% |
+| New-route model, 1450 routes it never saw | **24%** | 34% |
 | Old distance formula, same routes | 34% | 40% |
-| Missing month: reverse route's real fare that month (2013 cases) | **16%** | 25% |
-| Missing month: known-route model (2691 cases) | **19%** | 27% |
+| Missing month: reverse route's real fare that month (2020 cases) | **16%** | 25% |
+| Missing month: known-route model (2697 cases) | **19%** | 27% |
 | **All flight prices people see** (19% real fares, 6% reverse, 40% known-route model, 35% new-route model) | **16%** | 24% |
 
