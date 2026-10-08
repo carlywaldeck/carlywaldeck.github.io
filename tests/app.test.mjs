@@ -143,6 +143,18 @@ export default async function run() {
       `flight links are in English: Kiwi.com for the same weekend and Aviasales with locale=en (${kiwi})`);
     t.check(booking && booking.hrefs.some((h) => h.includes("airalo.com")) && booking.hrefs.some((h) => h.includes("hostelworld.com")) && /affiliate links/.test(booking.text),
       "plans link to hostels and an eSIM and disclose affiliate links");
+    const tabSets = await p.evaluate(() => {
+      const keep = new Set(state.daysSet), out = [];
+      const look = (x) => { ui.drawer = x.key; ui.tab = "plan"; renderDrawer();
+        out.push({ esc: isEscape(x), tabs: [...document.querySelectorAll("#drawer .tabs [role=tab]")].map((b) => b.textContent).join(" · "), days: document.querySelectorAll("#pane-plan .day").length }); };
+      look(current.trips.find((x) => !isEscape(x)));
+      state.daysSet = new Set([1]); update(); // day trips are escapes
+      const esc = current.trips.find((x) => isEscape(x)); if (esc) look(esc);
+      state.daysSet = keep; ui.drawer = null; update();
+      return out;
+    });
+    t.check(tabSets.length === 2 && tabSets.every((x) => x.tabs === "Overview · Itinerary · Booking · Details" && x.days > 0),
+      `every trip, cities and escapes, has Overview · Itinerary · Booking · Details with a day plan (${JSON.stringify(tabSets)})`);
     const tk = await p.evaluate(() => [...document.querySelectorAll("#drawer-body .links.tiktok a")].map((a) => a.href));
     t.check(tk.length >= 4 && tk.every((h) => h.startsWith("https://www.tiktok.com/search?q=")), `on computers, TikTok links open TikTok search (${tk[0]})`);
 

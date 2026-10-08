@@ -5382,15 +5382,14 @@ function escapeDetails(home, dest, cost) {
     ["c3", "Food", dayWord(state.days), cost.food],
     ["c4", "Sights & entry", "", cost.sights]
   ].filter(p => p[3] > 0);
-  return `
-    ${costBlock(parts, cost.total)}
-    ${escapePlan(home, esc, cost)}
-    <div><h4>Save money</h4><ul class="tips">
+  return costBlock(parts, cost.total);
+}
+function escapeTips(cost) {
+  return `<div><h4>Save money</h4><ul class="tips">
       <li>Regional trains and buses usually have fixed fares, so you rarely need to book ahead.</li>
       <li>Leave early: you get a full day there, and the first departures are often the quietest.</li>
       ${cost.stay ? "<li>Small towns empty out after the day-trippers leave, and guesthouses there are often cheaper than city hostels.</li>" : ""}
-    </ul></div>
-  `;
+    </ul></div>`;
 }
 
 
@@ -6356,8 +6355,9 @@ function drawDrawer(t) {
   // Tabs keep the plan short: what it costs and why it scores, the day-by-day plan, where to book, and the rest.
   const panes = isEscape(t)
     ? [["overview", "Overview", `<p class="lede">${dest.escape.note}</p>${scoreSection(t)}${escapeDetails(home, dest, cost)}`],
+       ["plan", "Itinerary", `${escapePlan(home, dest.escape, cost)}${tiktokSection(dest, matched)}`],
        ["book", "Booking", bookSection(home, dest, cost)],
-       ["details", "Details", `${about}${dataSection(t)}${live}${tiktokSection(dest, matched)}${sourcesNote()}`]]
+       ["details", "Details", `${about}${dataSection(t)}${live}${escapeTips(cost)}${sourcesNote()}`]]
     : [["overview", "Overview", `${scoreSection(t)}${costSection(cost)}${transportSection(dest, cost)}`],
        ["plan", "Itinerary", `${itinerarySection(dest, cost)}${state.days > 1 ? dayTripsSection(dest, cost) : ""}${tiktokSection(dest, matched)}`],
        ["book", "Booking", bookSection(home, dest, cost)],
