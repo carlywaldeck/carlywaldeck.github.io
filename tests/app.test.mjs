@@ -379,6 +379,11 @@ export default async function run() {
     t.check(tm.travel && tm.panelHidden && /3 places/.test(tm.banner) && /3 countries/.test(tm.banner) && tm.stops.join() === "lisbon,paris,rome",
       `the travel map shows your places in the order you went (${tm.banner.trim().slice(0, 80)})`);
     t.check(tm.back, "Back to trips leaves the travel map");
+    // Older saved data without place names (or bare star ratings) still shows real names.
+    const old = await openApp(browser, { setup: async (page) => { await page.addInitScript(() => localStorage.setItem("weekender:v1", JSON.stringify({ loginAsked: true, been: { rome: { r: 5, d: "2026-02" }, paris: 4 } }))); } });
+    const oldMap = await old.evaluate(() => { closeLanding(false); showTravelMap(); return { banner: $("#travel-banner").textContent, names: [been.rome.n, been.paris.n], list: beenListHtml() }; });
+    t.check(oldMap.names.join() === "Rome,Paris" && !/undefined/.test(oldMap.banner + oldMap.list) && !old.errors.length,
+      `places saved without names still show them (${oldMap.names}; ${old.errors})`);
     // 11. Any place in the world: Weekender's places plus the geocoder (faked here).
     const gp = await openApp(browser, { setup: async (page) => {
       await page.route("https://geocoding-api.open-meteo.com/**", (r) => r.fulfill({ contentType: "application/json", body: JSON.stringify({ results: [

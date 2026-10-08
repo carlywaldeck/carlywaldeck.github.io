@@ -5405,7 +5405,18 @@ const store = {
     if (!local && typeof schedulePush === "function" && Object.keys(patch).some(k => ["been", "saved", "criteria", "alerts"].includes(k))) schedulePush();
   }
 };
-let been = store.get().been || {};
+// Places you've been: { id: { r: stars, n: name, d: "YYYY-MM", ...geo } }. Older or synced data
+// can lack the name (or be a bare star rating), so fill it in from the place itself.
+function tidyBeen(b) {
+  for (const [id, v] of Object.entries(b || {})) {
+    const e = v && typeof v === "object" ? v : { r: Number(v) || 0 };
+    if (!e.n && !id.startsWith("geo:")) { try { const pl = beenPlace(id); if (pl) e.n = pl.name; } catch { /* unknown place */ } }
+    if (!e.n) e.n = id;
+    b[id] = e;
+  }
+  return b;
+}
+let been = tidyBeen(store.get().been || {});
 function saveBeen() { store.set({ been }); trainTaste(); }
 
 // Look up what a been-key refers to: a city, or an escape near a home city.
@@ -5923,7 +5934,7 @@ function schedulePush() {
 // browser just saved, including the login itself).
 function applyStore() {
   const s = store.get();
-  been = s.been || {};
+  been = tidyBeen(s.been || {});
   saved = s.saved || [];
   loadCriteria();
   trainTaste();
