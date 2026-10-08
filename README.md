@@ -129,10 +129,12 @@ note that last-minute fares often cost more than the month's fares.
 
 ## California version (/us/)
 weekender-trips.com/us/ is the same planner for California college students: pick your college
-(49, Cal Poly SLO included) and get local finds, day trips and weekend road trips, priced for
-driving (gas split between friends, park fees, campsites). Visitors choose Europe or California on
+(49, Cal Poly SLO included) and get local finds, day trips, weekend trips and long weekends (Vegas,
+San Diego, Zion…), priced for driving: gas split between the people in your car, park fees,
+campsites and motel rooms shared. Plans add Apple Maps directions, low tides, the moon for
+stargazing and air quality. Visitors choose Europe or California on
 the landing page and the site remembers. Data: hand-picked places, OSRM routes, Wikipedia,
-Open-Meteo, OpenStreetMap and EIA gas prices. See [docs/US.md](docs/US.md).
+Open-Meteo, OpenStreetMap, NOAA tides and EIA gas prices. See [docs/US.md](docs/US.md).
 
 ## Phone apps
 `mobile/` wraps the site into iOS and Android apps with Capacitor; GitHub builds an installable

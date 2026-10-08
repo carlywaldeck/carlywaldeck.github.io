@@ -703,7 +703,10 @@ body { background: radial-gradient(1100px 620px at 85% -12%, #FFF3D6 0%, rgba(25
 </div>
 
 <div class="popover" id="filters" hidden>
-  <div><h3 id="modes-label">Getting there by</h3><div class="chips" id="modes" role="group" aria-labelledby="modes-label"></div></div>
+  <div id="modes-filter"><h3 id="modes-label">Getting there by</h3><div class="chips" id="modes" role="group" aria-labelledby="modes-label"></div></div>
+  <div id="car-filter" hidden><h3 id="riders-label">People in the car</h3><div class="seg" id="riders" role="group" aria-labelledby="riders-label"></div>
+    <h3><label for="car-type">Your car</label></h3><select id="car-type"></select>
+    <p class="fine">Gas, park fees and rooms are split between everyone going.</p></div>
   <div><h3><label for="currency">Show prices in</label></h3><select id="currency">
     <option value="EUR">€ Euros</option><option value="USD">$ US dollars</option><option value="GBP">£ Pounds</option>
   </select></div>
@@ -4008,8 +4011,8 @@ window.CITIES = [
 // Phone apps: use the newest prices downloaded last time (see refreshAppData), if newer than the built-in copy.
 if (window.Capacitor) { try { const d = JSON.parse(localStorage.getItem("weekender:data") || "null"); if (d && d.generated) window.CITY_DATA = d; } catch { /* no saved copy */ } }
 </script>
-<script src="data/us-data.js?v=e567fe08"></script>
-<script src="assets/us.js?v=4a543109"></script>
+<script src="data/us-data.js?v=7e5fef47"></script>
+<script src="assets/us.js?v=f068def5"></script>
 <script>
 // ======================================================================
 // Weekender app logic
@@ -4184,7 +4187,9 @@ const TZ = { Spain: "Europe/Madrid", Portugal: "Europe/Lisbon", France: "Europe/
   Tunisia: "Africa/Tunis", Jordan: "Asia/Amman", Georgia: "Asia/Tbilisi", Cyprus: "Asia/Nicosia", Albania: "Europe/Tirane", "Bosnia & Herzegovina": "Europe/Sarajevo",
   Lithuania: "Europe/Vilnius", Iceland: "Atlantic/Reykjavik", Norway: "Europe/Oslo", Finland: "Europe/Helsinki", Luxembourg: "Europe/Luxembourg", Montenegro: "Europe/Podgorica",
   "North Macedonia": "Europe/Skopje", Armenia: "Asia/Yerevan", Egypt: "Africa/Cairo", USA: "America/Los_Angeles" };
-const localTime = (d, tz) => { try { return d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: tz }); } catch { return d.toISOString().slice(11, 16); } };
+const localTime = (d, tz) => { try { return d.toLocaleTimeString(US ? "en-US" : "en-GB", { hour: US ? "numeric" : "2-digit", minute: "2-digit", timeZone: tz }); } catch { return d.toISOString().slice(11, 16); } };
+// "17:05" → "5:05 PM" in the US version.
+const clock12 = (hm) => { if (!US) return hm; const [h, m] = hm.split(":").map(Number); return `${h % 12 || 12}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`; };
 // Sunrise and sunset (the standard solar equations; within a few minutes of published tables).
 function sunTimes(lat, lon, iso) {
   const rad = Math.PI / 180, jd = Date.parse(iso + "T12:00:00Z") / 864e5 + 2440587.5;
@@ -4269,13 +4274,14 @@ async function fetchLiveFare(home, dest) {
 // Current choices. The page opens with an example search already filled in.
 const state = {
   home: window.REGION === "us" ? "ucla" : "madrid",
-  budget: window.REGION === "us" ? 150 : 300,
+  budget: window.REGION === "us" ? 250 : 300,
   days: window.REGION === "us" ? 1 : 3,
   month: (new Date().getMonth() + 1) % 12,
   lastMinute: false, // "This weekend": leave this Friday, ranked with the real forecast
   interests: new Set(), // none picked: rank by price and timing until you choose
   modes: new Set(Object.keys(MODES)),
-  daysSet: new Set(window.REGION === "us" ? [1, 2] : [3]), // trip lengths to show (any combination of 1–4)
+  car: { riders: 3, type: "gas" }, // California: how many of you share the car, and what kind of car
+  daysSet: new Set(window.REGION === "us" ? [1, 2, 3] : [3]), // trip lengths to show (any combination of 1–4)
   sort: "best", // or "cheap"
   currency: window.REGION === "us" ? "USD" : "EUR",
   view: "list", // or "map"
@@ -4514,10 +4520,13 @@ const CITY_NAMES = new Set(CITIES.map(c => c.name));
 function nearbyEscapes(home) {
   if (US) {
     // US: 1 day = local finds and day trips; 2 days = weekend trips up to ~5½ h away; 3+ = farther too.
-    const day = home.dayTrips.map((d, i) => ({ ...d, id: `${home.id}-day-${i}`, overnight: false }));
-    const wk = home.weekends.map((w, i) => ({ ...w, id: `${home.id}-wkd-${i}`, overnight: true }));
+    // The drive depends on the month (Tioga Pass closes in winter), so it's worked out here.
+    const leg = (e) => { const l = usLeg(e); return { ...e, legKm: l.km, legHours: l.hours, winterRoute: l.winter }; };
+    const day = home.dayTrips.map((d, i) => ({ ...leg(d), id: `${home.id}-day-${i}`, overnight: false }));
+    const wk = home.weekends.map((w, i) => ({ ...leg(w), id: `${home.id}-wkd-${i}`, overnight: true }));
     if (state.days === 1) return day;
-    return wk.filter(w => (w.minDays || 2) <= state.days && (state.days >= 3 || parseHow(w.how).hours <= 5.5));
+    // 2 days: up to ~5½ h away. 3+ days: the farther trips (3 h or more), up to ~9 h: Vegas, San Diego, Zion…
+    return wk.filter(w => (w.minDays || 2) <= state.days && (state.days >= 3 ? w.legHours >= 3 && w.legHours <= 9 : w.legHours >= 1 && w.legHours <= 5.5));
   }
   const dayTrips = home.dayTrips.map((d, i) => ({ ...d, id: `${home.id}-day-${i}`, overnight: false }))
     .filter(d => !CITY_NAMES.has(d.name));
@@ -4531,7 +4540,43 @@ function nearbyEscapes(home) {
   return state.days === 2 ? weekends : [];
 }
 
+// ---- California: what a drive costs. Gas for the round trip split between everyone in the car, the
+// park fee per car split too, tickets per person, where you sleep (a campsite or motel room is
+// shared), and food (a snack for a local find, lunch out on a day trip, more when eating out in a city).
+const US_DATA = window.US_DATA || null;
+const CARS = { gas: { label: "Gas car", mpg: 30 }, hybrid: { label: "Hybrid", mpg: 50 }, suv: { label: "SUV or truck", mpg: 22 },
+  ev: { label: "Electric", perMile: 0.12 } }; // an EV: about 3.5 miles per kWh at a mix of home and public charging
+// Tioga Pass (Highway 120 through Yosemite) is usually closed from November to May.
+const TIOGA_CLOSED = [10, 11, 0, 1, 2, 3, 4];
+function usLeg(esc) {
+  const w = !!esc.winter && TIOGA_CLOSED.includes(state.month);
+  return { km: w ? esc.winter[0] : esc.km, hours: w ? esc.winter[1] : esc.hours, winter: w };
+}
+const carInfo = () => CARS[state.car.type] || CARS.gas;
+const perMile = () => carInfo().perMile || US_DATA.gas.price / carInfo().mpg;
+const usGas = (km) => Math.round(km * 2 / 1.609 * perMile() / state.car.riders);
+// How many people share a campsite (6), a motel room (4) or a cabin (6); hostels charge per bed.
+const SHARE = { camp: 6, motel: 4, cabin: 6 };
+function usStayEach(kind, mult) {
+  const price = US_DATA.stay[kind] ?? US_DATA.stay.motel, n = state.car.riders;
+  return kind === "hostel" ? Math.round(price * mult) : Math.round(Math.ceil(n / SHARE[kind]) * price * mult / n);
+}
+function usEstimate(home, esc) {
+  const transport = { mode: "car", hours: esc.legHours ?? esc.hours };
+  if (!state.modes.has("car") || (state.days === 1 && transport.hours > 3.1)) return null;
+  const gas = usGas(esc.legKm ?? esc.km), entry = Math.round(esc.fee / state.car.riders) + esc.ticket;
+  if (!esc.overnight) {
+    const food = esc.local ? US_DATA.food.local : US_DATA.food.day;
+    return { transport, nights: 0, food, travel: gas, sights: entry, stay: 0, total: gas + entry + food };
+  }
+  const nights = state.days - 1, kind = esc.stayKind;
+  const stay = nights * usStayEach(kind, kind === "camp" ? 1 : home.priceMult[state.month]); // campsites cost the same all year
+  const food = state.days * (US_DATA.food[kind] ?? US_DATA.food.motel);
+  return { transport, nights, food, travel: gas, sights: entry, stay, total: gas + entry + stay + food };
+}
+
 function estimateEscape(home, esc) {
+  if (US) return usEstimate(home, esc);
   const transport = parseHow(esc.how);
   if (!state.modes.has(transport.mode)) return null;
   if (state.days === 1 && transport.hours > (US ? 3.1 : 2.5)) return null;
@@ -4875,7 +4920,7 @@ const KLOOK_LINK = "https://klook.tpo.lu/SZgCAs8N";
 const AIRALO_LINK = "https://airalo.tpo.lu/hntsuX4W";
 // "Book this trip": one calm row per thing to book, with what it is, the dates and the estimate,
 // and one clear button (plus a second option for flights). Used by city trips and escapes.
-const shortDate = (iso) => new Date(iso + "T12:00:00Z").toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
+const shortDate = (iso) => new Date(iso + "T12:00:00Z").toLocaleDateString(US ? "en-US" : "en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
 function bookSection(home, dest, cost, t) {
   const mode = cost.transport.mode, abroad = !isEscape({ dest }) && dest.country !== home.country;
   const place = dest.name.split(/ [&(]/)[0];
@@ -4906,10 +4951,24 @@ function tipsSection(dest) {
 }
 
 function escapePlan(home, esc, cost) {
-  const leg = `${esc.how.split(",")[0]} from ${home.name}, ~${hrs(cost.transport.hours)}`;
+  const leg = US ? (esc.port ? `Drive to ${esc.port[2]}, ~${hrs(cost.transport.hours)}, then the boat over` : `Drive from ${home.name}, ~${hrs(cost.transport.hours)}`)
+      + (esc.winterRoute ? " (the winter way round: Tioga Pass is closed)" : "")
+    : `${esc.how.split(",")[0]} from ${home.name}, ~${hrs(cost.transport.hours)}`;
   let days;
-  if (!esc.overnight) {
-    days = [[["Getting there", leg], ["The day", esc.note], ["Evening", `Back in ${home.name}`]]];
+  if (US && esc.overnight) {
+    // Each day gets the place's own plan; longer trips add a stop nearby, then a slower day.
+    const night = { camp: "Camp nearby (book the site ahead)", hostel: "Hostel in town", motel: "Motel nearby, split the room", cabin: "Cabin, split between friends" }[esc.stayKind] || "Stay over nearby";
+    const stops = [...esc.days];
+    for (const x of esc.extras || []) if (stops.length < state.days) stops.push(`${x.name}: ${x.plan}`);
+    days = [];
+    for (let d = 0; d < state.days; d++) {
+      const slots = d === 0 ? [["Getting there", leg]] : [];
+      slots.push(["Explore", stops[d] || "A slower day: sleep in, then go back to your favorite spot"]);
+      slots.push(d < state.days - 1 ? ["Night", night] : ["Evening", `Drive back to ${home.name}`]);
+      days.push(slots);
+    }
+  } else if (!esc.overnight) {
+    days = [[["Getting there", leg], ["The day", US ? esc.days[0] : esc.note], ["Evening", `Back in ${home.name}`]]];
   } else if (state.days === 1) {
     days = [[["Getting there", leg], ["The day", esc.days[0]], ["Evening", `Back in ${home.name}`]]];
   } else {
@@ -5593,30 +5652,38 @@ function sourcesNote() {
 function escapeDetails(home, dest, cost) {
   const esc = dest.escape;
   const parts = [
-    ["c1", esc.overnight ? `${MODES[cost.transport.mode].label} round trip` : "Travel + entry", `~${hrs(cost.transport.hours)} each way`, cost.travel],
-    ["c2", "Stay", `${cost.nights} night`, cost.stay],
+    ["c1", US ? "Gas, your share" : esc.overnight ? `${MODES[cost.transport.mode].label} round trip` : "Travel + entry", US ? `${Math.round((esc.legKm ?? esc.km) * 2 / 1.609)} miles round trip, ${state.car.riders === 1 ? "just you" : `split ${state.car.riders} ways`}` : `~${hrs(cost.transport.hours)} each way`, cost.travel],
+    ["c2", "Stay", `${cost.nights} night${cost.nights > 1 ? "s" : ""}`, cost.stay],
     ["c3", "Food", dayWord(state.days), cost.food],
-    ["c4", "Sights & entry", "", cost.sights]
+    ["c4", US ? "Park fees & tickets" : "Sights & entry", "", cost.sights]
   ].filter(p => p[3] > 0);
   return costBlock(parts, cost.total);
 }
-// US booking: directions and gas, where to sleep (campsite, hostel, motel or cabin), tours, calendar.
+// US booking: directions and gas, the boat for island trips, where to sleep (campsite, hostel, motel
+// or cabin), tours, calendar.
+const US_FERRIES = { catalina: ["Catalina Express", "https://www.catalinaexpress.com/"], "channel-islands": ["Island Packers", "https://islandpackers.com/"],
+  "angel-island": ["Angel Island Ferry", "https://angelislandferry.com/"] };
+const usState = (name) => (name.match(/\((Nevada|Arizona|Utah|Oregon)\)/) || [, "California"])[1];
+const usPlaceName = (name) => name.replace(/\s*\((Nevada|Arizona|Utah|Oregon)\)/, "");
 function usBookSection(home, dest, cost, t, { when, btn, place }) {
-  const esc = dest.escape, D = window.US_DATA || {}, p = (PLACES[esc.name] || [])[0];
-  const miles = Math.round(esc.km / 1.609);
-  const dir = p ? `https://www.google.com/maps/dir/?api=1&origin=${home.lat},${home.lon}&destination=${p[0]},${p[1]}&travelmode=driving` : "https://www.google.com/maps";
-  const rows = [["🚗", "Drive", `${miles} miles each way · ${when} · about ${euro(cost.travel ?? cost.transport.cost ?? 0)} gas each (split ${D.riders || 3} ways)`, btn(dir, "Directions")]];
-  const sleep = cost.stay;
-  if (cost.nights > 0 && sleep) {
+  const esc = dest.escape, p = (PLACES[esc.name] || [])[0], st = usState(esc.name), where = `${usPlaceName(esc.name)}, ${st}`;
+  const miles = Math.round((esc.legKm ?? esc.km) / 1.609), to = esc.port ? `${esc.port[0]},${esc.port[1]}` : p ? `${p[0]},${p[1]}` : encodeURIComponent(where);
+  const dir = `https://maps.apple.com/?saddr=${home.lat},${home.lon}&daddr=${to}&dirflg=d`;
+  const who = state.car.riders === 1 ? "just you" : `split ${state.car.riders} ways`;
+  const rows = [["🚗", "Drive", `${miles} miles each way${esc.port ? ` to ${esc.port[2]}` : ""} · ${when} · about ${euro(cost.travel)} gas each (${who})${esc.winterRoute ? " · Tioga Pass is closed, so this is the winter route" : ""}`, btn(dir, "Apple Maps")]];
+  const ferry = US_FERRIES[esc.place];
+  if (ferry) rows.push(["⛴️", "Boat", `Round trip about ${euro(esc.ticket)} each · book ahead, boats sell out on weekends`, btn(ferry[1], ferry[0], false)]);
+  if (cost.nights > 0 && cost.stay) {
     const k = esc.stayKind;
-    const link = k === "camp" ? btn(`https://www.recreation.gov/search?q=${encodeURIComponent(place)}`, "Recreation.gov", false) + btn("https://www.reservecalifornia.com/", "ReserveCalifornia", false)
-      : k === "hostel" ? btn(`https://www.hostelworld.com/`, "Hostelworld", false)
-      : btn(`https://www.booking.com/searchresults.html?ss=${encodeURIComponent(place + ", California")}`, "Booking.com", false);
+    const link = k === "camp" ? btn(`https://www.recreation.gov/search?q=${encodeURIComponent(usPlaceName(esc.name))}`, "Recreation.gov", false) + (st === "California" ? btn("https://www.reservecalifornia.com/", "ReserveCalifornia", false) : "")
+      : k === "hostel" ? btn(`https://www.hostelworld.com/st/hostels/north-america/usa/`, "Hostelworld", false)
+      : btn(`https://www.booking.com/searchresults.html?ss=${encodeURIComponent(where)}&group_adults=${state.car.riders}&no_rooms=${Math.ceil(state.car.riders / (SHARE[k] || 4))}`, "Booking.com", false);
+    const share = k === "hostel" ? "a bed each" : `${Math.ceil(state.car.riders / SHARE[k])} ${k === "camp" ? "site" : k === "cabin" ? "cabin" : "room"}${Math.ceil(state.car.riders / SHARE[k]) > 1 ? "s" : ""} shared`;
     rows.push([k === "camp" ? "🏕️" : "🛏️", { camp: "Campsite", hostel: "Hostel", motel: "Motel", cabin: "Cabin" }[k] || "Place to stay",
-      `${cost.nights} night${cost.nights > 1 ? "s" : ""} near ${place} · about ${euro(sleep)} each${k === "camp" ? " (sites book up: reserve early)" : ""}`, link]);
+      `${cost.nights} night${cost.nights > 1 ? "s" : ""} near ${usPlaceName(esc.name)} · ${share} · about ${euro(cost.stay)} each${k === "camp" ? " · sites book up: reserve early" : ""}`, link]);
   }
-  rows.push(["🎟️", "Tours & tickets", `Guided tours, rentals and tickets around ${place}`,
-    btn(`https://www.getyourguide.com/s/?q=${encodeURIComponent(place + " California")}${GYG_PARTNER_ID ? `&partner_id=${GYG_PARTNER_ID}` : ""}`, "GetYourGuide", false) + btn(KLOOK_LINK, "Klook", false)]);
+  rows.push(["🎟️", "Tours & tickets", `Guided tours, rentals and tickets around ${usPlaceName(esc.name)}`,
+    btn(`https://www.getyourguide.com/s/?q=${encodeURIComponent(where)}${GYG_PARTNER_ID ? `&partner_id=${GYG_PARTNER_ID}` : ""}`, "GetYourGuide", false) + btn(KLOOK_LINK, "Klook", false)]);
   rows.push(["📅", "Add to calendar", `Block ${when} so nothing else gets planned`, `<button type="button" class="bk-alt" data-act="ics" data-id="${t ? t.key : ""}">Calendar</button>`]);
   return `<div class="book"><h4>Book this trip</h4>
     <ul class="bk-list">${rows.map(([icon, title, sub, links]) => `<li><span class="bk-icon" aria-hidden="true">${icon}</span>
@@ -5625,21 +5692,85 @@ function usBookSection(home, dest, cost, t, { when, btn, place }) {
 }
 // US details: the drive, the gas math, the weather and how well known the place is, with sources.
 function usDataSection(t) {
-  const D = window.US_DATA, esc = t.dest.escape, pl = D && D.places[esc.place];
+  const D = US_DATA, esc = t.dest.escape, pl = D && D.places[esc.place];
   if (!pl) return "";
-  const m = state.month, rows = [];
-  rows.push(["The drive", `${Math.round(esc.km / 1.609)} miles each way, about ${hrs(parseHow(esc.how).hours)}`, esc.realRoute ? "OpenStreetMap road routing (OSRM)" : "estimated from distance"]);
-  rows.push(["Gas", `${D.mpg} mpg at $${D.gas.price.toFixed(2)}/gal, split ${D.riders} ways`, D.gas.source]);
+  const m = state.month, rows = [], car = carInfo();
+  rows.push(["The drive", `${Math.round((esc.legKm ?? esc.km) / 1.609)} miles each way${esc.port ? ` to ${esc.port[2]}` : ""}, about ${hrs(esc.legHours ?? esc.hours)}`,
+    (esc.realRoute ? "OpenStreetMap road routing (OSRM)" : "estimated from distance") + (esc.winterRoute ? "; Tioga Pass is closed Nov–May, so this is the winter route" : esc.winter ? "; over Tioga Pass, which usually closes Nov–May" : "")]);
+  rows.push(["Gas", car.perMile ? `Electric, about $${car.perMile.toFixed(2)} a mile charging, ${state.car.riders === 1 ? "just you" : `split ${state.car.riders} ways`}`
+    : `${car.label}, ${car.mpg} mpg at $${D.gas.price.toFixed(2)}/gal, ${state.car.riders === 1 ? "just you" : `split ${state.car.riders} ways`}`, car.perMile ? "typical home and public charging prices" : D.gas.source]);
   if (pl.clim) rows.push([`Weather in ${MONTHS_FULL[m]}`, `highs around ${pl.clim.hiF[m]}°F, ${pl.clim.wetDays[m]} wet days`, "Open-Meteo, 5 years of daily records"]);
   const best = pl.season.map((v, i) => [v, i]).filter(([v]) => v >= 5).map(([, i]) => MONTHS[i]);
   if (best.length) rows.push(["Best months", best.join(", "), pl.clim ? "climate and type of place" : "type of place"]);
-  if (pl.pop) rows.push(["Popularity", `about ${pl.pop >= 1000 ? Math.round(pl.pop / 1000) + "k" : pl.pop} Wikipedia views a month`, "Wikipedia pageviews"]);
-  if (pl.fee || pl.ticket) rows.push(["Fees", [pl.fee ? `$${pl.fee} per car` : "", pl.ticket ? `about $${pl.ticket} per person (ferry, tour or entry)` : ""].filter(Boolean).join(" + "), "park and operator websites"]);
+  if (pl.pop) rows.push(["Popularity", `about ${pl.pop >= 1000 ? Math.round(pl.pop / 1000) + "k" : pl.pop} Wikipedia views a month${pl.pop < 3000 ? " (a hidden gem)" : ""}`, "Wikipedia pageviews"]);
+  if (pl.fee || pl.ticket) rows.push(["Fees", [pl.fee ? `$${pl.fee} per car` : "", pl.ticket ? `about $${pl.ticket} per person (boat, tour or entry)` : ""].filter(Boolean).join(" + "), "park and operator websites"]);
   return `<div><h4>The data behind this</h4><dl class="facts">${rows.map(([k, v, src]) => `<dt>${k}</dt><dd>${v}<small>${src}</small></dd>`).join("")}</dl></div>`;
+}
+// ---- California, right now: low tides (NOAA), the moon for stargazing, and air quality (wildfire smoke).
+// Tide predictions are computed years ahead, so they work for any month; air quality only for the
+// next few days.
+function tidesAt(station, from, to) {
+  const key = `tide:${station}:${from}`;
+  if (!liveCache[key]) cachedLoad(key, 7, async () => {
+    const d = await getJSON(`https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=predictions&application=weekender&begin_date=${from.replace(/-/g, "")}&end_date=${to.replace(/-/g, "")}&datum=MLLW&station=${station}&time_zone=lst_ldt&units=english&interval=hilo&format=json`);
+    return (d.predictions || []).filter(x => x.type === "L").map(x => ({ t: x.t, ft: Number(x.v) }));
+  });
+  return peek(key);
+}
+function airAt(lat, lon) {
+  const key = `aqi:${lat.toFixed(2)},${lon.toFixed(2)}:${new Date().toISOString().slice(0, 13)}`;
+  if (!liveCache[key]) cachedLoad(key, 0.25, async () => {
+    const d = await getJSON(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&hourly=us_aqi&forecast_days=5&timezone=auto`);
+    const byDay = {};
+    d.hourly.time.forEach((t, i) => { const v = d.hourly.us_aqi[i]; if (v != null) byDay[t.slice(0, 10)] = Math.max(byDay[t.slice(0, 10)] || 0, v); });
+    return byDay;
+  });
+  return peek(key);
+}
+// Moon: days since a known new moon (6 Jan 2000, 18:14 UTC), over the 29.53-day cycle.
+function moonOn(iso) {
+  const age = ((Date.parse(iso + "T22:00:00Z") - Date.UTC(2000, 0, 6, 18, 14)) / 864e5) % 29.530588853;
+  const a = (age + 29.530588853) % 29.530588853;
+  return { age: a, lit: Math.round((1 - Math.cos(2 * Math.PI * a / 29.530588853)) / 2 * 100) };
+}
+const AQI_WORDS = (v) => v <= 50 ? "good" : v <= 100 ? "moderate" : v <= 150 ? "unhealthy for sensitive groups" : v <= 200 ? "unhealthy" : "very unhealthy";
+function usLiveSection(t) {
+  const esc = t.dest.escape, pl = US_DATA && US_DATA.places[esc.place];
+  if (!pl) return "";
+  const [go, back] = weekendDates(state.days), rows = [];
+  const nights = [];
+  for (let d = Date.parse(go + "T12:00:00Z"); d <= Date.parse(back + "T12:00:00Z"); d += 864e5) nights.push(new Date(d).toISOString().slice(0, 10));
+  const fmt = (iso) => shortDate(iso);
+  // Tides, for the coast.
+  if (pl.tide) {
+    const lows = tidesAt(pl.tide[0], go, back);
+    if (lows && lows.length) {
+      const best = lows.reduce((b, x) => (x.ft < b.ft ? x : b));
+      rows.push(["Low tide", lows.map(x => `${fmt(x.t.slice(0, 10))} ${clock12(x.t.slice(11, 16))} (${x.ft.toFixed(1)} ft)`).join(" · ")
+        + (best.ft <= 0.5 ? `<br>Best for tide pools: ${fmt(best.t.slice(0, 10))}` : ""), `NOAA tide predictions, ${pl.tide[1]}`]);
+    } else if (lows === null && inflight.size) rows.push(["Low tide", "Loading…", "NOAA"]);
+  }
+  // The moon, for stargazing, deserts and camping.
+  if (pl.tags.some(k => ["stargazing", "desert", "camping"].includes(k)) || esc.stayKind === "camp") {
+    const m = moonOn(nights[0]);
+    const next = (() => { for (let i = 0; i < 30; i++) { const iso = new Date(Date.parse(go + "T12:00:00Z") + i * 864e5).toISOString().slice(0, 10); if (moonOn(iso).lit <= 3) return iso; } return null; })();
+    rows.push(["Moon", `${m.lit}% full${m.lit <= 25 ? ": dark skies, great for stars" : m.lit >= 75 ? ": bright, fewer stars (but easy night hikes)" : ""}${next && next !== nights[0] && m.lit > 25 ? `. Darkest skies around ${fmt(next)}` : ""}`, "computed from the lunar cycle"]);
+  }
+  // Air quality, when the trip is in the next few days (wildfire smoke can change plans).
+  const air = airAt(pl.lat, pl.lon);
+  if (air) {
+    const days = nights.filter(d => air[d] != null);
+    if (days.length) {
+      const worst = Math.max(...days.map(d => air[d]));
+      rows.push(["Air quality", `${worst} US AQI at worst (${AQI_WORDS(worst)})${worst > 100 ? ". Likely wildfire smoke: check AirNow before you go" : ""}`, "Open-Meteo air-quality forecast"]);
+    }
+  }
+  if (!rows.length) return "";
+  return `<div><h4>On your dates</h4><dl class="facts">${rows.map(([k, v, src]) => `<dt>${k}</dt><dd>${v}<small>${src}</small></dd>`).join("")}</dl></div>`;
 }
 function escapeTips(cost) {
   if (US) return `<div><h4>Save money</h4><ul class="tips">
-      <li>Carpool: gas and park fees split three ways is the biggest saving.</li>
+      <li>${state.car.riders < 4 ? `Bring one more friend: with ${state.car.riders + 1} in the car, everyone's gas and park fees drop.` : "Carpooling is the biggest saving: the gas and park fee are split between everyone in the car."}</li>
       <li>Going to several national parks this year? The $80 America the Beautiful pass covers a whole car.</li>
       <li>Campsites at state and national parks open months ahead and fill fast for summer weekends: book as soon as you know.</li>
       <li>Gas is usually cheaper inland than on the coast or in the mountains: fill up before you leave.</li>
@@ -6671,7 +6802,7 @@ function renderRatingPrompt(spot) {
 // ---------------------------------------------------------------- trip helpers
 
 const isEscape = (t) => !!t.dest.escape;
-const tripKind = (t) => isEscape(t) ? (US ? (t.dest.escape.local ? "Local find" : t.dest.escape.overnight ? "Weekend trip" : "Day trip") : (t.dest.escape.overnight && t.days === 2 ? "Weekend escape" : "Day trip")) : t.dest.country;
+const tripKind = (t) => isEscape(t) ? (US ? (t.dest.escape.local ? "Local find" : t.dest.escape.overnight ? (t.days >= 3 ? "Long weekend" : "Weekend trip") : "Day trip") : (t.dest.escape.overnight && t.days === 2 ? "Weekend escape" : "Day trip")) : t.dest.country;
 const daysLabel = () => { const l = [...state.daysSet].sort((a, b) => a - b); return l.length === 1 ? dayWord(l[0]) : `${l.join(", ")} days`; };
 
 // Color = the 1-10 score.
@@ -6831,7 +6962,7 @@ function drawDrawer(t) {
     ? [["overview", "Overview", `<p class="lede">${dest.escape.note}</p>${scoreSection(t)}${escapeDetails(home, dest, cost)}`],
        ["plan", "Itinerary", `${escapePlan(home, dest.escape, cost)}${tiktokSection(dest, matched)}`],
        ["book", "Booking", bookSection(home, dest, cost, t)],
-       ["details", "Details", `${about}${US ? usDataSection(t) : dataSection(t)}${live}${escapeTips(cost)}${US ? "" : sourcesNote()}`]]
+       ["details", "Details", `${about}${US ? usDataSection(t) + usLiveSection(t) : dataSection(t)}${live}${escapeTips(cost)}${US ? "" : sourcesNote()}`]]
     : [["overview", "Overview", `${scoreSection(t)}${costSection(cost)}${transportSection(dest, cost)}`],
        ["plan", "Itinerary", `${itinerarySection(dest, cost)}${state.days > 1 ? dayTripsSection(dest, cost) : ""}${tiktokSection(dest, matched)}`],
        ["book", "Booking", bookSection(home, dest, cost, t)],
@@ -7523,9 +7654,10 @@ function update() {
   document.querySelectorAll("#days .pick").forEach(b => b.setAttribute("aria-pressed", state.daysSet.has(Number(b.dataset.v))));
   document.querySelectorAll("#interests .chip").forEach(b => b.setAttribute("aria-pressed", state.interests.has(b.dataset.v)));
   document.querySelectorAll("#modes .chip").forEach(b => b.setAttribute("aria-pressed", state.modes.has(b.dataset.v)));
+  if (US) { document.querySelectorAll("#riders .pick").forEach(b => b.setAttribute("aria-pressed", Number(b.dataset.v) === state.car.riders)); $("#car-type").value = state.car.type; }
   document.querySelectorAll(".sort .pick").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === state.sort));
   const hidden = Object.keys(MODES).length - state.modes.size;
-  $("#filters-count").textContent = hidden ? `${state.modes.size}/4` : "";
+  $("#filters-count").textContent = US ? (state.car.riders !== 3 || state.car.type !== "gas" ? "1" : "") : hidden ? `${state.modes.size}/4` : "";
   $("#int-count").textContent = state.interests.size ? [...state.interests].map(k => INTERESTS[k]).join(", ") : "None yet: add a few to personalize";
   saveCriteria();
   trainTaste();
@@ -7757,7 +7889,7 @@ function setupLanding() {
 
 // Remember your search between visits (this browser only).
 function saveCriteria() {
-  store.set({ criteria: { home: state.home, budget: state.budget, days: [...state.daysSet], month: state.month, interests: [...state.interests], currency: state.currency, profile: state.profile } });
+  store.set({ criteria: { home: state.home, budget: state.budget, days: [...state.daysSet], month: state.month, interests: [...state.interests], currency: state.currency, profile: state.profile, ...(US ? { car: state.car } : {}) } });
 }
 function loadCriteria() {
   const c = store.get().criteria;
@@ -7769,6 +7901,7 @@ function loadCriteria() {
   if (c.month >= 0 && c.month <= 11) state.month = c.month;
   state.interests = new Set((c.interests || []).filter(k => INTERESTS[k]));
   if (["EUR", "USD", "GBP"].includes(c.currency)) state.currency = c.currency;
+  if (US && c.car && CARS[c.car.type] && c.car.riders >= 1 && c.car.riders <= 5) state.car = { riders: c.car.riders, type: c.car.type };
   const pf = c.profile || {};
   state.profile = { age: PROFILE_LABELS.age[pf.age] ? pf.age : "", with: PROFILE_LABELS.with[pf.with] ? pf.with : "" };
 }
@@ -7806,6 +7939,13 @@ function setupControls() {
   });
   $("#interests").addEventListener("click", (e) => { const b = e.target.closest(".chip"); if (b) { toggle(state.interests, b.dataset.v); changed(); } });
   $("#modes").addEventListener("click", (e) => { const b = e.target.closest(".chip"); if (b) { toggle(state.modes, b.dataset.v); changed(); } });
+  if (US) {
+    $("#modes-filter").hidden = true; $("#car-filter").hidden = false;
+    $("#riders").innerHTML = [1, 2, 3, 4, 5].map(n => `<button type="button" class="pick" data-v="${n}" aria-label="${n} ${n === 1 ? "person" : "people"}">${n}</button>`).join("");
+    $("#car-type").innerHTML = Object.entries(CARS).map(([k, c]) => `<option value="${k}">${c.label}${c.mpg ? ` (${c.mpg} mpg)` : ""}</option>`).join("");
+    $("#riders").addEventListener("click", (e) => { const b = e.target.closest(".pick"); if (b) { state.car.riders = Number(b.dataset.v); changed(); } });
+    $("#car-type").addEventListener("change", (e) => { state.car.type = e.target.value; changed(); });
+  }
   document.querySelector(".sort").addEventListener("click", (e) => { const b = e.target.closest(".pick"); if (b) { state.sort = b.dataset.v; changed(); } });
 
   // Places you've been: popover, "I've been here", star ratings

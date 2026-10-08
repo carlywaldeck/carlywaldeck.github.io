@@ -41,7 +41,7 @@ async function fetchWiki(items) {
     const batch = todo.slice(i, i + 40);
     try {
       const titles = batch.map((x) => decodeURIComponent(x.wiki).replace(/_/g, " ")).join("|");
-      const d = await get(`https://en.wikipedia.org/w/api.php?action=query&prop=coordinates&redirects=1&format=json&titles=${encodeURIComponent(titles)}`);
+      const d = await get(`https://en.wikipedia.org/w/api.php?action=query&prop=coordinates&colimit=max&redirects=1&format=json&titles=${encodeURIComponent(titles)}`);
       const norm = Object.fromEntries([...(d.query.normalized || []), ...(d.query.redirects || [])].map((n) => [n.to, n.from]));
       for (const p of Object.values(d.query.pages || {})) {
         let from = p.title; while (norm[from]) from = norm[from];
@@ -66,18 +66,45 @@ async function fetchWiki(items) {
 }
 
 // ---------------------------------------------------------------- 2. OSRM: drive times campus → place
-async function fetchRoutes(colleges, places) {
+// Ferry trips (Catalina, Channel Islands, Angel Island) are routed to the harbor, not the island.
+const routeKey = (c, p) => `${c.id}|${p.id}${p.port ? "|port" : ""}`;
+const target = (p) => (p.port ? [p.port[0], p.port[1]] : [p.lat, p.lon]);
+async function fetchRoutes(colleges, placesFor) {
   for (const c of colleges) {
-    const missing = places.filter((p) => !sources.routes[`${c.id}|${p.id}`]);
+    const missing = placesFor(c).filter((p) => !sources.routes[routeKey(c, p)]);
     for (let i = 0; i < missing.length; i += 90) {
       const batch = missing.slice(i, i + 90);
-      const coords = [[c.lon, c.lat], ...batch.map((p) => [p.lon, p.lat])].map((x) => x.map((v) => v.toFixed(5)).join(",")).join(";");
+      const coords = [[c.lat, c.lon], ...batch.map(target)].map(([la, lo]) => `${lo.toFixed(5)},${la.toFixed(5)}`).join(";");
       try {
         const d = await get(`https://router.project-osrm.org/table/v1/driving/${coords}?sources=0&annotations=duration,distance`, { wait: 5000 });
-        batch.forEach((p, k) => { const s = d.durations[0][k + 1], m = d.distances[0][k + 1]; if (s != null && m != null) sources.routes[`${c.id}|${p.id}`] = [Math.round(m / 100) / 10, Math.round(s / 36) / 100]; });
+        batch.forEach((p, k) => { const s = d.durations[0][k + 1], m = d.distances[0][k + 1]; if (s != null && m != null) sources.routes[routeKey(c, p)] = [Math.round(m / 100) / 10, Math.round(s / 36) / 100]; });
       } catch (e) { log(`osrm ${c.id}:`, e.message); }
       await sleep(1100); // the public server allows about one request a second
     }
+  }
+}
+// Tioga Pass (Highway 120 through Yosemite) is closed in winter, usually November to May, and the
+// fastest summer route from most of Northern and Central California to Mono Lake, Mammoth and Bishop
+// crosses it. For those trips we also route via passes that stay open (US 50 at Echo Summit, or
+// Highway 58 through Tehachapi) and keep the faster of the two as the winter route.
+const TIOGA = [37.9107, -119.2577], WINTER_VIA = [[38.8122, -120.0305], [35.1306, -118.4483]];
+async function osrmRoute(points) {
+  const d = await get(`https://router.project-osrm.org/route/v1/driving/${points.map(([la, lo]) => `${lo.toFixed(5)},${la.toFixed(5)}`).join(";")}?overview=false`, { wait: 5000 });
+  return d.routes && d.routes[0] ? [Math.round(d.routes[0].distance / 100) / 10, Math.round(d.routes[0].duration / 36) / 100] : null;
+}
+async function fetchWinterRoutes(colleges, places) {
+  sources.winter = sources.winter || {};
+  for (const c of colleges) for (const p of places.filter((x) => x.tioga)) {
+    const key = `${c.id}|${p.id}`, summer = sources.routes[key];
+    if (!summer || sources.winter[key] !== undefined) continue;
+    try {
+      // Does the summer route cross Tioga? It does if going via the pass costs (almost) nothing extra.
+      const via = await osrmRoute([[c.lat, c.lon], TIOGA, [p.lat, p.lon]]); await sleep(1100);
+      if (!via || via[1] > summer[1] * 1.05) { sources.winter[key] = null; continue; }
+      let best = null;
+      for (const w of WINTER_VIA) { const r = await osrmRoute([[c.lat, c.lon], w, [p.lat, p.lon]]); await sleep(1100); if (r && (!best || r[1] < best[1])) best = r; }
+      sources.winter[key] = best && best[1] > summer[1] * 1.1 ? best : null;
+    } catch (e) { log(`winter ${key}:`, e.message); }
   }
 }
 
@@ -100,6 +127,11 @@ async function fetchClimate(places) {
 const OSM_KINDS = [["natural", "waterfall", "Waterfall", ["nature", "hiking"]], ["natural", "hot_spring", "Hot spring", ["spas", "nature", "offbeat"]],
   ["natural", "peak", "Summit hike", ["hiking", "views", "mountains"]], ["natural", "cave_entrance", "Cave", ["caves", "offbeat"]], ["natural", "arch", "Rock arch", ["views", "offbeat"]],
   ["natural", "beach", "Beach", ["beach"]], ["tourism", "viewpoint", "Viewpoint", ["views"]], ["leisure", "garden", "Garden", ["gardens"]], ["historic", "ghost_town", "Ghost town", ["history", "offbeat"]]];
+// What to do at each kind of OpenStreetMap find.
+const OSM_PLAN = { Waterfall: "Hike in after a rainy week when it's flowing best, picnic at the pool", "Hot spring": "Soak at sunset; bring water, cash for any fee, and leave no trace",
+  "Summit hike": "Start early to beat the heat, watch the view clear from the top", Cave: "Bring a headlamp and check it's open before you go",
+  "Rock arch": "Go at golden hour for photos", Beach: "Check the tide, go for sunset, tacos after", Viewpoint: "Go for sunset, then dinner nearby",
+  Garden: "Free or cheap entry most days; go in the morning", "Ghost town": "Walk the old main street and look for the cemetery; bring water" };
 async function fetchOsm(colleges) {
   for (const c of colleges) {
     if (sources.osm[c.id]) continue;
@@ -109,10 +141,32 @@ async function fetchOsm(colleges) {
       sources.osm[c.id] = (d.elements || []).map((e) => {
         const kind = OSM_KINDS.find(([k, v]) => e.tags[k] === v);
         return kind && e.tags.name ? { name: e.tags.name, lat: e.lat ?? e.center?.lat, lon: e.lon ?? e.center?.lon, kind: kind[2], tags: kind[3], wiki: String(e.tags.wikipedia).replace(/^en:/, "").replace(/ /g, "_") } : null;
-      }).filter((x) => x && x.lat && !/^[a-z]{2}:/.test(x.wiki));
+      }).filter((x) => x && x.lat && !/^[a-z]{2}:/.test(x.wiki) && (x.kind !== "Garden" || /botanic/i.test(x.name)));
     } catch (e) { log(`osm ${c.id}:`, e.message); }
     await sleep(2000);
   }
+}
+
+// ---------------------------------------------------------------- 4b. NOAA: tide stations for coastal places
+// The app asks NOAA for low-tide times on your dates (tide pools!). Main California stations, used
+// until the data job downloads NOAA's full list of tide-prediction stations.
+const TIDE_STATIONS = [["9419750", "Crescent City", 41.745, -124.184], ["9418767", "North Spit, Humboldt Bay", 40.767, -124.217], ["9416841", "Arena Cove", 38.915, -123.711],
+  ["9415020", "Point Reyes", 37.996, -122.977], ["9414290", "San Francisco", 37.807, -122.465], ["9413450", "Monterey", 36.605, -121.888], ["9412110", "Port San Luis", 35.169, -120.754],
+  ["9411340", "Santa Barbara", 34.404, -119.693], ["9410840", "Santa Monica", 34.008, -118.500], ["9410660", "Los Angeles", 33.720, -118.272], ["9410230", "La Jolla", 32.867, -117.257],
+  ["9410170", "San Diego", 32.714, -117.174]];
+async function fetchTideStations() {
+  try {
+    const d = await get("https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations.json?type=tidepredictions");
+    const list = (d.stations || []).filter((x) => x.lat > 32 && x.lat < 43 && x.lng < -116).map((x) => [String(x.id), x.name, +x.lat, +x.lng]);
+    if (list.length > 20) sources.tides = list;
+  } catch (e) { log("noaa stations:", e.message); }
+}
+function tideFor(p) {
+  if (!["coast", "north_coast", "bay"].includes(p.area) || !p.tags.some((k) => ["beach", "wildlife", "islands", "surf"].includes(k))) return null;
+  const at = p.port ? [p.port[0], p.port[1]] : [p.lat, p.lon];
+  let best = null, bd = 40;
+  for (const st of sources.tides || TIDE_STATIONS) { const d = km(at, [st[2], st[3]]); if (d < bd) { bd = d; best = [st[0], st[1]]; } }
+  return best;
 }
 
 // ---------------------------------------------------------------- 5. EIA: gas price
@@ -126,26 +180,34 @@ async function fetchGas() {
 }
 
 const colleges = COLLEGES.map(([id, name, town, lat, lon, code, wiki]) => ({ id, name, town, lat, lon, code, wiki }));
+// OpenStreetMap finds near a campus, as places (only ones that are known: 150+ Wikipedia views a month).
+const OSM_MIN_VIEWS = 150;
+const osmFinds = (c) => (sources.osm[c.id] || []).filter((o) => o.kind !== "Garden" || /botanic/i.test(o.name))
+  .map((o) => ({ ...o, id: `osm-${o.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}` }));
 if (FETCH) {
   log("fetching sources…");
-  await fetchWiki([...colleges, ...PLACES]);
-  // Use Wikipedia's coordinates where ours are more than 3 km off.
-  for (const x of [...colleges, ...PLACES]) { const w = sources.wiki[x.wiki]; if (w && w.coord && km([x.lat, x.lon], w.coord) > 3 && km([x.lat, x.lon], w.coord) < 60) { x.lat = w.coord[0]; x.lon = w.coord[1]; } }
   await fetchGas();
+  await fetchTideStations();
   await fetchOsm(colleges);
-  await fetchRoutes(colleges, PLACES);
+  await fetchWiki([...colleges, ...PLACES, ...colleges.flatMap(osmFinds)]);
+  await fetchRoutes(colleges, (c) => [...PLACES, ...osmFinds(c)]);
+  await fetchWinterRoutes(colleges, PLACES);
   await fetchClimate(PLACES);
   sources.fetched = new Date().toISOString().slice(0, 10);
   await fs.writeFile(SRC, JSON.stringify(sources));
-} else {
-  for (const x of [...colleges, ...PLACES]) { const w = sources.wiki[x.wiki]; if (w && w.coord && km([x.lat, x.lon], w.coord) > 3 && km([x.lat, x.lon], w.coord) < 60) { x.lat = w.coord[0]; x.lon = w.coord[1]; } }
 }
+// Our coordinates are picked by hand (a trailhead, a town center); Wikipedia's are only a check.
+for (const x of [...colleges, ...PLACES]) { const w = sources.wiki[x.wiki]; if (w && w.coord && km([x.lat, x.lon], w.coord) > 25) log(`check coordinates: ${x.name} is ${Math.round(km([x.lat, x.lon], w.coord))} km from Wikipedia's`); }
 
 // ---------------------------------------------------------------- build
 const GAS = sources.gas || { price: 4.85, week: "2026-10", source: "estimate (California regular, set EIA_KEY to update weekly)" };
 const MPG = 30, RIDERS = 3; // a typical car, shared by three friends
-const STAY = { camp: 12, hostel: 48, motel: 65, cabin: 55 }; // per person per night: a $35 campsite for three, a $130 motel room for two…
-const FOOD = 30; // per day: groceries, a cheap lunch and dinner out
+// A night's stay: a campsite ($35, up to 6 people), a motel room with two beds ($135, up to 4), a
+// cabin ($160, up to 6), or a hostel bed ($45 each). The app splits them between the friends going.
+const STAY = { camp: 35, motel: 135, cabin: 160, hostel: 45 };
+// Food per person: a local find is a snack or tacos; a day trip, lunch out; nights away, per day,
+// depending on where you sleep (groceries at a campsite, eating out in a city).
+const FOOD = { local: 8, day: 15, camp: 15, cabin: 20, motel: 25, hostel: 30 };
 // How good each month is (1–5), by kind of place; climate data (when fetched) nudges these.
 const SEASON = {
   coast: [4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 4, 4], north_coast: [2, 2, 3, 3, 4, 5, 5, 5, 5, 4, 3, 2], bay: [3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 4, 3],
@@ -165,42 +227,66 @@ function season(p) {
   });
 }
 function route(c, p) {
-  const r = sources.routes[`${c.id}|${p.id}`];
-  if (r) return { km: r[0], hours: r[1], real: true };
+  const r = sources.routes[routeKey(c, p)], w = (sources.winter || {})[`${c.id}|${p.id}`];
+  if (r) return { km: r[0], hours: r[1], real: true, winter: w || null };
   // No routing yet: straight line × 1.3 for roads, slower in the mountains and far north.
   const slow = ["sierra", "sierra_high", "north_coast", "socal_mtn", "snow"].includes(p.area);
-  const d = km([c.lat, c.lon], [p.lat, p.lon]) * 1.3;
-  return { km: Math.round(d), hours: Math.round((d / (slow ? 62 : 82) + 0.15) * 100) / 100, real: false };
+  const d = km([c.lat, c.lon], target(p)) * 1.3;
+  return { km: Math.round(d), hours: Math.round((d / (slow ? 62 : 82) + 0.15) * 100) / 100, real: false, winter: null };
 }
 const pop = (p) => (sources.wiki[p.wiki] || {}).views || 0;
+// Compass direction from campus, in 8 sectors, so trip lists aren't all one way up or down the state.
+const sector = (c, p) => { const y = Math.sin(toRad(p.lon - c.lon)) * Math.cos(toRad(p.lat)), x = Math.cos(toRad(c.lat)) * Math.sin(toRad(p.lat)) - Math.sin(toRad(c.lat)) * Math.cos(toRad(p.lat)) * Math.cos(toRad(p.lon - c.lon));
+  return Math.round(((Math.atan2(y, x) * 180 / Math.PI + 360) % 360) / 45) % 8; };
+// Pick up to n trips: the best-known place in each direction in turn, so a campus gets trips north,
+// south and inland, not only the most famous ones (which tend to sit in one direction).
+function balanced(rows, n, c) {
+  const by = new Map();
+  for (const r of rows.sort((a, b) => places[b[0]].fame - places[a[0]].fame)) { const k = sector(c, places[r[0]]); if (!by.has(k)) by.set(k, []); by.get(k).push(r); }
+  const out = [];
+  while (out.length < n && [...by.values()].some((l) => l.length)) {
+    for (const l of [...by.values()].filter((l) => l.length).sort((a, b) => places[b[0][0]].fame - places[a[0][0]].fame)) { if (out.length < n) out.push(l.shift()); }
+  }
+  return out;
+}
 
-// Places are stored once; each college gets its routes: [place id, road km, hours, kinds], where kinds
-// says how the place works from this campus: l = local find, d = day trip, w = weekend, x = 3+ days.
+// Places are stored once; each college gets its routes: [place id, road km, hours, kind, winter km,
+// winter hours], where kind says how the place works from this campus: l = local find (under 45
+// min), d = day trip (up to 3 h each way), w = weekend (up to 5½ h), x = long weekend, 3+ days (up to
+// 9 h); "~" marks an estimated route. Winter km/hours are set when Tioga Pass's closure makes the drive longer.
 const places = {};
-const addPlace = (p) => { places[p.id] = { name: p.name, lat: +p.lat.toFixed(4), lon: +p.lon.toFixed(4), area: p.area, tags: p.tags, fee: p.fee || 0, ticket: p.ticket || 0, stay: p.stay, note: p.note, days: p.days, wiki: p.wiki, season: season(p), pop: pop(p), ...(sources.climate[p.id] ? { clim: sources.climate[p.id] } : {}), ...(p.osm ? { osm: 1 } : {}) }; };
+const addPlace = (p) => { places[p.id] = { name: p.name, lat: +p.lat.toFixed(4), lon: +p.lon.toFixed(4), area: p.area, tags: p.tags, fee: p.fee || 0, ticket: p.ticket || 0, stay: p.stay, note: p.note, days: p.days, wiki: p.wiki, season: season(p), pop: pop(p),
+  ...(p.port ? { port: p.port } : {}), ...(tideFor(p) ? { tide: tideFor(p) } : {}), ...(sources.climate[p.id] ? { clim: sources.climate[p.id] } : {}), ...(p.osm ? { osm: 1 } : {}) };
+  Object.defineProperty(places[p.id], "fame", { value: Math.log10(pop(p) + 100) + (p.osm ? -0.5 : 0), enumerable: false }); };
 PLACES.forEach(addPlace);
 const out = [];
 for (const c of colleges) {
-  const local = [], day = [], wkd = [];
+  const local = [], day = [], wkd = [], long = [];
   const all = [...PLACES];
-  // Extra local finds from OpenStreetMap near this campus (not already one of our places).
-  for (const o of (sources.osm[c.id] || [])) {
-    if (all.some((p) => km([p.lat, p.lon], [o.lat, o.lon]) < 4 || p.name === o.name)) continue;
-    const p = { id: `osm-${o.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`, name: o.name, lat: o.lat, lon: o.lon, area: "coast", tags: o.tags, fee: 0, stay: null, trip: "local", osm: true,
-      note: `${o.kind} near campus (found in OpenStreetMap; it has a Wikipedia page).`, days: [`${o.kind}: go in the late afternoon for the light, then dinner near campus`], wiki: o.wiki };
+  // Extra local finds from OpenStreetMap near this campus: known ones (Wikipedia views), not already ours.
+  for (const o of osmFinds(c)) {
+    if (all.some((p) => km([p.lat, p.lon], [o.lat, o.lon]) < 4 || p.name.includes(o.name))) continue;
+    const views = (sources.wiki[o.wiki] || {}).views;
+    if (views != null && views < OSM_MIN_VIEWS) continue;
+    const near = PLACES.reduce((b, p) => (km([p.lat, p.lon], [o.lat, o.lon]) < km([b.lat, b.lon], [o.lat, o.lon]) ? p : b));
+    const p = { id: o.id, name: o.name, lat: o.lat, lon: o.lon, area: near.area, tags: o.tags, fee: 0, stay: null, trip: "local", osm: true,
+      note: `A ${o.kind.toLowerCase()} near campus, found in OpenStreetMap.`, days: [OSM_PLAN[o.kind] || "Go for sunset, then dinner nearby"], wiki: o.wiki };
     all.push(p); if (!places[p.id]) addPlace(p);
   }
   for (const p of all) {
     const r = route(c, p), h = r.hours;
-    if (p.area === "city" && km([c.lat, c.lon], [p.lat, p.lon]) < 12) continue; // you're already there
-    const row = (k) => [p.id, Math.round(r.km), Math.round(h * 100) / 100, k + (r.real ? "" : "~")];
-    if ((p.trip === "local" || p.trip === "both" || p.trip === "day") && h <= 0.8) local.push(row("l"));
+    if (p.area === "city" && km([c.lat, c.lon], [p.lat, p.lon]) < 30) continue; // you're already there
+    const row = (k) => [p.id, Math.round(r.km), Math.round(h * 100) / 100, k + (r.real ? "" : "~"), ...(r.winter ? [Math.round(r.winter[0]), r.winter[1]] : [])];
+    const short = p.trip === "local" || p.trip === "both" || p.trip === "day", overnight = p.trip === "both" || p.trip === "weekend" || p.trip === "long";
+    if (short && h <= 0.75) local.push(row("l"));
     else if ((p.trip === "local" && h <= 1.5) || ((p.trip === "both" || p.trip === "day") && h <= 3)) day.push(row("d"));
-    if (((p.trip === "both" || p.trip === "weekend") && h >= 1 && h <= 7) || (p.trip === "long" && h <= 9)) wkd.push(row(p.trip === "long" ? "x" : "w"));
+    if (overnight && p.trip !== "long" && h >= 1 && h <= 5.5) wkd.push(row("w"));
+    else if (overnight && h >= 1 && h <= 9) long.push(row("x"));
   }
-  const fame = (a, b) => (places[b[0]].pop - places[a[0]].pop) || (a[1] - b[1]);
+  // Local finds: our hand-picked places first (closest first), then OpenStreetMap's best known.
+  local.sort((a, b) => (!!places[a[0]].osm - !!places[b[0]].osm) || (places[a[0]].osm ? places[b[0]].fame - places[a[0]].fame : a[2] - b[2]));
   out.push({ id: c.id, code: c.code, name: c.name, town: c.town, lat: c.lat, lon: c.lon, wiki: c.wiki,
-    trips: [...local.sort((a, b) => a[1] - b[1]).slice(0, 8), ...day.sort(fame).slice(0, 14), ...wkd.sort(fame).slice(0, 22)] });
+    trips: [...local.slice(0, 8), ...balanced(day, 14, c), ...balanced(wkd, 20, c), ...balanced(long, 12, c)] });
 }
 const data = { generated: new Date().toISOString().slice(0, 10), region: "us",
   sources: { places: "Hand-picked by Weekender (scripts/us/places.mjs)", routes: Object.keys(sources.routes).length ? "OSRM / OpenStreetMap road routing" : "estimated from distance (routing not fetched yet)",

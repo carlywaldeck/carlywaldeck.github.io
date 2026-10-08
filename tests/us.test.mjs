@@ -20,8 +20,8 @@ export default async function run() {
   t.check(!thin.length, `every college has enough trips (thin: ${thin})`);
   const badTrips = D.colleges.flatMap((c) => c.trips.filter(([id, km, h]) => !D.places[id] || !(km > 0) || !(h > 0) || h > 9.5).map((x) => `${c.id}→${x[0]}`));
   t.check(!badTrips.length, `trips point at real places with sane distances (${badTrips.slice(0, 5)})`);
-  const badPlaces = Object.entries(D.places).filter(([, p]) => !p.name || !p.note || !(p.lat > 32 && p.lat < 43.5) || !(p.lon > -125 && p.lon < -112.5) || !Array.isArray(p.days) || !p.days.length || p.season.length !== 12 || !p.tags.length)
-    .map(([id]) => id); // California, plus the long-weekend trips just over the border (Zion, Crater Lake)
+  const badPlaces = Object.entries(D.places).filter(([, p]) => !p.name || !p.note || !(p.lat > 32 && p.lat < 43.5) || !(p.lon > -125 && p.lon < -111) || !Array.isArray(p.days) || !p.days.length || p.season.length !== 12 || !p.tags.length)
+    .map(([id]) => id); // California, plus the long-weekend trips over the border (Nevada, Arizona, Utah, Oregon)
   t.check(!badPlaces.length, `places have a note, a plan, tags, 12 months of seasons and coordinates in or near California (${badPlaces.slice(0, 5)})`);
   t.check(D.gas.price > 2 && D.gas.price < 9 && D.mpg > 0 && D.riders >= 1, `gas math inputs are sane ($${D.gas.price}, ${D.mpg} mpg, ${D.riders} riders)`);
 
@@ -52,17 +52,45 @@ export default async function run() {
     t.check(r.cur === "true" && r.storeKey !== "weekender:v1", `California is marked as the current version, with its own saved data (${r.storeKey})`);
     t.check(!!r.weekend, "there is a camping weekend trip");
     const plan = await page.evaluate(async (key) => {
-      ui.drawer = key; ui.tab = "booking"; renderDrawer();
+      ui.drawer = key; ui.tab = "book"; renderDrawer();
       const booking = document.querySelector("#drawer").innerHTML;
       ui.tab = "details"; renderDrawer();
       const details = document.querySelector("#drawer").textContent;
-      ui.tab = "itinerary"; renderDrawer();
+      ui.tab = "plan"; renderDrawer();
       const itin = document.querySelector("#drawer").textContent;
       return { booking, details, itin, local: document.querySelector("#drawer").textContent };
     }, r.weekend);
-    t.check(/google\.com\/maps\/dir/.test(plan.booking) && /recreation\.gov|reservecalifornia/i.test(plan.booking), "booking: driving directions and campsite reservations");
+    t.check(/maps\.apple\.com\/\?saddr=/.test(plan.booking) && !/google\.com\/maps/.test(plan.booking) && /recreation\.gov|reservecalifornia/i.test(plan.booking), "booking: Apple Maps directions and campsite reservations");
     t.check(/miles each way/.test(plan.details) && /mpg/.test(plan.details), "details: the drive and the gas math");
-    t.check(/Drive from Cal Poly SLO/.test(plan.itin) && /Camp/.test(plan.itin) && !/€/.test(plan.itin), "itinerary: drive there, camp, all in dollars");
+    t.check(/Drive from Cal Poly SLO/.test(plan.itin) && /Camp/.test(plan.itin) && /Drive back to Cal Poly SLO/.test(plan.itin) && !/€/.test(plan.itin), "itinerary: drive there, camp, drive back, all in dollars");
+    // Prices: a local find is pocket money, gas is split between the people in the car.
+    const money = await page.evaluate(() => {
+      state.daysSet = new Set([1]); state.days = 1; state.budget = 250; update();
+      const local = current.trips.filter((x) => x.dest.escape.local).map((x) => x.cost.total);
+      const pick = current.trips.find((x) => !x.dest.escape.local && x.cost.travel > 5);
+      const gas3 = pick.cost.travel;
+      state.car.riders = 1; update();
+      const gas1 = current.trips.find((x) => x.key === pick.key).cost.travel;
+      state.car.riders = 3; state.car.type = "ev"; update();
+      const gasEv = current.trips.find((x) => x.key === pick.key).cost.travel;
+      state.car.type = "gas"; state.daysSet = new Set([3]); state.days = 3; update();
+      const long = current.trips.map((x) => x.dest.name);
+      return { local, gas3, gas1, gasEv, long, minLong: Math.min(...current.trips.map((x) => x.dest.escape.legHours)) };
+    });
+    t.check(money.local.length && Math.max(...money.local) < 40, `local finds cost little (${money.local})`);
+    t.check(Math.abs(money.gas1 - money.gas3 * 3) <= 3 && money.gasEv < money.gas3, `gas is split between riders, and cheaper in an EV (1: ${money.gas1}, 3: ${money.gas3}, EV: ${money.gasEv})`);
+    t.check(["Las Vegas (Nevada)", "San Diego", "Joshua Tree"].every((n) => money.long.includes(n)) && money.minLong >= 3,
+      `long weekends from Cal Poly reach Vegas, San Diego and Joshua Tree (${money.long.slice(0, 12)})`);
+    // Tides: NOAA (faked here) gives low tides for a beach trip on your dates.
+    const tide = await openApp(browser, { file: US_INDEX, setup: async (pg) => {
+      await pg.route("https://api.tidesandcurrents.noaa.gov/**", (r) => r.fulfill({ contentType: "application/json", body: JSON.stringify({ predictions: [{ t: "2026-11-06 06:12", v: "-0.4", type: "L" }, { t: "2026-11-06 12:30", v: "4.9", type: "H" }] }) }));
+    } });
+    await tide.evaluate(() => { state.home = "cal-poly-slo"; state.daysSet = new Set([1]); state.days = 1; update(); closeLanding(false);
+      const t = current.trips.find((x) => x.dest.escape.place === "morro-bay"); ui.drawer = t.key; ui.tab = "details"; renderDrawer(); });
+    await tide.waitForFunction(() => /Low tide/.test(document.querySelector("#drawer").textContent) && !/Loading/.test(document.querySelector("#drawer").textContent), null, { timeout: 5000 }).catch(() => {});
+    const tideText = await tide.evaluate(() => document.querySelector("#drawer").textContent);
+    t.check(/Low tide/.test(tideText) && /6:12 AM/.test(tideText) && /tide pools/.test(tideText) && /Port San Luis/.test(tideText), `beach trips show low tides from NOAA (${(tideText.match(/Low tide.{0,90}/) || [""])[0]})`);
+    t.check(!tide.errors.length, `tide page errors: ${tide.errors}`);
     // Search finds colleges.
     await page.evaluate(() => openLanding());
     await page.fill("#lp-home-input", "cal poly");
