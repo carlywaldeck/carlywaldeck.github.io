@@ -43,8 +43,8 @@ Everything is per person, for driving:
 ## Extras in each plan
 
 - **Apple Maps** directions from campus (to the harbor for Catalina, the Channel Islands and Angel Island, with the boat to book).
-- **Winter routes**: Tioga Pass (Highway 120) closes about November to May. Drives to Mono Lake, Mammoth
-  and Bishop that cross it in summer use the longer winter route in those months.
+- **Winter routes**: the Sierra passes (Tioga, Sonora, Ebbetts) close about November to May. Drives to
+  Mono Lake, Mammoth and Bishop that cross them in summer use the longer winter route in those months.
 - **Low tides** on your dates for beach trips (NOAA tide predictions), with the best day for tide pools.
 - **The moon** on your nights for stargazing, desert and camping trips, and when the darkest skies are.
 - **Air quality** (US AQI) when the trip is in the next few days, to catch wildfire smoke.

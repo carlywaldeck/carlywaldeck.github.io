@@ -83,27 +83,25 @@ async function fetchRoutes(colleges, placesFor) {
     }
   }
 }
-// Tioga Pass (Highway 120 through Yosemite) is closed in winter, usually November to May, and the
-// fastest summer route from most of Northern and Central California to Mono Lake, Mammoth and Bishop
-// crosses it. For those trips we also route via passes that stay open (US 50 at Echo Summit, or
-// Highway 58 through Tehachapi) and keep the faster of the two as the winter route.
-const TIOGA = [37.9107, -119.2577], WINTER_VIA = [[38.8122, -120.0305], [35.1306, -118.4483]];
+// The Sierra passes on the fastest summer routes to the east side (Tioga, Sonora and Ebbetts) close in
+// winter, usually November to May. For Mono Lake, Mammoth and Bishop we also route over roads that stay
+// open (US 50 at Echo Summit from the north, US 395 past Olancha from the south) and, when that's
+// clearly slower than the summer drive, keep it as the winter route.
+const OPEN_VIA = [[38.8122, -120.0305], [36.2830, -117.9930]];
 async function osrmRoute(points) {
   const d = await get(`https://router.project-osrm.org/route/v1/driving/${points.map(([la, lo]) => `${lo.toFixed(5)},${la.toFixed(5)}`).join(";")}?overview=false`, { wait: 5000 });
   return d.routes && d.routes[0] ? [Math.round(d.routes[0].distance / 100) / 10, Math.round(d.routes[0].duration / 36) / 100] : null;
 }
 async function fetchWinterRoutes(colleges, places) {
-  sources.winter = sources.winter || {};
+  sources.winterRoutes = sources.winterRoutes || {};
+  delete sources.winter; // the first version only checked Tioga Pass
   for (const c of colleges) for (const p of places.filter((x) => x.tioga)) {
     const key = `${c.id}|${p.id}`, summer = sources.routes[key];
-    if (!summer || sources.winter[key] !== undefined) continue;
+    if (!summer || sources.winterRoutes[key] !== undefined) continue;
     try {
-      // Does the summer route cross Tioga? It does if going via the pass costs (almost) nothing extra.
-      const via = await osrmRoute([[c.lat, c.lon], TIOGA, [p.lat, p.lon]]); await sleep(1100);
-      if (!via || via[1] > summer[1] * 1.05) { sources.winter[key] = null; continue; }
       let best = null;
-      for (const w of WINTER_VIA) { const r = await osrmRoute([[c.lat, c.lon], w, [p.lat, p.lon]]); await sleep(1100); if (r && (!best || r[1] < best[1])) best = r; }
-      sources.winter[key] = best && best[1] > summer[1] * 1.1 ? best : null;
+      for (const w of OPEN_VIA) { const r = await osrmRoute([[c.lat, c.lon], w, [p.lat, p.lon]]); await sleep(1100); if (r && (!best || r[1] < best[1])) best = r; }
+      sources.winterRoutes[key] = best && best[1] > summer[1] * 1.08 ? best : null;
     } catch (e) { log(`winter ${key}:`, e.message); }
   }
 }
@@ -165,7 +163,9 @@ function tideFor(p) {
   if (!["coast", "north_coast", "bay"].includes(p.area) || !p.tags.some((k) => ["beach", "wildlife", "islands", "surf"].includes(k))) return null;
   const at = p.port ? [p.port[0], p.port[1]] : [p.lat, p.lon];
   let best = null, bd = 40;
-  for (const st of sources.tides || TIDE_STATIONS) { const d = km(at, [st[2], st[3]]); if (d < bd) { bd = d; best = [st[0], st[1]]; } }
+  // NOAA writes some names in capitals ("PORT SAN LUIS"): show them as "Port San Luis".
+  const tidy = (n) => (n === n.toUpperCase() ? n.toLowerCase().replace(/\b[a-z]/g, (ch) => ch.toUpperCase()) : n);
+  for (const st of sources.tides || TIDE_STATIONS) { const d = km(at, [st[2], st[3]]); if (d < bd) { bd = d; best = [st[0], tidy(st[1])]; } }
   return best;
 }
 
@@ -227,7 +227,7 @@ function season(p) {
   });
 }
 function route(c, p) {
-  const r = sources.routes[routeKey(c, p)], w = (sources.winter || {})[`${c.id}|${p.id}`];
+  const r = sources.routes[routeKey(c, p)], w = (sources.winterRoutes || {})[`${c.id}|${p.id}`];
   if (r) return { km: r[0], hours: r[1], real: true, winter: w || null };
   // No routing yet: straight line × 1.3 for roads, slower in the mountains and far north.
   const slow = ["sierra", "sierra_high", "north_coast", "socal_mtn", "snow"].includes(p.area);
@@ -253,7 +253,7 @@ function balanced(rows, n, c) {
 // Places are stored once; each college gets its routes: [place id, road km, hours, kind, winter km,
 // winter hours], where kind says how the place works from this campus: l = local find (under 45
 // min), d = day trip (up to 3 h each way), w = weekend (up to 5½ h), x = long weekend, 3+ days (up to
-// 9 h); "~" marks an estimated route. Winter km/hours are set when Tioga Pass's closure makes the drive longer.
+// 9 h); "~" marks an estimated route. Winter km/hours are set when the Sierra passes' winter closure makes the drive longer.
 const places = {};
 const addPlace = (p) => { places[p.id] = { name: p.name, lat: +p.lat.toFixed(4), lon: +p.lon.toFixed(4), area: p.area, tags: p.tags, fee: p.fee || 0, ticket: p.ticket || 0, stay: p.stay, note: p.note, days: p.days, wiki: p.wiki, season: season(p), pop: pop(p),
   ...(p.port ? { port: p.port } : {}), ...(tideFor(p) ? { tide: tideFor(p) } : {}), ...(sources.climate[p.id] ? { clim: sources.climate[p.id] } : {}), ...(p.osm ? { osm: 1 } : {}) };

@@ -4516,7 +4516,7 @@ const CITY_NAMES = new Set(CITIES.map(c => c.name));
 function nearbyEscapes(home) {
   if (US) {
     // US: 1 day = local finds and day trips; 2 days = weekend trips up to ~5½ h away; 3+ = farther too.
-    // The drive depends on the month (Tioga Pass closes in winter), so it's worked out here.
+    // The drive depends on the month (Sierra passes close in winter), so it's worked out here.
     const leg = (e) => { const l = usLeg(e); return { ...e, legKm: l.km, legHours: l.hours, winterRoute: l.winter }; };
     const day = home.dayTrips.map((d, i) => ({ ...leg(d), id: `${home.id}-day-${i}`, overnight: false }));
     const wk = home.weekends.map((w, i) => ({ ...leg(w), id: `${home.id}-wkd-${i}`, overnight: true }));
@@ -4542,7 +4542,7 @@ function nearbyEscapes(home) {
 const US_DATA = window.US_DATA || null;
 const CARS = { gas: { label: "Gas car", mpg: 30 }, hybrid: { label: "Hybrid", mpg: 50 }, suv: { label: "SUV or truck", mpg: 22 },
   ev: { label: "Electric", perMile: 0.12 } }; // an EV: about 3.5 miles per kWh at a mix of home and public charging
-// Tioga Pass (Highway 120 through Yosemite) is usually closed from November to May.
+// The Sierra passes (Tioga, Sonora, Ebbetts) are usually closed from November to May.
 const TIOGA_CLOSED = [10, 11, 0, 1, 2, 3, 4];
 function usLeg(esc) {
   const w = !!esc.winter && TIOGA_CLOSED.includes(state.month);
@@ -4948,7 +4948,7 @@ function tipsSection(dest) {
 
 function escapePlan(home, esc, cost) {
   const leg = US ? (esc.port ? `Drive to ${esc.port[2]}, ~${hrs(cost.transport.hours)}, then the boat over` : `Drive from ${home.name}, ~${hrs(cost.transport.hours)}`)
-      + (esc.winterRoute ? " (the winter way round: Tioga Pass is closed)" : "")
+      + (esc.winterRoute ? " (the winter way round: the Sierra passes are closed)" : "")
     : `${esc.how.split(",")[0]} from ${home.name}, ~${hrs(cost.transport.hours)}`;
   let days;
   if (US && esc.overnight) {
@@ -5666,7 +5666,7 @@ function usBookSection(home, dest, cost, t, { when, btn, place }) {
   const miles = Math.round((esc.legKm ?? esc.km) / 1.609), to = esc.port ? `${esc.port[0]},${esc.port[1]}` : p ? `${p[0]},${p[1]}` : encodeURIComponent(where);
   const dir = `https://maps.apple.com/?saddr=${home.lat},${home.lon}&daddr=${to}&dirflg=d`;
   const who = state.car.riders === 1 ? "just you" : `split ${state.car.riders} ways`;
-  const rows = [["🚗", "Drive", `${miles} miles each way${esc.port ? ` to ${esc.port[2]}` : ""} · ${when} · about ${euro(cost.travel)} gas each (${who})${esc.winterRoute ? " · Tioga Pass is closed, so this is the winter route" : ""}`, btn(dir, "Apple Maps")]];
+  const rows = [["🚗", "Drive", `${miles} miles each way${esc.port ? ` to ${esc.port[2]}` : ""} · ${when} · about ${euro(cost.travel)} gas each (${who})${esc.winterRoute ? " · the Sierra passes are closed, so this is the winter route" : ""}`, btn(dir, "Apple Maps")]];
   const ferry = US_FERRIES[esc.place];
   if (ferry) rows.push(["⛴️", "Boat", `Round trip about ${euro(esc.ticket)} each · book ahead, boats sell out on weekends`, btn(ferry[1], ferry[0], false)]);
   if (cost.nights > 0 && cost.stay) {
@@ -5692,7 +5692,7 @@ function usDataSection(t) {
   if (!pl) return "";
   const m = state.month, rows = [], car = carInfo();
   rows.push(["The drive", `${Math.round((esc.legKm ?? esc.km) / 1.609)} miles each way${esc.port ? ` to ${esc.port[2]}` : ""}, about ${hrs(esc.legHours ?? esc.hours)}`,
-    (esc.realRoute ? "OpenStreetMap road routing (OSRM)" : "estimated from distance") + (esc.winterRoute ? "; Tioga Pass is closed Nov–May, so this is the winter route" : esc.winter ? "; over Tioga Pass, which usually closes Nov–May" : "")]);
+    (esc.realRoute ? "OpenStreetMap road routing (OSRM)" : "estimated from distance") + (esc.winterRoute ? "; the Sierra passes close Nov–May, so this is the winter route" : esc.winter ? "; over a Sierra pass that usually closes Nov–May" : "")]);
   rows.push(["Gas", car.perMile ? `Electric, about $${car.perMile.toFixed(2)} a mile charging, ${state.car.riders === 1 ? "just you" : `split ${state.car.riders} ways`}`
     : `${car.label}, ${car.mpg} mpg at $${D.gas.price.toFixed(2)}/gal, ${state.car.riders === 1 ? "just you" : `split ${state.car.riders} ways`}`, car.perMile ? "typical home and public charging prices" : D.gas.source]);
   if (pl.clim) rows.push([`Weather in ${MONTHS_FULL[m]}`, `highs around ${pl.clim.hiF[m]}°F, ${pl.clim.wetDays[m]} wet days`, "Open-Meteo, 5 years of daily records"]);
