@@ -286,12 +286,14 @@ export default async function run() {
     const touch = (type, pts) => cdp.send("Input.dispatchTouchEvent", { type, touchPoints: pts.map(([x, y], id) => ({ x, y, id })) });
     const s0 = await tp.evaluate(() => G.scale), scales = [];
     await touch("touchStart", [[165, 220], [225, 220]]);
-    for (let i = 1; i <= 6; i++) { await touch("touchMove", [[165 - i * 8, 220], [225 + i * 8, 220]]); scales.push(await tp.evaluate(() => G.scale)); }
-    await touch("touchEnd", []);
+    // Touch moves can be applied on the next animation frame (slower machines), so read after one.
+    const afterFrame = () => tp.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => r(G.scale)))));
+    for (let i = 1; i <= 6; i++) { await touch("touchMove", [[165 - i * 8, 220], [225 + i * 8, 220]]); scales.push(await afterFrame()); }
+    await touch("touchEnd", []); await afterFrame();
     t.check(scales.every((v, i) => v > (i ? scales[i - 1] : s0)) && scales[5] > s0 * 2.5, `pinching zooms the globe smoothly (${[s0, ...scales].map(Math.round).join(" → ")})`);
     await touch("touchStart", [[200, 260]]);
     for (let i = 1; i <= 4; i++) await touch("touchMove", [[200 + i * 10, 260]]);
-    await touch("touchEnd", []);
+    await touch("touchEnd", []); await afterFrame();
     const tags = await tp.evaluate(() => { const t = current.trips[0]; ui.drawer = t.key; ui.tab = "plan"; renderDrawer(); const r = [...document.querySelectorAll("#drawer-body .links.tiktok a")].map((a) => a.href); ui.drawer = null; renderDrawer(); return r; });
     t.check(tags.length >= 4 && tags.every((h) => /^https:\/\/www\.tiktok\.com\/tag\/[a-z0-9]+$/.test(h)), `on phones, TikTok links open hashtag pages in the app (${tags[0]})`);
     const after = await tp.evaluate(() => ({ dragging: G.dragging, scale: G.scale }));
