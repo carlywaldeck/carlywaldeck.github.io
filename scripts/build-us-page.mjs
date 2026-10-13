@@ -41,7 +41,9 @@ swap("<p>Real prices for 120 cities and 640+ day trips, scored 1–10 for you.</
 swap("<b>Pick your city and budget</b><span>Where you're studying, when, and what you want to spend.</span>",
   "<b>Pick your college and budget</b><span>Your campus, when, and what you want to spend.</span>");
 swap("<span>Price, weather, crowds and what you're into, in one number.</span>",
-  "<span>Drive time, gas split three ways, park fees, weather and what you're into, in one number.</span>");
+  "<span>Drive time, gas split between friends, park fees, what's happening that month and what you're into, in one number.</span>");
+swap("<b>Open the plan</b><span>Day-by-day itinerary and booking links. Save it and we'll tell you when it gets cheaper.</span>",
+  "<b>Open the plan</b><span>Day-by-day itinerary, directions, campsites and the train if you'd rather not drive. Send it to the group chat to vote.</span>");
 swap("Built on 5 years of weather records, official tourism and price statistics, OpenStreetMap and real flight fares.",
   "Built on real driving routes (OSRM), 5 years of weather records (Open-Meteo), OpenStreetMap, Wikipedia and current gas prices.");
 

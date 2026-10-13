@@ -88,6 +88,12 @@ Wednesday and whenever the US scripts change, so the real routes and weather lan
 Optional: get a free EIA key at https://www.eia.gov/opendata/register.php and add it as the
 repository secret `EIA_KEY` for weekly gas prices. Nothing else to sign up for; nothing costs money.
 
+## Pages for search engines
+
+`scripts/build-us-pages.mjs` writes a page per college at `/us/from/<college>/` ("Weekend trips from
+Cal Poly SLO") with that month's best local finds, day trips, weekends and long weekends, computed by
+the app itself, and adds them to `sitemap.xml`. The California data job rebuilds them weekly.
+
 ## How it's built
 
 `us/index.html` is generated from `index.html` by `scripts/build-us-page.mjs` (it sets

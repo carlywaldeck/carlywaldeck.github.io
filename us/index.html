@@ -778,8 +778,8 @@ body { background: radial-gradient(1100px 620px at 85% -12%, #FFF3D6 0%, rgba(25
       <p>65 California colleges, hidden local spots, day trips and weekend road trips, scored 1–10 for you.</p>
       <ol class="lp-how" aria-label="How it works">
         <li><b>Pick your college and budget</b><span>Your campus, when, and what you want to spend.</span></li>
-        <li><b>Get trips scored 1–10</b><span>Drive time, gas split three ways, park fees, weather and what you're into, in one number.</span></li>
-        <li><b>Open the plan</b><span>Day-by-day itinerary and booking links. Save it and we'll tell you when it gets cheaper.</span></li>
+        <li><b>Get trips scored 1–10</b><span>Drive time, gas split between friends, park fees, what's happening that month and what you're into, in one number.</span></li>
+        <li><b>Open the plan</b><span>Day-by-day itinerary, directions, campsites and the train if you'd rather not drive. Send it to the group chat to vote.</span></li>
       </ol>
       <p class="lp-data" id="lp-data" hidden>Built on real driving routes (OSRM), 5 years of weather records (Open-Meteo), OpenStreetMap, Wikipedia and current gas prices.</p>
     </div>
@@ -6621,7 +6621,7 @@ function accountPage() {
       <div class="modal-actions"><button type="button" class="ghost" data-act="logout">Log out</button></div>
       <p class="note acct-legal"><a href="privacy.html">Privacy &amp; terms</a> · <button type="button" class="linkish" data-act="delete-account">Delete my account</button></p>`,
     trips: `<p class="note">Trips you saved with ☆ Save. Open one to see its plan again.</p>
-      <label class="alert-opt"><input type="checkbox" id="acct-alerts" ${store.get().alerts ? "checked" : ""}> Email me when a saved trip gets cheaper <small>(checked weekly with the new fares)</small></label><ul class="been-items saved-items" id="acct-saved">${savedHtml()}</ul>`,
+      ${US ? "" : `<label class="alert-opt"><input type="checkbox" id="acct-alerts" ${store.get().alerts ? "checked" : ""}> Email me when a saved trip gets cheaper <small>(checked weekly with the new fares)</small></label>`}<ul class="been-items saved-items" id="acct-saved">${savedHtml()}</ul>`,
     places: `<button type="button" class="cta map-cta" data-act="travel-map">🌍 See my travel map</button>
       <p class="note">Add the places you've been, when you went, and how much you liked them. Your ratings teach Weekender your taste.</p>
       <div class="city-search"><input id="acct-been-input" type="text" role="combobox" aria-label="Add a place you've been" aria-autocomplete="list" aria-expanded="false" aria-controls="acct-been-list" autocomplete="off" spellcheck="false" placeholder="Add any city or town you've visited">

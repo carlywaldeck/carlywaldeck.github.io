@@ -33,6 +33,10 @@ export default async function run() {
   t.check(/<base href="\.\.\/">/.test(html) && /window\.REGION = "us"/.test(html) && /data\/us-data\.js/.test(html) && !/data\/app-data\.js\?v/.test(html),
     "the US page loads the US data instead of the European data");
 
+  // ---- college pages for search engines
+  const seo = fs.existsSync(ROOT + "us/from/cal-poly-slo/index.html") ? fs.readFileSync(ROOT + "us/from/cal-poly-slo/index.html", "utf8") : "";
+  t.check(/Weekend trips from Cal Poly SLO/.test(seo) && /\$\d+/.test(seo) && /#from=cal-poly-slo/.test(seo) && fs.readFileSync(ROOT + "sitemap.xml", "utf8").includes("/us/from/cal-poly-slo/"),
+    "each college has a page for search engines, in the sitemap");
   const browser = await openBrowser();
   try {
     // ---- the app in US mode

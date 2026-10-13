@@ -90,6 +90,9 @@ await fs.writeFile(ROOT + "from/index.html", `${head("Cheap weekend trips from 1
 ${Object.keys(byCountry).sort().map((k) => `<h2>${esc(k)}</h2><ul class="links">${byCountry[k].map((c) => `<li><a href="/from/${c.id}/">${esc(c.name)}</a></li>`).join("")}</ul>`).join("")}
 ${foot}`);
 const today = new Date().toISOString().slice(0, 10);
-await fs.writeFile(ROOT + "sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url><loc>${u}</loc><lastmod>${today}</lastmod></url>`).join("\n")}\n</urlset>\n`);
+// Keep the California college pages (written by scripts/build-us-pages.mjs) in the sitemap.
+const old = await fs.readFile(ROOT + "sitemap.xml", "utf8").catch(() => "");
+const us = [...old.matchAll(/<url><loc>([^<]+\/us\/from\/[^<]*)<\/loc><lastmod>([^<]+)<\/lastmod><\/url>/g)].map((m) => [m[1], m[2]]);
+await fs.writeFile(ROOT + "sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${[...urls.map((u) => [u, today]), ...us].map(([u, d]) => `  <url><loc>${u}</loc><lastmod>${d}</lastmod></url>`).join("\n")}\n</urlset>\n`);
 await fs.writeFile(ROOT + "robots.txt", `User-agent: *\nAllow: /\nSitemap: ${SITE}/sitemap.xml\n`);
 console.log(`built ${urls.length - 4} city pages + index, sitemap.xml, robots.txt`);
