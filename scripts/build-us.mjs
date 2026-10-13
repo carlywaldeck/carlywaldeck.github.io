@@ -172,7 +172,7 @@ function tideFor(p) {
 
 // ---------------------------------------------------------------- 5. EIA: gas price
 async function fetchGas() {
-  if (!process.env.EIA_KEY) return;
+  if (!process.env.EIA_KEY) return fetchGasPage();
   try {
     const d = await get(`https://api.eia.gov/v2/petroleum/pri/gnd/data/?api_key=${process.env.EIA_KEY}&frequency=weekly&data[0]=value&facets[duoarea][]=SCA&facets[product][]=EPMR&sort[0][column]=period&sort[0][direction]=desc&length=1`);
     const row = d.response.data[0];
@@ -200,15 +200,29 @@ if (FETCH) {
 // Our coordinates are picked by hand (a trailhead, a town center); Wikipedia's are only a check.
 for (const x of [...colleges, ...PLACES]) { const w = sources.wiki[x.wiki]; if (w && w.coord && km([x.lat, x.lon], w.coord) > 25) log(`check coordinates: ${x.name} is ${Math.round(km([x.lat, x.lon], w.coord))} km from Wikipedia's`); }
 
+// Without a key: EIA's public weekly series page for California regular gasoline (an HTML table of
+// weeks; the last filled cell is this week's price).
+async function fetchGasPage() {
+  try {
+    const r = await fetch("https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=EMM_EPMR_PTE_SCA_DPG&f=W", { headers: { "User-Agent": UA }, signal: AbortSignal.timeout(60000) });
+    const html = await r.text();
+    const cells = [...html.matchAll(/<td class=['"]B3['"][^>]*>\s*([0-9]\.[0-9]{3})\s*<\/td>/g)].map((m) => Number(m[1]));
+    const weeks = [...html.matchAll(/(\d{4})-([A-Za-z]{3})\s*<\/td>/g)];
+    const price = cells[cells.length - 1];
+    if (price > 2 && price < 9) sources.gas = { price, week: weeks.length ? `${weeks[weeks.length - 1][1]}-${weeks[weeks.length - 1][2]}` : new Date().toISOString().slice(0, 10), source: "EIA weekly California regular gasoline" };
+    else log("eia page: no price found");
+  } catch (e) { log("eia page:", e.message); }
+}
+
 // ---------------------------------------------------------------- build
-const GAS = sources.gas || { price: 4.85, week: "2026-10", source: "estimate (California regular, set EIA_KEY to update weekly)" };
-const MPG = 30, RIDERS = 3; // a typical car, shared by three friends
+const GAS = sources.gas || { price: 4.85, week: "2026-10", source: "estimate (California regular; the weekly data job updates it from EIA)" };
+const MPG = 30, RIDERS = 4; // a typical car, shared by four friends
 // A night's stay: a campsite ($35, up to 6 people), a motel room with two beds ($135, up to 4), a
 // cabin ($160, up to 6), or a hostel bed ($45 each). The app splits them between the friends going.
 const STAY = { camp: 35, motel: 135, cabin: 160, hostel: 45 };
-// Food per person: a local find is a snack or tacos; a day trip, lunch out; nights away, per day,
-// depending on where you sleep (groceries at a campsite, eating out in a city).
-const FOOD = { local: 8, day: 15, camp: 15, cabin: 20, motel: 25, hostel: 30 };
+// Food per person: a local find is a coffee or a snack; a day trip, lunch out; nights away, per day,
+// depending on where you sleep (groceries cooked at a campsite or cabin, cheap eats in a city).
+const FOOD = { local: 5, day: 12, camp: 12, cabin: 15, motel: 20, hostel: 25 };
 // How good each month is (1–5), by kind of place; climate data (when fetched) nudges these.
 const SEASON = {
   coast: [4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 4, 4], north_coast: [2, 2, 3, 3, 4, 5, 5, 5, 5, 4, 3, 2], bay: [3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 4, 3],
@@ -256,7 +270,7 @@ function balanced(rows, n, c) {
 // min), d = day trip (up to 3 h each way), w = weekend (up to 5½ h), x = long weekend, 3+ days (up to
 // 9 h); "~" marks an estimated route. Winter km/hours are set when the Sierra passes' winter closure makes the drive longer.
 const places = {};
-const addPlace = (p) => { places[p.id] = { name: p.name, lat: +p.lat.toFixed(4), lon: +p.lon.toFixed(4), area: p.area, tags: p.tags, fee: p.fee || 0, ticket: p.ticket || 0, stay: p.stay, note: p.note, days: p.days, wiki: p.wiki, season: season(p), pop: pop(p),
+const addPlace = (p) => { places[p.id] = { name: p.name, lat: +p.lat.toFixed(4), lon: +p.lon.toFixed(4), area: p.area, tags: p.tags, fee: p.fee || 0, ticket: p.ticket || 0, ...(p.extra ? { extra: p.extra } : {}), stay: p.stay, ...(p.stayCost ? { stayCost: p.stayCost } : {}), note: p.note, days: p.days, wiki: p.wiki, season: season(p), pop: pop(p),
   ...(p.port ? { port: p.port } : {}), ...(tideFor(p) ? { tide: tideFor(p) } : {}), ...(sources.climate[p.id] ? { clim: sources.climate[p.id] } : {}), ...(p.osm ? { osm: 1 } : {}) };
   Object.defineProperty(places[p.id], "fame", { value: Math.log10(pop(p) + 100) + (p.osm ? -0.5 : 0), enumerable: false }); };
 PLACES.forEach(addPlace);

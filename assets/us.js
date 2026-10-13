@@ -23,7 +23,7 @@
       if (!p) continue;
       window.PLACES[p.name] = [[p.lat, p.lon]];
       if (p.wiki) window.US_WIKI[p.name] = decodeURIComponent(p.wiki).replace(/_/g, " ");
-      const base = { name: p.name, place: id, how: "Drive", km: dist, hours, winter: wKm ? [wKm, wHours] : null, port: p.port || null, fee: p.fee, ticket: p.ticket,
+      const base = { name: p.name, place: id, how: "Drive", km: dist, hours, winter: wKm ? [wKm, wHours] : null, port: p.port || null, fee: p.fee, ticket: p.ticket, extra: p.extra || null, stayCost: p.stayCost || null,
         tags: p.tags, note: p.note, season: p.season, realRoute: !kind.includes("~"), osm: !!p.osm };
       if (kind[0] === "l" || kind[0] === "d") dayTrips.push({ ...base, local: kind[0] === "l", days: p.days.slice(0, 1) });
       else weekends.push({ ...base, stayKind: p.stay || "motel", days: p.days, extras: nearby(id), long: kind[0] === "x", minDays: kind[0] === "x" ? 3 : 2 });

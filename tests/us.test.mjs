@@ -67,18 +67,19 @@ export default async function run() {
     const money = await page.evaluate(() => {
       state.daysSet = new Set([1]); state.days = 1; state.budget = 250; update();
       const local = current.trips.filter((x) => x.dest.escape.local).map((x) => x.cost.total);
-      const pick = current.trips.find((x) => !x.dest.escape.local && x.cost.travel > 5);
+      const pick = [...current.trips].sort((a, b) => b.cost.travel - a.cost.travel)[0], riders = state.car.riders;
       const gas3 = pick.cost.travel;
       state.car.riders = 1; update();
       const gas1 = current.trips.find((x) => x.key === pick.key).cost.travel;
-      state.car.riders = 3; state.car.type = "ev"; update();
+      state.car.riders = riders; state.car.type = "ev"; update();
       const gasEv = current.trips.find((x) => x.key === pick.key).cost.travel;
       state.car.type = "gas"; state.daysSet = new Set([3]); state.days = 3; update();
       const long = current.trips.map((x) => x.dest.name);
-      return { local, gas3, gas1, gasEv, long, minLong: Math.min(...current.trips.map((x) => x.dest.escape.legHours)) };
+      return { riders, local, gas3, gas1, gasEv, long, minLong: Math.min(...current.trips.map((x) => x.dest.escape.legHours)) };
     });
     t.check(money.local.length && Math.max(...money.local) < 40, `local finds cost little (${money.local})`);
-    t.check(Math.abs(money.gas1 - money.gas3 * 3) <= 3 && money.gasEv < money.gas3, `gas is split between riders, and cheaper in an EV (1: ${money.gas1}, 3: ${money.gas3}, EV: ${money.gasEv})`);
+    t.check(money.riders === 4 && Math.abs(money.gas1 - money.gas3 * 4) <= 4 && money.gasEv < money.gas3, `gas is split between the 4 in the car, and cheaper in an EV (1: ${money.gas1}, 4: ${money.gas3}, EV: ${money.gasEv})`);
+    t.check(Math.max(...money.local) <= 15, `local finds are pocket money (${money.local})`);
     t.check(["Las Vegas (Nevada)", "San Diego", "Joshua Tree"].every((n) => money.long.includes(n)) && money.minLong >= 3,
       `long weekends from Cal Poly reach Vegas, San Diego and Joshua Tree (${money.long.slice(0, 12)})`);
     // Tides: NOAA (faked here) gives low tides for a beach trip on your dates.

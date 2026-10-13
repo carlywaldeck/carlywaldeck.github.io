@@ -4276,7 +4276,7 @@ const state = {
   lastMinute: false, // "This weekend": leave this Friday, ranked with the real forecast
   interests: new Set(), // none picked: rank by price and timing until you choose
   modes: new Set(Object.keys(MODES)),
-  car: { riders: 3, type: "gas" }, // California: how many of you share the car, and what kind of car
+  car: { riders: 4, type: "gas" }, // California: how many of you share the car, and what kind of car
   daysSet: new Set(window.REGION === "us" ? [1, 2, 3] : [3]), // trip lengths to show (any combination of 1–4)
   sort: "best", // or "cheap"
   currency: window.REGION === "us" ? "USD" : "EUR",
@@ -4553,8 +4553,8 @@ const perMile = () => carInfo().perMile || US_DATA.gas.price / carInfo().mpg;
 const usGas = (km) => Math.round(km * 2 / 1.609 * perMile() / state.car.riders);
 // How many people share a campsite (6), a motel room (4) or a cabin (6); hostels charge per bed.
 const SHARE = { camp: 6, motel: 4, cabin: 6 };
-function usStayEach(kind, mult) {
-  const price = US_DATA.stay[kind] ?? US_DATA.stay.motel, n = state.car.riders;
+function usStayEach(kind, mult, own) {
+  const price = own || (US_DATA.stay[kind] ?? US_DATA.stay.motel), n = state.car.riders;
   return kind === "hostel" ? Math.round(price * mult) : Math.round(Math.ceil(n / SHARE[kind]) * price * mult / n);
 }
 function usEstimate(home, esc) {
@@ -4566,7 +4566,7 @@ function usEstimate(home, esc) {
     return { transport, nights: 0, food, travel: gas, sights: entry, stay: 0, total: gas + entry + food };
   }
   const nights = state.days - 1, kind = esc.stayKind;
-  const stay = nights * usStayEach(kind, kind === "camp" ? 1 : home.priceMult[state.month]); // campsites cost the same all year
+  const stay = nights * usStayEach(kind, kind === "camp" ? 1 : home.priceMult[state.month], esc.stayCost); // campsites cost the same all year
   const food = state.days * (US_DATA.food[kind] ?? US_DATA.food.motel);
   return { transport, nights, food, travel: gas, sights: entry, stay, total: gas + entry + stay + food };
 }
@@ -5653,7 +5653,8 @@ function escapeDetails(home, dest, cost) {
     ["c3", "Food", dayWord(state.days), cost.food],
     ["c4", US ? "Park fees & tickets" : "Sights & entry", "", cost.sights]
   ].filter(p => p[3] > 0);
-  return costBlock(parts, cost.total);
+  const extra = US && esc.extra ? `<p class="fine">Optional, not included: ${esc.extra[1]}, about ${euro(esc.extra[0])} each.</p>` : "";
+  return costBlock(parts, cost.total) + extra;
 }
 // US booking: directions and gas, the boat for island trips, where to sleep (campsite, hostel, motel
 // or cabin), tours, calendar.
@@ -5766,7 +5767,7 @@ function usLiveSection(t) {
 }
 function escapeTips(cost) {
   if (US) return `<div><h4>Save money</h4><ul class="tips">
-      <li>${state.car.riders < 4 ? `Bring one more friend: with ${state.car.riders + 1} in the car, everyone's gas and park fees drop.` : "Carpooling is the biggest saving: the gas and park fee are split between everyone in the car."}</li>
+      <li>${state.car.riders < 4 ? `Bring one more friend: with ${state.car.riders + 1} in the car, everyone's gas and park fees drop.` : "Carpooling is the biggest saving: the gas, the park fee and the room are split between everyone going."}</li>
       <li>Going to several national parks this year? The $80 America the Beautiful pass covers a whole car.</li>
       <li>Campsites at state and national parks open months ahead and fill fast for summer weekends: book as soon as you know.</li>
       <li>Gas is usually cheaper inland than on the coast or in the mountains: fill up before you leave.</li>
@@ -7653,7 +7654,7 @@ function update() {
   if (US) { document.querySelectorAll("#riders .pick").forEach(b => b.setAttribute("aria-pressed", Number(b.dataset.v) === state.car.riders)); $("#car-type").value = state.car.type; }
   document.querySelectorAll(".sort .pick").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === state.sort));
   const hidden = Object.keys(MODES).length - state.modes.size;
-  $("#filters-count").textContent = US ? (state.car.riders !== 3 || state.car.type !== "gas" ? "1" : "") : hidden ? `${state.modes.size}/4` : "";
+  $("#filters-count").textContent = US ? (state.car.riders !== 4 || state.car.type !== "gas" ? "1" : "") : hidden ? `${state.modes.size}/4` : "";
   $("#int-count").textContent = state.interests.size ? [...state.interests].map(k => INTERESTS[k]).join(", ") : "None yet: add a few to personalize";
   saveCriteria();
   trainTaste();
@@ -7897,7 +7898,8 @@ function loadCriteria() {
   if (c.month >= 0 && c.month <= 11) state.month = c.month;
   state.interests = new Set((c.interests || []).filter(k => INTERESTS[k]));
   if (["EUR", "USD", "GBP"].includes(c.currency)) state.currency = c.currency;
-  if (US && c.car && CARS[c.car.type] && c.car.riders >= 1 && c.car.riders <= 5) state.car = { riders: c.car.riders, type: c.car.type };
+  // (3 people in a gas car was the old default, not a choice: start those visitors on the new default.)
+  if (US && c.car && CARS[c.car.type] && c.car.riders >= 1 && c.car.riders <= 5 && !(c.car.riders === 3 && c.car.type === "gas")) state.car = { riders: c.car.riders, type: c.car.type };
   const pf = c.profile || {};
   state.profile = { age: PROFILE_LABELS.age[pf.age] ? pf.age : "", with: PROFILE_LABELS.with[pf.with] ? pf.with : "" };
 }

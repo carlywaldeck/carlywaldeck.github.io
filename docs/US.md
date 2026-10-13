@@ -33,10 +33,10 @@ Everything is per person, for driving:
 
 | Cost | How |
 |------|-----|
-| Gas | Round-trip miles × price per mile ÷ people in the car. Gas car 30 mpg, hybrid 50, SUV 22, or an EV at about $0.12 a mile; this week's California gas price |
-| Park fees and tickets | Fee per car ÷ people, plus tickets per person (ferries, tours, cave tours) |
-| Where you sleep | A $35 campsite (up to 6), a $135 motel room with two beds (up to 4), a $160 cabin (up to 6), or a $45 hostel bed, split between the people going. Motels and cabins cost more in summer; campsites don't |
-| Food | A snack for a local find ($8), lunch out on a day trip ($15), and per day away: $15 camping (groceries), $20 cabin, $25 motel, $30 city hostel |
+| Gas | Round-trip miles × price per mile ÷ people in the car (4 by default). Gas car 30 mpg, hybrid 50, SUV 22, or an EV at about $0.12 a mile; this week's California gas price from EIA |
+| Park fees and tickets | Fee per car ÷ people, plus tickets only when you can't go without them (the boat to an island, the tour that's the only way in). Optional extras (rafting, kayaks, a hot tub) are shown in the plan but not added |
+| Where you sleep | A $35 campsite (up to 6), a $135 motel room with two beds (up to 4), a $160 cabin (up to 6), or a hostel bed (each city's own price: $36 in San Diego to $55 in Santa Barbara), split between the people going. Motels and cabins cost more in summer; campsites don't |
+| Food | A coffee or snack for a local find ($5), lunch out on a day trip ($12), and per day away: $12 camping or $15 in a cabin (you cook), $20 at a motel, $25 in a city |
 
 **Filters → People in the car / Your car** changes all of this (1 to 5 people, gas, hybrid, SUV or electric).
 
