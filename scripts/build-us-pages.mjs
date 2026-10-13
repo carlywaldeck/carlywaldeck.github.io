@@ -45,7 +45,7 @@ h1{font-size:clamp(30px,6vw,44px);line-height:1.1;margin:28px 0 10px;letter-spac
 const head = (title, desc, path) => `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title><meta name="description" content="${esc(desc)}"><link rel="canonical" href="${SITE}/${path}">
 <meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${SITE}/${path}">
-<meta property="og:image" content="${SITE}/og.png"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta property="og:image" content="${SITE}/og-us.png"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&display=swap"><style>${style}</style></head><body><main>
 <a class="brand" href="/us/"><img src="/favicon.svg" alt="" width="30" height="30">weekender<span>.</span></a>`;
 const card = (t) => `<div class="card"><h3>${esc(t.name)}</h3><div class="sub">${esc(t.kind)} · drive ${hrs(t.hours)} each way${t.train ? " · or train" : ""}</div>

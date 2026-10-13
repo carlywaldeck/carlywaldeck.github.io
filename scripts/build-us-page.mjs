@@ -33,7 +33,9 @@ swap(`content="Plan a cheap weekend away from where you're studying abroad: 120 
 swap(`content="Pick your home city, budget and interests; get scored trips with costs, transport and a tailored itinerary."`,
   `content="Pick your college, budget and interests; get local finds, day trips and weekend road trips with real drive times and costs."`);
 swap(`<meta property="og:url" content="https://weekender-trips.com/">`, `<meta property="og:url" content="https://weekender-trips.com/us/">`);
-swap("shown on a map of Europe", "for California college students");
+swap(`content="Weekender: cheap weekend trips from wherever you're studying, shown on a map of Europe"`, `content="Weekender: weekend trips from your campus, shown on a map of California"`);
+swap(`<meta property="og:image" content="https://weekender-trips.com/og.png">`, `<meta property="og:image" content="https://weekender-trips.com/og-us.png">`);
+swap(`<meta name="twitter:image" content="https://weekender-trips.com/og.png">`, `<meta name="twitter:image" content="https://weekender-trips.com/og-us.png">`);
 swap(`placeholder="Search a city"`, `placeholder="Search your college"`);
 swap(">Where are you based?</label>", ">Where do you go to college?</label>");
 swap("<p>Real prices for 120 cities and 640+ day trips, scored 1–10 for you.</p>",
