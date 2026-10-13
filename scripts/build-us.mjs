@@ -287,7 +287,7 @@ function balanced(rows, n, c) {
 // min), d = day trip (up to 3 h each way), w = weekend (up to 5½ h), x = long weekend, 3+ days (up to
 // 9 h); "~" marks an estimated route. Winter km/hours are set when the Sierra passes' winter closure makes the drive longer.
 const places = {};
-const addPlace = (p) => { places[p.id] = { name: p.name, lat: +p.lat.toFixed(4), lon: +p.lon.toFixed(4), area: p.area, tags: p.tags, fee: p.fee || 0, ticket: p.ticket || 0, ...(p.extra ? { extra: p.extra } : {}), stay: p.stay, ...(p.stayCost ? { stayCost: p.stayCost } : {}), ...(p.when ? { when: p.when } : {}), note: p.note, days: p.days, wiki: p.wiki, season: season(p), pop: pop(p),
+const addPlace = (p) => { places[p.id] = { name: p.name, lat: +p.lat.toFixed(4), lon: +p.lon.toFixed(4), area: p.area, tags: p.tags, fee: p.fee || 0, ticket: p.ticket || 0, ...(p.extra ? { extra: p.extra } : {}), stay: p.stay, ...(p.stayCost != null ? { stayCost: p.stayCost } : {}), ...(p.when ? { when: p.when } : {}), note: p.note, days: p.days, wiki: p.wiki, season: season(p), pop: pop(p),
   ...(p.port ? { port: p.port } : {}), ...(tideFor(p) ? { tide: tideFor(p) } : {}), ...(sources.climate[p.id] ? { clim: sources.climate[p.id] } : {}), ...(p.osm ? { osm: 1 } : {}) };
   Object.defineProperty(places[p.id], "fame", { value: Math.log10(pop(p) + 100) + (p.osm ? -0.5 : 0), enumerable: false }); };
 PLACES.forEach(addPlace);
@@ -321,7 +321,7 @@ for (const c of colleges) {
   // Local finds: our hand-picked places first (closest first), then OpenStreetMap's best known.
   local.sort((a, b) => (!!places[a[0]].osm - !!places[b[0]].osm) || (places[a[0]].osm ? places[b[0]].fame - places[a[0]].fame : a[2] - b[2]));
   out.push({ id: c.id, code: c.code, name: c.name, town: c.town, lat: c.lat, lon: c.lon, wiki: c.wiki,
-    trips: [...local.slice(0, 8), ...balanced(day, 14, c), ...balanced(wkd, 20, c), ...balanced(long, 12, c)] });
+    trips: [...local.slice(0, 10), ...balanced(day, 18, c), ...balanced(wkd, 24, c), ...balanced(long, 15, c)] });
 }
 // ---------------------------------------------------------------- trips without a car (Amtrak)
 // Rail distance ≈ straight line × 1.3; trains average about 40 mph with stops; a change of line costs an

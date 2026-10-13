@@ -78,7 +78,7 @@ Stations and car-free places are in `scripts/us/stations.mjs`.
 
 | What | Source |
 |------|--------|
-| Colleges and 130 hand-picked places, with notes and day plans | `scripts/us/colleges.mjs`, `scripts/us/places.mjs` |
+| Colleges and 157 hand-picked places, with notes and day plans | `scripts/us/colleges.mjs`, `scripts/us/places.mjs` |
 | Drive times and distances from every campus | OSRM (OpenStreetMap road routing) |
 | Coordinates check and popularity | Wikipedia (coordinates, 60 days of pageviews) |
 | Best months to go | Open-Meteo, 5 years of daily weather, blended with a season profile per kind of place |

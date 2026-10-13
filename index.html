@@ -4581,7 +4581,7 @@ const usGas = (km) => Math.round(km * 2 / 1.609 * perMile() / state.car.riders);
 // How many people share a campsite (6), a motel room (4) or a cabin (6); hostels charge per bed.
 const SHARE = { camp: 6, motel: 4, cabin: 6 };
 function usStayEach(kind, mult, own) {
-  const price = own || (US_DATA.stay[kind] ?? US_DATA.stay.motel), n = state.car.riders;
+  const price = own ?? (US_DATA.stay[kind] ?? US_DATA.stay.motel), n = state.car.riders;
   return kind === "hostel" ? Math.round(price * mult) : Math.round(Math.ceil(n / SHARE[kind]) * price * mult / n);
 }
 function usEstimate(home, esc) {
@@ -5717,7 +5717,7 @@ function usBookSection(home, dest, cost, t, { when, btn, place }) {
   }
   const ferry = US_FERRIES[esc.place];
   if (ferry) rows.push(["⛴️", "Boat", `Round trip about ${euro(esc.ticket)} each · book ahead, boats sell out on weekends`, btn(ferry[1], ferry[0], false)]);
-  if (cost.nights > 0 && cost.stay) {
+  if (cost.nights > 0 && (cost.stay || esc.stayCost === 0)) {
     const k = esc.stayKind;
     const link = k === "camp" ? btn(`https://www.recreation.gov/search?q=${encodeURIComponent(usPlaceName(esc.name))}`, "Recreation.gov", false) + (st === "California" ? btn("https://www.reservecalifornia.com/", "ReserveCalifornia", false) : "")
       : k === "hostel" ? btn(`https://www.hostelworld.com/st/hostels/north-america/usa/`, "Hostelworld", false)
@@ -5725,7 +5725,7 @@ function usBookSection(home, dest, cost, t, { when, btn, place }) {
     const share = k === "hostel" ? "a bed each" : `${Math.ceil(state.car.riders / SHARE[k])} ${k === "camp" ? "site" : k === "cabin" ? "cabin" : "room"}${Math.ceil(state.car.riders / SHARE[k]) > 1 ? "s" : ""} shared`;
     const campList = k === "camp" ? usCampsHtml(esc, btn) : null;
     rows.push([k === "camp" ? "🏕️" : "🛏️", { camp: "Campsite", hostel: "Hostel", motel: "Motel", cabin: "Cabin" }[k] || "Place to stay",
-      `${cost.nights} night${cost.nights > 1 ? "s" : ""} near ${usPlaceName(esc.name)} · ${share} · about ${euro(cost.stay)} each${k === "camp" && !campList ? " · sites book up: reserve early" : ""}${campList ? `</small>${campList}<small hidden>` : ""}`, link]);
+      `${cost.nights} night${cost.nights > 1 ? "s" : ""} near ${usPlaceName(esc.name)} · ${esc.stayCost === 0 ? "free camping on public land (no reservations, bring water)" : `${share} · about ${euro(cost.stay)} each`}${k === "camp" && !campList ? " · sites book up: reserve early" : ""}${campList ? `</small>${campList}<small hidden>` : ""}`, link]);
   }
   rows.push(["🎟️", "Tours & tickets", `Guided tours, rentals and tickets around ${usPlaceName(esc.name)}`,
     btn(`https://www.getyourguide.com/s/?q=${encodeURIComponent(where)}${GYG_PARTNER_ID ? `&partner_id=${GYG_PARTNER_ID}` : ""}`, "GetYourGuide", false) + btn(KLOOK_LINK, "Klook", false)]);
