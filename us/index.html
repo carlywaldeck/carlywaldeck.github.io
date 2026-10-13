@@ -1454,8 +1454,14 @@ function estimateEscape(home, esc) {
 //   interests how well it matches what you picked (left out when you pick none)
 //   length    whether the trip length suits the distance (a far flight on a 1-day trip scores low)
 //   taste     what the model has learned from places you've rated (see "taste model" below)
-const SCORE_WEIGHTS = { interest: 0.35, price: 0.25, season: 0.2, length: 0.2 };
-const SCORE_WEIGHTS_NO_INTERESTS = { price: 0.35, season: 0.35, length: 0.3 };
+// California adds drive time: nearly every trip there is cheap for the budget and in a good month, so
+// how much of your time away is spent in the car is what tells them apart.
+const SCORE_WEIGHTS = US ? { interest: 0.3, price: 0.2, season: 0.2, length: 0.1, drive: 0.2 } : { interest: 0.35, price: 0.25, season: 0.2, length: 0.2 };
+const SCORE_WEIGHTS_NO_INTERESTS = US ? { price: 0.25, season: 0.3, length: 0.15, drive: 0.3 } : { price: 0.35, season: 0.35, length: 0.3 };
+// Drive time (California): the share of your waking hours away (14 a day) spent getting there and back.
+// 15 minutes to a local find ≈ 0.96; 2 hours each way on a day trip ≈ 0.63; 8 hours each way on a
+// 3-day weekend ≈ 0.5.
+function driveScore(hours, days) { return Math.max(0, Math.min(1, 1 - 1.3 * (2 * hours) / (days * 14))); }
 
 // Price: anything within budget is fine, cheaper is better, and it only gets steep near the limit
 // (60% of budget → 0.82, 80% → 0.68, 100% → 0.5; over budget → 0).
@@ -1466,6 +1472,7 @@ function seasonScore(s) { const i = Math.max(1, Math.min(5, s)) - 1, lo = Math.f
 
 // Best trip length for a trip, from how long it takes to get there (hours each way).
 function idealDays(hours, escape) {
+  if (escape && US) return hours <= 1.5 ? 1 : hours <= 3 ? 1.5 : hours <= 5.5 ? 2 : 3;
   if (escape) return escape.overnight ? 2 : 1;
   return hours <= 1.5 ? 1.5 : hours <= 3.5 ? 2.5 : hours <= 6 ? 3.5 : 4.5;
 }
@@ -1539,6 +1546,7 @@ function findTripsFor() {
       season: state.lastMinute && weekendWx(dest, home) ? wxScore(weekendWx(dest, home)) : seasonScore((esc.season || home.season)[state.month]),
       interest: wanted.length ? matched.length / wanted.length : null,
       length: lengthScore(state.days, cost.transport.hours, esc),
+      drive: US ? driveScore(cost.transport.hours, state.days) : undefined,
       taste: tasteFor(esc.id)
     };
     trips.push({ dest, cost, matched, viaDayTrip: [], parts, ...scoreTrip(parts), fitsInterests: !wanted.length || matched.length > 0 });
@@ -3686,7 +3694,7 @@ const daysLabel = () => { const l = [...state.daysSet].sort((a, b) => a - b); re
 // Color = the 1-10 score.
 const tone = (t) => t.over ? "warn" : t.score10 >= 7.5 ? "good" : t.score10 >= 5.5 ? "mid" : "warn";
 const TONE_TEXT = { good: "Strong pick", mid: "Decent pick", warn: "Weaker pick" };
-const PART_LABELS = { price: "Price", season: "Timing", interest: "Your interests", length: "Trip length", taste: "Your taste" };
+const PART_LABELS = { price: "Price", season: "Timing", interest: "Your interests", length: "Trip length", drive: "Drive time", taste: "Your taste" };
 const scoreBadge = (t, cls = "") => `<span class="score ${tone(t)} ${cls}" title="Score ${t.score10} out of 10">${t.score10.toFixed(1)}</span>`;
 function partNote(t, k) {
   const p = t.parts[k];
@@ -3698,11 +3706,12 @@ function partNote(t, k) {
   }
   if (k === "interest") { const n = (t.matched || []).length + (t.viaDayTrip || []).length; return `${n} of ${state.interests.size} matched`; }
   if (k === "length") { const d = idealDays(t.cost.transport.hours, t.dest.escape); return p >= 0.95 ? `${dayWord(t.days)} suits the trip` : `best as ${d <= 1.5 ? "1–2 days" : d <= 2.5 ? "2–3 days" : d <= 3.5 ? "3–4 days" : "4–5+ days"}`; }
+  if (k === "drive") return `${t.cost.transport.mode === "train" ? "on the train" : "driving"} ~${hrs(t.cost.transport.hours)} each way on a ${dayWord(t.days)} trip`;
   if (k === "taste") return tasteReason(t) || "based on your ratings";
   return "";
 }
 function scoreBars(t, mini) {
-  const keys = ["price", "season", "interest", "length", "taste"].filter(k => t.parts[k] != null && (k !== "taste" || tasteWeight()));
+  const keys = ["price", "season", "interest", "length", "drive", "taste"].filter(k => t.parts[k] != null && (k !== "taste" || tasteWeight()));
   return `<ul class="bars${mini ? " mini" : ""}">${keys.map(k => `<li><span>${PART_LABELS[k]}</span><i><b style="width:${Math.round(t.parts[k] * 100)}%"></b></i>${mini ? "" : `<small>${partNote(t, k)}</small>`}</li>`).join("")}</ul>`;
 }
 
@@ -3902,7 +3911,7 @@ function dataSection(t) {
 
 function scoreSection(t) {
   return `<div><h4>Score ${t.score10.toFixed(1)} / 10 · ${TONE_TEXT[tone(t)]}</h4>
-    <p class="note">A mix of price, timing${state.interests.size ? ", your interests" : ""}, whether ${dayWord(t.days)} suits the trip${tasteWeight() ? " and your ratings of places you've been" : ""}.</p>
+    <p class="note">A mix of price, timing${state.interests.size ? ", your interests" : ""}, whether ${dayWord(t.days)} suits the trip${t.parts.drive != null ? ", how much of it is spent on the road" : ""}${tasteWeight() ? " and your ratings of places you've been" : ""}.</p>
     ${scoreBars(t, false)}</div>`;
 }
 

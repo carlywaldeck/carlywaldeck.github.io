@@ -27,6 +27,14 @@ Cal Poly SLO included) and you get four kinds of trips:
 Trips are picked in every direction from campus (north, south and inland), not just the most famous
 ones, which tend to cluster on one side.
 
+## How trips are scored
+
+Like Europe, each trip gets 1–10 from price (against your budget), timing (the month, seasonal
+highlights, or this weekend's forecast), your interests and whether the trip length suits the
+distance. California adds **drive time**: the share of your waking hours away spent on the road, since
+nearly every trip is cheap for the budget and in a good month. A 15-minute local find barely
+counts; 4 hours each way on a 2-day weekend counts a lot.
+
 ## How prices work
 
 Everything is per person, for driving:
