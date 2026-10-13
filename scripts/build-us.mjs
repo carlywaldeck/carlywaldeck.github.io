@@ -263,11 +263,12 @@ function season(p) {
 }
 function route(c, p) {
   const r = sources.routes[routeKey(c, p)], w = (sources.winterRoutes || {})[`${c.id}|${p.id}`];
-  if (r) return { km: r[0], hours: r[1], real: true, winter: w || null };
+  const boat = (p.port && p.port[3]) || 0; // the ferry crossing to an island, each way
+  if (r) return { km: r[0], hours: Math.round((r[1] + boat) * 100) / 100, real: true, winter: w || null };
   // No routing yet: straight line × 1.3 for roads, slower in the mountains and far north.
   const slow = ["sierra", "sierra_high", "north_coast", "socal_mtn", "snow"].includes(p.area);
   const d = km([c.lat, c.lon], target(p)) * 1.3;
-  return { km: Math.round(d), hours: Math.round((d / (slow ? 62 : 82) + 0.15) * 100) / 100, real: false, winter: null };
+  return { km: Math.round(d), hours: Math.round((d / (slow ? 62 : 82) + 0.15 + boat) * 100) / 100, real: false, winter: null };
 }
 const pop = (p) => (sources.wiki[p.wiki] || {}).views || 0;
 // Compass direction from campus, in 8 sectors, so trip lists aren't all one way up or down the state.
@@ -302,7 +303,7 @@ for (const c of colleges) {
   for (const o of osmFinds(c)) {
     if (all.some((p) => km([p.lat, p.lon], [o.lat, o.lon]) < 4 || p.name.includes(o.name))) continue;
     const views = (sources.wiki[o.wiki] || {}).views;
-    if (views != null && views < (o.kind === "Park" ? 600 : OSM_MIN_VIEWS)) continue; // plenty of small city parks have a page
+    if (views != null && views < (o.kind === "Park" ? 1500 : OSM_MIN_VIEWS)) continue; // plenty of small city parks have a page
     const near = PLACES.reduce((b, p) => (km([p.lat, p.lon], [o.lat, o.lon]) < km([b.lat, b.lon], [o.lat, o.lon]) ? p : b));
     const p = { id: o.id, name: o.name, lat: o.lat, lon: o.lon, area: near.area, tags: o.tags, fee: 0, stay: null, trip: "local", osm: true,
       note: `A ${o.kind.toLowerCase()} near campus, found in OpenStreetMap.`, days: [OSM_PLAN[o.kind] || "Go for sunset, then dinner nearby"], wiki: o.wiki };

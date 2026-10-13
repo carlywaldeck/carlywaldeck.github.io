@@ -4993,7 +4993,7 @@ function tipsSection(dest) {
 
 function escapePlan(home, esc, cost) {
   const leg = US && esc.mode === "train" ? `Train from ${esc.fromName} to ${esc.toName}${esc.change ? " (one change)" : ""}, ~${hrs(cost.transport.hours)} door to door${esc.lastMile ? `; from the station, ${esc.lastMile}` : ""}`
-    : US ? (esc.port ? `Drive to ${esc.port[2]}, ~${hrs(cost.transport.hours)}, then the boat over` : `Drive from ${home.name}, ~${hrs(cost.transport.hours)}`)
+    : US ? (esc.port ? `Drive to ${esc.port[2]}, then the boat over: ~${hrs(cost.transport.hours)} door to door` : `Drive from ${home.name}, ~${hrs(cost.transport.hours)}`)
       + (esc.winterRoute ? " (the winter way round: the Sierra passes are closed)" : "")
     : `${esc.how.split(",")[0]} from ${home.name}, ~${hrs(cost.transport.hours)}`;
   let days;

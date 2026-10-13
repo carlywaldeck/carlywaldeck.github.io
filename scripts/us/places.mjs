@@ -1,6 +1,6 @@
 // Places to go from California colleges, picked for being unique (not just "a city"): ghost towns,
 // hot springs, tufa towers, condor caves, glass beaches, dark-sky deserts… plus the classics.
-// Each place: id, name, lat, lon, area (season profile in build-us.mjs), tags (interest keys),
+// Each place: id, name, lat, lon, port (for islands: [lat, lon, name, ferry hours each way]), area (season profile in build-us.mjs), tags (interest keys),
 //   fee: entrance or parking per car ($), ticket: per person, only when you can't go without it
 //   (the ferry to an island, the tour that's the only way in) ($), extra: [$, "what"] an optional
 //   activity worth doing (rafting, kayaks, a hot tub): shown in the plan, not added to the price,
@@ -33,7 +33,7 @@ export const PLACES = [
   { id: "san-francisco", name: "San Francisco", lat: 37.7749, lon: -122.4194, area: "city", tags: ["food", "art", "history", "nightlife", "views", "streetart", "film", "lgbtq", "vintage"], fee: 0, stay: "hostel", stayCost: 50, trip: "both",
     note: "Mission burritos and murals, cable cars, the Castro and fog rolling over Twin Peaks.",
     days: ["Mission murals on Balmy Alley, a burrito in Dolores Park, Castro at night", "Walk the Golden Gate Bridge, Presidio Tunnel Tops, dim sum in the Richmond"], when: [[[9], "🎶", "Hardly Strictly Bluegrass", "A free three-day music festival in Golden Gate Park, early October."]], wiki: "San_Francisco" },
-  { id: "angel-island", name: "Angel Island", lat: 37.8609, lon: -122.4325, port: [37.8735, -122.4567, "Tiburon"], area: "bay", tags: ["islands", "hiking", "history", "views", "cycling"], fee: 0, ticket: 20, stay: "camp", trip: "both",
+  { id: "angel-island", name: "Angel Island", lat: 37.8609, lon: -122.4325, port: [37.8735, -122.4567, "Tiburon", 0.4], area: "bay", tags: ["islands", "hiking", "history", "views", "cycling"], fee: 0, ticket: 20, stay: "camp", trip: "both",
     note: "A ferry to a car-free island with 360° bay views and the immigration station's poems.",
     days: ["Ferry from Tiburon, bike the perimeter road, the Immigration Station museum", "Hike Mount Livermore at sunrise (if camping), ferry back"], wiki: "Angel_Island_(California)" },
   { id: "half-moon-bay", name: "Half Moon Bay & Pescadero", lat: 37.4636, lon: -122.4286, area: "coast", tags: ["beach", "food", "villages", "hiking", "wildlife"], fee: 0, stay: "camp", trip: "both",
@@ -195,7 +195,7 @@ export const PLACES = [
   { id: "ojai", name: "Ojai", lat: 34.4480, lon: -119.2429, area: "foothills", tags: ["spas", "hiking", "villages", "views", "books"], fee: 0, stay: "motel", trip: "both",
     note: "An artsy valley known for its 'pink moment' sunset and an outdoor bookstore.",
     days: ["Bart's Books (outdoor shelves), Ojai Avenue, Meditation Mount at the pink moment", "Rose Valley Falls, the Ojai Valley trail by bike"], wiki: "Ojai,_California" },
-  { id: "channel-islands", name: "Channel Islands", lat: 34.0490, lon: -119.5570, port: [34.2478, -119.2649, "Ventura Harbor"], area: "coast", tags: ["islands", "hiking", "wildlife", "caves", "camping"], fee: 0, ticket: 75, stay: "camp", trip: "both",
+  { id: "channel-islands", name: "Channel Islands", lat: 34.0490, lon: -119.5570, port: [34.2478, -119.2649, "Ventura Harbor", 1.25], area: "coast", tags: ["islands", "hiking", "wildlife", "caves", "camping"], fee: 0, ticket: 75, stay: "camp", trip: "both",
     note: "A boat to 'California's Galápagos': island foxes, dolphins on the way and sea-cave kayaking.",
     days: ["Boat from Ventura to Scorpion Anchorage, Cavern Point loop", "Sea cave kayak tour, Potato Harbor"], when: [[[0, 1, 2, 3], "🐋", "Gray whales", "Gray whales and dolphins are often seen from the boat in winter and spring."]], wiki: "Channel_Islands_National_Park" },
   { id: "point-mugu", name: "Point Mugu", lat: 34.0850, lon: -119.0600, area: "coast", tags: ["hiking", "beach", "views"], fee: 10, stay: null, trip: "local",
@@ -220,7 +220,7 @@ export const PLACES = [
   { id: "palos-verdes", name: "Palos Verdes", lat: 33.7440, lon: -118.4090, area: "coast", tags: ["views", "beach", "wildlife", "hiking"], fee: 5, stay: null, trip: "local",
     note: "Tide pools, a sea arch and the Portuguese Bend coves on LA's quiet peninsula.",
     days: ["Abalone Cove tide pools, Point Vicente whale watch, Terranea's cliff trail at sunset"], wiki: "Palos_Verdes_Peninsula" },
-  { id: "catalina", name: "Catalina Island", lat: 33.3428, lon: -118.3278, port: [33.7520, -118.2010, "the Long Beach ferry terminal"], area: "coast", tags: ["islands", "beach", "hiking", "wildlife", "views"], fee: 0, ticket: 80, stay: "camp", trip: "both",
+  { id: "catalina", name: "Catalina Island", lat: 33.3428, lon: -118.3278, port: [33.7520, -118.2010, "the Long Beach ferry terminal", 1.0], area: "coast", tags: ["islands", "beach", "hiking", "wildlife", "views"], fee: 0, ticket: 80, stay: "camp", trip: "both",
     note: "A ferry to a car-free island town with bison, snorkeling and golf carts.",
     days: ["Ferry to Avalon, snorkel at Lovers Cove, the Casino building", "Hike to the Garden to Sky trail, look for bison on an inland tour"], wiki: "Santa_Catalina_Island_(California)" },
   { id: "mount-baldy", name: "Mount Baldy", lat: 34.2889, lon: -117.6467, area: "socal_mtn", tags: ["hiking", "snow", "mountains", "views"], fee: 5, stay: null, trip: "local",
@@ -420,7 +420,7 @@ export const PLACES = [
     note: "A wide sparkling beach in front of the 1888 Hotel del Coronado, and the bay ferry back to downtown.",
     days: ["Bike Coronado's beach path, Hotel del Coronado, the ferry to downtown for sunset"], wiki: "Coronado,_California" },
   // ---------------------------------------------------------------- More options
-  { id: "alcatraz", name: "Alcatraz", lat: 37.8267, lon: -122.4230, port: [37.8085, -122.4045, "Pier 33"], area: "bay", tags: ["history", "islands", "film", "views"], fee: 0, ticket: 45, stay: null, trip: "local",
+  { id: "alcatraz", name: "Alcatraz", lat: 37.8267, lon: -122.4230, port: [37.8085, -122.4045, "Pier 33", 0.25], area: "bay", tags: ["history", "islands", "film", "views"], fee: 0, ticket: 45, stay: null, trip: "local",
     note: "The prison island in the bay: the cellhouse audio tour is narrated by former guards and inmates.",
     days: ["Early ferry from Pier 33 (book a week or more ahead), the cellhouse audio tour, the gardens and the view back at the city"], wiki: "Alcatraz_Island" },
   { id: "devils-slide", name: "Devil's Slide & Pacifica", lat: 37.5730, lon: -122.5170, area: "coast", tags: ["views", "hiking", "wildlife", "beach"], fee: 0, stay: null, trip: "local",

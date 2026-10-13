@@ -19,7 +19,7 @@ export const PLACES_WEST = [
       note: "A glowing turquoise lake under jagged peaks, on one of America's least-visited national parks.",
       days: ["Diablo Lake overlook, Thunder Knob trail, camp at Colonial Creek", "Washington Pass overlook, Blue Lake trail"], wiki: "North_Cascades_National_Park",
       when: [[[10, 11, 0, 1, 2, 3], "🚧", "Highway 20 closed", "The North Cascades Highway usually closes from November to April.", false]] },
-    { id: "san-juan-islands", name: "San Juan Islands", lat: 48.5343, lon: -123.0171, port: [48.5070, -122.6790, "the Anacortes ferry terminal"], area: "pnw_coast", tags: ["islands", "wildlife", "villages", "cycling"], fee: 0, ticket: 20, stay: "motel", trip: "weekend",
+    { id: "san-juan-islands", name: "San Juan Islands", lat: 48.5343, lon: -123.0171, port: [48.5070, -122.6790, "the Anacortes ferry terminal", 1.1], area: "pnw_coast", tags: ["islands", "wildlife", "villages", "cycling"], fee: 0, ticket: 20, stay: "motel", trip: "weekend",
       note: "A ferry through the islands to Friday Harbor, with orcas off Lime Kiln Point.",
       days: ["Walk-on ferry from Anacortes, Friday Harbor's waterfront, the Whale Museum", "Bike to Lime Kiln Point to watch for orcas, Roche Harbor's sculpture park"], wiki: "San_Juan_Islands",
       when: [[[4, 5, 6, 7, 8], "🐋", "Orca season", "Orcas are most often seen from shore from May to September."]] },
