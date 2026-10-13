@@ -8,6 +8,7 @@
 // Run: node scripts/build-us-live.mjs (the daily "Refresh events and campsites" workflow runs it).
 import fs from "node:fs/promises";
 import { PLACES } from "./us/places.mjs";
+import { PLACES_WEST } from "./us/places-west.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const OUT = ROOT + "data/us-live.js", CAMPS = ROOT + "data/us-camps.json";
@@ -32,7 +33,7 @@ const iso = (d) => d.toISOString().slice(0, 10);
 const weekends = [];
 { const d = new Date(); d.setUTCHours(12, 0, 0, 0); while (d.getUTCDay() !== 5) d.setUTCDate(d.getUTCDate() + 1);
   for (let w = 0; w < WEEKS; w++) { const f = new Date(d); f.setUTCDate(d.getUTCDate() + 7 * w); const s = new Date(f); s.setUTCDate(f.getUTCDate() + 2); weekends.push([iso(f), iso(s)]); } }
-const places = PLACES.filter((p) => !/\((Nevada|Arizona|Utah|Oregon)\)/.test(p.name) || p.id === "las-vegas" || p.id === "reno");
+const places = [...PLACES, ...PLACES_WEST];
 
 // ---------------------------------------------------------------- events (Ticketmaster)
 // Per place and weekend, the most relevant events within 20 miles (25 for big parks with few venues),

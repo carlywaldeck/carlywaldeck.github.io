@@ -1,4 +1,5 @@
-// California colleges for the US version: [id, name, short city, lat, lon, nearest airport, Wikipedia title].
+// Colleges for the US version: [id, name, short city, lat, lon, nearest airport, Wikipedia title, state].
+// The state defaults to California (CA).
 // Every UC and CSU campus with undergraduates, and California's private four-year colleges and
 // universities (no community colleges).
 // Coordinates are campus centers; the data job (scripts/build-us.mjs) refines them from Wikipedia.
@@ -70,5 +71,55 @@ export const COLLEGES = [
   ["menlo", "Menlo College", "Atherton", 37.4545, -122.1915, "SJC", "Menlo_College"],
   ["cal-maritime", "Cal Maritime", "Vallejo", 38.0690, -122.2308, "OAK", "California_State_University_Maritime_Academy"],
   ["pacific-union", "Pacific Union College", "Angwin", 38.5730, -122.4436, "STS", "Pacific_Union_College"],
-  ["simpson", "Simpson University", "Redding", 40.6197, -122.3627, "RDD", "Simpson_University"]
+  ["simpson", "Simpson University", "Redding", 40.6197, -122.3627, "RDD", "Simpson_University"],
+  // ---------------------------------------------------------------- the West
+  // Oregon
+  ["uoregon", "University of Oregon", "Eugene", 44.0448, -123.0726, "EUG", "University_of_Oregon", "OR"],
+  ["oregon-state", "Oregon State", "Corvallis", 44.5638, -123.2794, "EUG", "Oregon_State_University", "OR"],
+  ["portland-state", "Portland State", "Portland", 45.5118, -122.6847, "PDX", "Portland_State_University", "OR"],
+  ["reed", "Reed College", "Portland", 45.4811, -122.6309, "PDX", "Reed_College", "OR"],
+  ["lewis-clark", "Lewis & Clark", "Portland", 45.4510, -122.6700, "PDX", "Lewis_%26_Clark_College", "OR"],
+  ["uportland", "University of Portland", "Portland", 45.5718, -122.7275, "PDX", "University_of_Portland", "OR"],
+  ["willamette", "Willamette University", "Salem", 44.9370, -123.0300, "PDX", "Willamette_University", "OR"],
+  ["southern-oregon", "Southern Oregon University", "Ashland", 42.1890, -122.6960, "MFR", "Southern_Oregon_University", "OR"],
+  // Washington
+  ["uw", "University of Washington", "Seattle", 47.6553, -122.3035, "SEA", "University_of_Washington", "WA"],
+  ["wsu", "Washington State", "Pullman", 46.7298, -117.1817, "PUW", "Washington_State_University", "WA"],
+  ["western-washington", "Western Washington", "Bellingham", 48.7340, -122.4860, "BLI", "Western_Washington_University", "WA"],
+  ["central-washington", "Central Washington", "Ellensburg", 47.0024, -120.5390, "SEA", "Central_Washington_University", "WA"],
+  ["eastern-washington", "Eastern Washington", "Cheney", 47.4900, -117.5830, "GEG", "Eastern_Washington_University", "WA"],
+  ["gonzaga", "Gonzaga", "Spokane", 47.6670, -117.4020, "GEG", "Gonzaga_University", "WA"],
+  ["seattle-u", "Seattle University", "Seattle", 47.6097, -122.3172, "SEA", "Seattle_University", "WA"],
+  ["puget-sound", "University of Puget Sound", "Tacoma", 47.2622, -122.4818, "SEA", "University_of_Puget_Sound", "WA"],
+  ["pacific-lutheran", "Pacific Lutheran", "Tacoma", 47.1460, -122.4430, "SEA", "Pacific_Lutheran_University", "WA"],
+  ["whitman", "Whitman College", "Walla Walla", 46.0710, -118.3290, "ALW", "Whitman_College", "WA"],
+  ["evergreen", "Evergreen State", "Olympia", 47.0730, -122.9760, "SEA", "Evergreen_State_College", "WA"],
+  // Nevada
+  ["unr", "University of Nevada, Reno", "Reno", 39.5442, -119.8159, "RNO", "University_of_Nevada,_Reno", "NV"],
+  ["unlv", "UNLV", "Las Vegas", 36.1077, -115.1431, "LAS", "University_of_Nevada,_Las_Vegas", "NV"],
+  // Arizona
+  ["asu", "Arizona State", "Tempe", 33.4242, -111.9281, "PHX", "Arizona_State_University", "AZ"],
+  ["uarizona", "University of Arizona", "Tucson", 32.2319, -110.9501, "TUS", "University_of_Arizona", "AZ"],
+  ["nau", "Northern Arizona", "Flagstaff", 35.1894, -111.6530, "FLG", "Northern_Arizona_University", "AZ"],
+  ["gcu", "Grand Canyon University", "Phoenix", 33.5129, -112.1260, "PHX", "Grand_Canyon_University", "AZ"],
+  // Utah
+  ["utah", "University of Utah", "Salt Lake City", 40.7649, -111.8421, "SLC", "University_of_Utah", "UT"],
+  ["byu", "BYU", "Provo", 40.2518, -111.6493, "SLC", "Brigham_Young_University", "UT"],
+  ["utah-state", "Utah State", "Logan", 41.7452, -111.8097, "SLC", "Utah_State_University", "UT"],
+  ["uvu", "Utah Valley University", "Orem", 40.2786, -111.7139, "SLC", "Utah_Valley_University", "UT"],
+  ["weber-state", "Weber State", "Ogden", 41.1924, -111.9441, "SLC", "Weber_State_University", "UT"],
+  ["southern-utah", "Southern Utah University", "Cedar City", 37.6747, -113.0710, "CDC", "Southern_Utah_University", "UT"],
+  ["utah-tech", "Utah Tech", "St. George", 37.1036, -113.5650, "SGU", "Utah_Tech_University", "UT"],
+  // Colorado
+  ["cu-boulder", "CU Boulder", "Boulder", 40.0076, -105.2659, "DEN", "University_of_Colorado_Boulder", "CO"],
+  ["colorado-state", "Colorado State", "Fort Collins", 40.5734, -105.0865, "DEN", "Colorado_State_University", "CO"],
+  ["du", "University of Denver", "Denver", 39.6766, -104.9619, "DEN", "University_of_Denver", "CO"],
+  ["mines", "Colorado School of Mines", "Golden", 39.7510, -105.2226, "DEN", "Colorado_School_of_Mines", "CO"],
+  ["colorado-college", "Colorado College", "Colorado Springs", 38.8487, -104.8240, "COS", "Colorado_College", "CO"],
+  ["uccs", "UCCS", "Colorado Springs", 38.8930, -104.8000, "COS", "University_of_Colorado_Colorado_Springs", "CO"],
+  ["cu-denver", "CU Denver", "Denver", 39.7447, -105.0055, "DEN", "University_of_Colorado_Denver", "CO"],
+  ["unco", "University of Northern Colorado", "Greeley", 40.4045, -104.6990, "DEN", "University_of_Northern_Colorado", "CO"],
+  ["fort-lewis", "Fort Lewis College", "Durango", 37.2750, -107.8710, "DRO", "Fort_Lewis_College", "CO"],
+  ["western-colorado", "Western Colorado University", "Gunnison", 38.5490, -106.9200, "GUC", "Western_Colorado_University", "CO"],
+  ["colorado-mesa", "Colorado Mesa University", "Grand Junction", 39.0820, -108.5530, "GJT", "Colorado_Mesa_University", "CO"]
 ];

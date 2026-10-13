@@ -7,7 +7,7 @@
 <script>window.REGION = "us";</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script>
-// Europe or California: remember the visitor's choice, and send California students to /us/
+// Europe or the US: remember the visitor's choice, and send US students to /us/
 // when they open the plain address (links to a trip or a vote always open where they point).
 (function () {
   try {
@@ -22,16 +22,16 @@
   } catch (e) { /* storage blocked: stay here */ }
 })();
 </script>
-<title>Weekender: weekend trips for California college students</title>
-<meta name="description" content="Pick your California college and get local finds, day trips and weekend road trips scored 1 to 10, with gas split between friends, park fees, campsites and day-by-day plans built from open data.">
+<title>Weekender: weekend trips for college students in California and the West</title>
+<meta name="description" content="Pick your college (California, Oregon, Washington, Nevada, Arizona, Utah, Colorado) and get local finds, day trips and weekend road trips scored 1 to 10, with gas split between friends, park fees, campsites and day-by-day plans built from open data.">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Weekender: weekend trips for California college students">
+<meta property="og:title" content="Weekender: weekend trips for college students in California and the West">
 <meta property="og:description" content="Pick your college, budget and interests; get local finds, day trips and weekend road trips with real drive times and costs.">
 <meta property="og:url" content="https://weekender-trips.com/us/">
 <meta property="og:image" content="https://weekender-trips.com/og-us.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Weekender: weekend trips from your campus, shown on a map of California">
+<meta property="og:image:alt" content="Weekender: weekend trips from your campus, shown on a map of the western US">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://weekender-trips.com/og-us.png">
 <meta name="theme-color" content="#2F5BEA">
@@ -781,7 +781,7 @@ body { background: radial-gradient(1100px 620px at 85% -12%, #FFF3D6 0%, rgba(25
       <div class="brand big"><svg class="mark" viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="116" fill="#2F5BEA"/><g transform="translate(0 30)"><path d="M120 196 Q 188 372 256 196 Q 324 372 392 196" fill="none" stroke="#fff" stroke-width="40" stroke-linecap="round"/><circle cx="120" cy="196" r="38" fill="#fff"/><circle cx="256" cy="196" r="38" fill="#fff"/><circle cx="392" cy="196" r="38" fill="#FFC857"/></g></svg>weekender<span>.</span></div>
       <p class="lp-slogan">Study here. Weekend everywhere.</p>
       <h1 id="lp-title">Cheap trips from <span class="hl">wherever you're studying.</span></h1>
-      <p>65 California colleges, hidden local spots, day trips and weekend road trips, scored 1–10 for you.</p>
+      <p>108 colleges in California and the West, hidden local spots, day trips and weekend road trips, scored 1–10 for you.</p>
       <ol class="lp-how" aria-label="How it works">
         <li><b>Pick your college and budget</b><span>Your campus, when, and what you want to spend.</span></li>
         <li><b>Get trips scored 1–10</b><span>Drive time, gas split between friends, park fees, what's happening that month and what you're into, in one number.</span></li>
@@ -793,7 +793,7 @@ body { background: radial-gradient(1100px 620px at 85% -12%, #FFF3D6 0%, rgba(25
       <div class="lp-field"><span id="lp-region-label">Where are you studying?</span>
         <div class="region-pick" role="group" aria-labelledby="lp-region-label">
           <a href="./?region=eu" data-region="eu" id="region-eu"><span aria-hidden="true">🇪🇺</span> Europe <small>study abroad</small></a>
-          <a href="us/" data-region="us" id="region-us"><span aria-hidden="true">🇺🇸</span> California <small>college</small></a>
+          <a href="us/" data-region="us" id="region-us"><span aria-hidden="true">🇺🇸</span> USA <small>California &amp; the West</small></a>
         </div>
       </div>
       <div class="lp-field"><label id="lp-home-label" for="lp-home-input">Where do you go to college?</label>
@@ -854,8 +854,8 @@ window.CITIES = []; // the California version's colleges come from assets/us.js
 // Phone apps: use the newest prices downloaded last time (see refreshAppData), if newer than the built-in copy.
 if (window.Capacitor) { try { const d = JSON.parse(localStorage.getItem("weekender:data") || "null"); if (d && d.generated) window.CITY_DATA = d; } catch { /* no saved copy */ } }
 </script>
-<script src="data/us-data.js?v=7721943b"></script>
-<script src="assets/us.js?v=297b355c"></script>
+<script src="data/us-data.js?v=9da3c4f8"></script>
+<script src="assets/us.js?v=91028998"></script>
 <script>
 // ======================================================================
 // Weekender app logic
@@ -1055,7 +1055,7 @@ function sunTimes(lat, lon, iso) {
 function dayLine(place, d) {
   if (!place || place.lat == null) return "";
   const [go] = weekendDates(state.days), iso = new Date(Date.parse(go + "T12:00:00Z") + d * 864e5).toISOString().slice(0, 10);
-  const sun = sunTimes(place.lat, place.lon, iso), tz = TZ[place.country] || "UTC";
+  const sun = sunTimes(place.lat, place.lon, iso), tz = place.tz || TZ[place.country] || "UTC";
   return `<span class="day-sun">${shortDate(iso)}${sun ? ` · sunrise ${localTime(sun.rise, tz)} · sunset ${localTime(sun.set, tz)}` : ""}</span>`;
 }
 
@@ -1411,7 +1411,15 @@ function usLeg(esc) {
 const carInfo = () => CARS[state.car.type] || CARS.gas;
 // What's happening at a place in the chosen month (monarchs, superblooms, whale season, a festival…).
 const usWhen = (t) => (US && t.dest.escape && (t.dest.escape.when || []).filter(w => w[0].includes(state.month))) || [];
-const perMile = () => carInfo().perMile || US_DATA.gas.price / carInfo().mpg;
+// Gas price in the college's state (EIA weekly).
+const homeGas = () => { const h = byId(state.home); return (h && h.gas) || US_DATA.gas.price; };
+const perMile = () => carInfo().perMile || homeGas() / carInfo().mpg;
+const STATE_NAMES = { CA: "California", OR: "Oregon", WA: "Washington", NV: "Nevada", AZ: "Arizona", UT: "Utah", CO: "Colorado", ID: "Idaho", MT: "Montana", WY: "Wyoming" };
+// Time zones by state, for sunrise and sunset (Arizona doesn't change clocks).
+const US_TZ = { CA: "America/Los_Angeles", OR: "America/Los_Angeles", WA: "America/Los_Angeles", NV: "America/Los_Angeles", ID: "America/Los_Angeles",
+  AZ: "America/Phoenix", UT: "America/Denver", CO: "America/Denver", MT: "America/Denver", WY: "America/Denver" };
+// "in Nevada" when a trip crosses into another state from the college's.
+const otherState = (t) => US && t.dest.escape && t.dest.escape.state && current.home && t.dest.escape.state !== current.home.state ? STATE_NAMES[t.dest.escape.state] || t.dest.escape.state : "";
 const usGas = (km) => Math.round(km * 2 / 1.609 * perMile() / state.car.riders);
 // How many people share a campsite (6), a motel room (4) or a cabin (6); hostels charge per bed.
 const SHARE = { camp: 6, motel: 4, cabin: 6 };
@@ -1847,7 +1855,7 @@ function escapePlan(home, esc, cost) {
     days.push([["Explore", esc.days[Math.min(state.days - 1, esc.days.length - 1)] || esc.days[1]], ["Evening", `Back in ${home.name}`]]);
   }
   const cards = days.map((d, i) => `<div class="day">
-      <div class="day-head"><strong>${days.length > 1 ? `Day ${i + 1}` : "Your day"}</strong>${(() => { const p = (PLACES[esc.name] || [])[0]; return p ? dayLine({ lat: p[0], lon: p[1], country: home.country }, i) : ""; })()}</div>
+      <div class="day-head"><strong>${days.length > 1 ? `Day ${i + 1}` : "Your day"}</strong>${(() => { const p = (PLACES[esc.name] || [])[0]; return p ? dayLine({ lat: p[0], lon: p[1], country: home.country, tz: US ? esc.tz || US_TZ[esc.state] : undefined }, i) : ""; })()}</div>
       <ol>${d.map(([slot, what]) => `<li><span class="slot">${slot}</span><span class="what solo"><span>${what}</span></span></li>`).join("")}</ol>
     </div>`).join("");
   const more = esc.overnight && state.days === 1 ? `<p class="fine">Stay the night to also see: ${esc.days[1]}. Switch to 2 days to price it.</p>` : "";
@@ -2534,10 +2542,9 @@ function escapeDetails(home, dest, cost) {
 // or cabin), tours, calendar.
 const US_FERRIES = { catalina: ["Catalina Express", "https://www.catalinaexpress.com/"], "channel-islands": ["Island Packers", "https://islandpackers.com/"],
   "angel-island": ["Angel Island Ferry", "https://angelislandferry.com/"] };
-const usState = (name) => (name.match(/\((Nevada|Arizona|Utah|Oregon)\)/) || [, "California"])[1];
-const usPlaceName = (name) => name.replace(/\s*\((Nevada|Arizona|Utah|Oregon)\)/, "");
+const usPlaceName = (name) => name;
 function usBookSection(home, dest, cost, t, { when, btn, place }) {
-  const esc = dest.escape, p = (PLACES[esc.name] || [])[0], st = usState(esc.name), where = `${usPlaceName(esc.name)}, ${st}`;
+  const esc = dest.escape, p = (PLACES[esc.name] || [])[0], st = esc.state || "CA", where = `${esc.name}, ${STATE_NAMES[st] || st}`;
   const miles = Math.round((esc.legKm ?? esc.km) / 1.609), to = esc.port ? `${esc.port[0]},${esc.port[1]}` : p ? `${p[0]},${p[1]}` : encodeURIComponent(where);
   const dir = `https://maps.apple.com/?saddr=${home.lat},${home.lon}&daddr=${to}&dirflg=d`;
   const who = state.car.riders === 1 ? "just you" : `split ${state.car.riders} ways`;
@@ -2554,7 +2561,7 @@ function usBookSection(home, dest, cost, t, { when, btn, place }) {
   if (ferry) rows.push(["⛴️", "Boat", `Round trip about ${euro(esc.ticket)} each · book ahead, boats sell out on weekends`, btn(ferry[1], ferry[0], false)]);
   if (cost.nights > 0 && (cost.stay || esc.stayCost === 0)) {
     const k = esc.stayKind;
-    const link = k === "camp" ? btn(`https://www.recreation.gov/search?q=${encodeURIComponent(usPlaceName(esc.name))}`, "Recreation.gov", false) + (st === "California" ? btn("https://www.reservecalifornia.com/", "ReserveCalifornia", false) : "")
+    const link = k === "camp" ? btn(`https://www.recreation.gov/search?q=${encodeURIComponent(usPlaceName(esc.name))}`, "Recreation.gov", false) + (st === "CA" ? btn("https://www.reservecalifornia.com/", "ReserveCalifornia", false) : "")
       : k === "hostel" ? btn(`https://www.hostelworld.com/st/hostels/north-america/usa/`, "Hostelworld", false)
       : btn(`https://www.booking.com/searchresults.html?ss=${encodeURIComponent(where)}&group_adults=${state.car.riders}&no_rooms=${Math.ceil(state.car.riders / (SHARE[k] || 4))}`, "Booking.com", false);
     const share = k === "hostel" ? "a bed each" : `${Math.ceil(state.car.riders / SHARE[k])} ${k === "camp" ? "site" : k === "cabin" ? "cabin" : "room"}${Math.ceil(state.car.riders / SHARE[k]) > 1 ? "s" : ""} shared`;
@@ -2581,7 +2588,7 @@ function usDataSection(t) {
   } else rows.push(["The drive", `${Math.round((esc.legKm ?? esc.km) / 1.609)} miles each way${esc.port ? ` to ${esc.port[2]}` : ""}, about ${hrs(esc.legHours ?? esc.hours)}`,
     (esc.realRoute ? "OpenStreetMap road routing (OSRM)" : "estimated from distance") + (esc.winterRoute ? "; the Sierra passes close Nov–May, so this is the winter route" : esc.winter ? "; over a Sierra pass that usually closes Nov–May" : "")]);
   if (esc.mode !== "train") rows.push(["Gas", car.perMile ? `Electric, about $${car.perMile.toFixed(2)} a mile charging, ${state.car.riders === 1 ? "just you" : `split ${state.car.riders} ways`}`
-    : `${car.label}, ${car.mpg} mpg at $${D.gas.price.toFixed(2)}/gal, ${state.car.riders === 1 ? "just you" : `split ${state.car.riders} ways`}`, car.perMile ? "typical home and public charging prices" : D.gas.source]);
+    : `${car.label}, ${car.mpg} mpg at $${homeGas().toFixed(2)}/gal, ${state.car.riders === 1 ? "just you" : `split ${state.car.riders} ways`}`, car.perMile ? "typical home and public charging prices" : ((D.gasByState || {})[current.home.state] || D.gas).source]);
   if (pl.clim) rows.push([`Weather in ${MONTHS_FULL[m]}`, `highs around ${pl.clim.hiF[m]}°F, ${pl.clim.wetDays[m]} wet days`, "Open-Meteo, 5 years of daily records"]);
   const best = pl.season.map((v, i) => [v, i]).filter(([v]) => v >= 5).map(([, i]) => MONTHS[i]);
   if (best.length) rows.push(["Best months", best.join(", "), pl.clim ? "climate and type of place" : "type of place"]);
@@ -3825,7 +3832,7 @@ function renderPanel(result) {
       return `<button type="button" class="row ${tone(t)}${ui.selected === t.key ? " active" : ""}" data-id="${t.key}" title="${TONE_TEXT[tone(t)]}: ${t.score10}/10">
         <span class="thumb" data-wiki="${t.dest.name.replace(/"/g, "&quot;")}" data-initial="${t.dest.name[0]}"></span>
         <span class="row-main"><strong>${t.dest.name}</strong>
-          <small>${multi ? `${dayWord(t.days)} · ` : ""}${tripKind(t)} · ${MODES[t.cost.transport.mode].label} ${hrs(t.cost.transport.hours)}${state.interests.size && likes.length ? ` · <span class="match">✓ ${likes.join(", ")}</span>` : ""}${usWhen(t).map(w => ` · <span class="${w[4] === false ? "heads-up" : "happening"}">${w[1]} ${w[2]}</span>`).join("")}</small></span>
+          <small>${multi ? `${dayWord(t.days)} · ` : ""}${tripKind(t)}${otherState(t) ? ` in ${otherState(t)}` : ""} · ${MODES[t.cost.transport.mode].label} ${hrs(t.cost.transport.hours)}${state.interests.size && likes.length ? ` · <span class="match">✓ ${likes.join(", ")}</span>` : ""}${usWhen(t).map(w => ` · <span class="${w[4] === false ? "heads-up" : "happening"}">${w[1]} ${w[2]}</span>`).join("")}</small></span>
         <span class="row-right">${scoreBadge(t)}<span class="row-price num">${euro(t.cost.total)}</span>${(() => { const w = state.lastMinute && weekendWx(t.dest, current.home || byId(state.home)); return w ? `<span class="row-wx">${WX_ICON(w.code)} ${US ? toF(w.hi) : w.hi}°</span>` : ""; })()}</span>
       </button>`;
     }).join("")}`).join("");
@@ -3908,7 +3915,7 @@ function drawDrawer(t) {
         <button type="button" class="ghost sm" data-act="share" data-id="${t.key}">Share</button>
         <button type="button" class="ghost sm" data-act="story" data-id="${t.key}">Story image</button>
       </div>
-      <span class="eyebrow">${isEscape(t) ? `${tripKind(t)} from ${home.name}` : `${home.code} → ${dest.code} · ${dest.country}`}</span>
+      <span class="eyebrow">${isEscape(t) ? `${tripKind(t)} from ${home.name}${otherState(t) ? ` · ${otherState(t)}` : ""}` : `${home.code} → ${dest.code} · ${dest.country}`}</span>
       <h2>${dest.name}</h2>
       <div class="spot-price dr-price"><strong class="num">${euro(cost.total)}</strong>
         <span class="${left >= 0 ? "good" : "warn"}">${left >= 0 ? `${euro(left)} under budget` : `${euro(-left)} over budget`}</span></div>

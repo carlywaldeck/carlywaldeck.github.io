@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Builds us/index.html, the California version of Weekender, from index.html, so both versions share
+// Builds us/index.html, the US version of Weekender (California and the West), from index.html, so both versions share
 // one codebase (every screen and feature) and only differ in data and wording. The page loads
 // data/us-data.js (written by scripts/build-us.mjs) and assets/us.js, which turns colleges into
 // "home cities" and places into local finds, day trips and weekend trips by car.
@@ -31,21 +31,21 @@ if (!html.includes("data/us-data.js")) throw new Error("build-us-page: app-data 
   html = html.slice(0, i) + "window.CITIES = []; // the California version's colleges come from assets/us.js" + html.slice(j + 3);
 }
 
-const TITLE = "Weekender: weekend trips for California college students";
+const TITLE = "Weekender: weekend trips for college students in California and the West";
 swap("<title>Weekender: cheap weekend trips for students abroad</title>", `<title>${TITLE}</title>`);
 swap(`<meta property="og:title" content="Weekender: cheap weekend trips for students abroad">`, `<meta property="og:title" content="${TITLE}">`);
 swap(`content="Plan a cheap weekend away from where you're studying abroad: 120 European cities scored 1 to 10 on price, timing and your interests, with budgets and day-by-day plans built from open data."`,
-  `content="Pick your California college and get local finds, day trips and weekend road trips scored 1 to 10, with gas split between friends, park fees, campsites and day-by-day plans built from open data."`);
+  `content="Pick your college (California, Oregon, Washington, Nevada, Arizona, Utah, Colorado) and get local finds, day trips and weekend road trips scored 1 to 10, with gas split between friends, park fees, campsites and day-by-day plans built from open data."`);
 swap(`content="Pick your home city, budget and interests; get scored trips with costs, transport and a tailored itinerary."`,
   `content="Pick your college, budget and interests; get local finds, day trips and weekend road trips with real drive times and costs."`);
 swap(`<meta property="og:url" content="https://weekender-trips.com/">`, `<meta property="og:url" content="https://weekender-trips.com/us/">`);
-swap(`content="Weekender: cheap weekend trips from wherever you're studying, shown on a map of Europe"`, `content="Weekender: weekend trips from your campus, shown on a map of California"`);
+swap(`content="Weekender: cheap weekend trips from wherever you're studying, shown on a map of Europe"`, `content="Weekender: weekend trips from your campus, shown on a map of the western US"`);
 swap(`<meta property="og:image" content="https://weekender-trips.com/og.png">`, `<meta property="og:image" content="https://weekender-trips.com/og-us.png">`);
 swap(`<meta name="twitter:image" content="https://weekender-trips.com/og.png">`, `<meta name="twitter:image" content="https://weekender-trips.com/og-us.png">`);
 swap(`placeholder="Search a city"`, `placeholder="Search your college"`);
 swap(">Where are you based?</label>", ">Where do you go to college?</label>");
 swap("<p>Real prices for 120 cities and 640+ day trips, scored 1–10 for you.</p>",
-  `<p>${new Set(JSON.parse(usData.slice(usData.indexOf("{"), usData.lastIndexOf("}") + 1)).colleges.map(c => c.id)).size} California colleges, hidden local spots, day trips and weekend road trips, scored 1–10 for you.</p>`);
+  `<p>${new Set(JSON.parse(usData.slice(usData.indexOf("{"), usData.lastIndexOf("}") + 1)).colleges.map(c => c.id)).size} colleges in California and the West, hidden local spots, day trips and weekend road trips, scored 1–10 for you.</p>`);
 swap("<b>Pick your city and budget</b><span>Where you're studying, when, and what you want to spend.</span>",
   "<b>Pick your college and budget</b><span>Your campus, when, and what you want to spend.</span>");
 swap("<span>Price, weather, crowds and what you're into, in one number.</span>",

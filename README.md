@@ -127,9 +127,9 @@ note that last-minute fares often cost more than the month's fares.
 - **Sunrise and sunset** for each day of a plan, computed with the standard solar equations and
   shown in the destination's local time.
 
-## California version (/us/)
-weekender-trips.com/us/ is the same planner for California college students: pick your college
-(65 four-year colleges, Cal Poly SLO included) and get local finds, day trips, weekend trips and long weekends (Vegas,
+## US version (/us/): California and the West
+weekender-trips.com/us/ is the same planner for US college students in California and the West: pick
+your college (108 four-year colleges in CA, OR, WA, NV, AZ, UT and CO, Cal Poly SLO included) and get local finds, day trips, weekend trips and long weekends (Vegas,
 San Diego, Zion…), priced for driving: gas split between the people in your car, park fees,
 campsites and motel rooms shared. Plans add Apple Maps directions, low tides, the moon for
 stargazing and air quality. Visitors choose Europe or California on

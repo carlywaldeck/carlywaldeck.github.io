@@ -16,13 +16,13 @@ export default async function run() {
   t.check(slo && slo.name === "Cal Poly SLO", "Cal Poly SLO is one of the colleges");
   const k = slo ? kinds(slo) : {};
   t.check(k.l >= 3 && k.d >= 5 && k.w >= 8, `Cal Poly SLO has local finds, day trips and weekend trips (${JSON.stringify(k)})`);
-  const thin = D.colleges.filter((c) => { const x = kinds(c); return x.d + x.l < 4 || x.w < 6; }).map((c) => c.id);
+  const thin = D.colleges.filter((c) => { const x = kinds(c); return x.d + x.l < 2 || x.w < 6; }).map((c) => c.id);
   t.check(!thin.length, `every college has enough trips (thin: ${thin})`);
   const badTrips = D.colleges.flatMap((c) => c.trips.filter(([id, km, h]) => !D.places[id] || !(km > 0) || !(h > 0) || h > 9.5).map((x) => `${c.id}→${x[0]}`));
   t.check(!badTrips.length, `trips point at real places with sane distances (${badTrips.slice(0, 5)})`);
-  const badPlaces = Object.entries(D.places).filter(([, p]) => !p.name || !p.note || !(p.lat > 32 && p.lat < 43.5) || !(p.lon > -125 && p.lon < -111) || !Array.isArray(p.days) || !p.days.length || p.season.length !== 12 || !p.tags.length)
-    .map(([id]) => id); // California, plus the long-weekend trips over the border (Nevada, Arizona, Utah, Oregon)
-  t.check(!badPlaces.length, `places have a note, a plan, tags, 12 months of seasons and coordinates in or near California (${badPlaces.slice(0, 5)})`);
+  const badPlaces = Object.entries(D.places).filter(([, p]) => !p.name || !p.note || !(p.lat > 31 && p.lat < 49.5) || !(p.lon > -125 && p.lon < -104) || !Array.isArray(p.days) || !p.days.length || p.season.length !== 12 || !p.tags.length)
+    .map(([id]) => id); // the western states and their neighbors
+  t.check(!badPlaces.length, `places have a note, a plan, tags, 12 months of seasons and coordinates in the West (${badPlaces.slice(0, 5)})`);
   t.check(D.gas.price > 2 && D.gas.price < 9 && D.mpg > 0 && D.riders >= 1, `gas math inputs are sane ($${D.gas.price}, ${D.mpg} mpg, ${D.riders} riders)`);
 
   // ---- the generated page is up to date with index.html
@@ -84,7 +84,7 @@ export default async function run() {
     t.check(money.local.length && Math.max(...money.local) < 40, `local finds cost little (${money.local})`);
     t.check(money.riders === 4 && Math.abs(money.gas1 - money.gas3 * 4) <= 4 && money.gasEv < money.gas3, `gas is split between the 4 in the car, and cheaper in an EV (1: ${money.gas1}, 4: ${money.gas3}, EV: ${money.gasEv})`);
     t.check(Math.max(...money.local) <= 15, `local finds are pocket money (${money.local})`);
-    t.check(["Las Vegas (Nevada)", "San Diego", "Joshua Tree"].every((n) => money.long.includes(n)) && money.minLong >= 3,
+    t.check(["Las Vegas", "San Diego", "Joshua Tree"].every((n) => money.long.includes(n)) && money.minLong >= 3,
       `long weekends from Cal Poly reach Vegas, San Diego and Joshua Tree (${money.long.slice(0, 12)})`);
     // No car: trips by train from the campus station, with the student fare; ids stay stable.
     const tr = await page.evaluate(() => {

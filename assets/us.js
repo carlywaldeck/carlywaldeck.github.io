@@ -25,7 +25,7 @@
       if (!p) continue;
       window.PLACES[p.name] = [[p.lat, p.lon]];
       if (p.wiki) window.US_WIKI[p.name] = decodeURIComponent(p.wiki).replace(/_/g, " ");
-      const base = { name: p.name, place: id, how: "Drive", km: dist, hours, winter: wKm ? [wKm, wHours] : null, port: p.port || null, fee: p.fee, ticket: p.ticket, extra: p.extra || null, stayCost: p.stayCost ?? null,
+      const base = { name: p.name, state: p.state || "CA", tz: p.tz || null, place: id, how: "Drive", km: dist, hours, winter: wKm ? [wKm, wHours] : null, port: p.port || null, fee: p.fee, ticket: p.ticket, extra: p.extra || null, stayCost: p.stayCost ?? null,
         tags: p.tags, note: p.note, season: boosted(p), when: p.when || null, realRoute: !kind.includes("~"), osm: !!p.osm };
       if (kind[0] === "l" || kind[0] === "d") dayTrips.push({ ...base, local: kind[0] === "l", days: p.days.slice(0, 1) });
       else weekends.push({ ...base, stayKind: p.stay || "motel", days: p.days, extras: nearby(id), long: kind[0] === "x", minDays: kind[0] === "x" ? 3 : 2 });
@@ -35,12 +35,12 @@
       const p = P[id];
       window.PLACES[p.name] = [[p.lat, p.lon]];
       if (p.wiki) window.US_WIKI[p.name] = decodeURIComponent(p.wiki).replace(/_/g, " ");
-      return { name: p.name, place: id, how: "Train", mode: "train", hours, km: 0, fare, change: !!change, lastMile, lastCost: 0, from: c.train.station, fromName: D.stations[c.train.station],
+      return { name: p.name, state: p.state || "CA", tz: p.tz || null, place: id, how: "Train", mode: "train", hours, km: 0, fare, change: !!change, lastMile, lastCost: 0, from: c.train.station, fromName: D.stations[c.train.station],
         station: code, toName: D.stations[code], fee: 0, ticket: p.ticket, extra: p.extra || null, stayCost: p.stayCost ?? null, tags: p.tags, note: p.note, season: boosted(p),
         when: p.when || null, realRoute: false, stayKind: p.stay || "motel", days: p.days, extras: [], minDays: 1, local: false, dayOnly: !p.stay };
     });
     if (c.wiki) window.US_WIKI[c.name] = decodeURIComponent(c.wiki).replace(/_/g, " ");
-    return { id: c.id, code: c.code, name: c.name, town: c.town, country: "USA", lat: c.lat, lon: c.lon,
+    return { id: c.id, code: c.code, name: c.name, town: c.town, state: c.state || "CA", gas: c.gas || D.gas.price, country: "USA", lat: c.lat, lon: c.lon,
       costs: { hostel: D.stay.hostel, food: D.food.day, transit: 0, activities: 0 }, interests: [], season: [3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 4, 3],
       // Motels and cabins cost more in summer and on holiday weekends; campsites and gas don't follow this.
       priceMult: [0.95, 0.95, 1, 1, 1.05, 1.15, 1.2, 1.2, 1.05, 1, 0.95, 1], bestTime: "", itinerary: [[], [], []], tips: [], dayTrips, weekends, trainTrips };

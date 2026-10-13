@@ -2,7 +2,9 @@
 // Lines: PS = Pacific Surfliner (San Luis Obispo – Los Angeles – San Diego), CS = Coast Starlight
 // (Los Angeles – Oakland – Sacramento – Redding – Dunsmuir), CC = Capitol Corridor (San José – Oakland
 // – Sacramento – Auburn), SJ = San Joaquins (Oakland/Sacramento – Fresno – Bakersfield), ZE = California
-// Zephyr (Emeryville – Sacramento – Truckee – Reno). Coordinates are approximate (station buildings).
+// Zephyr (Emeryville – Sacramento – Truckee – Reno – Salt Lake City – Glenwood Springs – Denver), CDS =
+// Amtrak Cascades (Eugene – Portland – Seattle – Bellingham), EB = Empire Builder (Seattle/Portland –
+// Spokane), SWC = Southwest Chief (Los Angeles – Flagstaff). Coordinates are approximate.
 export const STATIONS = [
   ["SLO", "San Luis Obispo", 35.2765, -120.6542, ["PS", "CS"]],
   ["GVB", "Grover Beach", 35.1207, -120.6301, ["PS"]],
@@ -17,7 +19,7 @@ export const STATIONS = [
   ["VNC", "Van Nuys", 34.2112, -118.4483, ["PS", "CS"]],
   ["BUR", "Burbank Airport", 34.2003, -118.3555, ["PS"]],
   ["GDL", "Glendale", 34.1236, -118.2591, ["PS"]],
-  ["LAX", "Los Angeles Union Station", 34.0562, -118.2365, ["PS", "CS"]],
+  ["LAX", "Los Angeles Union Station", 34.0562, -118.2365, ["PS", "CS", "SWC"]],
   ["FUL", "Fullerton", 33.8698, -117.9790, ["PS"]],
   ["ANA", "Anaheim", 33.8037, -117.8775, ["PS"]],
   ["SNA", "Santa Ana", 33.7488, -117.8668, ["PS"]],
@@ -47,6 +49,25 @@ export const STATIONS = [
   ["CIC", "Chico", 39.7232, -121.8462, ["CS"]],
   ["RDD", "Redding", 40.5838, -122.3929, ["CS"]],
   ["DUN", "Dunsmuir", 41.2116, -122.2719, ["CS"]],
+  ["KFS", "Klamath Falls", 42.2250, -121.7820, ["CS"]],
+  ["EUG", "Eugene", 44.0550, -123.0940, ["CS", "CDS"]],
+  ["ALY", "Albany (Oregon)", 44.6300, -123.1030, ["CS", "CDS"]],
+  ["SLM", "Salem", 44.9310, -123.0290, ["CS", "CDS"]],
+  ["PDX", "Portland Union Station", 45.5290, -122.6770, ["CS", "CDS", "EB"]],
+  ["OLW", "Olympia-Lacey", 46.9910, -122.7940, ["CS", "CDS"]],
+  ["TAC", "Tacoma", 47.2420, -122.4220, ["CS", "CDS"]],
+  ["SEA", "Seattle King Street", 47.5980, -122.3300, ["CS", "CDS", "EB"]],
+  ["EVR", "Everett", 47.9750, -122.1980, ["CDS", "EB"]],
+  ["BEL", "Bellingham", 48.7220, -122.5110, ["CDS"]],
+  ["LWA", "Leavenworth", 47.5880, -120.6630, ["EB"]],
+  ["SPK", "Spokane", 47.6530, -117.4120, ["EB"]],
+  ["SLC", "Salt Lake City", 40.7610, -111.9040, ["ZE"]],
+  ["PRO", "Provo", 40.2270, -111.6630, ["ZE"]],
+  ["GJT", "Grand Junction", 39.0640, -108.5700, ["ZE"]],
+  ["GSC", "Glenwood Springs", 39.5480, -107.3240, ["ZE"]],
+  ["WIP", "Fraser-Winter Park", 39.9450, -105.8170, ["ZE"]],
+  ["DEN", "Denver Union Station", 39.7530, -105.0000, ["ZE"]],
+  ["FLG", "Flagstaff", 35.1980, -111.6480, ["SWC"]],
   ["SKT", "Stockton", 37.9566, -121.2789, ["SJ"]],
   ["MOD", "Modesto", 37.6460, -120.9650, ["SJ"]],
   ["TRK", "Turlock-Denair", 37.5280, -120.7997, ["SJ"]],
@@ -75,5 +96,17 @@ export const CAR_FREE = {
   "sundial-bridge": ["RDD", "a 30-minute walk along the river", 0, 0.5],
   "bidwell-park": ["CIC", "a 15-minute bike ride", 0, 0.25],
   "venice": ["LAX", "Metro E Line to Santa Monica, then bike to Venice", 4, 1],
-  "lake-tahoe": ["TRU", "TART bus from Truckee to Kings Beach (free)", 0, 0.6]
+  "lake-tahoe": ["TRU", "TART bus from Truckee to Kings Beach (free)", 0, 0.6],
+  "seattle": ["SEA", "walk or the Link light rail from King Street", 6, 0.2],
+  "portland": ["PDX", "walk or the streetcar from Union Station", 5, 0.2],
+  "columbia-gorge": ["PDX", "Columbia Gorge Express bus from Gateway to Multnomah Falls", 10, 1],
+  "leavenworth": ["LWA", "a short ride from the Icicle station to town", 10, 0.2],
+  "spokane": ["SPK", "walk: the station is downtown", 0, 0],
+  "salt-lake-city": ["SLC", "TRAX light rail downtown", 5, 0.3],
+  "glenwood-springs": ["GSC", "walk: the station is across from the hot springs pool", 0, 0],
+  "denver": ["DEN", "you're downtown at Union Station", 0, 0],
+  "flagstaff": ["FLG", "walk: the station is on Route 66 downtown", 0, 0],
+  "grand-canyon": ["FLG", "Groome shuttle from Flagstaff to the South Rim", 80, 2]
 };
+// Average speed with stops, km/h: the Cascades and Surfliner are quick, the long-distance trains slower.
+export const LINE_SPEED = { CDS: 85, PS: 68, CC: 72, SJ: 70, CS: 60, ZE: 55, EB: 60, SWC: 75 };

@@ -6,15 +6,20 @@
 //  - Open-Meteo: 5 years of daily weather per place, for the best months to go;
 //  - OpenStreetMap (Overpass): extra local finds near each campus (waterfalls, peaks, hot springs,
 //    viewpoints, caves… that have a Wikipedia article);
-//  - EIA (US Energy Information Administration): this week's California gas price (needs EIA_KEY).
+//  - EIA (US Energy Information Administration): this week's gas price in each state (public tables).
 // Network results are cached in data/us-sources.json, so the build also works offline (with
 // estimates for anything never fetched). Run: node scripts/build-us.mjs  (FETCH=1 to refresh sources)
 import fs from "node:fs/promises";
 import { COLLEGES } from "./us/colleges.mjs";
-import { PLACES } from "./us/places.mjs";
-import { STATIONS, CAR_FREE } from "./us/stations.mjs";
+import { PLACES as PLACES_CA } from "./us/places.mjs";
+import { PLACES_WEST } from "./us/places-west.mjs";
+import { STATIONS, CAR_FREE, LINE_SPEED } from "./us/stations.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
+const PLACES = [...PLACES_CA, ...PLACES_WEST].map((p) => ({ state: "CA", ...p }));
+const STATE_NAME = { CA: "California", OR: "Oregon", WA: "Washington", NV: "Nevada", AZ: "Arizona", UT: "Utah", CO: "Colorado", ID: "Idaho", MT: "Montana", WY: "Wyoming" };
+// Only route to places a campus could reach in a long weekend (straight line ≤ 1,000 km).
+const inReach = (c, p) => km([c.lat, c.lon], [p.lat, p.lon]) <= 1000;
 const SRC = ROOT + "data/us-sources.json";
 const FETCH = !!process.env.FETCH;
 const UA = "Weekender/1.0 (student trip planner; https://weekender-trips.com)";
@@ -157,11 +162,13 @@ async function fetchOsm(colleges) {
 const TIDE_STATIONS = [["9419750", "Crescent City", 41.745, -124.184], ["9418767", "North Spit, Humboldt Bay", 40.767, -124.217], ["9416841", "Arena Cove", 38.915, -123.711],
   ["9415020", "Point Reyes", 37.996, -122.977], ["9414290", "San Francisco", 37.807, -122.465], ["9413450", "Monterey", 36.605, -121.888], ["9412110", "Port San Luis", 35.169, -120.754],
   ["9411340", "Santa Barbara", 34.404, -119.693], ["9410840", "Santa Monica", 34.008, -118.500], ["9410660", "Los Angeles", 33.720, -118.272], ["9410230", "La Jolla", 32.867, -117.257],
-  ["9410170", "San Diego", 32.714, -117.174]];
+  ["9410170", "San Diego", 32.714, -117.174], ["9432780", "Charleston", 43.345, -124.322], ["9435380", "South Beach, Newport", 44.625, -124.043],
+  ["9439040", "Astoria", 46.207, -123.768], ["9442396", "La Push", 47.913, -124.637], ["9444090", "Port Angeles", 48.125, -123.440],
+  ["9449880", "Friday Harbor", 48.545, -123.010], ["9447130", "Seattle", 47.603, -122.339]];
 async function fetchTideStations() {
   try {
     const d = await get("https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations.json?type=tidepredictions");
-    const list = (d.stations || []).filter((x) => x.lat > 32 && x.lat < 43 && x.lng < -116).map((x) => [String(x.id), x.name, +x.lat, +x.lng]);
+    const list = (d.stations || []).filter((x) => x.lat > 32 && x.lat < 49.5 && x.lng < -116).map((x) => [String(x.id), x.name, +x.lat, +x.lng]);
     if (list.length > 20) sources.tides = list;
   } catch (e) { log("noaa stations:", e.message); }
 }
@@ -175,17 +182,33 @@ function tideFor(p) {
   return best;
 }
 
-// ---------------------------------------------------------------- 5. EIA: gas price
+// ---------------------------------------------------------------- 5. EIA: gas prices by state
+// EIA publishes weekly regular gasoline prices for California, Washington and Colorado, and for regions:
+// Oregon, Nevada and Arizona use "West Coast without California", Utah uses "Rocky Mountain". Read from
+// EIA's public series tables (no key). Notes on what was read are kept in sources.gasCheck.
+const GAS_SERIES = { CA: "SCA", WA: "SWA", CO: "SCO", OR: "R5XCA", NV: "R5XCA", AZ: "R5XCA", UT: "R40" };
+const GAS_FALLBACK = { CA: 4.85, WA: 4.3, OR: 4.1, NV: 4.2, AZ: 3.4, UT: 3.3, CO: 3.2 };
 async function fetchGas() {
-  if (!process.env.EIA_KEY) return fetchGasPage();
-  try {
-    const d = await get(`https://api.eia.gov/v2/petroleum/pri/gnd/data/?api_key=${process.env.EIA_KEY}&frequency=weekly&data[0]=value&facets[duoarea][]=SCA&facets[product][]=EPMR&sort[0][column]=period&sort[0][direction]=desc&length=1`);
-    const row = d.response.data[0];
-    if (row && row.value > 2) sources.gas = { price: Number(row.value), week: row.period, source: "EIA weekly California regular gasoline" };
-  } catch (e) { log("eia:", e.message.replace(process.env.EIA_KEY, "***")); }
+  const check = [], bySeries = {};
+  for (const series of new Set(Object.values(GAS_SERIES))) {
+    try {
+      const r = await fetch(`https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=EMM_EPMR_PTE_${series}_DPG&f=W`, { headers: { "User-Agent": UA }, signal: AbortSignal.timeout(60000) });
+      const html = await r.text();
+      const cells = [...html.matchAll(/<td[^>]*class=['"]?B3['"]?[^>]*>\s*([0-9]\.[0-9]{2,3})\s*<\/td>/gi)].map((m) => Number(m[1]));
+      check.push(`${series}: HTTP ${r.status}, ${html.length} chars, ${cells.length} prices, last ${cells.slice(-2).join(",")}`);
+      const v = cells[cells.length - 1];
+      if (v > 2 && v < 9) bySeries[series] = v;
+    } catch (e) { check.push(`${series}: ${e.message}`); }
+    await sleep(1000);
+  }
+  sources.gasCheck = check;
+  const week = new Date().toISOString().slice(0, 10);
+  for (const [st, series] of Object.entries(GAS_SERIES)) if (bySeries[series]) (sources.gasByState = sources.gasByState || {})[st] = { price: bySeries[series], week, source: `EIA weekly regular gasoline (${series.length === 3 ? STATE_NAME[st] : series === "R40" ? "Rocky Mountain region" : "West Coast region"})` };
+  if (sources.gasByState && sources.gasByState.CA) sources.gas = sources.gasByState.CA;
+  log("eia:", check.join(" | "));
 }
 
-const colleges = COLLEGES.map(([id, name, town, lat, lon, code, wiki]) => ({ id, name, town, lat, lon, code, wiki }));
+const colleges = COLLEGES.map(([id, name, town, lat, lon, code, wiki, state = "CA"]) => ({ id, name, town, lat, lon, code, wiki, state }));
 // OpenStreetMap finds near a campus, as places (only ones that are known: 150+ Wikipedia views a month).
 const OSM_MIN_VIEWS = 150;
 const osmFinds = (c) => (sources.osm[c.id] || []).filter((o) => o.kind !== "Garden" || /botanic/i.test(o.name))
@@ -196,7 +219,7 @@ if (FETCH) {
   await fetchTideStations();
   await fetchOsm(colleges);
   await fetchWiki([...colleges, ...PLACES, ...colleges.flatMap(osmFinds)]);
-  await fetchRoutes(colleges, (c) => [...PLACES, ...osmFinds(c)]);
+  await fetchRoutes(colleges, (c) => [...PLACES.filter((p) => inReach(c, p)), ...osmFinds(c)]);
   await fetchWinterRoutes(colleges, PLACES);
   await fetchClimate(PLACES);
   sources.fetched = new Date().toISOString().slice(0, 10);
@@ -205,34 +228,9 @@ if (FETCH) {
 // Our coordinates are picked by hand (a trailhead, a town center); Wikipedia's are only a check.
 for (const x of [...colleges, ...PLACES]) { const w = sources.wiki[x.wiki]; if (w && w.coord && km([x.lat, x.lon], w.coord) > 25) log(`check coordinates: ${x.name} is ${Math.round(km([x.lat, x.lon], w.coord))} km from Wikipedia's`); }
 
-// Without a key: EIA's public pages. First the weekly series table for California regular gasoline
-// (the last filled cell is this week's price), then the "Gasoline and Diesel Fuel Update" page
-// (California's row lists the last three weeks). What went wrong, if anything, is kept in
-// sources.gasCheck so it can be read from the committed data (Actions logs aren't always at hand).
-async function fetchGasPage() {
-  const check = [];
-  const page = async (url) => { const r = await fetch(url, { headers: { "User-Agent": UA }, signal: AbortSignal.timeout(60000) }); const t = await r.text(); check.push(`${url.split("/").slice(2, 4).join("/")}: HTTP ${r.status}, ${t.length} chars`); return t; };
-  const ok = (v) => v > 2 && v < 9;
-  try {
-    const html = await page("https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=EMM_EPMR_PTE_SCA_DPG&f=W");
-    const cells = [...html.matchAll(/<td[^>]*class=['"]?B3['"]?[^>]*>\s*([0-9]\.[0-9]{2,3})\s*<\/td>/gi)].map((m) => Number(m[1]));
-    check.push(`series cells: ${cells.length}, last ${cells.slice(-3).join(",")}`);
-    if (ok(cells[cells.length - 1])) { sources.gas = { price: cells[cells.length - 1], week: new Date().toISOString().slice(0, 10), source: "EIA weekly California regular gasoline" }; sources.gasCheck = check; return; }
-  } catch (e) { check.push("series: " + e.message); }
-  try {
-    const html = await page("https://www.eia.gov/petroleum/gasdiesel/");
-    const i = html.search(/>\s*California\s*</);
-    const nums = i < 0 ? [] : [...html.slice(i, i + 1500).matchAll(/>\s*([0-9]\.[0-9]{3})\s*</g)].map((m) => Number(m[1]));
-    check.push(`update page: California at ${i}, numbers ${nums.slice(0, 5).join(",")}`);
-    // Gasoline table: three weekly prices, then week-ago and year-ago changes. The third is this week.
-    if (ok(nums[2])) { sources.gas = { price: nums[2], week: new Date().toISOString().slice(0, 10), source: "EIA weekly California regular gasoline" }; sources.gasCheck = check; return; }
-  } catch (e) { check.push("update page: " + e.message); }
-  sources.gasCheck = check;
-  log("eia:", check.join(" | "));
-}
-
 // ---------------------------------------------------------------- build
-const GAS = sources.gas || { price: 4.85, week: "2026-10", source: "estimate (California regular; the weekly data job updates it from EIA)" };
+const gasFor = (st) => (sources.gasByState || {})[st] || { price: GAS_FALLBACK[st] || 4, week: null, source: `estimate (${STATE_NAME[st] || st} regular; the weekly data job updates it from EIA)` };
+const GAS = gasFor("CA");
 const MPG = 30, RIDERS = 4; // a typical car, shared by four friends
 // A night's stay: a campsite ($35, up to 6 people), a motel room with two beds ($135, up to 4), a
 // cabin ($160, up to 6), or a hostel bed ($45 each). The app splits them between the friends going.
@@ -246,7 +244,12 @@ const SEASON = {
   city: [4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 4, 4], wine: [3, 3, 4, 4, 5, 5, 4, 4, 5, 5, 4, 3], valley: [3, 3, 4, 5, 5, 3, 2, 2, 4, 5, 4, 3],
   foothills: [3, 3, 4, 5, 5, 4, 3, 3, 4, 5, 4, 3], sierra: [2, 2, 3, 3, 4, 5, 5, 5, 5, 4, 2, 2], sierra_high: [1, 1, 1, 2, 3, 5, 5, 5, 5, 3, 1, 1],
   snow: [5, 5, 5, 3, 3, 4, 5, 5, 4, 3, 3, 4], high_desert: [3, 3, 4, 5, 5, 4, 3, 3, 5, 5, 4, 3], desert: [5, 5, 5, 4, 2, 1, 1, 1, 2, 4, 5, 5],
-  socal_mtn: [4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 4, 4]
+  socal_mtn: [4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 4, 4],
+  // The rest of the West: rainy Northwest winters, snowbound Cascades roads, Rockies ski and summer
+  // seasons (with spring mud season), and canyon country (best in spring and fall).
+  pnw_coast: [2, 2, 2, 3, 4, 4, 5, 5, 5, 3, 2, 2], pnw_city: [2, 2, 3, 3, 4, 4, 5, 5, 5, 4, 2, 3],
+  pnw_mtn: [1, 1, 1, 2, 2, 3, 5, 5, 5, 3, 1, 1], rockies: [4, 4, 4, 2, 2, 4, 5, 5, 5, 4, 2, 4],
+  canyon: [2, 2, 4, 5, 5, 3, 2, 3, 5, 5, 3, 2]
 };
 function season(p) {
   const base = SEASON[p.area] || SEASON.city, c = sources.climate[p.id];
@@ -287,14 +290,14 @@ function balanced(rows, n, c) {
 // min), d = day trip (up to 3 h each way), w = weekend (up to 5½ h), x = long weekend, 3+ days (up to
 // 9 h); "~" marks an estimated route. Winter km/hours are set when the Sierra passes' winter closure makes the drive longer.
 const places = {};
-const addPlace = (p) => { places[p.id] = { name: p.name, lat: +p.lat.toFixed(4), lon: +p.lon.toFixed(4), area: p.area, tags: p.tags, fee: p.fee || 0, ticket: p.ticket || 0, ...(p.extra ? { extra: p.extra } : {}), stay: p.stay, ...(p.stayCost != null ? { stayCost: p.stayCost } : {}), ...(p.when ? { when: p.when } : {}), note: p.note, days: p.days, wiki: p.wiki, season: season(p), pop: pop(p),
-  ...(p.port ? { port: p.port } : {}), ...(tideFor(p) ? { tide: tideFor(p) } : {}), ...(sources.climate[p.id] ? { clim: sources.climate[p.id] } : {}), ...(p.osm ? { osm: 1 } : {}) };
+const addPlace = (p) => { places[p.id] = { name: p.name, state: p.state || "CA", lat: +p.lat.toFixed(4), lon: +p.lon.toFixed(4), area: p.area, tags: p.tags, fee: p.fee || 0, ticket: p.ticket || 0, ...(p.extra ? { extra: p.extra } : {}), stay: p.stay, ...(p.stayCost != null ? { stayCost: p.stayCost } : {}), ...(p.when ? { when: p.when } : {}), note: p.note, days: p.days, wiki: p.wiki, season: season(p), pop: pop(p),
+  ...(p.port ? { port: p.port } : {}), ...(p.tz ? { tz: p.tz } : {}), ...(tideFor(p) ? { tide: tideFor(p) } : {}), ...(sources.climate[p.id] ? { clim: sources.climate[p.id] } : {}), ...(p.osm ? { osm: 1 } : {}) };
   Object.defineProperty(places[p.id], "fame", { value: Math.log10(pop(p) + 100) + (p.osm ? -0.5 : 0), enumerable: false }); };
 PLACES.forEach(addPlace);
 const out = [];
 for (const c of colleges) {
   const local = [], nearish = [], day = [], wkd = [], long = [];
-  const all = [...PLACES];
+  const all = PLACES.filter((p) => inReach(c, p));
   // Extra local finds from OpenStreetMap near this campus: known ones (Wikipedia views), not already ours.
   for (const o of osmFinds(c)) {
     if (all.some((p) => km([p.lat, p.lon], [o.lat, o.lon]) < 4 || p.name.includes(o.name))) continue;
@@ -307,7 +310,7 @@ for (const c of colleges) {
   }
   for (const p of all) {
     const r = route(c, p), h = r.hours;
-    if (p.area === "city" && km([c.lat, c.lon], [p.lat, p.lon]) < 30) continue; // you're already there
+    if ((p.area === "city" || p.city) && km([c.lat, c.lon], [p.lat, p.lon]) < 30) continue; // you're already there
     const row = (k) => [p.id, Math.round(r.km), Math.round(h * 100) / 100, k + (r.real ? "" : "~"), ...(r.winter ? [Math.round(r.winter[0]), r.winter[1]] : [])];
     const short = p.trip === "local" || p.trip === "both" || p.trip === "day", overnight = p.trip === "both" || p.trip === "weekend" || p.trip === "long";
     if (short && h <= 0.75) local.push(row("l"));
@@ -320,12 +323,12 @@ for (const c of colleges) {
   if (local.filter((r) => !places[r[0]].osm).length < 3) local.push(...nearish.sort((a, b) => a[2] - b[2]).slice(0, 3));
   // Local finds: our hand-picked places first (closest first), then OpenStreetMap's best known.
   local.sort((a, b) => (!!places[a[0]].osm - !!places[b[0]].osm) || (places[a[0]].osm ? places[b[0]].fame - places[a[0]].fame : a[2] - b[2]));
-  out.push({ id: c.id, code: c.code, name: c.name, town: c.town, lat: c.lat, lon: c.lon, wiki: c.wiki,
+  out.push({ id: c.id, code: c.code, name: c.name, town: c.town, state: c.state, gas: gasFor(c.state).price, lat: c.lat, lon: c.lon, wiki: c.wiki,
     trips: [...local.slice(0, 10), ...balanced(day, 18, c), ...balanced(wkd, 24, c), ...balanced(long, 15, c)] });
 }
 // ---------------------------------------------------------------- trips without a car (Amtrak)
-// Rail distance ≈ straight line × 1.3; trains average about 40 mph with stops; a change of line costs an
-// hour. Fares: about $8 + $0.15 a mile one way (Amtrak California's usual fares), minus the 15%
+// Rail distance ≈ straight line × 1.3; each line has its average speed with stops (LINE_SPEED: the
+// Cascades about 53 mph, the Coast Starlight about 37); a change of line costs an hour. Fares: about $8 + $0.15 a mile one way (Amtrak California's usual fares), minus the 15%
 // student discount, round trip, plus the bus or ferry from the station. Campuses more than ~6 km from a
 // station get there by local transit (Metro, Metrolink, BART, Caltrain): an hour and $5 more, or 1½ hours
 // and $12 from 35–60 km (Metrolink from the Inland Empire, the Highway 17 bus from Santa Cruz).
@@ -333,12 +336,13 @@ const ST = Object.fromEntries(STATIONS.map(([code, name, lat, lon, lines]) => [c
 function trainTrips(c) {
   const near = STATIONS.map(([code, , lat, lon]) => [code, km([c.lat, c.lon], [lat, lon])]).sort((a, b) => a[1] - b[1])[0];
   if (!near || near[1] > 60) return null; // no station within reach
-  const from = ST[near[0]], trips = [], far = near[1] > 6, farther = near[1] > 35;
+  const from = ST[near[0]], trips = [], far = near[1] > 8, farther = near[1] > 35;
   for (const [id, [code, how, lastCost, lastHours]] of Object.entries(CAR_FREE)) {
     const to = ST[code], p = places[id];
     if (!to || !p || to.code === from.code || km([from.lat, from.lon], [to.lat, to.lon]) < 10 || km([c.lat, c.lon], [p.lat, p.lon]) < 12) continue;
-    const railKm = km([from.lat, from.lon], [to.lat, to.lon]) * 1.3, change = !from.lines.some((l) => to.lines.includes(l));
-    const hours = Math.round((railKm / 64 + (change ? 1 : 0) + lastHours + (farther ? 1.5 : far ? 1 : 0.3)) * 4) / 4; // + getting to the station
+    const railKm = km([from.lat, from.lon], [to.lat, to.lon]) * 1.3, shared = from.lines.filter((l) => to.lines.includes(l)), change = !shared.length;
+    const speed = shared.length ? Math.max(...shared.map((l) => LINE_SPEED[l] || 64)) : 64;
+    const hours = Math.round((railKm / speed + (change ? 1 : 0) + lastHours + (farther ? 1.5 : far ? 1 : 0.3)) * 4) / 4; // + getting to the station
     const fare = Math.round(2 * (8 + 0.15 * railKm / 1.609) * 0.85) + lastCost + (farther ? 12 : far ? 5 : 0);
     if (hours > 10) continue;
     trips.push([id, to.code, hours, fare, change ? 1 : 0, how]);
@@ -350,7 +354,7 @@ for (const o of out) { const t = trainTrips(o); if (t) o.train = t; }
 const data = { generated: new Date().toISOString().slice(0, 10), region: "us",
   sources: { places: "Hand-picked by Weekender (scripts/us/places.mjs)", routes: Object.keys(sources.routes).length ? "OSRM / OpenStreetMap road routing" : "estimated from distance (routing not fetched yet)",
     wiki: "Wikipedia (coordinates, pageviews)", climate: Object.keys(sources.climate).length ? "Open-Meteo, 5 years of daily weather" : "season profiles by type of place", osm: "OpenStreetMap (Overpass)", gas: GAS.source },
-  gas: GAS, mpg: MPG, riders: RIDERS, stay: STAY, food: FOOD, stations: Object.fromEntries(STATIONS.map(([code, name]) => [code, name])), fetched: sources.fetched || null, places, colleges: out };
+  gas: GAS, gasByState: Object.fromEntries(Object.keys(STATE_NAME).map((st) => [st, gasFor(st)])), mpg: MPG, riders: RIDERS, stay: STAY, food: FOOD, stations: Object.fromEntries(STATIONS.map(([code, name]) => [code, name])), fetched: sources.fetched || null, places, colleges: out };
 const js = "// Generated by scripts/build-us.mjs. Do not edit by hand.\nwindow.US_DATA = " + JSON.stringify(data) + ";\n";
 await fs.writeFile(ROOT + "data/us-data.js", js);
 const n = out.reduce((s, c) => s + c.trips.length, 0);

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-// Builds one static page per California college ("Weekend trips from Cal Poly SLO") at us/from/<college>/,
+// Builds one static page per US college ("Weekend trips from Cal Poly SLO") at us/from/<college>/,
 // plus us/from/index.html, and adds them to sitemap.xml, so search engines can find the US version.
 // The trips are computed by the app itself (us/index.html loaded headless with Playwright) for next
 // month, a $250 budget and four friends in a gas car, so the pages match what the planner shows.
-// Run: node scripts/build-us-pages.mjs (the California data workflow runs it after each refresh).
+// Run: node scripts/build-us-pages.mjs (the US data workflow runs it after each refresh).
 import fs from "node:fs/promises";
 import { openBrowser, openApp, US_INDEX } from "../tests/helpers.mjs";
 
@@ -51,7 +51,7 @@ const head = (title, desc, path) => `<!doctype html><html lang="en"><head><meta 
 const card = (t) => `<div class="card"><h3>${esc(t.name)}</h3><div class="sub">${esc(t.kind)} · drive ${hrs(t.hours)} each way${t.train ? " · or train" : ""}</div>
 <div class="row"><span class="price">$${t.total}</span><span class="score">${t.score.toFixed(1)}/10</span></div>${t.when.length ? `<div class="tag">${esc(t.when.join(" · "))}</div>` : ""}<p class="note">${esc(t.note)}</p></div>`;
 const foot = `<footer>Prices are per person for ${data.month} ${data.year}, for four friends sharing a car: gas, park fees, a shared campsite or room, and food. Drive times are real road routes; updated weekly.
-<br><a href="/us/">Weekender California</a> · <a href="/us/from/">All colleges</a> · <a href="/">Studying abroad in Europe?</a> · <a href="/privacy.html">Privacy &amp; terms</a> · Some links on Weekender are affiliate links.</footer></main></body></html>`;
+<br><a href="/us/">Weekender USA</a> · <a href="/us/from/">All colleges</a> · <a href="/">Studying abroad in Europe?</a> · <a href="/privacy.html">Privacy &amp; terms</a> · Some links on Weekender are affiliate links.</footer></main></body></html>`;
 
 await fs.rm(ROOT + "us/from", { recursive: true, force: true });
 const urls = [];
@@ -76,7 +76,7 @@ ${foot}`;
   await fs.writeFile(ROOT + path + "index.html", html);
   urls.push(`${SITE}/${path}`);
 }
-await fs.writeFile(ROOT + "us/from/index.html", `${head("Weekend trips from California colleges | Weekender", "Pick your college and see the best local finds, day trips and weekend road trips from it, with real drive times and costs.", "us/from/")}
+await fs.writeFile(ROOT + "us/from/index.html", `${head("Weekend trips from colleges in California and the West | Weekender", "Pick your college and see the best local finds, day trips and weekend road trips from it, with real drive times and costs.", "us/from/")}
 <h1>Weekend trips from your college</h1><p class="lede">Pick where you go to school.</p>
 <ul class="links">${data.colleges.map((c) => `<li><a href="/us/from/${c.id}/">${esc(c.name)}</a></li>`).join("")}</ul>
 ${foot}`);
