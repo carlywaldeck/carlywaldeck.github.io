@@ -7442,7 +7442,7 @@ function travelStats() {
 function travelBanner() {
   const { dated, undated, all, countries, km, fav } = travelStats();
   $("#travel-banner").innerHTML = `<div><h2>${firstName() ? `${escHtml(firstName())}'s travels` : "Your travels"}</h2>
-    <p>${all.length} place${all.length === 1 ? "" : "s"} · ${countries.size} countr${countries.size === 1 ? "y" : "ies"}${dated.length ? ` · since ${monthLabel(been[dated[0]].d)}` : ""}${km > 0 ? ` · ${Math.round(km).toLocaleString()} km between trips` : ""}${fav ? ` · favorite: ${escHtml(been[fav].n)} ${"★".repeat(been[fav].r)}` : ""}</p>
+    <p>${all.length} place${all.length === 1 ? "" : "s"} · ${countries.size} countr${countries.size === 1 ? "y" : "ies"}${dated.length ? ` · since ${monthLabel(been[dated[0]].d)}` : ""}${km > 0 ? ` · ${US ? `${Math.round(km / 1.609).toLocaleString()} miles` : `${Math.round(km).toLocaleString()} km`} between trips` : ""}${fav ? ` · favorite: ${escHtml(been[fav].n)} ${"★".repeat(been[fav].r)}` : ""}</p>
     ${!all.length ? `<p class="note">No places yet. Add some under Places I've been.</p>` : undated.length ? `<p class="note">Add dates to connect your trips in order.</p>` : ""}</div>
     <div class="tb-actions">${all.length ? `<button type="button" class="cta sm" data-act="travel-image">Share image</button>` : ""}<button type="button" class="ghost sm" data-act="travel-exit">Back to trips</button></div>`;
 }
@@ -7463,7 +7463,7 @@ async function travelImage() {
   x.fillStyle = "#13233F"; x.font = font(700, 84);
   x.fillText(firstName() ? `${firstName()}'s travels` : "My travels", 80, 270);
   x.font = font(500, 40); x.fillStyle = "#5A6B85";
-  x.fillText(`${all.length} place${all.length === 1 ? "" : "s"} · ${countries.size} countr${countries.size === 1 ? "y" : "ies"}${km > 0 ? ` · ${Math.round(km).toLocaleString()} km` : ""}`, 80, 340);
+  x.fillText(`${all.length} place${all.length === 1 ? "" : "s"} · ${countries.size} countr${countries.size === 1 ? "y" : "ies"}${km > 0 ? ` · ${US ? `${Math.round(km / 1.609).toLocaleString()} miles` : `${Math.round(km).toLocaleString()} km`}` : ""}`, 80, 340);
   // The globe, cropped square around its center from the on-screen map.
   const base = $("#globe-base"), fx = $("#globe-fx"), dpr = G.dpr || 1;
   const side = Math.min(base.width, base.height), sx = Math.max(0, Math.min(base.width - side, G.cx * dpr - side / 2)), sy = Math.max(0, Math.min(base.height - side, G.cy * dpr - side / 2));
