@@ -4070,6 +4070,10 @@ const INTEREST_ICON = { food: "🍝", nightlife: "🪩", history: "🏛️", art
 if (window.REGION === "us") {
   Object.assign(INTERESTS, { camping: "Camping", stargazing: "Stargazing" });
   Object.assign(INTEREST_ICON, { camping: "🏕️", stargazing: "🌌" });
+  // Only offer interests that at least two California places have (no castles or football here).
+  const count = {};
+  Object.values((window.US_DATA || {}).places || {}).forEach(p => p.tags.forEach(k => { count[k] = (count[k] || 0) + 1; }));
+  for (const k of Object.keys(INTERESTS)) if ((count[k] || 0) < 2) delete INTERESTS[k];
 }
 const chipLabel = (k) => `${INTEREST_ICON[k] ? `<span class="ci" aria-hidden="true">${INTEREST_ICON[k]}</span>` : ""}${INTERESTS[k]}`;
 // The landing page shows these first; the rest sit behind "More".
@@ -6937,7 +6941,7 @@ function renderPanel(result) {
         <span class="thumb" data-wiki="${t.dest.name.replace(/"/g, "&quot;")}" data-initial="${t.dest.name[0]}"></span>
         <span class="row-main"><strong>${t.dest.name}</strong>
           <small>${multi ? `${dayWord(t.days)} · ` : ""}${tripKind(t)} · ${MODES[t.cost.transport.mode].label} ${hrs(t.cost.transport.hours)}${state.interests.size && likes.length ? ` · <span class="match">✓ ${likes.join(", ")}</span>` : ""}${usWhen(t).map(w => ` · <span class="${w[4] === false ? "heads-up" : "happening"}">${w[1]} ${w[2]}</span>`).join("")}</small></span>
-        <span class="row-right">${scoreBadge(t)}<span class="row-price num">${euro(t.cost.total)}</span>${(() => { const w = state.lastMinute && weekendWx(t.dest, current.home || byId(state.home)); return w ? `<span class="row-wx">${WX_ICON(w.code)} ${w.hi}°</span>` : ""; })()}</span>
+        <span class="row-right">${scoreBadge(t)}<span class="row-price num">${euro(t.cost.total)}</span>${(() => { const w = state.lastMinute && weekendWx(t.dest, current.home || byId(state.home)); return w ? `<span class="row-wx">${WX_ICON(w.code)} ${US ? toF(w.hi) : w.hi}°</span>` : ""; })()}</span>
       </button>`;
     }).join("")}`).join("");
 }

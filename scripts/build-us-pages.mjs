@@ -69,7 +69,7 @@ ${c.local.length ? `<h2>Local finds near campus</h2><div class="grid">${c.local.
 ${c.day.length ? `<h2>Day trips</h2><div class="grid">${c.day.map(card).join("")}</div>` : ""}
 ${c.weekend.length ? `<h2>Weekend trips</h2><div class="grid">${c.weekend.map(card).join("")}</div>` : ""}
 ${c.long.length ? `<h2>Long weekends</h2><div class="grid">${c.long.map(card).join("")}</div>` : ""}
-<h2>Personalize it</h2><p>Set your budget, how many friends are coming, your car (or no car: train and bus), and what you're into (hiking, beaches, camping, stargazing, food and 35 more), and Weekender re-ranks every trip for you, with a day-by-day plan, directions and campsites.</p>
+<h2>Personalize it</h2><p>Set your budget, how many friends are coming, your car (or no car: train and bus), and what you're into (hiking, beaches, camping, stargazing, food and more), and Weekender re-ranks every trip for you, with a day-by-day plan, directions and campsites.</p>
 <a class="cta" href="/us/#from=${c.id}">Find my trips from ${esc(c.name)} →</a>
 ${foot}`;
   await fs.mkdir(ROOT + path, { recursive: true });
