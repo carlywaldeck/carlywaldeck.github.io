@@ -45,7 +45,7 @@ export default async function run() {
         groups, results: document.querySelector("#results").textContent, cur: document.querySelector("#region-us").getAttribute("aria-current"), storeKey: STORE_KEY,
         weekend: (trips.find((x) => x.days === 2 && x.dest.escape.stayKind === "camp") || {}).key, cheap: trips.every((x) => x.cost.total < 400) };
     });
-    t.check(r.region === "us" && r.currency === "USD" && r.modes.join() === "car", `US mode: dollars and driving (${r.region}, ${r.currency}, ${r.modes})`);
+    t.check(r.region === "us" && r.currency === "USD" && r.modes.join() === "car,train", `US mode: dollars, driving or the train (${r.region}, ${r.currency}, ${r.modes})`);
     t.check(r.n >= 15 && r.allCar && r.cheap, `Cal Poly SLO gets driving trips at student prices (${r.n})`);
     t.check(["Local find", "Day trip", "Weekend trip"].every((x) => r.kinds.includes(x)), `trips are local finds, day trips and weekend trips (${r.kinds})`);
     t.check(/Local finds/.test(r.results) && /Day trips from Cal Poly SLO/.test(r.results) && /Weekend trips from Cal Poly SLO/.test(r.results), `the list is grouped by kind of trip (${r.results.slice(0, 160)})`);
@@ -82,6 +82,21 @@ export default async function run() {
     t.check(Math.max(...money.local) <= 15, `local finds are pocket money (${money.local})`);
     t.check(["Las Vegas (Nevada)", "San Diego", "Joshua Tree"].every((n) => money.long.includes(n)) && money.minLong >= 3,
       `long weekends from Cal Poly reach Vegas, San Diego and Joshua Tree (${money.long.slice(0, 12)})`);
+    // No car: trips by train from the campus station, with the student fare; ids stay stable.
+    const tr = await page.evaluate(() => {
+      state.month = 3; state.car.type = "none"; state.daysSet = new Set([1, 2]); state.days = 1; update();
+      const trips = current.trips.map((x) => ({ name: x.dest.name, mode: x.cost.transport.mode, days: x.days, total: x.cost.total, key: x.key, travel: x.cost.travel }));
+      const sb = current.trips.find((x) => x.dest.name === "Santa Barbara" && x.days === 1);
+      ui.drawer = sb.key; ui.tab = "book"; renderDrawer();
+      const book = document.querySelector("#drawer").innerHTML;
+      const been = beenPlace(sb.dest.id);
+      state.car.type = "gas"; update();
+      const carKeys = current.trips.map((x) => x.key);
+      return { trips, book, been: been && been.name, carKeys, sbId: sb.dest.id };
+    });
+    t.check(tr.trips.length >= 3 && tr.trips.every((x) => x.mode === "train"), `without a car, trips go by train (${tr.trips.map((x) => x.name).join(", ")})`);
+    t.check(/amtrak\.com/.test(tr.book) && /SLO/.test(tr.book) && /student discount/.test(tr.book), "train booking: Amtrak from San Luis Obispo with the student discount");
+    t.check(tr.sbId === "cal-poly-slo.trn.santa-barbara" && tr.been === "Santa Barbara" && tr.carKeys.includes("cal-poly-slo.day.santa-barbara@1"), `trip ids name the college and the place (${tr.sbId}, ${tr.carKeys[0]})`);
     // Seasonal highlights: monarchs at Pismo in January, not in July.
     const hl = await page.evaluate(() => {
       const pick = (m) => { state.month = m; state.daysSet = new Set([1]); state.days = 1; update(); const t = current.trips.find((x) => x.dest.escape.place === "pismo-dunes"); return t ? { when: usWhen(t).map((w) => w[2]), row: document.querySelector(`.row[data-id="${t.key}"]`)?.textContent || "" } : null; };
