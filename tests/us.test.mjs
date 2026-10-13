@@ -105,6 +105,20 @@ export default async function run() {
     t.check(/amtrak\.com/.test(tr.book) && /SLO/.test(tr.book) && /student discount/.test(tr.book), "train booking: Amtrak from San Luis Obispo with the student discount");
     t.check(/Or take the train/.test(tr.carBook) && /dirflg=r/.test(tr.carBook) && /dirflg=d/.test(tr.carBook), "driving trips also show the train and a transit route");
     t.check(tr.sbId === "cal-poly-slo.trn.santa-barbara" && tr.been === "Santa Barbara" && tr.carKeys.includes("cal-poly-slo.day.santa-barbara@1"), `trip ids name the college and the place (${tr.sbId}, ${tr.carKeys[0]})`);
+    // Events and open campsites on your dates (data/us-live.js; faked here).
+    const live = await page.evaluate(() => {
+      state.month = 10; state.car.type = "gas"; state.daysSet = new Set([2]); state.days = 2; update();
+      const [go] = weekendDates(2);
+      US_LIVE = { generated: new Date().toISOString(), events: { "big-sur": [[go, "19:30", "Big Sur Jazz Night", "Henry Miller Library", "https://www.ticketmaster.com/x", "music"]] },
+        camps: { "big-sur": [["233116", "Kirk Creek", 35.99, -121.49, { [go]: 3 }]] } };
+      const t = current.trips.find((x) => x.dest.escape.place === "big-sur");
+      ui.drawer = t.key; ui.tab = "details"; renderDrawer();
+      const details = document.querySelector("#drawer").innerText;
+      ui.tab = "book"; renderDrawer();
+      return { details, book: document.querySelector("#drawer").innerHTML };
+    });
+    t.check(/Big Sur Jazz Night/.test(live.details) && /7:30 PM/.test(live.details), "plans list events on your dates");
+    t.check(/recreation\.gov\/camping\/campgrounds\/233116/.test(live.book) && /3 sites open/.test(live.book), "booking shows campgrounds with open sites on your nights");
     // Seasonal highlights: monarchs at Pismo in January, not in July.
     const hl = await page.evaluate(() => {
       const pick = (m) => { state.month = m; state.daysSet = new Set([1]); state.days = 1; update(); const t = current.trips.find((x) => x.dest.escape.place === "pismo-dunes"); return t ? { when: usWhen(t).map((w) => w[2]), row: document.querySelector(`.row[data-id="${t.key}"]`)?.textContent || "" } : null; };

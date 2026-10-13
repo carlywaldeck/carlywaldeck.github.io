@@ -96,6 +96,26 @@ Wednesday and whenever the US scripts change, so the real routes and weather lan
 Optional: get a free EIA key at https://www.eia.gov/opendata/register.php and add it as the
 repository secret `EIA_KEY` for weekly gas prices. Nothing else to sign up for; nothing costs money.
 
+## Events and campsites (daily)
+
+`scripts/build-us-live.mjs` runs every morning (the **Refresh events and campsites** workflow) and
+writes `data/us-live.js`, which the app loads when a plan opens:
+
+- **What's on**: concerts, sports, shows and festivals within about 20 miles of each place on the next
+  10 weekends, from the Ticketmaster Discovery API. Shown under Details → On your dates.
+- **Open campsites**: for camping trips, the Recreation.gov campgrounds within 15 miles and how many
+  sites are still open on your Friday and Saturday nights, with a link straight to each campground.
+  State park campgrounds (ReserveCalifornia) aren't included; the plan links there too.
+
+Both need free API keys saved as repository secrets (Settings → Secrets and variables → Actions):
+
+| Secret | Where to get it |
+|--------|-----------------|
+| `TICKETMASTER_KEY` | developer.ticketmaster.com → sign up → My Apps → the Consumer Key |
+| `RIDB_KEY` | ridb.recreation.gov → sign up → your profile → API key (finds the campgrounds; availability itself needs no key) |
+
+Without them the sections just don't appear. Keys are only used by the workflow, never sent to the site.
+
 ## Pages for search engines
 
 `scripts/build-us-pages.mjs` writes a page per college at `/us/from/<college>/` ("Weekend trips from

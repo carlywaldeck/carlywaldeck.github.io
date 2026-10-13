@@ -414,8 +414,8 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
 .landing-copy p { font-size: 17px; color: var(--muted); max-width: 520px; margin: 0; }
 .book h4 { margin-bottom: 8px; }
 .bk-list { list-style: none; margin: 0; padding: 0; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
-.bk-list li { display: grid; grid-template-columns: 30px 1fr auto; gap: 10px; align-items: center; padding: 12px 14px; }
-.bk-list li + li { border-top: 1px solid var(--line); }
+.bk-list > li { display: grid; grid-template-columns: 30px 1fr auto; gap: 10px; align-items: center; padding: 12px 14px; }
+.bk-list > li + li { border-top: 1px solid var(--line); }
 .bk-icon { font-size: 18px; text-align: center; }
 .bk-text { display: grid; gap: 1px; min-width: 0; }
 .bk-text b { font-weight: 600; font-size: 14.5px; }
@@ -427,7 +427,7 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
 .bk-alt { color: var(--accent); border: 1px solid var(--line); background: #fff; }
 .bk-alt:hover { border-color: var(--hover-line); }
 @media (max-width: 520px) {
-  .bk-list li { grid-template-columns: 30px 1fr; }
+  .bk-list > li { grid-template-columns: 30px 1fr; }
   .bk-links { grid-column: 2; justify-content: flex-start; }
 }
 .day-sun { flex: 1; font-size: 12px; color: var(--muted); margin-left: 8px; font-weight: 500; }
@@ -496,6 +496,12 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
 .row small .happening { color: var(--good); font-weight: 600; }
 .row small .heads-up { color: var(--warn); font-weight: 600; }
 .happening-note { margin: 10px 0 0; padding: 10px 12px; border-radius: 10px; background: var(--good-soft); font-size: 14px; }
+.events, .camp-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.events small { display: block; color: var(--muted); font-size: 12px; }
+.camp-list { margin-top: 6px; font-size: 13.5px; }
+.camp-list li { display: block; padding: 0; }
+.camp-note { display: block; margin-top: 4px; }
+.warn-text { color: var(--warn); }
 .spot-when { margin: 4px 0 0; font-size: 13px; font-weight: 600; color: var(--good); }
 #car-filter h3 + .seg { margin-bottom: 14px; }
 #car-filter h3 { margin-top: 0; }
@@ -2552,8 +2558,9 @@ function usBookSection(home, dest, cost, t, { when, btn, place }) {
       : k === "hostel" ? btn(`https://www.hostelworld.com/st/hostels/north-america/usa/`, "Hostelworld", false)
       : btn(`https://www.booking.com/searchresults.html?ss=${encodeURIComponent(where)}&group_adults=${state.car.riders}&no_rooms=${Math.ceil(state.car.riders / (SHARE[k] || 4))}`, "Booking.com", false);
     const share = k === "hostel" ? "a bed each" : `${Math.ceil(state.car.riders / SHARE[k])} ${k === "camp" ? "site" : k === "cabin" ? "cabin" : "room"}${Math.ceil(state.car.riders / SHARE[k]) > 1 ? "s" : ""} shared`;
+    const campList = k === "camp" ? usCampsHtml(esc, btn) : null;
     rows.push([k === "camp" ? "🏕️" : "🛏️", { camp: "Campsite", hostel: "Hostel", motel: "Motel", cabin: "Cabin" }[k] || "Place to stay",
-      `${cost.nights} night${cost.nights > 1 ? "s" : ""} near ${usPlaceName(esc.name)} · ${share} · about ${euro(cost.stay)} each${k === "camp" ? " · sites book up: reserve early" : ""}`, link]);
+      `${cost.nights} night${cost.nights > 1 ? "s" : ""} near ${usPlaceName(esc.name)} · ${share} · about ${euro(cost.stay)} each${k === "camp" && !campList ? " · sites book up: reserve early" : ""}${campList ? `</small>${campList}<small hidden>` : ""}`, link]);
   }
   rows.push(["🎟️", "Tours & tickets", `Guided tours, rentals and tickets around ${usPlaceName(esc.name)}`,
     btn(`https://www.getyourguide.com/s/?q=${encodeURIComponent(where)}${GYG_PARTNER_ID ? `&partner_id=${GYG_PARTNER_ID}` : ""}`, "GetYourGuide", false) + btn(KLOOK_LINK, "Klook", false)]);
@@ -2610,6 +2617,37 @@ function moonOn(iso) {
   return { age: a, lit: Math.round((1 - Math.cos(2 * Math.PI * a / 29.530588853)) / 2 * 100) };
 }
 const AQI_WORDS = (v) => v <= 50 ? "good" : v <= 100 ? "moderate" : v <= 150 ? "unhealthy for sensitive groups" : v <= 200 ? "unhealthy" : "very unhealthy";
+// Events and campsite availability (data/us-live.js, refreshed daily): loaded when a plan first opens.
+let US_LIVE = null, usLiveLoading = false;
+function loadUsLive() {
+  if (US_LIVE || usLiveLoading || !US) return;
+  usLiveLoading = true;
+  const sc = document.createElement("script");
+  sc.src = "data/us-live.js?v=" + new Date().toISOString().slice(0, 10);
+  sc.onload = () => { US_LIVE = window.US_LIVE || { events: {}, camps: {} }; if (ui.drawer) renderDrawer(); };
+  sc.onerror = () => { US_LIVE = { events: {}, camps: {} }; };
+  document.head.appendChild(sc);
+}
+const EVENT_ICON = { music: "🎶", sports: "🏟️", arts: "🎭", film: "🎬", misc: "🎟️" };
+function usEvents(t) {
+  if (!US_LIVE || !US_LIVE.events) return [];
+  const [go, back] = weekendDates(state.days);
+  return (US_LIVE.events[t.dest.escape.place] || []).filter(e => e[0] >= go && e[0] <= back);
+}
+function usCampsHtml(esc, btn) {
+  const camps = US_LIVE && US_LIVE.camps && US_LIVE.camps[esc.place];
+  if (!camps || !camps.length) return null;
+  const [go, back] = weekendDates(state.days), nights = [];
+  for (let d = Date.parse(go + "T12:00:00Z"); d < Date.parse(back + "T12:00:00Z"); d += 864e5) nights.push(new Date(d).toISOString().slice(0, 10));
+  const checked = (US_LIVE.generated || "").slice(0, 10);
+  const lines = camps.map(([id, name, , , open]) => {
+    const known = open && nights.every(n => open[n] != null);
+    const counts = known ? nights.map(n => open[n]) : null;
+    const status = !counts ? "" : counts.every(c => c === 0) ? ` · <span class="warn-text">full on your nights</span>` : ` · <b>${Math.min(...counts)} site${Math.min(...counts) === 1 ? "" : "s"} open</b>`;
+    return `<li><a href="https://www.recreation.gov/camping/campgrounds/${id}" target="_blank" rel="noopener">${escHtml(name)} ↗</a>${status}</li>`;
+  });
+  return `<ul class="camp-list">${lines.join("")}</ul><small class="camp-note">Open sites on Recreation.gov for ${nights.map(shortDate).join(" and ")}, checked ${shortDate(checked)}. State park sites are on ReserveCalifornia.</small>`;
+}
 function usLiveSection(t) {
   const esc = t.dest.escape, pl = US_DATA && US_DATA.places[esc.place];
   if (!pl) return "";
@@ -2641,6 +2679,9 @@ function usLiveSection(t) {
       rows.push(["Air quality", `${worst} US AQI at worst (${AQI_WORDS(worst)})${worst > 100 ? ". Likely wildfire smoke: check AirNow before you go" : ""}`, "Open-Meteo air-quality forecast"]);
     }
   }
+  const ev = usEvents(t);
+  if (ev.length) rows.push(["What's on", `<ul class="events">${ev.slice(0, 8).map(([date, time, name, venue, url, kind]) =>
+    `<li>${EVENT_ICON[kind] || "🎟️"} <a href="${url}" target="_blank" rel="noopener">${escHtml(name)}</a><small>${shortDate(date)}${time ? ` · ${clock12(time)}` : ""}${venue ? ` · ${escHtml(venue)}` : ""}</small></li>`).join("")}</ul>`, "Ticketmaster, within about 20 miles; updated daily"]);
   if (!rows.length) return "";
   return `<div><h4>On your dates</h4><dl class="facts">${rows.map(([k, v, src]) => `<dt>${k}</dt><dd>${v}<small>${src}</small></dd>`).join("")}</dl></div>`;
 }
@@ -3826,6 +3867,7 @@ function renderDrawer(fromLive) {
   const t = tripById(ui.drawer);
   if (t && !nudgedThisVisit) setTimeout(maybeNudgeInstall, 2500);
   if (!t) { drawer.hidden = true; document.body.classList.remove("drawer-open"); return; }
+  if (US) loadUsLive();
   drawer.hidden = false;
   document.body.classList.add("drawer-open");
   withDays(t.days, () => drawDrawer(t));

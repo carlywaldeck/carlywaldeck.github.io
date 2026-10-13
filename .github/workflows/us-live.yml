@@ -1,0 +1,55 @@
+# Refreshes what changes daily in the California version: concerts, sports, shows and festivals near each
+# place on the coming weekends (Ticketmaster; needs the TICKETMASTER_KEY secret) and open campsites near
+# camping trips (Recreation.gov; the campground list needs the RIDB_KEY secret). Writes data/us-live.js.
+# Runs every morning, when the script changes, or by hand (Actions → "Refresh events and campsites").
+name: Refresh events and campsites
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "37 12 * * *" # 12:37 UTC (early morning in California) every day
+  push:
+    branches: [main]
+    paths:
+      - "scripts/build-us-live.mjs"
+      - ".github/workflows/us-live.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: us-live
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Fetch events and campsites
+        continue-on-error: true # keep the previous data if a source is down
+        env:
+          TICKETMASTER_KEY: ${{ secrets.TICKETMASTER_KEY }}
+          RIDB_KEY: ${{ secrets.RIDB_KEY }}
+        run: node scripts/build-us-live.mjs
+      - name: Commit on top of the latest main
+        run: |
+          mkdir -p /tmp/live && cp data/us-live.js /tmp/live/ && (cp data/us-camps.json /tmp/live/ 2>/dev/null || true)
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/live/us-live.js data/
+            [ -f /tmp/live/us-camps.json ] && cp /tmp/live/us-camps.json data/
+            git add data/us-live.js data/us-camps.json 2>/dev/null || git add data/us-live.js
+            if git diff --cached --quiet; then echo "No changes"; exit 0; fi
+            git commit -m "Refresh events and campsites"
+            if git push origin HEAD:main; then exit 0; fi
+            echo "main moved; retrying ($attempt)"; sleep 5
+          done
+          exit 1
