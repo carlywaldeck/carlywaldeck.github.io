@@ -5739,7 +5739,7 @@ function usDataSection(t) {
   if (pl.clim) rows.push([`Weather in ${MONTHS_FULL[m]}`, `highs around ${pl.clim.hiF[m]}°F, ${pl.clim.wetDays[m]} wet days`, "Open-Meteo, 5 years of daily records"]);
   const best = pl.season.map((v, i) => [v, i]).filter(([v]) => v >= 5).map(([, i]) => MONTHS[i]);
   if (best.length) rows.push(["Best months", best.join(", "), pl.clim ? "climate and type of place" : "type of place"]);
-  if (pl.pop) rows.push(["Popularity", `about ${pl.pop >= 1000 ? Math.round(pl.pop / 1000) + "k" : pl.pop} Wikipedia views a month${pl.pop < 3000 ? " (a hidden gem)" : ""}`, "Wikipedia pageviews"]);
+  if (pl.pop) rows.push(["Popularity", `about ${pl.pop >= 1000 ? Math.round(pl.pop / 1000) + "k" : pl.pop} Wikipedia views a month`, "Wikipedia pageviews"]);
   if (pl.fee || pl.ticket) rows.push(["Fees", [pl.fee ? `$${pl.fee} per car` : "", pl.ticket ? `about $${pl.ticket} per person (boat, tour or entry)` : ""].filter(Boolean).join(" + "), "park and operator websites"]);
   return `<div><h4>The data behind this</h4><dl class="facts">${rows.map(([k, v, src]) => `<dt>${k}</dt><dd>${v}<small>${src}</small></dd>`).join("")}</dl></div>`;
 }

@@ -385,7 +385,7 @@ export const PLACES = [
     note: "A 220-foot waterfall that was only 'rediscovered' in 2004, and a clear lake with sandy beaches.",
     days: ["Whiskeytown Falls trail, then swim at Brandy Creek beach"], wiki: "Whiskeytown%E2%80%93Shasta%E2%80%93Trinity_National_Recreation_Area" },
   { id: "shasta-dam", name: "Shasta Dam & Lake Shasta Caverns", lat: 40.7180, lon: -122.4180, area: "foothills", tags: ["caves", "lakes", "history", "views"], fee: 0, extra: [36, "Lake Shasta Caverns tour (with a boat ride)"], stay: null, trip: "local",
-    note: "Walk across a dam twice the height of Niagara Falls with Mount Shasta behind it.",
+    note: "Walk across a dam over three times the height of Niagara Falls, with Mount Shasta behind it.",
     days: ["Walk the top of Shasta Dam, then the caverns tour across the lake"], wiki: "Shasta_Dam" },
   { id: "painted-cave", name: "Painted Cave & Knapp's Castle", lat: 34.5050, lon: -119.7870, area: "coast", tags: ["history", "offbeat", "views", "hiking"], fee: 0, stay: null, trip: "local",
     note: "Chumash paintings in a tiny cave, and the ruins of a mountain castle above Santa Barbara. Free.",
