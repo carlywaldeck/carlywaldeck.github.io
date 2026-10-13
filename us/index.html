@@ -497,6 +497,8 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
 .row small .heads-up { color: var(--warn); font-weight: 600; }
 .happening-note { margin: 10px 0 0; padding: 10px 12px; border-radius: 10px; background: var(--good-soft); font-size: 14px; }
 .spot-when { margin: 4px 0 0; font-size: 13px; font-weight: 600; color: var(--good); }
+#car-filter h3 + .seg { margin-bottom: 14px; }
+#car-filter h3 { margin-top: 0; }
 .region-pick { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
 .region-pick a { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; color: inherit; text-decoration: none; font-weight: 600; background: #fff; }
 .region-pick a small { flex-basis: 100%; color: var(--muted); font-weight: 400; font-size: 12px; }
@@ -711,7 +713,7 @@ body { background: radial-gradient(1100px 620px at 85% -12%, #FFF3D6 0%, rgba(25
   <div id="car-filter" hidden><h3 id="riders-label">People going</h3><div class="seg" id="riders" role="group" aria-labelledby="riders-label"></div>
     <h3><label for="car-type">Your car</label></h3><select id="car-type"></select>
     <p class="fine">Gas, park fees and rooms are split between everyone going. No car? Pick "train and bus".</p></div>
-  <div><h3><label for="currency">Show prices in</label></h3><select id="currency">
+  <div id="currency-filter"><h3><label for="currency">Show prices in</label></h3><select id="currency">
     <option value="EUR">€ Euros</option><option value="USD">$ US dollars</option><option value="GBP">£ Pounds</option>
   </select></div>
 </div>
@@ -4532,8 +4534,10 @@ function nearbyEscapes(home) {
       return (home.trainTrips || []).map(e => ({ ...e, id: `${home.id}.trn.${e.place}`, legHours: e.hours, overnight: state.days > 1 }))
         .filter(e => state.days === 1 ? e.hours <= 3 : !e.dayOnly && (state.days === 2 ? e.hours <= 6 : e.hours >= 2.5 && e.hours <= 10));
     }
-    const day = home.dayTrips.map(d => ({ ...leg(d), id: `${home.id}.day.${d.place}`, overnight: false }));
-    const wk = home.weekends.map(w => ({ ...leg(w), id: `${home.id}.wkd.${w.place}`, overnight: true }));
+    // Driving is the default; where the train goes too, keep it as an alternative to show in the plan.
+    const byTrain = new Map((home.trainTrips || []).map(e => [e.place, e]));
+    const day = home.dayTrips.map(d => ({ ...leg(d), id: `${home.id}.day.${d.place}`, overnight: false, alt: byTrain.get(d.place) || null }));
+    const wk = home.weekends.map(w => ({ ...leg(w), id: `${home.id}.wkd.${w.place}`, overnight: true, alt: byTrain.get(w.place) || null }));
     if (state.days === 1) return day;
     // 2 days: up to ~5½ h away. 3+ days: the farther trips (3 h or more), up to ~9 h: Vegas, San Diego, Zion…
     return wk.filter(w => (w.minDays || 2) <= state.days && (state.days >= 3 ? w.legHours >= 3 && w.legHours <= 9 : w.legHours >= 1 && w.legHours <= 5.5));
@@ -5673,7 +5677,8 @@ function escapeDetails(home, dest, cost) {
     ["c3", "Food", dayWord(state.days), cost.food],
     ["c4", US ? "Park fees & tickets" : "Sights & entry", "", cost.sights]
   ].filter(p => p[3] > 0);
-  const extra = US && esc.extra ? `<p class="fine">Optional, not included: ${esc.extra[1]}, about ${euro(esc.extra[0])} each.</p>` : "";
+  const extra = (US && esc.extra ? `<p class="fine">Optional, not included: ${esc.extra[1]}, about ${euro(esc.extra[0])} each.</p>` : "")
+    + (US && esc.alt && (state.days > 1 || esc.alt.hours <= 3) ? `<p class="fine">🚆 No car? The train goes too: about ${euro(esc.alt.fare)} round trip with the student discount, ~${hrs(esc.alt.hours)} each way door to door (see Booking).</p>` : "");
   return costBlock(parts, cost.total) + extra;
 }
 // US booking: directions and gas, the boat for island trips, where to sleep (campsite, hostel, motel
@@ -5690,7 +5695,12 @@ function usBookSection(home, dest, cost, t, { when, btn, place }) {
   const rows = esc.mode === "train"
     ? [["🚆", "Train", `${esc.fromName} (${esc.from}) → ${esc.toName} (${esc.station})${esc.change ? ", one change" : ""} · ${when} · about ${euro(cost.travel)} round trip each with Amtrak's 15% student discount${esc.lastMile ? ` · then ${esc.lastMile}` : ""}`,
         btn("https://www.amtrak.com/", "Amtrak") + btn(`https://maps.apple.com/?saddr=${home.lat},${home.lon}&daddr=${to}&dirflg=r`, "Apple Maps", false)]]
-    : [["🚗", "Drive", `${miles} miles each way${esc.port ? ` to ${esc.port[2]}` : ""} · ${when} · about ${euro(cost.travel)} gas each (${who})${esc.winterRoute ? " · the Sierra passes are closed, so this is the winter route" : ""}`, btn(dir, "Apple Maps")]];
+    : [["🚗", "Drive", `${miles} miles each way${esc.port ? ` to ${esc.port[2]}` : ""} · ${when} · about ${euro(cost.travel)} gas each (${who})${esc.winterRoute ? " · the Sierra passes are closed, so this is the winter route" : ""}`,
+        btn(dir, "Apple Maps") + btn(`https://maps.apple.com/?saddr=${home.lat},${home.lon}&daddr=${to}&dirflg=r`, "Transit route", false)]];
+  if (esc.mode !== "train" && esc.alt) {
+    const a = esc.alt;
+    rows.push(["🚆", "Or take the train", `${a.fromName} (${a.from}) → ${a.toName} (${a.station})${a.change ? ", one change" : ""} · about ${euro(a.fare)} round trip each with Amtrak's 15% student discount, ~${hrs(a.hours)} each way door to door${a.lastMile ? ` · then ${a.lastMile}` : ""}`, btn("https://www.amtrak.com/", "Amtrak", false)]);
+  }
   const ferry = US_FERRIES[esc.place];
   if (ferry) rows.push(["⛴️", "Boat", `Round trip about ${euro(esc.ticket)} each · book ahead, boats sell out on weekends`, btn(ferry[1], ferry[0], false)]);
   if (cost.nights > 0 && cost.stay) {
@@ -7975,7 +7985,7 @@ function setupControls() {
   $("#interests").addEventListener("click", (e) => { const b = e.target.closest(".chip"); if (b) { toggle(state.interests, b.dataset.v); changed(); } });
   $("#modes").addEventListener("click", (e) => { const b = e.target.closest(".chip"); if (b) { toggle(state.modes, b.dataset.v); changed(); } });
   if (US) {
-    $("#modes-filter").hidden = true; $("#car-filter").hidden = false;
+    $("#modes-filter").hidden = true; $("#car-filter").hidden = false; $("#currency-filter").hidden = true; // prices are in dollars
     $("#riders").innerHTML = [1, 2, 3, 4, 5].map(n => `<button type="button" class="pick" data-v="${n}" aria-label="${n} ${n === 1 ? "person" : "people"}">${n}</button>`).join("");
     $("#car-type").innerHTML = Object.entries(CARS).map(([k, c]) => `<option value="${k}">${c.label}${c.mpg ? ` (${c.mpg} mpg)` : ""}</option>`).join("");
     $("#riders").addEventListener("click", (e) => { const b = e.target.closest(".pick"); if (b) { state.car.riders = Number(b.dataset.v); changed(); } });

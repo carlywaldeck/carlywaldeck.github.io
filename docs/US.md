@@ -38,7 +38,9 @@ Everything is per person, for driving:
 | Where you sleep | A $35 campsite (up to 6), a $135 motel room with two beds (up to 4), a $160 cabin (up to 6), or a hostel bed (each city's own price: $36 in San Diego to $55 in Santa Barbara), split between the people going. Motels and cabins cost more in summer; campsites don't |
 | Food | A coffee or snack for a local find ($5), lunch out on a day trip ($12), and per day away: $12 camping or $15 in a cabin (you cook), $20 at a motel, $25 in a city |
 
-**No car?** Pick "No car: train and bus" under Filters → Your car. Trips then go by Amtrak (Pacific
+**Public transport.** Trips assume you drive, but every plan also has a transit route in Apple Maps,
+and trips the train reaches show "Or take the train" with its fare and time. **No car?** Pick "No car:
+train and bus" under Filters → Your car. Trips then go by Amtrak (Pacific
 Surfliner, Coast Starlight, Capitol Corridor, San Joaquins and the Zephyr to Truckee and Reno) from the
 campus's nearest station, with the bus or ferry from the arrival station (the YARTS bus into Yosemite,
 the Highway 17 Express to Santa Cruz, the boat to Catalina or the Channel Islands). Fares are typical

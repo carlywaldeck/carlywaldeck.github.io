@@ -92,10 +92,14 @@ export default async function run() {
       const been = beenPlace(sb.dest.id);
       state.car.type = "gas"; update();
       const carKeys = current.trips.map((x) => x.key);
-      return { trips, book, been: been && been.name, carKeys, sbId: sb.dest.id };
+      const sbCar = current.trips.find((x) => x.dest.escape.place === "santa-barbara");
+      ui.drawer = sbCar.key; ui.tab = "book"; renderDrawer();
+      const carBook = document.querySelector("#drawer").innerHTML;
+      return { trips, book, been: been && been.name, carKeys, sbId: sb.dest.id, carBook };
     });
     t.check(tr.trips.length >= 3 && tr.trips.every((x) => x.mode === "train"), `without a car, trips go by train (${tr.trips.map((x) => x.name).join(", ")})`);
     t.check(/amtrak\.com/.test(tr.book) && /SLO/.test(tr.book) && /student discount/.test(tr.book), "train booking: Amtrak from San Luis Obispo with the student discount");
+    t.check(/Or take the train/.test(tr.carBook) && /dirflg=r/.test(tr.carBook) && /dirflg=d/.test(tr.carBook), "driving trips also show the train and a transit route");
     t.check(tr.sbId === "cal-poly-slo.trn.santa-barbara" && tr.been === "Santa Barbara" && tr.carKeys.includes("cal-poly-slo.day.santa-barbara@1"), `trip ids name the college and the place (${tr.sbId}, ${tr.carKeys[0]})`);
     // Seasonal highlights: monarchs at Pismo in January, not in July.
     const hl = await page.evaluate(() => {
