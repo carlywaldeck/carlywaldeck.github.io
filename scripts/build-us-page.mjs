@@ -24,6 +24,12 @@ swap(/* links resolve from the site root, and the app knows which version it is 
 html = html.replace(/<script src="data\/app-data\.js\?v=[^"]*"><\/script>/,
   `<script src="data/us-data.js?v=${stamp(usData)}"></script>\n<script src="assets/us.js?v=${stamp(usJs)}"></script>`);
 if (!html.includes("data/us-data.js")) throw new Error("build-us-page: app-data script tag not found");
+// Europe's 120 cities (about 250 KB) aren't used here: assets/us.js sets the colleges instead.
+{
+  const i = html.indexOf("window.CITIES = ["), j = html.indexOf("\n];\n</script>", i);
+  if (i < 0 || j < 0) throw new Error("build-us-page: the European city list was not found");
+  html = html.slice(0, i) + "window.CITIES = []; // the California version's colleges come from assets/us.js" + html.slice(j + 3);
+}
 
 const TITLE = "Weekender: weekend trips for California college students";
 swap("<title>Weekender: cheap weekend trips for students abroad</title>", `<title>${TITLE}</title>`);
