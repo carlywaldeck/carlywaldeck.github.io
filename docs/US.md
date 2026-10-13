@@ -14,7 +14,7 @@ version, and an account keeps both.
 
 ## What it shows
 
-Pick your college (49 to start: every UC and CSU campus, plus the larger private colleges,
+Pick your college (65: every UC and CSU campus and the private four-year colleges, no community colleges;
 Cal Poly SLO included) and you get four kinds of trips:
 
 - **Local finds**: under 45 minutes from campus (Bishop Peak, Montaña de Oro and Pismo's dunes from Cal Poly SLO).
@@ -54,7 +54,7 @@ Everything is per person, for driving:
 
 | What | Source |
 |------|--------|
-| Colleges and 100+ hand-picked places, with notes and day plans | `scripts/us/colleges.mjs`, `scripts/us/places.mjs` |
+| Colleges and 130 hand-picked places, with notes and day plans | `scripts/us/colleges.mjs`, `scripts/us/places.mjs` |
 | Drive times and distances from every campus | OSRM (OpenStreetMap road routing) |
 | Coordinates check and popularity | Wikipedia (coordinates, 60 days of pageviews) |
 | Best months to go | Open-Meteo, 5 years of daily weather, blended with a season profile per kind of place |

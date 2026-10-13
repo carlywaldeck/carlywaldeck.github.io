@@ -6877,7 +6877,7 @@ function renderPanel(result) {
     const far = main.filter(t => t.days === d && !isEscape(t));
     if (US) {
       const loc = near.filter(t => t.dest.escape.local), rest = near.filter(t => !t.dest.escape.local);
-      if (loc.length) groups.push([`${pre}Local finds · under 45 min`, loc]);
+      if (loc.length) groups.push([`${pre}Local finds · ${Math.max(...loc.map(t => t.cost.transport.hours)) <= 0.76 ? "under 45 min" : "about an hour or less"}`, loc]);
       if (rest.length) groups.push([`${pre}${d === 1 ? "Day trips" : d === 2 ? "Weekend trips" : "Long weekends"} from ${home.name}`, rest]);
       continue;
     }

@@ -769,7 +769,7 @@ body { background: radial-gradient(1100px 620px at 85% -12%, #FFF3D6 0%, rgba(25
       <div class="brand big"><svg class="mark" viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="116" fill="#2F5BEA"/><g transform="translate(0 30)"><path d="M120 196 Q 188 372 256 196 Q 324 372 392 196" fill="none" stroke="#fff" stroke-width="40" stroke-linecap="round"/><circle cx="120" cy="196" r="38" fill="#fff"/><circle cx="256" cy="196" r="38" fill="#fff"/><circle cx="392" cy="196" r="38" fill="#FFC857"/></g></svg>weekender<span>.</span></div>
       <p class="lp-slogan">Study here. Weekend everywhere.</p>
       <h1 id="lp-title">Cheap trips from <span class="hl">wherever you're studying.</span></h1>
-      <p>49 California colleges, hidden local spots, day trips and weekend road trips, scored 1–10 for you.</p>
+      <p>65 California colleges, hidden local spots, day trips and weekend road trips, scored 1–10 for you.</p>
       <ol class="lp-how" aria-label="How it works">
         <li><b>Pick your college and budget</b><span>Your campus, when, and what you want to spend.</span></li>
         <li><b>Get trips scored 1–10</b><span>Drive time, gas split three ways, park fees, weather and what you're into, in one number.</span></li>
@@ -4011,7 +4011,7 @@ window.CITIES = [
 // Phone apps: use the newest prices downloaded last time (see refreshAppData), if newer than the built-in copy.
 if (window.Capacitor) { try { const d = JSON.parse(localStorage.getItem("weekender:data") || "null"); if (d && d.generated) window.CITY_DATA = d; } catch { /* no saved copy */ } }
 </script>
-<script src="data/us-data.js?v=7e97a2b8"></script>
+<script src="data/us-data.js?v=e71a3cc5"></script>
 <script src="assets/us.js?v=40f8c7f7"></script>
 <script>
 // ======================================================================
@@ -6881,7 +6881,7 @@ function renderPanel(result) {
     const far = main.filter(t => t.days === d && !isEscape(t));
     if (US) {
       const loc = near.filter(t => t.dest.escape.local), rest = near.filter(t => !t.dest.escape.local);
-      if (loc.length) groups.push([`${pre}Local finds · under 45 min`, loc]);
+      if (loc.length) groups.push([`${pre}Local finds · ${Math.max(...loc.map(t => t.cost.transport.hours)) <= 0.76 ? "under 45 min" : "about an hour or less"}`, loc]);
       if (rest.length) groups.push([`${pre}${d === 1 ? "Day trips" : d === 2 ? "Weekend trips" : "Long weekends"} from ${home.name}`, rest]);
       continue;
     }

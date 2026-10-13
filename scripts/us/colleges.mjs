@@ -1,5 +1,6 @@
 // California colleges for the US version: [id, name, short city, lat, lon, nearest airport, Wikipedia title].
-// Launch set: every UC and CSU campus with undergraduates, plus the larger private colleges.
+// Every UC and CSU campus with undergraduates, and California's private four-year colleges and
+// universities (no community colleges).
 // Coordinates are campus centers; the data job (scripts/build-us.mjs) refines them from Wikipedia.
 export const COLLEGES = [
   // University of California
@@ -53,5 +54,21 @@ export const COLLEGES = [
   ["westmont", "Westmont", "Santa Barbara", 34.4492, -119.6607, "SBA", "Westmont_College"],
   ["cal-lutheran", "Cal Lutheran", "Thousand Oaks", 34.2246, -118.8775, "BUR", "California_Lutheran_University"],
   ["biola", "Biola", "La Mirada", 33.9058, -118.0167, "LGB", "Biola_University"],
-  ["azusa-pacific", "Azusa Pacific", "Azusa", 34.1307, -117.8880, "ONT", "Azusa_Pacific_University"]
+  ["azusa-pacific", "Azusa Pacific", "Azusa", 34.1307, -117.8880, "ONT", "Azusa_Pacific_University"],
+  ["redlands", "University of Redlands", "Redlands", 34.0632, -117.1637, "ONT", "University_of_Redlands"],
+  ["la-verne", "University of La Verne", "La Verne", 34.1007, -117.7716, "ONT", "University_of_La_Verne"],
+  ["whittier", "Whittier College", "Whittier", 33.9783, -118.0303, "LGB", "Whittier_College"],
+  ["cal-baptist", "California Baptist", "Riverside", 33.9286, -117.4255, "ONT", "California_Baptist_University"],
+  ["concordia-irvine", "Concordia Irvine", "Irvine", 33.6560, -117.8113, "SNA", "Concordia_University_Irvine"],
+  ["vanguard", "Vanguard University", "Costa Mesa", 33.6630, -117.9095, "SNA", "Vanguard_University"],
+  ["soka", "Soka University", "Aliso Viejo", 33.5554, -117.7350, "SNA", "Soka_University_of_America"],
+  ["mount-saint-marys", "Mount Saint Mary's", "Los Angeles", 34.0833, -118.4822, "LAX", "Mount_Saint_Mary%27s_University"],
+  ["calarts", "CalArts", "Valencia", 34.3928, -118.5673, "BUR", "California_Institute_of_the_Arts"],
+  ["artcenter", "ArtCenter", "Pasadena", 34.1676, -118.1858, "BUR", "ArtCenter_College_of_Design"],
+  ["fresno-pacific", "Fresno Pacific", "Fresno", 36.7268, -119.7326, "FAT", "Fresno_Pacific_University"],
+  ["dominican", "Dominican University", "San Rafael", 37.9806, -122.5160, "SFO", "Dominican_University_of_California"],
+  ["menlo", "Menlo College", "Atherton", 37.4545, -122.1915, "SJC", "Menlo_College"],
+  ["cal-maritime", "Cal Maritime", "Vallejo", 38.0690, -122.2308, "OAK", "California_State_University_Maritime_Academy"],
+  ["pacific-union", "Pacific Union College", "Angwin", 38.5730, -122.4436, "STS", "Pacific_Union_College"],
+  ["simpson", "Simpson University", "Redding", 40.6197, -122.3627, "RDD", "Simpson_University"]
 ];

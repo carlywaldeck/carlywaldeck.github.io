@@ -125,16 +125,20 @@ async function fetchClimate(places) {
 // ---------------------------------------------------------------- 4. OpenStreetMap: local finds near campus
 const OSM_KINDS = [["natural", "waterfall", "Waterfall", ["nature", "hiking"]], ["natural", "hot_spring", "Hot spring", ["spas", "nature", "offbeat"]],
   ["natural", "peak", "Summit hike", ["hiking", "views", "mountains"]], ["natural", "cave_entrance", "Cave", ["caves", "offbeat"]], ["natural", "arch", "Rock arch", ["views", "offbeat"]],
-  ["natural", "beach", "Beach", ["beach"]], ["tourism", "viewpoint", "Viewpoint", ["views"]], ["leisure", "garden", "Garden", ["gardens"]], ["historic", "ghost_town", "Ghost town", ["history", "offbeat"]]];
+  ["natural", "beach", "Beach", ["beach"]], ["tourism", "viewpoint", "Viewpoint", ["views"]], ["leisure", "garden", "Garden", ["gardens"]], ["historic", "ghost_town", "Ghost town", ["history", "offbeat"]],
+  ["leisure", "nature_reserve", "Nature reserve", ["nature", "hiking", "wildlife"]], ["leisure", "park", "Park", ["nature", "hiking"]]];
+const OSM_VERSION = 2; // bump when the kinds change, so the data job asks again
 // What to do at each kind of OpenStreetMap find.
 const OSM_PLAN = { Waterfall: "Hike in after a rainy week when it's flowing best, picnic at the pool", "Hot spring": "Soak at sunset; bring water, cash for any fee, and leave no trace",
   "Summit hike": "Start early to beat the heat, watch the view clear from the top", Cave: "Bring a headlamp and check it's open before you go",
   "Rock arch": "Go at golden hour for photos", Beach: "Check the tide, go for sunset, tacos after", Viewpoint: "Go for sunset, then dinner nearby",
-  Garden: "Free or cheap entry most days; go in the morning", "Ghost town": "Walk the old main street and look for the cemetery; bring water" };
+  Garden: "Free or cheap entry most days; go in the morning", "Ghost town": "Walk the old main street and look for the cemetery; bring water",
+  "Nature reserve": "Walk the main loop early, when the wildlife is out; binoculars help", Park: "Pick the longest trail, bring a picnic, stay for sunset" };
 async function fetchOsm(colleges) {
+  if (sources.osmVersion !== OSM_VERSION) { sources.osm = {}; sources.osmVersion = OSM_VERSION; }
   for (const c of colleges) {
     if (sources.osm[c.id]) continue;
-    const q = `[out:json][timeout:60];(${OSM_KINDS.map(([k, v]) => `nwr["${k}"="${v}"]["wikipedia"](around:40000,${c.lat},${c.lon});`).join("")});out center tags 80;`;
+    const q = `[out:json][timeout:60];(${OSM_KINDS.map(([k, v]) => `nwr["${k}"="${v}"]["wikipedia"](around:40000,${c.lat},${c.lon});`).join("")});out center tags 250;`;
     try {
       const d = await get("https://overpass-api.de/api/interpreter", { method: "POST", body: "data=" + encodeURIComponent(q), headers: { "Content-Type": "application/x-www-form-urlencoded" }, wait: 15000, timeout: 90000 });
       sources.osm[c.id] = (d.elements || []).map((e) => {
@@ -276,13 +280,13 @@ const addPlace = (p) => { places[p.id] = { name: p.name, lat: +p.lat.toFixed(4),
 PLACES.forEach(addPlace);
 const out = [];
 for (const c of colleges) {
-  const local = [], day = [], wkd = [], long = [];
+  const local = [], nearish = [], day = [], wkd = [], long = [];
   const all = [...PLACES];
   // Extra local finds from OpenStreetMap near this campus: known ones (Wikipedia views), not already ours.
   for (const o of osmFinds(c)) {
     if (all.some((p) => km([p.lat, p.lon], [o.lat, o.lon]) < 4 || p.name.includes(o.name))) continue;
     const views = (sources.wiki[o.wiki] || {}).views;
-    if (views != null && views < OSM_MIN_VIEWS) continue;
+    if (views != null && views < (o.kind === "Park" ? 600 : OSM_MIN_VIEWS)) continue; // plenty of small city parks have a page
     const near = PLACES.reduce((b, p) => (km([p.lat, p.lon], [o.lat, o.lon]) < km([b.lat, b.lon], [o.lat, o.lon]) ? p : b));
     const p = { id: o.id, name: o.name, lat: o.lat, lon: o.lon, area: near.area, tags: o.tags, fee: 0, stay: null, trip: "local", osm: true,
       note: `A ${o.kind.toLowerCase()} near campus, found in OpenStreetMap.`, days: [OSM_PLAN[o.kind] || "Go for sunset, then dinner nearby"], wiki: o.wiki };
@@ -294,10 +298,13 @@ for (const c of colleges) {
     const row = (k) => [p.id, Math.round(r.km), Math.round(h * 100) / 100, k + (r.real ? "" : "~"), ...(r.winter ? [Math.round(r.winter[0]), r.winter[1]] : [])];
     const short = p.trip === "local" || p.trip === "both" || p.trip === "day", overnight = p.trip === "both" || p.trip === "weekend" || p.trip === "long";
     if (short && h <= 0.75) local.push(row("l"));
+    else if (short && h <= 1 && p.trip === "local") nearish.push(row("l"));
     else if ((p.trip === "local" && h <= 1.5) || ((p.trip === "both" || p.trip === "day") && h <= 3)) day.push(row("d"));
     if (overnight && p.trip !== "long" && h >= 1 && h <= 5.5) wkd.push(row("w"));
     else if (overnight && h >= 1 && h <= 9) long.push(row("x"));
   }
+  // Spread-out campuses (Bakersfield, Turlock, Merced…) with few finds within 45 minutes: up to an hour.
+  if (local.filter((r) => !places[r[0]].osm).length < 3) local.push(...nearish.sort((a, b) => a[2] - b[2]).slice(0, 3));
   // Local finds: our hand-picked places first (closest first), then OpenStreetMap's best known.
   local.sort((a, b) => (!!places[a[0]].osm - !!places[b[0]].osm) || (places[a[0]].osm ? places[b[0]].fame - places[a[0]].fame : a[2] - b[2]));
   out.push({ id: c.id, code: c.code, name: c.name, town: c.town, lat: c.lat, lon: c.lon, wiki: c.wiki,
