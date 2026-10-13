@@ -204,18 +204,30 @@ if (FETCH) {
 // Our coordinates are picked by hand (a trailhead, a town center); Wikipedia's are only a check.
 for (const x of [...colleges, ...PLACES]) { const w = sources.wiki[x.wiki]; if (w && w.coord && km([x.lat, x.lon], w.coord) > 25) log(`check coordinates: ${x.name} is ${Math.round(km([x.lat, x.lon], w.coord))} km from Wikipedia's`); }
 
-// Without a key: EIA's public weekly series page for California regular gasoline (an HTML table of
-// weeks; the last filled cell is this week's price).
+// Without a key: EIA's public pages. First the weekly series table for California regular gasoline
+// (the last filled cell is this week's price), then the "Gasoline and Diesel Fuel Update" page
+// (California's row lists the last three weeks). What went wrong, if anything, is kept in
+// sources.gasCheck so it can be read from the committed data (Actions logs aren't always at hand).
 async function fetchGasPage() {
+  const check = [];
+  const page = async (url) => { const r = await fetch(url, { headers: { "User-Agent": UA }, signal: AbortSignal.timeout(60000) }); const t = await r.text(); check.push(`${url.split("/").slice(2, 4).join("/")}: HTTP ${r.status}, ${t.length} chars`); return t; };
+  const ok = (v) => v > 2 && v < 9;
   try {
-    const r = await fetch("https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=EMM_EPMR_PTE_SCA_DPG&f=W", { headers: { "User-Agent": UA }, signal: AbortSignal.timeout(60000) });
-    const html = await r.text();
-    const cells = [...html.matchAll(/<td class=['"]B3['"][^>]*>\s*([0-9]\.[0-9]{3})\s*<\/td>/g)].map((m) => Number(m[1]));
-    const weeks = [...html.matchAll(/(\d{4})-([A-Za-z]{3})\s*<\/td>/g)];
-    const price = cells[cells.length - 1];
-    if (price > 2 && price < 9) sources.gas = { price, week: weeks.length ? `${weeks[weeks.length - 1][1]}-${weeks[weeks.length - 1][2]}` : new Date().toISOString().slice(0, 10), source: "EIA weekly California regular gasoline" };
-    else log("eia page: no price found");
-  } catch (e) { log("eia page:", e.message); }
+    const html = await page("https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=EMM_EPMR_PTE_SCA_DPG&f=W");
+    const cells = [...html.matchAll(/<td[^>]*class=['"]?B3['"]?[^>]*>\s*([0-9]\.[0-9]{2,3})\s*<\/td>/gi)].map((m) => Number(m[1]));
+    check.push(`series cells: ${cells.length}, last ${cells.slice(-3).join(",")}`);
+    if (ok(cells[cells.length - 1])) { sources.gas = { price: cells[cells.length - 1], week: new Date().toISOString().slice(0, 10), source: "EIA weekly California regular gasoline" }; sources.gasCheck = check; return; }
+  } catch (e) { check.push("series: " + e.message); }
+  try {
+    const html = await page("https://www.eia.gov/petroleum/gasdiesel/");
+    const i = html.search(/>\s*California\s*</);
+    const nums = i < 0 ? [] : [...html.slice(i, i + 1500).matchAll(/>\s*([0-9]\.[0-9]{3})\s*</g)].map((m) => Number(m[1]));
+    check.push(`update page: California at ${i}, numbers ${nums.slice(0, 5).join(",")}`);
+    // Gasoline table: three weekly prices, then week-ago and year-ago changes. The third is this week.
+    if (ok(nums[2])) { sources.gas = { price: nums[2], week: new Date().toISOString().slice(0, 10), source: "EIA weekly California regular gasoline" }; sources.gasCheck = check; return; }
+  } catch (e) { check.push("update page: " + e.message); }
+  sources.gasCheck = check;
+  log("eia:", check.join(" | "));
 }
 
 // ---------------------------------------------------------------- build
@@ -274,7 +286,7 @@ function balanced(rows, n, c) {
 // min), d = day trip (up to 3 h each way), w = weekend (up to 5½ h), x = long weekend, 3+ days (up to
 // 9 h); "~" marks an estimated route. Winter km/hours are set when the Sierra passes' winter closure makes the drive longer.
 const places = {};
-const addPlace = (p) => { places[p.id] = { name: p.name, lat: +p.lat.toFixed(4), lon: +p.lon.toFixed(4), area: p.area, tags: p.tags, fee: p.fee || 0, ticket: p.ticket || 0, ...(p.extra ? { extra: p.extra } : {}), stay: p.stay, ...(p.stayCost ? { stayCost: p.stayCost } : {}), note: p.note, days: p.days, wiki: p.wiki, season: season(p), pop: pop(p),
+const addPlace = (p) => { places[p.id] = { name: p.name, lat: +p.lat.toFixed(4), lon: +p.lon.toFixed(4), area: p.area, tags: p.tags, fee: p.fee || 0, ticket: p.ticket || 0, ...(p.extra ? { extra: p.extra } : {}), stay: p.stay, ...(p.stayCost ? { stayCost: p.stayCost } : {}), ...(p.when ? { when: p.when } : {}), note: p.note, days: p.days, wiki: p.wiki, season: season(p), pop: pop(p),
   ...(p.port ? { port: p.port } : {}), ...(tideFor(p) ? { tide: tideFor(p) } : {}), ...(sources.climate[p.id] ? { clim: sources.climate[p.id] } : {}), ...(p.osm ? { osm: 1 } : {}) };
   Object.defineProperty(places[p.id], "fame", { value: Math.log10(pop(p) + 100) + (p.osm ? -0.5 : 0), enumerable: false }); };
 PLACES.forEach(addPlace);

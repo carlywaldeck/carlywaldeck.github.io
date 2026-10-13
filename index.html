@@ -490,6 +490,10 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
   .landing-card { padding: 18px; }
 }
 .links.tiktok { margin-top: 8px; }
+.row small .happening { color: var(--good); font-weight: 600; }
+.row small .heads-up { color: var(--warn); font-weight: 600; }
+.happening-note { margin: 10px 0 0; padding: 10px 12px; border-radius: 10px; background: var(--good-soft); font-size: 14px; }
+.spot-when { margin: 4px 0 0; font-size: 13px; font-weight: 600; color: var(--good); }
 .region-pick { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
 .region-pick a { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; color: inherit; text-decoration: none; font-weight: 600; background: #fff; }
 .region-pick a small { flex-basis: 100%; color: var(--muted); font-weight: 400; font-size: 12px; }
@@ -4549,6 +4553,8 @@ function usLeg(esc) {
   return { km: w ? esc.winter[0] : esc.km, hours: w ? esc.winter[1] : esc.hours, winter: w };
 }
 const carInfo = () => CARS[state.car.type] || CARS.gas;
+// What's happening at a place in the chosen month (monarchs, superblooms, whale season, a festival…).
+const usWhen = (t) => (US && t.dest.escape && (t.dest.escape.when || []).filter(w => w[0].includes(state.month))) || [];
 const perMile = () => carInfo().perMile || US_DATA.gas.price / carInfo().mpg;
 const usGas = (km) => Math.round(km * 2 / 1.609 * perMile() / state.car.riders);
 // How many people share a campsite (6), a motel room (4) or a cabin (6); hostels charge per bed.
@@ -6894,7 +6900,7 @@ function renderPanel(result) {
       return `<button type="button" class="row ${tone(t)}${ui.selected === t.key ? " active" : ""}" data-id="${t.key}" title="${TONE_TEXT[tone(t)]}: ${t.score10}/10">
         <span class="thumb" data-wiki="${t.dest.name.replace(/"/g, "&quot;")}" data-initial="${t.dest.name[0]}"></span>
         <span class="row-main"><strong>${t.dest.name}</strong>
-          <small>${multi ? `${dayWord(t.days)} · ` : ""}${tripKind(t)} · ${MODES[t.cost.transport.mode].label} ${hrs(t.cost.transport.hours)}${state.interests.size && likes.length ? ` · <span class="match">✓ ${likes.join(", ")}</span>` : ""}</small></span>
+          <small>${multi ? `${dayWord(t.days)} · ` : ""}${tripKind(t)} · ${MODES[t.cost.transport.mode].label} ${hrs(t.cost.transport.hours)}${state.interests.size && likes.length ? ` · <span class="match">✓ ${likes.join(", ")}</span>` : ""}${usWhen(t).map(w => ` · <span class="${w[4] === false ? "heads-up" : "happening"}">${w[1]} ${w[2]}</span>`).join("")}</small></span>
         <span class="row-right">${scoreBadge(t)}<span class="row-price num">${euro(t.cost.total)}</span>${(() => { const w = state.lastMinute && weekendWx(t.dest, current.home || byId(state.home)); return w ? `<span class="row-wx">${WX_ICON(w.code)} ${w.hi}°</span>` : ""; })()}</span>
       </button>`;
     }).join("")}`).join("");
@@ -6923,7 +6929,7 @@ function renderSpot() {
     <div class="spot-price"><strong class="num">${euro(t.cost.total)}</strong>
       <span class="${left >= 0 ? "good" : "warn"}">${left >= 0 ? `${euro(left)} under budget` : `${euro(-left)} over`}</span></div>
     <p class="spot-meta">${MODES[t.cost.transport.mode].label} · ~${hrs(t.cost.transport.hours)} each way · ${dayWord(t.days)}
-      · <span class="${s.tone}">${s.text.toLowerCase()} in ${MONTHS[state.month]}</span></p>
+      · <span class="${s.tone}">${s.text.toLowerCase()} in ${MONTHS[state.month]}</span></p>${usWhen(t).filter(w => w[4] !== false).map(w => `<p class="spot-when">${w[1]} ${w[2]} in ${MONTHS[state.month]}</p>`).join("")}
     <div class="spot-score">${scoreBadge(t, "big")}<span><b>${TONE_TEXT[tone(t)]}</b> · out of 10</span></div>
     <div class="spot-actions">
       <button type="button" class="cta" data-act="open-plan" data-id="${t.key}">Open the plan</button>
@@ -6956,7 +6962,7 @@ function drawDrawer(t) {
   const live = `${weatherSection(t)}${holidaySection(t)}`;
   // Tabs keep the plan short: what it costs and why it scores, the day-by-day plan, where to book, and the rest.
   const panes = isEscape(t)
-    ? [["overview", "Overview", `<p class="lede">${dest.escape.note}</p>${scoreSection(t)}${escapeDetails(home, dest, cost)}`],
+    ? [["overview", "Overview", `<p class="lede">${dest.escape.note}</p>${usWhen(t).map(w => `<p class="happening-note">${w[1]} ${w[3]}</p>`).join("")}${scoreSection(t)}${escapeDetails(home, dest, cost)}`],
        ["plan", "Itinerary", `${escapePlan(home, dest.escape, cost)}${tiktokSection(dest, matched)}`],
        ["book", "Booking", bookSection(home, dest, cost, t)],
        ["details", "Details", `${about}${US ? usDataSection(t) + usLiveSection(t) : dataSection(t)}${live}${escapeTips(cost)}${US ? "" : sourcesNote()}`]]
@@ -6983,6 +6989,7 @@ function drawDrawer(t) {
       ${localCurrencyNote(t)}
       <div class="tags">
         <span class="tag ${s.tone}">${s.text} in ${MONTHS[state.month]}</span>
+        ${usWhen(t).map(w => `<span class="tag ${w[4] === false ? "warn" : "good"}">${w[1]} ${w[2]}</span>`).join("")}
         ${matched.map(m => `<span class="tag">${INTERESTS[m]}</span>`).join("")}
         ${viaDayTrip.map(m => `<span class="tag">${INTERESTS[m]} · day trip</span>`).join("")}
       </div>

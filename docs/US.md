@@ -42,6 +42,12 @@ Everything is per person, for driving:
 
 ## Extras in each plan
 
+- **What's happening**: about 40 places have seasonal highlights, shown on the trip and boosting its
+  score in those months: monarch butterflies at Pismo (Nov–Feb), elephant seal pups, gray and humpback
+  whales, desert superblooms, Yosemite's waterfalls and the February firefall, Eastern Sierra fall
+  color, snow season, apple picking at Oak Glen, cranes in the Central Valley, free festivals. Some are
+  heads-ups instead (Death Valley's summer heat, Coachella weekends filling Palm Springs).
+
 - **Apple Maps** directions from campus (to the harbor for Catalina, the Channel Islands and Angel Island, with the boat to book).
 - **Winter routes**: the Sierra passes (Tioga, Sonora, Ebbetts) close about November to May. Drives to
   Mono Lake, Mammoth and Bishop that cross them in summer use the longer winter route in those months.

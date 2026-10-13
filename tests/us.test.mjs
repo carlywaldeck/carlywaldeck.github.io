@@ -82,6 +82,12 @@ export default async function run() {
     t.check(Math.max(...money.local) <= 15, `local finds are pocket money (${money.local})`);
     t.check(["Las Vegas (Nevada)", "San Diego", "Joshua Tree"].every((n) => money.long.includes(n)) && money.minLong >= 3,
       `long weekends from Cal Poly reach Vegas, San Diego and Joshua Tree (${money.long.slice(0, 12)})`);
+    // Seasonal highlights: monarchs at Pismo in January, not in July.
+    const hl = await page.evaluate(() => {
+      const pick = (m) => { state.month = m; state.daysSet = new Set([1]); state.days = 1; update(); const t = current.trips.find((x) => x.dest.escape.place === "pismo-dunes"); return t ? { when: usWhen(t).map((w) => w[2]), row: document.querySelector(`.row[data-id="${t.key}"]`)?.textContent || "" } : null; };
+      return { jan: pick(0), jul: pick(6) };
+    });
+    t.check(hl.jan && hl.jan.when.includes("Monarch butterflies") && /Monarch/.test(hl.jan.row) && hl.jul && !hl.jul.when.length, `seasonal highlights show in the right month (${JSON.stringify(hl)})`);
     // Tides: NOAA (faked here) gives low tides for a beach trip on your dates.
     const tide = await openApp(browser, { file: US_INDEX, setup: async (pg) => {
       await pg.route("https://api.tidesandcurrents.noaa.gov/**", (r) => r.fulfill({ contentType: "application/json", body: JSON.stringify({ predictions: [{ t: "2026-11-06 06:12", v: "-0.4", type: "L" }, { t: "2026-11-06 12:30", v: "4.9", type: "H" }] }) }));

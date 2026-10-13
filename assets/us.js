@@ -14,6 +14,8 @@
   const handPicked = Object.entries(P).filter(([, p]) => !p.osm);
   const nearby = (id) => handPicked.filter(([k, q]) => k !== id && km(P[id], q) < 70).sort((a, b) => km(P[id], a[1]) - km(P[id], b[1])).slice(0, 3)
     .map(([k, q]) => ({ place: k, name: q.name, plan: q.days[0] }));
+  // Months with a seasonal highlight (monarchs, superblooms, snow…) count as the best time to go.
+  const boosted = (p) => { const s = [...p.season]; for (const [months, , , , boost] of p.when || []) if (boost !== false) for (const m of months) s[m] = 5; return s; };
   window.US_WIKI = {};
   window.PLACES = window.PLACES || {};
   window.CITIES = D.colleges.map((c) => {
@@ -24,7 +26,7 @@
       window.PLACES[p.name] = [[p.lat, p.lon]];
       if (p.wiki) window.US_WIKI[p.name] = decodeURIComponent(p.wiki).replace(/_/g, " ");
       const base = { name: p.name, place: id, how: "Drive", km: dist, hours, winter: wKm ? [wKm, wHours] : null, port: p.port || null, fee: p.fee, ticket: p.ticket, extra: p.extra || null, stayCost: p.stayCost || null,
-        tags: p.tags, note: p.note, season: p.season, realRoute: !kind.includes("~"), osm: !!p.osm };
+        tags: p.tags, note: p.note, season: boosted(p), when: p.when || null, realRoute: !kind.includes("~"), osm: !!p.osm };
       if (kind[0] === "l" || kind[0] === "d") dayTrips.push({ ...base, local: kind[0] === "l", days: p.days.slice(0, 1) });
       else weekends.push({ ...base, stayKind: p.stay || "motel", days: p.days, extras: nearby(id), long: kind[0] === "x", minDays: kind[0] === "x" ? 3 : 2 });
     }
