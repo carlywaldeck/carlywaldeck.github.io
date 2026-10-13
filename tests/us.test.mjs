@@ -119,6 +119,19 @@ export default async function run() {
     });
     t.check(/Big Sur Jazz Night/.test(live.details) && /7:30 PM/.test(live.details), "plans list events on your dates");
     t.check(/recreation\.gov\/camping\/campgrounds\/233116/.test(live.book) && /3 sites open/.test(live.book), "booking shows campgrounds with open sites on your nights");
+    // "In San Luis Obispo": events and spots in the college's own town, above the trips (not trips).
+    const town = await page.evaluate(() => {
+      const h = byId("cal-poly-slo"), keep = h.around;
+      h.around = [["Mission San Luis Obispo de Tolosa", "Historic building", "🏚️", 35.28, -120.66, "Mission_San_Luis_Obispo_de_Tolosa"]];
+      const [go] = weekendDates(3);
+      US_LIVE.events["c:cal-poly-slo"] = [[go, "19:00", "Cal Poly Mustangs football", "Spanos Stadium", "https://www.ticketmaster.com/z", "sports"]];
+      state.home = "cal-poly-slo"; update();
+      const card = document.querySelector("#results .town-card");
+      const out = { text: card ? card.innerText : "", first: document.querySelector("#results").firstElementChild.className, isTrip: current.trips.some((t) => /Mission San Luis/.test(t.dest.name)) };
+      h.around = keep; return out;
+    });
+    t.check(/In San Luis Obispo/.test(town.text) && /Mustangs/.test(town.text) && /Mission San Luis Obispo/.test(town.text) && /town-card/.test(town.first) && !town.isTrip,
+      `the college's town gets its own card above the trips, not as a trip (${town.text.slice(0, 80)})`);
     // Seasonal highlights: monarchs at Pismo in January, not in July.
     const hl = await page.evaluate(() => {
       const pick = (m) => { state.month = m; state.daysSet = new Set([1]); state.days = 1; update(); const t = current.trips.find((x) => x.dest.escape.place === "pismo-dunes"); return t ? { when: usWhen(t).map((w) => w[2]), row: document.querySelector(`.row[data-id="${t.key}"]`)?.textContent || "" } : null; };

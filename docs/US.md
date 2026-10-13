@@ -98,6 +98,14 @@ Wednesday and whenever the US scripts change, so the real routes and weather lan
 
 Gas prices come from EIA's public weekly tables (no key needed). For events and campsites, see below.
 
+## In your town (not trips)
+
+Above the trips, a card for the college's own town ("In San Luis Obispo"): what's on that weekend
+(concerts, games, shows, from Ticketmaster, daily) and the best-known spots around town within about
+12 km (museums, galleries, viewpoints, parks, gardens, historic places, theaters, the stadium), from
+OpenStreetMap, only places with a Wikipedia article, ranked by pageviews. No prices or scores: they're
+things to do between trips.
+
 ## Events and campsites (daily)
 
 `scripts/build-us-live.mjs` runs every morning (the **Refresh events and campsites** workflow) and

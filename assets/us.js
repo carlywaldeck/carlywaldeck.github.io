@@ -40,7 +40,7 @@
         when: p.when || null, realRoute: false, stayKind: p.stay || "motel", days: p.days, extras: [], minDays: 1, local: false, dayOnly: !p.stay };
     });
     if (c.wiki) window.US_WIKI[c.name] = decodeURIComponent(c.wiki).replace(/_/g, " ");
-    return { id: c.id, code: c.code, name: c.name, town: c.town, state: c.state || "CA", gas: c.gas || D.gas.price, country: "USA", lat: c.lat, lon: c.lon,
+    return { id: c.id, code: c.code, name: c.name, town: c.town, state: c.state || "CA", gas: c.gas || D.gas.price, around: c.around || [], country: "USA", lat: c.lat, lon: c.lon,
       costs: { hostel: D.stay.hostel, food: D.food.day, transit: 0, activities: 0 }, interests: [], season: [3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 4, 3],
       // Motels and cabins cost more in summer and on holiday weekends; campsites and gas don't follow this.
       priceMult: [0.95, 0.95, 1, 1, 1.05, 1.15, 1.2, 1.2, 1.05, 1, 0.95, 1], bestTime: "", itinerary: [[], [], []], tips: [], dayTrips, weekends, trainTrips };

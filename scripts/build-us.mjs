@@ -156,6 +156,32 @@ async function fetchOsm(colleges) {
   }
 }
 
+// ---------------------------------------------------------------- 4a. OpenStreetMap: around town (not trips)
+// Notable things in each college's own town, within about 12 km: museums, galleries, viewpoints,
+// parks, gardens, historic places, theaters, the stadium… only ones with a Wikipedia article.
+const TOWN_KINDS = [["tourism", "museum", "Museum", "🏛️"], ["tourism", "gallery", "Gallery", "🎨"], ["tourism", "attraction", "Sight", "⭐"],
+  ["tourism", "viewpoint", "Viewpoint", "📸"], ["tourism", "zoo", "Zoo", "🦁"], ["tourism", "aquarium", "Aquarium", "🐠"], ["leisure", "park", "Park", "🌳"],
+  ["leisure", "garden", "Garden", "🌷"], ["leisure", "nature_reserve", "Nature reserve", "🌿"], ["leisure", "stadium", "Stadium", "🏟️"],
+  ["amenity", "theatre", "Theater", "🎭"], ["amenity", "arts_centre", "Arts center", "🎨"], ["historic", "monument", "Monument", "🗿"],
+  ["historic", "building", "Historic building", "🏚️"], ["historic", "castle", "Castle", "🏰"], ["natural", "peak", "Summit", "⛰️"], ["natural", "beach", "Beach", "🏖️"],
+  ["amenity", "marketplace", "Market", "🧺"], ["amenity", "place_of_worship", "Landmark church", "⛪"]];
+async function fetchTown(colleges) {
+  sources.town = sources.town || {};
+  for (const c of colleges) {
+    if (sources.town[c.id]) continue;
+    const q = `[out:json][timeout:60];(${TOWN_KINDS.map(([k, v]) => `nwr["${k}"="${v}"]["wikipedia"](around:12000,${c.lat},${c.lon});`).join("")});out center tags 200;`;
+    try {
+      const d = await get("https://overpass-api.de/api/interpreter", { method: "POST", body: "data=" + encodeURIComponent(q), headers: { "Content-Type": "application/x-www-form-urlencoded" }, wait: 15000, timeout: 90000 });
+      sources.town[c.id] = (d.elements || []).map((e) => {
+        const kind = TOWN_KINDS.find(([k, v]) => e.tags[k] === v);
+        return kind && e.tags.name ? { name: e.tags.name, lat: e.lat ?? e.center?.lat, lon: e.lon ?? e.center?.lon, kind: kind[2], icon: kind[3], wiki: String(e.tags.wikipedia).replace(/^en:/, "").replace(/ /g, "_") } : null;
+      }).filter((x) => x && x.lat && !/^[a-z]{2}:/.test(x.wiki));
+    } catch (e) { log(`town ${c.id}:`, e.message); }
+    await sleep(2000);
+  }
+}
+const townFinds = (c) => (sources.town || {})[c.id] || [];
+
 // ---------------------------------------------------------------- 4b. NOAA: tide stations for coastal places
 // The app asks NOAA for low-tide times on your dates (tide pools!). Main California stations, used
 // until the data job downloads NOAA's full list of tide-prediction stations.
@@ -218,7 +244,8 @@ if (FETCH) {
   await fetchGas();
   await fetchTideStations();
   await fetchOsm(colleges);
-  await fetchWiki([...colleges, ...PLACES, ...colleges.flatMap(osmFinds)]);
+  await fetchTown(colleges);
+  await fetchWiki([...colleges, ...PLACES, ...colleges.flatMap(osmFinds), ...colleges.flatMap(townFinds)]);
   await fetchRoutes(colleges, (c) => [...PLACES.filter((p) => inReach(c, p)), ...osmFinds(c)]);
   await fetchWinterRoutes(colleges, PLACES);
   await fetchClimate(PLACES);
@@ -324,7 +351,13 @@ for (const c of colleges) {
   if (local.filter((r) => !places[r[0]].osm).length < 3) local.push(...nearish.sort((a, b) => a[2] - b[2]).slice(0, 3));
   // Local finds: our hand-picked places first (closest first), then OpenStreetMap's best known.
   local.sort((a, b) => (!!places[a[0]].osm - !!places[b[0]].osm) || (places[a[0]].osm ? places[b[0]].fame - places[a[0]].fame : a[2] - b[2]));
-  out.push({ id: c.id, code: c.code, name: c.name, town: c.town, state: c.state, gas: gasFor(c.state).price, lat: c.lat, lon: c.lon, wiki: c.wiki,
+  // Around town: the best-known spots in the campus's own town (not trips), skipping the campus itself.
+  const tripNames = new Set([...local, ...day].map((r) => places[r[0]].name));
+  const seenTown = new Set();
+  const around = townFinds(c).filter((o) => !tripNames.has(o.name) && o.wiki !== c.wiki && !/university|college|campus/i.test(o.name) && !seenTown.has(o.name) && seenTown.add(o.name))
+    .map((o) => ({ ...o, views: (sources.wiki[o.wiki] || {}).views || 0 })).filter((o) => o.views >= 100)
+    .sort((a, b) => b.views - a.views).slice(0, 12).map((o) => [o.name, o.kind, o.icon, +o.lat.toFixed(4), +o.lon.toFixed(4), o.wiki]);
+  out.push({ id: c.id, code: c.code, name: c.name, town: c.town, state: c.state, gas: gasFor(c.state).price, lat: c.lat, lon: c.lon, wiki: c.wiki, around,
     trips: [...local.slice(0, 10), ...balanced(day, 18, c), ...balanced(wkd, 24, c), ...balanced(long, 15, c)] });
 }
 // ---------------------------------------------------------------- trips without a car (Amtrak)

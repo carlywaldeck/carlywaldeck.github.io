@@ -496,8 +496,17 @@ body.landing-open .topbar, body.landing-open .panel, body.landing-open .spot, bo
 .row small .happening { color: var(--good); font-weight: 600; }
 .row small .heads-up { color: var(--warn); font-weight: 600; }
 .happening-note { margin: 10px 0 0; padding: 10px 12px; border-radius: 10px; background: var(--good-soft); font-size: 14px; }
+.town-card { margin: 4px 12px 14px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--soft); }
+.town-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.town-head small { color: var(--muted); font-size: 12px; }
+.town-label { margin: 10px 0 6px; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.town-spots { display: flex; flex-wrap: wrap; gap: 6px; }
+.town-spot { display: inline-flex; gap: 4px; align-items: center; padding: 5px 10px; border: 1px solid var(--line); border-radius: 999px; font-size: 13px; color: inherit; text-decoration: none; }
+.town-spot:hover { border-color: var(--accent); }
 .events, .camp-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 .events small { display: block; color: var(--muted); font-size: 12px; }
+.events a { color: var(--ink); font-weight: 600; text-decoration: none; }
+.events a:hover { color: var(--accent); text-decoration: underline; }
 .camp-list { margin-top: 6px; font-size: 13.5px; }
 .camp-list li { display: block; padding: 0; }
 .camp-note { display: block; margin-top: 4px; }
@@ -854,8 +863,8 @@ window.CITIES = []; // the California version's colleges come from assets/us.js
 // Phone apps: use the newest prices downloaded last time (see refreshAppData), if newer than the built-in copy.
 if (window.Capacitor) { try { const d = JSON.parse(localStorage.getItem("weekender:data") || "null"); if (d && d.generated) window.CITY_DATA = d; } catch { /* no saved copy */ } }
 </script>
-<script src="data/us-data.js?v=d40b3f31"></script>
-<script src="assets/us.js?v=91028998"></script>
+<script src="data/us-data.js?v=4bcdbf07"></script>
+<script src="assets/us.js?v=b5928e19"></script>
 <script>
 // ======================================================================
 // Weekender app logic
@@ -2631,7 +2640,7 @@ function loadUsLive() {
   usLiveLoading = true;
   const sc = document.createElement("script");
   sc.src = "data/us-live.js?v=" + new Date().toISOString().slice(0, 10);
-  sc.onload = () => { US_LIVE = window.US_LIVE || { events: {}, camps: {} }; if (ui.drawer) renderDrawer(); };
+  sc.onload = () => { US_LIVE = window.US_LIVE || { events: {}, camps: {} }; update(); };
   sc.onerror = () => { US_LIVE = { events: {}, camps: {} }; };
   document.head.appendChild(sc);
 }
@@ -2654,6 +2663,22 @@ function usCampsHtml(esc, btn) {
     return `<li><a href="https://www.recreation.gov/camping/campgrounds/${id}" target="_blank" rel="noopener">${escHtml(name)} ↗</a>${status}</li>`;
   });
   return `<ul class="camp-list">${lines.join("")}</ul><small class="camp-note">Open sites on Recreation.gov for ${nights.map(shortDate).join(" and ")}, checked ${shortDate(checked)}. State park sites are on ReserveCalifornia.</small>`;
+}
+// "In San Luis Obispo": things in the college's own town, not trips (no price or score): what's on
+// that weekend (Ticketmaster, daily) and the best-known spots around town (OpenStreetMap + Wikipedia).
+function townCard(home) {
+  loadUsLive();
+  const [go, back] = weekendDates(3);
+  const ev = US_LIVE && US_LIVE.events ? (US_LIVE.events["c:" + home.id] || []).filter(e => e[0] >= go && e[0] <= back) : [];
+  const spots = home.around || [];
+  if (!ev.length && !spots.length) return "";
+  return `<section class="town-card" aria-label="In ${escHtml(home.town)}">
+    <div class="town-head"><b>In ${escHtml(home.town)}</b><small>Not a trip: things to do around campus</small></div>
+    ${ev.length ? `<p class="town-label">${shortDate(go)} – ${shortDate(back)}</p><ul class="events town-events">${ev.slice(0, 4).map(([date, time, name, venue, url, kind]) =>
+      `<li>${EVENT_ICON[kind] || "🎟️"} <a href="${url}" target="_blank" rel="noopener">${escHtml(name)}</a><small>${shortDate(date)}${time ? ` · ${clock12(time)}` : ""}${venue ? ` · ${escHtml(venue)}` : ""}</small></li>`).join("")}</ul>` : ""}
+    ${spots.length ? `<p class="town-label">Around town</p><div class="town-spots">${spots.map(([name, kind, icon, , , wiki]) =>
+      `<a class="town-spot" href="https://en.wikipedia.org/wiki/${wiki}" target="_blank" rel="noopener" title="${escHtml(kind)}">${icon} ${escHtml(name)}</a>`).join("")}</div>` : ""}
+  </section>`;
 }
 function usLiveSection(t) {
   const esc = t.dest.escape, pl = US_DATA && US_DATA.places[esc.place];
@@ -3825,7 +3850,7 @@ function renderPanel(result) {
   const other = trips.filter(t => t.other), over = trips.filter(t => t.over);
   if (other.length) groups.push(["Also fits, but doesn't match your interests", other]);
   if (over.length) groups.push(["A little over budget", over]);
-  $("#results").innerHTML = groups.map(([title, list]) => `
+  $("#results").innerHTML = (US ? townCard(home) : "") + groups.map(([title, list]) => `
     <h3 class="group">${title}<span>${list.length}</span></h3>
     ${list.map(t => {
       const likes = [...(t.matched || []), ...(t.viaDayTrip || [])].map(m => INTERESTS[m]);

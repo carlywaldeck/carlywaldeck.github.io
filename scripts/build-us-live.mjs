@@ -9,12 +9,13 @@
 import fs from "node:fs/promises";
 import { PLACES } from "./us/places.mjs";
 import { PLACES_WEST } from "./us/places-west.mjs";
+import { COLLEGES } from "./us/colleges.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const OUT = ROOT + "data/us-live.js", CAMPS = ROOT + "data/us-camps.json";
 const UA = "Weekender/1.0 (student trip planner; https://weekender-trips.com)";
 const TM = process.env.TICKETMASTER_KEY, RIDB = process.env.RIDB_KEY;
-const WEEKS = Number(process.env.WEEKS || 10);
+const WEEKS = Number(process.env.WEEKS || 8); // ~3,000 Ticketmaster calls a day (the limit is 5,000)
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const log = (...a) => console.log(...a);
 async function get(url, headers = {}, tries = 3) {
@@ -33,7 +34,8 @@ const iso = (d) => d.toISOString().slice(0, 10);
 const weekends = [];
 { const d = new Date(); d.setUTCHours(12, 0, 0, 0); while (d.getUTCDay() !== 5) d.setUTCDate(d.getUTCDate() + 1);
   for (let w = 0; w < WEEKS; w++) { const f = new Date(d); f.setUTCDate(d.getUTCDate() + 7 * w); const s = new Date(f); s.setUTCDate(f.getUTCDate() + 2); weekends.push([iso(f), iso(s)]); } }
-const places = [...PLACES, ...PLACES_WEST];
+// Trip places, plus each college's own town ("c:" + college id) for the "In your town" card.
+const places = [...PLACES, ...PLACES_WEST, ...COLLEGES.map(([id, name, town, lat, lon]) => ({ id: "c:" + id, name: town, lat, lon, area: "town" }))];
 
 // ---------------------------------------------------------------- events (Ticketmaster)
 // Per place and weekend, the most relevant events within 20 miles (25 for big parks with few venues),
@@ -46,7 +48,7 @@ async function fetchEvents() {
   for (const p of places) {
     const list = [];
     for (const [fri, sun] of weekends) {
-      const url = `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${TM}&latlong=${p.lat},${p.lon}&radius=${p.area === "city" ? 15 : 25}&unit=miles` +
+      const url = `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${TM}&latlong=${p.lat},${p.lon}&radius=${p.area === "town" ? 10 : p.area === "city" || p.city ? 15 : 25}&unit=miles` +
         `&startDateTime=${fri}T00:00:00Z&endDateTime=${sun}T23:59:59Z&size=25&sort=relevance,desc&locale=*`;
       try {
         const d = await get(url); calls++;
