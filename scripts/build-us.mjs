@@ -220,8 +220,11 @@ async function fetchGas() {
     try {
       const r = await fetch(`https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=EMM_EPMR_PTE_${series}_DPG&f=W`, { headers: { "User-Agent": UA }, signal: AbortSignal.timeout(60000) });
       const html = await r.text();
-      const cells = [...html.matchAll(/<td[^>]*class=['"]?B3['"]?[^>]*>\s*([0-9]\.[0-9]{2,3})\s*<\/td>/gi)].map((m) => Number(m[1]));
-      check.push(`${series}: HTTP ${r.status}, ${html.length} chars, ${cells.length} prices, last ${cells.slice(-2).join(",")}`);
+      // Weekly prices sit in table cells as "4.523"; take every cell shaped like a gas price, last = newest.
+      let cells = [...html.matchAll(/<td[^>]*>\s*(?:<[^>]+>\s*)*([2-8]\.[0-9]{3})\s*(?:<[^>]+>\s*)*<\/td>/gi)].map((m) => Number(m[1]));
+      if (!cells.length) cells = [...html.matchAll(/>\s*([2-8]\.[0-9]{3})\s*</g)].map((m) => Number(m[1]));
+      const at = html.search(/[2-8]\.[0-9]{3}/);
+      check.push(`${series}: HTTP ${r.status}, ${html.length} chars, ${cells.length} prices, last ${cells.slice(-2).join(",")}${cells.length ? "" : `, sample: ${at < 0 ? "none" : html.slice(Math.max(0, at - 160), at + 40).replace(/\s+/g, " ")}`}`);
       const v = cells[cells.length - 1];
       if (v > 2 && v < 9) bySeries[series] = v;
     } catch (e) { check.push(`${series}: ${e.message}`); }
