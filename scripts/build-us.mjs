@@ -180,7 +180,7 @@ async function fetchTown(colleges) {
     await sleep(2000);
   }
 }
-const townFinds = (c) => (sources.town || {})[c.id] || [];
+const townFinds = (c) => ((sources.town || {})[c.id] || []).filter((o) => km([c.lat, c.lon], [o.lat, o.lon]) <= 15);
 
 // ---------------------------------------------------------------- 4b. NOAA: tide stations for coastal places
 // The app asks NOAA for low-tide times on your dates (tide pools!). Main California stations, used
@@ -240,7 +240,9 @@ async function fetchGas() {
 const colleges = COLLEGES.map(([id, name, town, lat, lon, code, wiki, state = "CA"]) => ({ id, name, town, lat, lon, code, wiki, state }));
 // OpenStreetMap finds near a campus, as places (only ones that are known: 150+ Wikipedia views a month).
 const OSM_MIN_VIEWS = 150;
-const osmFinds = (c) => (sources.osm[c.id] || []).filter((o) => o.kind !== "Garden" || /botanic/i.test(o.name))
+// (Some OpenStreetMap areas span places far apart, so their center can land hundreds of km away: keep
+// only finds actually near campus.)
+const osmFinds = (c) => (sources.osm[c.id] || []).filter((o) => (o.kind !== "Garden" || /botanic/i.test(o.name)) && km([c.lat, c.lon], [o.lat, o.lon]) <= 45)
   .map((o) => ({ ...o, id: `osm-${o.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}` }));
 if (FETCH) {
   log("fetching sources…");

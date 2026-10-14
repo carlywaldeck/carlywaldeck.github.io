@@ -373,5 +373,17 @@ export const PLACES_WEST = [
       note: "A small lake town on Idaho's biggest lake, with Schweitzer's ski runs above it.", days: ["City Beach and the Long Bridge path, the town's cafés", "Ski Schweitzer, or paddle Lake Pend Oreille in summer"], wiki: "Sandpoint,_Idaho" },
     { id: "wallace", name: "Wallace", lat: 47.4730, lon: -115.9280, area: "rockies", tags: ["history", "offbeat", "villages"], fee: 0, extra: [20, "the Sierra Silver Mine tour"], stay: "motel", trip: "both",
       note: "A whole silver-mining town on the National Register, that declared itself the center of the universe.", days: ["The center-of-the-universe manhole, mine tour, the brothel museum", "Bike the Route of the Hiawatha's tunnels and trestles (summer)"], wiki: "Wallace,_Idaho" }
+  ]),
+  // ---------------------------------------------------------------- near the more remote campuses
+  ...W("OR", [
+    { id: "pendleton", name: "Pendleton", lat: 45.6721, lon: -118.7886, area: "high_desert", tags: ["history", "offbeat", "villages", "markets"], fee: 0, extra: [20, "the Pendleton Underground tour"], stay: null, trip: "local",
+      note: "A cowboy town with a wool mill you can tour and a tunnel network under the streets from its wilder days.", days: ["Pendleton Woolen Mills tour, the Pendleton Underground tour, Main Street saddle shops"], wiki: "Pendleton,_Oregon",
+      when: [[[8], "🤠", "Pendleton Round-Up", "One of the biggest rodeos in the country takes over town in mid-September."]] }
+  ]),
+  ...W("CO", [
+    { id: "durango-silverton", name: "Durango & Silverton train", lat: 37.2700, lon: -107.8820, area: "rockies", tags: ["history", "views", "mountains"], fee: 0, extra: [100, "the narrow-gauge train to Silverton"], stay: null, trip: "local",
+      note: "A coal-fired 1882 steam train up a river gorge to an old mining town (or just watch it leave from the depot).", days: ["The Durango depot and museum, ride or wave at the morning steam train, Animas River trail"], wiki: "Durango_and_Silverton_Narrow_Gauge_Railroad" },
+    { id: "pagosa-springs", name: "Pagosa Springs", lat: 37.2683, lon: -107.0098, area: "rockies", tags: ["spas", "snow", "villages"], fee: 0, extra: [45, "a day at the hot springs pools"], stay: null, trip: "day",
+      note: "The world's deepest geothermal hot spring, with terraced pools along the San Juan River.", days: ["Soak by the river, Treasure Falls on the way, or ski Wolf Creek's deep snow in winter"], wiki: "Pagosa_Springs,_Colorado" }
   ])
 ];
