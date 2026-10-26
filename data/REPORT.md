@@ -1,6 +1,6 @@
 # Data report
 
-Generated 2026-10-19 by `scripts/build-data.mjs`. This compares the original hand-written estimates in the app with the values computed from open data.
+Generated 2026-10-26 by `scripts/build-data.mjs`. This compares the original hand-written estimates in the app with the values computed from open data.
 
 ## Best months (1–5 scores)
 
@@ -95,14 +95,14 @@ Agreement = share of cities where the hand-picked tag and the data (top 40% of c
 
 ## Flight fares and the flight price model
 
-- Real round-trip fares (Travelpayouts / Aviasales, fetched 2026-10-19): **43970** route-months on **11094** routes, each the median of up to 5 weekly snapshots (5 so far)
-- Models: ridge regression on log(fare), trained on 35530 fares. "New route": 11 features (log distance, log distance², demand at destination that month, demand at home that month, destination price level, destination popularity, home popularity, how cheap flights from this airport are, how cheap flights to this airport are, how cheap this month is, short hop (< 500 km)). "Known route" adds: this route in other months, has other months, the reverse route, has reverse route
+- Real round-trip fares (Travelpayouts / Aviasales, fetched 2026-10-26): **44657** route-months on **11031** routes, each the median of up to 5 weekly snapshots (5 so far)
+- Models: ridge regression on log(fare), trained on 36116 fares. "New route": 11 features (log distance, log distance², demand at destination that month, demand at home that month, destination price level, destination popularity, home popularity, how cheap flights from this airport are, how cheap flights to this airport are, how cheap this month is, short hop (< 500 km)). "Known route" adds: this route in other months, has other months, the reverse route, has reverse route
 
 | Test | Typical error | Average error |
 |---|---|---|
-| New-route model, 1720 routes it never saw | **23%** | 33% |
-| Old distance formula, same routes | 35% | 39% |
-| Missing month: reverse route's real fare that month (3137 cases) | **17%** | 26% |
-| Missing month: known-route model (3719 cases) | **19%** | 26% |
-| **All flight prices people see** (26% real fares, 8% reverse, 41% known-route model, 26% new-route model) | **13%** | 21% |
+| New-route model, 1716 routes it never saw | **24%** | 34% |
+| Old distance formula, same routes | 36% | 41% |
+| Missing month: reverse route's real fare that month (3175 cases) | **17%** | 27% |
+| Missing month: known-route model (3804 cases) | **19%** | 26% |
+| **All flight prices people see** (27% real fares, 8% reverse, 40% known-route model, 26% new-route model) | **12%** | 21% |
 
